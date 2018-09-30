@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.9" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.3" />
     <PackageReference Include="MySql.Data" Version="8.0.12" />
     <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="8.0.12" />
     <PackageReference Include="MySql.Data.EntityFrameworkCore.Design" Version="8.0.12" />
@@ -17,7 +18,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\Stores\" />
+    <Folder Include="Areas\Api\Data\" />
+    <Folder Include="Areas\Api\Models\" />
+    <Folder Include="Areas\Api\Views\" />
   </ItemGroup>
 
 </Project>

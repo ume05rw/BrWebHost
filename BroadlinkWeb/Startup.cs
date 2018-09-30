@@ -61,6 +61,12 @@ namespace BroadlinkWeb
 
             app.UseMvc(routes =>
             {
+                // エリアが存在する場合はそのルートをセットする。
+                routes.MapRoute(
+                    name: "areaDefault",
+                    template: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
+                // ↓デフォルト生成コード
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
