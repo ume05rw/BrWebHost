@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using BroadlinkWeb.Models;
 using BroadlinkWeb.Models.Entities;
 using BroadlinkWeb.Models.Stores;
+using System.Net;
 
 namespace BroadlinkWeb.Areas.Api.Controllers
 {
@@ -32,6 +33,49 @@ namespace BroadlinkWeb.Areas.Api.Controllers
             var result = this._store.Discover();
             return result;
         }
+
+        // GET: api/BrDevices/5
+        [HttpGet("GetA1SensorValues/{id}")]
+        public async Task<IActionResult> GetA1SensorValues([FromRoute] int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var brDevice = await _context.BrDevices.SingleOrDefaultAsync(m => m.Id == id);
+
+            if (brDevice == null)
+            {
+                return NotFound();
+            }
+
+            var mac = brDevice.MacAddressString
+                .Split('-')
+                .Select(hex => Convert.ToByte(hex, 16))
+                .ToArray();
+            var endPoint = new IPEndPoint(IPAddress.Parse(brDevice.IpAddressString), brDevice.Port);
+            var dev = SharpBroadlink.Broadlink.Create(brDevice.DeviceTypeNumber, mac, endPoint);
+
+            if (dev.DeviceType != SharpBroadlink.Devices.DeviceType.A1)
+            {
+                return NotFound();
+            }
+
+            var a1Dev = (SharpBroadlink.Devices.A1)dev;
+
+            a1Dev.Auth()
+                .GetAwaiter()
+                .GetResult();
+
+            var result = a1Dev.CheckSensorsRaw()
+                .GetAwaiter()
+                .GetResult();
+
+            return Ok(result);
+        }
+
+
 
         // GET: api/BrDevices
         [HttpGet]

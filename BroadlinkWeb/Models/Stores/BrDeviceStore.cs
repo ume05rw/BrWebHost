@@ -28,20 +28,33 @@ namespace BroadlinkWeb.Models.Stores
 
             // DB登録済みのデバイスエンティティ取得
             var registedDevices = this._dbc.BrDevices.ToList();
+            var isDbChanged = false;
 
             // デバイスエンティティにBroadlinkデバイスオブジェクトをセット。
             foreach (var brDev in registedDevices)
-                brDev.SbDevice = primitiveDevices
+            {
+                var matched = primitiveDevices
                     .FirstOrDefault(d => d.Host.Address.ToString() == brDev.IpAddressString);
+
+                var exists = (matched != null);
+                if (brDev.IsActive != exists)
+                {
+                    brDev.IsActive = exists;
+                    this._dbc.Add(brDev);
+                    isDbChanged = true;
+                }
+            }
 
             // DB未登録デバイスオブジェクトのEntityを生成
             var newDevices = primitiveDevices
-                .Where(d => registedDevices.FirstOrDefault(bd => bd.SbDevice == d) == null)
+                .Where(d => registedDevices.FirstOrDefault(bd => bd.IpAddressString == d.Host.Address.ToString()) == null)
                 .Select(d => new BrDevice()
                 {
+                    MacAddressString = BitConverter.ToString(d.Mac),
                     IpAddressString = d.Host.Address.ToString(),
-                    BrDeviceType = d.DeviceType.ToString(),
-                    SbDevice = d
+                    Port = d.Host.Port,
+                    DeviceTypeNumber = d.DevType,
+                    IsActive = true
                 })
                 .ToArray();
 
@@ -50,8 +63,12 @@ namespace BroadlinkWeb.Models.Stores
             {
                 registedDevices.AddRange(newDevices);
                 this._dbc.AddRange(newDevices);
-                this._dbc.SaveChanges();
+                isDbChanged = true;
+                
             }
+
+            if (isDbChanged)
+                this._dbc.SaveChanges();
 
             return registedDevices;
         }

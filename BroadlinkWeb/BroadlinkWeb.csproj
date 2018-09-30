@@ -10,7 +10,6 @@
     <PackageReference Include="MySql.Data" Version="8.0.12" />
     <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="8.0.12" />
     <PackageReference Include="MySql.Data.EntityFrameworkCore.Design" Version="8.0.12" />
-    <PackageReference Include="SharpBroadlink" Version="1.0.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -21,6 +20,10 @@
     <Folder Include="Areas\Api\Data\" />
     <Folder Include="Areas\Api\Models\" />
     <Folder Include="Areas\Api\Views\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Library\SharpBroadlink\SharpBroadlink\SharpBroadlink.csproj" />
   </ItemGroup>
 
 </Project>

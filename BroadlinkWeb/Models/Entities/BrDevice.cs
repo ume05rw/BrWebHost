@@ -15,15 +15,27 @@ namespace BroadlinkWeb.Models.Entities
         public int Id { get; set; }
 
         [Required]
-        [Column(TypeName = "varchar(256)")]
+        [Column(TypeName = "varchar(20)")]
+        public string MacAddressString { get; set; }
+
+        [Required]
+        [Column(TypeName = "varchar(20)")]
         public string IpAddressString { get; set; }
 
         [Required]
-        [Column(TypeName = "varchar(50)")]
-        public string BrDeviceType { get; set; }
+        [Column(TypeName = "int(5)")]
+        public int Port { get; set; }
 
-        [IgnoreDataMember]
-        [NotMapped]
-        public SharpBroadlink.Devices.IDevice SbDevice { get; set; }
+        [Required]
+        [Column(TypeName = "int(6)")]
+        public int DeviceTypeNumber { get; set; }
+
+        [Required]
+        [Column(TypeName = "tinyint(1)")]
+        public bool IsActive { get; set; }
+
+        //[IgnoreDataMember] // JSONシリアライズ対象にしない。
+        //[NotMapped] // DBカラムとのマッピングを行わない。
+        //public SharpBroadlink.Devices.IDevice SbDevice { get; set; }
     }
 }
