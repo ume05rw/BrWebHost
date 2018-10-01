@@ -10,67 +10,83 @@ namespace BroadlinkWeb.Models.Stores
 {
     public class BrDeviceStore
     {
+        private static List<BrDevice> _list { get; set; }
+            = new List<BrDevice>();
+
+
+
         private Dbc _dbc;
+
+        public List<BrDevice> List => BrDeviceStore._list;
 
         public BrDeviceStore(Dbc dbc)
         {
             this._dbc = dbc;
         }
 
-        public IEnumerable<BrDevice> Discover()
+        public IEnumerable<BrDevice> Refresh()
         {
             var result = new List<BrDevice>();
 
             // LAN上のBroadlinkデバイスオブジェクトを取得
-            var primitiveDevices = Broadlink.Discover(2)
+            var broadlinkDevices = Broadlink.Discover(2)
                 .GetAwaiter()
                 .GetResult();
 
             // DB登録済みのデバイスエンティティ取得
-            var registedDevices = this._dbc.BrDevices.ToList();
-            var isDbChanged = false;
+            var entities = this._dbc.BrDevices.ToList();
 
             // デバイスエンティティにBroadlinkデバイスオブジェクトをセット。
-            foreach (var brDev in registedDevices)
-            {
-                var matched = primitiveDevices
-                    .FirstOrDefault(d => d.Host.Address.ToString() == brDev.IpAddressString);
-
-                var exists = (matched != null);
-                if (brDev.IsActive != exists)
-                {
-                    brDev.IsActive = exists;
-                    this._dbc.Add(brDev);
-                    isDbChanged = true;
-                }
-            }
+            foreach (var entity in entities)
+                entity.SbDevice = broadlinkDevices
+                    .FirstOrDefault(bd => this.IsDeviceMatch(entity, bd));
 
             // DB未登録デバイスオブジェクトのEntityを生成
-            var newDevices = primitiveDevices
-                .Where(d => registedDevices.FirstOrDefault(bd => bd.IpAddressString == d.Host.Address.ToString()) == null)
-                .Select(d => new BrDevice()
+            var newDevices = broadlinkDevices
+                .Where(bd => entities.FirstOrDefault(en => this.IsDeviceMatch(en, bd)) == null)
+                .Select(bd => new BrDevice()
                 {
-                    MacAddressString = BitConverter.ToString(d.Mac),
-                    IpAddressString = d.Host.Address.ToString(),
-                    Port = d.Host.Port,
-                    DeviceTypeNumber = d.DevType,
-                    IsActive = true
+                    MacAddressString = BitConverter.ToString(bd.Mac),
+                    IpAddressString = bd.Host.Address.ToString(),
+                    Port = bd.Host.Port,
+                    DeviceTypeDetailNumber = bd.DevType,
+                    SbDevice = bd
                 })
                 .ToArray();
 
             // 未登録デバイスがあれば登録
             if (newDevices.Length > 0)
             {
-                registedDevices.AddRange(newDevices);
+                entities.AddRange(newDevices);
                 this._dbc.AddRange(newDevices);
-                isDbChanged = true;
-                
+                this._dbc.SaveChanges();
             }
 
-            if (isDbChanged)
-                this._dbc.SaveChanges();
+            // デバイスの認証を通す。
+            foreach (var entity in entities.Where(en => en.IsActive))
+                entity.SbDevice.Auth().GetAwaiter().GetResult();
 
-            return registedDevices;
+            // エンティティキャッシュ差し替え
+            BrDeviceStore._list.Clear();
+            BrDeviceStore._list.AddRange(entities);
+
+            return entities;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="brDev"></param>
+        /// <param name="sbDev"></param>
+        /// <returns></returns>
+        private bool IsDeviceMatch(BrDevice brDev, SharpBroadlink.Devices.IDevice sbDev)
+        {
+            if (brDev == null || sbDev == null)
+                return false;
+
+            return (brDev.IpAddressString == sbDev.Host.Address.ToString()
+                    && brDev.Port == sbDev.Host.Port
+                    && brDev.DeviceTypeDetailNumber == sbDev.DevType);
         }
     }
 }

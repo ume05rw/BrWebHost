@@ -30,43 +30,31 @@ namespace BroadlinkWeb.Areas.Api.Controllers
         [HttpGet("Discover")]
         public IEnumerable<BrDevice> Discover()
         {
-            var result = this._store.Discover();
+            var result = this._store.Refresh();
             return result;
         }
 
         // GET: api/BrDevices/5
-        [HttpGet("GetA1SensorValues/{id}")]
-        public async Task<IActionResult> GetA1SensorValues([FromRoute] int id)
+        [HttpGet("GetA1SensorValues/{id?}")]
+        public IActionResult GetA1SensorValues([FromRoute] int? id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            if (!this.ModelState.IsValid)
+                return this.BadRequest(ModelState);
 
-            var brDevice = await _context.BrDevices.SingleOrDefaultAsync(m => m.Id == id);
+            BrDevice entity;
+            if (id == null)
+                entity = this._store.List.FirstOrDefault(bd => bd.SbDevice?.DeviceType == SharpBroadlink.Devices.DeviceType.A1);
+            else
+                entity = this._store.List.FirstOrDefault(bd => bd.Id == id);
 
-            if (brDevice == null)
-            {
-                return NotFound();
-            }
+            if (entity == null)
+                return this.NotFound();
+            else if (!entity.IsActive)
+                return this.BadRequest("Device is not Active");
+            else if (entity.SbDevice.DeviceType != SharpBroadlink.Devices.DeviceType.A1)
+                return this.BadRequest("Device is not A1 Sensor");
 
-            var mac = brDevice.MacAddressString
-                .Split('-')
-                .Select(hex => Convert.ToByte(hex, 16))
-                .ToArray();
-            var endPoint = new IPEndPoint(IPAddress.Parse(brDevice.IpAddressString), brDevice.Port);
-            var dev = SharpBroadlink.Broadlink.Create(brDevice.DeviceTypeNumber, mac, endPoint);
-
-            if (dev.DeviceType != SharpBroadlink.Devices.DeviceType.A1)
-            {
-                return NotFound();
-            }
-
-            var a1Dev = (SharpBroadlink.Devices.A1)dev;
-
-            a1Dev.Auth()
-                .GetAwaiter()
-                .GetResult();
+            var a1Dev = (SharpBroadlink.Devices.A1)entity.SbDevice;
 
             var result = a1Dev.CheckSensorsRaw()
                 .GetAwaiter()
@@ -74,8 +62,6 @@ namespace BroadlinkWeb.Areas.Api.Controllers
 
             return Ok(result);
         }
-
-
 
         // GET: api/BrDevices
         [HttpGet]

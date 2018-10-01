@@ -4,8 +4,18 @@
 
         console.log('query-1');
 
+        query({
+            url: "http://localhost:20776/api/BrDevices/Discover",
+            method: 'GET',
+            values: {},
+            callback: function (res) {
+                console.log('query-3');
+                console.log(res);
+            }
+        });
+
         //query({
-        //    url: "http://localhost:20776/api/BrDevices/Discover",
+        //    url: "http://localhost:20776/api/BrDevices/GetA1SensorValues/10",
         //    method: 'GET',
         //    values: {},
         //    callback: function (res) {
@@ -14,8 +24,16 @@
         //    }
         //});
 
+        console.log('query-2');
+    });
+
+    $('button[name=A1Value]').click(function () {
+        //alert('hello!');
+
+        console.log('query-1');
+
         query({
-            url: "http://localhost:20776/api/BrDevices/GetA1SensorValues/10",
+            url: "http://localhost:20776/api/BrDevices/GetA1SensorValues/",
             method: 'GET',
             values: {},
             callback: function (res) {

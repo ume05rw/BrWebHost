@@ -24,15 +24,12 @@ namespace BroadlinkWeb.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int(11)");
 
-                    b.Property<int>("DeviceTypeNumber")
+                    b.Property<int>("DeviceTypeDetailNumber")
                         .HasColumnType("int(6)");
 
                     b.Property<string>("IpAddressString")
                         .IsRequired()
                         .HasColumnType("varchar(20)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("MacAddressString")
                         .IsRequired()

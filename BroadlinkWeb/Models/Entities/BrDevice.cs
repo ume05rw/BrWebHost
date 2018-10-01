@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -11,31 +12,41 @@ namespace BroadlinkWeb.Models.Entities
     public class BrDevice
     {
         [Key]
-        [Column(TypeName = "int(11)")]
+        [Column(Order = 0, TypeName = "int(11)")] // Orderプロパティは、EFCore未サポート
+        [Description("Registed Broadlink-device ID")] // Description属性は、EFCore未サポート
         public int Id { get; set; }
 
         [Required]
-        [Column(TypeName = "varchar(20)")]
+        [Column(Order = 1, TypeName = "varchar(20)")]
+        [Description("MAC Address, Reversed")]
         public string MacAddressString { get; set; }
 
         [Required]
-        [Column(TypeName = "varchar(20)")]
+        [Column(Order = 2, TypeName = "varchar(20)")]
+        [Description("IPv4 Address")]
         public string IpAddressString { get; set; }
 
         [Required]
-        [Column(TypeName = "int(5)")]
+        [Column(Order = 3, TypeName = "int(5)")]
+        [Description("UDP Port")]
         public int Port { get; set; }
 
         [Required]
-        [Column(TypeName = "int(6)")]
-        public int DeviceTypeNumber { get; set; }
+        [Column(Order = 4, TypeName = "int(6)")]
+        [Description("Device-Type Detail")]
+        public int DeviceTypeDetailNumber { get; set; }
 
-        [Required]
-        [Column(TypeName = "tinyint(1)")]
-        public bool IsActive { get; set; }
+        [NotMapped] // DBカラムとのマッピングを行わない。
+        public bool IsActive => (this.SbDevice != null);
 
-        //[IgnoreDataMember] // JSONシリアライズ対象にしない。
-        //[NotMapped] // DBカラムとのマッピングを行わない。
-        //public SharpBroadlink.Devices.IDevice SbDevice { get; set; }
+        [NotMapped] // DBカラムとのマッピングを行わない。
+        public string DeviceTypeDetal => this.DeviceTypeDetailNumber.ToString("x2");
+
+        [NotMapped] // DBカラムとのマッピングを行わない。
+        public string DeviceType => this.SbDevice?.DeviceType.ToString();
+
+        [IgnoreDataMember] // JSONシリアライズ対象にしない。
+        [NotMapped] // DBカラムとのマッピングを行わない。
+        public SharpBroadlink.Devices.IDevice SbDevice { get; set; }
     }
 }
