@@ -42,6 +42,107 @@ namespace BroadlinkWeb.Migrations
 
                     b.ToTable("BrDevices");
                 });
+
+            modelBuilder.Entity("BroadlinkWeb.Models.Entities.Control", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int(11)");
+
+                    b.Property<string>("Code")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasColumnType("varchar(8)");
+
+                    b.Property<int>("ControlSetId")
+                        .HasColumnType("int(11)");
+
+                    b.Property<string>("IconId")
+                        .HasColumnType("int(11)");
+
+                    b.Property<int?>("IconId1");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("PositionX")
+                        .IsRequired()
+                        .HasColumnType("int(11)");
+
+                    b.Property<string>("PositionY")
+                        .IsRequired()
+                        .HasColumnType("int(11)");
+
+                    b.Property<string>("Size")
+                        .IsRequired()
+                        .HasColumnType("int(11)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ControlSetId");
+
+                    b.HasIndex("IconId1");
+
+                    b.ToTable("Controlls");
+                });
+
+            modelBuilder.Entity("BroadlinkWeb.Models.Entities.ControlSet", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int(11)");
+
+                    b.Property<int>("BrDeviceId")
+                        .HasColumnType("int(11)");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BrDeviceId");
+
+                    b.ToTable("ControlSets");
+                });
+
+            modelBuilder.Entity("BroadlinkWeb.Models.Entities.Icon", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int(11)");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("varchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Icons");
+                });
+
+            modelBuilder.Entity("BroadlinkWeb.Models.Entities.Control", b =>
+                {
+                    b.HasOne("BroadlinkWeb.Models.Entities.ControlSet", "ControlSet")
+                        .WithMany()
+                        .HasForeignKey("ControlSetId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("BroadlinkWeb.Models.Entities.Icon", "Icon")
+                        .WithMany()
+                        .HasForeignKey("IconId1");
+                });
+
+            modelBuilder.Entity("BroadlinkWeb.Models.Entities.ControlSet", b =>
+                {
+                    b.HasOne("BroadlinkWeb.Models.Entities.BrDevice", "BrDevice")
+                        .WithMany()
+                        .HasForeignKey("BrDeviceId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
 #pragma warning restore 612, 618
         }
     }

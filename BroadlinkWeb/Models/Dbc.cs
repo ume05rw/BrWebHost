@@ -14,6 +14,12 @@ namespace BroadlinkWeb.Models
     {
         public DbSet<BrDevice> BrDevices { get; set; }
 
+        public DbSet<ControlSet> ControlSets { get; set; }
+
+        public DbSet<Control> Controlls { get; set; }
+
+        public DbSet<Icon> Icons { get; set; }
+
         /// <summary>
         /// Constructor
         /// </summary>

@@ -35,7 +35,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
         }
 
         // GET: api/BrDevices/5
-        [HttpGet("GetA1SensorValues/{id?}")]
+        [HttpGet("GetA1SensorValues/{id?}")] // <- nullableのとき、ここにも?が必要。
         public IActionResult GetA1SensorValues([FromRoute] int? id)
         {
             if (!this.ModelState.IsValid)
