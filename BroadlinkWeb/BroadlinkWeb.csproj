@@ -2,7 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TypeScriptToolsVersion>3.0</TypeScriptToolsVersion>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\js\Page.ts" />
+    <Content Remove="wwwroot\ts\PageManager.ts" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.9" />
@@ -20,10 +26,16 @@
     <Folder Include="Areas\Api\Data\" />
     <Folder Include="Areas\Api\Models\" />
     <Folder Include="Areas\Api\Views\" />
+    <Folder Include="wwwroot\images\icons\" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Library\SharpBroadlink\SharpBroadlink\SharpBroadlink.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="wwwroot\ts\Page.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\PageManager.ts" />
   </ItemGroup>
 
 </Project>
