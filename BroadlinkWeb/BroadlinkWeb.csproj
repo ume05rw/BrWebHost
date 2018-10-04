@@ -7,6 +7,13 @@
 
   <ItemGroup>
     <Content Remove="wwwroot\js\Page.ts" />
+    <Content Remove="wwwroot\ts\App\Control\Control.ts" />
+    <Content Remove="wwwroot\ts\App\Control\ControlSet.ts" />
+    <Content Remove="wwwroot\ts\App\Main.ts" />
+    <Content Remove="wwwroot\ts\Fw\Util\Xhr.ts" />
+    <Content Remove="wwwroot\ts\Fw\Util\XhrMethodType.ts" />
+    <Content Remove="wwwroot\ts\Fw\Util\XhrParams.ts" />
+    <Content Remove="wwwroot\ts\Fw\Util\XhrResult.ts" />
     <Content Remove="wwwroot\ts\PageManager.ts" />
   </ItemGroup>
 
@@ -23,10 +30,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Api\Data\" />
-    <Folder Include="Areas\Api\Models\" />
-    <Folder Include="Areas\Api\Views\" />
     <Folder Include="wwwroot\images\icons\" />
+    <Folder Include="wwwroot\ts\App\Model\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,8 +39,20 @@
   </ItemGroup>
 
   <ItemGroup>
-    <TypeScriptCompile Include="wwwroot\ts\Page.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\PageManager.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Control\Control.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Control\ControlSet.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Main.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Controller\MainController.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Controller\Sub1Controller.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Controller\Sub2Controller.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Controller\Factory.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Controller\IController.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Controller\ControllerBase.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Controller\Manager.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Xhr.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Util\XhrMethodType.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Util\XhrParams.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Util\XhrResult.ts" />
   </ItemGroup>
 
 </Project>
