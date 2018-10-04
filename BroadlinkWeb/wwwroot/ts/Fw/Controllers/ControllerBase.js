@@ -2,8 +2,8 @@
 /// <reference path="../../../lib/underscore/index.d.ts" />
 var Fw;
 (function (Fw) {
-    var Controller;
-    (function (Controller) {
+    var Controllers;
+    (function (Controllers) {
         var ControllerBase = /** @class */ (function () {
             function ControllerBase(elem, manager) {
                 this.View = elem;
@@ -15,7 +15,7 @@ var Fw;
             }
             return ControllerBase;
         }());
-        Controller.ControllerBase = ControllerBase;
-    })(Controller = Fw.Controller || (Fw.Controller = {}));
+        Controllers.ControllerBase = ControllerBase;
+    })(Controllers = Fw.Controllers || (Fw.Controllers = {}));
 })(Fw || (Fw = {}));
 //# sourceMappingURL=ControllerBase.js.map

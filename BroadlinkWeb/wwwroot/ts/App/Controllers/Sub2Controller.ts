@@ -1,13 +1,13 @@
 ﻿/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 
-namespace App.Controller {
-    export class Sub2Controller extends Fw.Controller.ControllerBase {
+namespace App.Controllers {
+    export class Sub2Controller extends Fw.Controllers.ControllerBase {
 
         private _btnGoMain: JQuery;
         private _btnA1Value: JQuery;
 
-        constructor(elem: JQuery, manager: Fw.Controller.Manager) {
+        constructor(elem: JQuery, manager: Fw.Controllers.Manager) {
             super(elem, manager);
             this.Init();
         }

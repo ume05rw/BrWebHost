@@ -1,8 +1,7 @@
 ﻿/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="./Control.ts" />
 
-namespace App.Control {
-    export class ControlSet {
+namespace App.Models {
+    export class Control {
     }
 }

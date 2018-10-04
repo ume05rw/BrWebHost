@@ -1,14 +1,14 @@
 ﻿/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 
-namespace Fw.Controller {
-    export class ControllerBase implements Fw.Controller.IController {
+namespace Fw.Controllers {
+    export class ControllerBase implements Fw.Controllers.IController {
         public Id: string;
         public IsDefaultView: boolean;
         public View: JQuery;
-        public Manager: Fw.Controller.Manager;
+        public Manager: Fw.Controllers.Manager;
 
-        constructor(elem: JQuery, manager: Fw.Controller.Manager) {
+        constructor(elem: JQuery, manager: Fw.Controllers.Manager) {
             this.View = elem;
             this.Manager = manager;
             this.Id = this.View.data("controller");

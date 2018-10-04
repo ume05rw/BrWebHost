@@ -2,15 +2,15 @@
 /// <reference path="../../../lib/underscore/index.d.ts" />
 var Fw;
 (function (Fw) {
-    var Controller;
-    (function (Controller) {
+    var Controllers;
+    (function (Controllers) {
         var Manager = /** @class */ (function () {
             function Manager() {
                 var pages = [];
                 $("div[data-controller]").each(function (i, el) {
                     var $elem = $(el);
                     var name = $elem.data('controller');
-                    var instance = Controller.Factory.Create(name, $elem, this);
+                    var instance = Controllers.Factory.Create(name, $elem, this);
                     pages.push(instance);
                 }.bind(this));
                 this._list = pages;
@@ -30,7 +30,7 @@ var Fw;
             };
             return Manager;
         }());
-        Controller.Manager = Manager;
-    })(Controller = Fw.Controller || (Fw.Controller = {}));
+        Controllers.Manager = Manager;
+    })(Controllers = Fw.Controllers || (Fw.Controllers = {}));
 })(Fw || (Fw = {}));
 //# sourceMappingURL=Manager.js.map

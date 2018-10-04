@@ -7,8 +7,6 @@
 
   <ItemGroup>
     <Content Remove="wwwroot\js\Page.ts" />
-    <Content Remove="wwwroot\ts\App\Control\Control.ts" />
-    <Content Remove="wwwroot\ts\App\Control\ControlSet.ts" />
     <Content Remove="wwwroot\ts\App\Main.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\Xhr.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\XhrMethodType.ts" />
@@ -31,7 +29,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\images\icons\" />
-    <Folder Include="wwwroot\ts\App\Model\" />
+    <Folder Include="wwwroot\ts\App\Views\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,16 +37,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <TypeScriptCompile Include="wwwroot\ts\App\Control\Control.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\App\Control\ControlSet.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Models\Control.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Models\ControlSet.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Main.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\App\Controller\MainController.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\App\Controller\Sub1Controller.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\App\Controller\Sub2Controller.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Controller\Factory.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Controller\IController.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Controller\ControllerBase.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Controller\Manager.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Controllers\MainController.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Controllers\Sub1Controller.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Controllers\Sub2Controller.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\Factory.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\IController.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\ControllerBase.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\Manager.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Xhr.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\XhrMethodType.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\XhrParams.ts" />

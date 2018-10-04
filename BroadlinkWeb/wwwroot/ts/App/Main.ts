@@ -4,7 +4,7 @@
 namespace App {
     export class Main {
         public static StartUp(): void {
-            var pager = new Fw.Controller.Manager();
+            var pager = new Fw.Controllers.Manager();
         }
     }
 }

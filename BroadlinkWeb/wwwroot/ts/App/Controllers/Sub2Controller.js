@@ -15,8 +15,8 @@ var __extends = (this && this.__extends) || (function () {
 })();
 var App;
 (function (App) {
-    var Controller;
-    (function (Controller) {
+    var Controllers;
+    (function (Controllers) {
         var Sub2Controller = /** @class */ (function (_super) {
             __extends(Sub2Controller, _super);
             function Sub2Controller(elem, manager) {
@@ -42,8 +42,8 @@ var App;
                 });
             };
             return Sub2Controller;
-        }(Fw.Controller.ControllerBase));
-        Controller.Sub2Controller = Sub2Controller;
-    })(Controller = App.Controller || (App.Controller = {}));
+        }(Fw.Controllers.ControllerBase));
+        Controllers.Sub2Controller = Sub2Controller;
+    })(Controllers = App.Controllers || (App.Controllers = {}));
 })(App || (App = {}));
 //# sourceMappingURL=Sub2Controller.js.map

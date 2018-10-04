@@ -6,7 +6,7 @@ var App;
         function Main() {
         }
         Main.StartUp = function () {
-            var pager = new Fw.Controller.Manager();
+            var pager = new Fw.Controllers.Manager();
         };
         return Main;
     }());
