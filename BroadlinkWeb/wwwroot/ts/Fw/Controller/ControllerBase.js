@@ -8,8 +8,8 @@ var Fw;
             function ControllerBase(elem, manager) {
                 this.View = elem;
                 this.Manager = manager;
-                this.Id = this.View.data("viewclass");
-                this.IsDefaultView = (this.View.data("defaultview"));
+                this.Id = this.View.data("controller");
+                this.IsDefaultView = (this.View.data("default"));
                 if (this.IsDefaultView)
                     this.View.show();
             }

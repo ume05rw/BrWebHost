@@ -7,6 +7,9 @@ namespace Fw.Util {
 
         public static Query(params: XhrParams): any {
 
+            // 数値になってしまう。
+            let methodToString: string = params.Method.toString().toUpperCase();
+
             let method: string;
             switch (params.Method) {
                 case XhrMethodType.Get: method = 'GET'; break;

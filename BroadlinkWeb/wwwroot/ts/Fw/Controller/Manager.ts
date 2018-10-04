@@ -3,16 +3,15 @@
 
 namespace Fw.Controller {
     export class Manager {
-        private _list: Fw.Controller.IController[];
+        private _list: IController[];
 
         constructor() {
-            let pages: Fw.Controller.IController[] = [];
+            let pages: IController[] = [];
 
-            $("div[data-viewclass]").each(function (i, el) {
+            $("div[data-controller]").each(function (i, el) {
                 let $elem = $(el);
-                let name = $elem.data('viewclass');
-                let pageClass = Fw.Controller.Factory.GetViewClass(name);
-                let instance = new pageClass($elem, this);
+                let name = $elem.data('controller');
+                let instance = Factory.Create(name, $elem, this);
                 pages.push(instance);
             }.bind(this));
 

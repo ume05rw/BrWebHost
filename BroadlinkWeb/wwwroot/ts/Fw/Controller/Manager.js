@@ -7,11 +7,10 @@ var Fw;
         var Manager = /** @class */ (function () {
             function Manager() {
                 var pages = [];
-                $("div[data-viewclass]").each(function (i, el) {
+                $("div[data-controller]").each(function (i, el) {
                     var $elem = $(el);
-                    var name = $elem.data('viewclass');
-                    var pageClass = Fw.Controller.Factory.GetViewClass(name);
-                    var instance = new pageClass($elem, this);
+                    var name = $elem.data('controller');
+                    var instance = Controller.Factory.Create(name, $elem, this);
                     pages.push(instance);
                 }.bind(this));
                 this._list = pages;

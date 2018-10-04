@@ -8,6 +8,8 @@ var Fw;
             function Xhr() {
             }
             Xhr.Query = function (params) {
+                // 数値になってしまう。
+                var methodToString = params.Method.toString().toUpperCase();
                 var method;
                 switch (params.Method) {
                     case Util.XhrMethodType.Get:

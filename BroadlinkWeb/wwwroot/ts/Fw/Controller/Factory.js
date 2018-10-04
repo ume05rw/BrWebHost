@@ -8,8 +8,10 @@ var Fw;
             function Factory() {
             }
             // https://qiita.com/kojiy72/items/8e3ac6ae2083d3e1284c
-            Factory.GetViewClass = function (name) {
-                return Function('return (App.Controller.' + name + 'Controller)')();
+            Factory.Create = function (name, elem, manager) {
+                var classObject = Function('return (App.Controller.' + name + 'Controller)')();
+                var instance = new classObject(elem, manager);
+                return instance;
             };
             return Factory;
         }());
