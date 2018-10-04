@@ -24,12 +24,12 @@ namespace App.Controllers {
 
                 console.log('btnA1Value.click');
 
-                var params = new Fw.Util.XhrParams('BrDevices/GetA1SensorValues', Fw.Util.XhrMethodType.Get);
+                var params = new Fw.Util.Xhr.Params('BrDevices/GetA1SensorValues', Fw.Util.Xhr.MethodType.Get);
                 params.Callback = (data) => {
                     console.log('GetA1SensorValues:');
                     console.log(data);
                 }
-                Fw.Util.Xhr.Query(params);
+                Fw.Util.Xhr.Query.Invoke(params);
             })
         }
     }

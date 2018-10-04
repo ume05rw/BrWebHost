@@ -1,5 +1,6 @@
 ﻿/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Fw/Controllers/ControllerBase.ts" />
 
 namespace App.Controllers {
     export class MainController extends Fw.Controllers.ControllerBase {

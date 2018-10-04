@@ -4,8 +4,6 @@
 namespace App.Controllers {
     export class Sub1Controller extends Fw.Controllers.ControllerBase {
 
-        
-
         private _btnGoMain: JQuery;
         private _btnDevices: JQuery;
 
@@ -26,12 +24,12 @@ namespace App.Controllers {
 
                 console.log('btnDevices.click');
 
-                var params = new Fw.Util.XhrParams('BrDevices/Discover', Fw.Util.XhrMethodType.Get);
+                var params = new Fw.Util.Xhr.Params('BrDevices/Discover', Fw.Util.Xhr.MethodType.Get);
                 params.Callback = (data) => {
                     console.log('Disover:');
                     console.log(data);
                 }
-                Fw.Util.Xhr.Query(params);
+                Fw.Util.Xhr.Query.Invoke(params);
             });
         }
     }

@@ -1,26 +1,27 @@
-﻿/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
+﻿/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
 
-namespace Fw.Util {
-    export class Xhr {
-        public static UrlBase: string = 'http://localhost/';
+namespace Fw.Util.Xhr {
+    export class Query {
+        // ↓App.Mainで書き換える。
+        public static BaseUrl: string = 'http://localhost/';
 
-        public static Query(params: XhrParams): any {
+        public static Invoke(params: Params): any {
 
             // 数値になってしまう。
-            let methodToString: string = params.Method.toString().toUpperCase();
+            //let methodToString: string = params.Method.toString().toUpperCase();
 
             let method: string;
             switch (params.Method) {
-                case XhrMethodType.Get: method = 'GET'; break;
-                case XhrMethodType.Post: method = 'POST'; break;
-                case XhrMethodType.Put: method = 'PUT'; break;
-                case XhrMethodType.Delete: method = 'DELETE'; break;
+                case MethodType.Get: method = 'GET'; break;
+                case MethodType.Post: method = 'POST'; break;
+                case MethodType.Put: method = 'PUT'; break;
+                case MethodType.Delete: method = 'DELETE'; break;
                 default: method = 'POST';
             }
 
             $.ajax({
-                url: Xhr.UrlBase + params.Url,
+                url: Query.BaseUrl + params.Url,
                 method: method,
                 data: params.Values || null,
                 cache: false,

@@ -47,10 +47,26 @@
     <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\IController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\ControllerBase.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\Manager.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Xhr.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Util\XhrMethodType.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Util\XhrParams.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Util\XhrResult.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Xhr\Query.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Xhr\MethodType.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Xhr\Params.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Xhr\Result.ts" />
   </ItemGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <TypeScriptTarget>ES5</TypeScriptTarget>
+    <TypeScriptJSXEmit>None</TypeScriptJSXEmit>
+    <TypeScriptModuleKind />
+    <TypeScriptCompileOnSaveEnabled>True</TypeScriptCompileOnSaveEnabled>
+    <TypeScriptNoImplicitAny>False</TypeScriptNoImplicitAny>
+    <TypeScriptRemoveComments>False</TypeScriptRemoveComments>
+    <TypeScriptOutFile>wwwroot/js/tsout.js</TypeScriptOutFile>
+    <TypeScriptOutDir></TypeScriptOutDir>
+    <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
+    <TypeScriptNoEmitOnError>True</TypeScriptNoEmitOnError>
+    <TypeScriptSourceMap>True</TypeScriptSourceMap>
+    <TypeScriptMapRoot />
+    <TypeScriptSourceRoot></TypeScriptSourceRoot>
+  </PropertyGroup>
 
 </Project>
