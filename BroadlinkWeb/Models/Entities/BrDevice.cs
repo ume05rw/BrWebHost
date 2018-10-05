@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace BroadlinkWeb.Models.Entities
 {
+    [Table("brdevices")]
     public class BrDevice
     {
         [Key]

@@ -10,6 +10,9 @@ namespace App {
 }
 
 $(function () {
-    Fw.Util.Xhr.Query.BaseUrl = 'http://localhost:20776/api/';
+    let proto = location.protocol;
+    let host = location.hostname;
+    let port = location.port;
+    Fw.Util.Xhr.Query.BaseUrl = proto + '//' + host + ':' + port + '/api/';
     App.Main.StartUp();
 });

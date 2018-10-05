@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace BroadlinkWeb.Models.Entities
 {
+    [Table("icons")]
     public class Icon
     {
         [Key]

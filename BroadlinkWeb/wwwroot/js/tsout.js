@@ -11,34 +11,6 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-var App;
-(function (App) {
-    var Models;
-    (function (Models) {
-        var Control = /** @class */ (function () {
-            function Control() {
-            }
-            return Control;
-        }());
-        Models.Control = Control;
-    })(Models = App.Models || (App.Models = {}));
-})(App || (App = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-var App;
-(function (App) {
-    var Models;
-    (function (Models) {
-        var ControlSet = /** @class */ (function () {
-            function ControlSet() {
-            }
-            return ControlSet;
-        }());
-        Models.ControlSet = ControlSet;
-    })(Models = App.Models || (App.Models = {}));
-})(App || (App = {}));
 /// <reference path="../../lib/jquery/index.d.ts" />
 /// <reference path="../../lib/underscore/index.d.ts" />
 var App;
@@ -54,7 +26,10 @@ var App;
     App.Main = Main;
 })(App || (App = {}));
 $(function () {
-    Fw.Util.Xhr.Query.BaseUrl = 'http://localhost:20776/api/';
+    var proto = location.protocol;
+    var host = location.hostname;
+    var port = location.port;
+    Fw.Util.Xhr.Query.BaseUrl = proto + '//' + host + ':' + port + '/api/';
     App.Main.StartUp();
 });
 /// <reference path="../../../lib/jquery/index.d.ts" />
@@ -75,6 +50,63 @@ var Fw;
             return ControllerBase;
         }());
         Controllers.ControllerBase = ControllerBase;
+    })(Controllers = Fw.Controllers || (Fw.Controllers = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+var Fw;
+(function (Fw) {
+    var Controllers;
+    (function (Controllers) {
+        var Factory = /** @class */ (function () {
+            function Factory() {
+            }
+            // https://qiita.com/kojiy72/items/8e3ac6ae2083d3e1284c
+            Factory.Create = function (name, elem, manager) {
+                var classObject = Function('return (App.Controllers.' + name + 'Controller)')();
+                var instance = new classObject(elem, manager);
+                return instance;
+            };
+            return Factory;
+        }());
+        Controllers.Factory = Factory;
+    })(Controllers = Fw.Controllers || (Fw.Controllers = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+var Fw;
+(function (Fw) {
+    var Controllers;
+    (function (Controllers) {
+        var Manager = /** @class */ (function () {
+            function Manager() {
+                var pages = [];
+                $("div[data-controller]").each(function (i, el) {
+                    var $elem = $(el);
+                    var name = $elem.data('controller');
+                    var instance = Controllers.Factory.Create(name, $elem, this);
+                    pages.push(instance);
+                }.bind(this));
+                this._list = pages;
+            }
+            Manager.prototype.show = function (id) {
+                var target = _.find(this._list, function (p) {
+                    return (p.Id === id);
+                });
+                if (!target)
+                    throw new Error("id not found: " + id);
+                _.each(this._list, function (p) {
+                    p.View.is(':visible')
+                        ? p.View.hide(200)
+                        : p.View.hide();
+                });
+                target.View.show(200);
+            };
+            return Manager;
+        }());
+        Controllers.Manager = Manager;
     })(Controllers = Fw.Controllers || (Fw.Controllers = {}));
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
@@ -181,61 +213,32 @@ var App;
 })(App || (App = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
-var Fw;
-(function (Fw) {
-    var Controllers;
-    (function (Controllers) {
-        var Factory = /** @class */ (function () {
-            function Factory() {
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Control = /** @class */ (function () {
+            function Control() {
             }
-            // https://qiita.com/kojiy72/items/8e3ac6ae2083d3e1284c
-            Factory.Create = function (name, elem, manager) {
-                var classObject = Function('return (App.Controllers.' + name + 'Controller)')();
-                var instance = new classObject(elem, manager);
-                return instance;
-            };
-            return Factory;
+            return Control;
         }());
-        Controllers.Factory = Factory;
-    })(Controllers = Fw.Controllers || (Fw.Controllers = {}));
-})(Fw || (Fw = {}));
+        Models.Control = Control;
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-var Fw;
-(function (Fw) {
-    var Controllers;
-    (function (Controllers) {
-        var Manager = /** @class */ (function () {
-            function Manager() {
-                var pages = [];
-                $("div[data-controller]").each(function (i, el) {
-                    var $elem = $(el);
-                    var name = $elem.data('controller');
-                    var instance = Controllers.Factory.Create(name, $elem, this);
-                    pages.push(instance);
-                }.bind(this));
-                this._list = pages;
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var ControlSet = /** @class */ (function () {
+            function ControlSet() {
             }
-            Manager.prototype.show = function (id) {
-                var target = _.find(this._list, function (p) {
-                    return (p.Id === id);
-                });
-                if (!target)
-                    throw new Error("id not found: " + id);
-                _.each(this._list, function (p) {
-                    p.View.is(':visible')
-                        ? p.View.hide(200)
-                        : p.View.hide();
-                });
-                target.View.show(200);
-            };
-            return Manager;
+            return ControlSet;
         }());
-        Controllers.Manager = Manager;
-    })(Controllers = Fw.Controllers || (Fw.Controllers = {}));
-})(Fw || (Fw = {}));
+        Models.ControlSet = ControlSet;
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 var Fw;

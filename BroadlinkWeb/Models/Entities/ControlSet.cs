@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace BroadlinkWeb.Models.Entities
 {
+    [Table("controlsets")]
     public class ControlSet
     {
         [Key]

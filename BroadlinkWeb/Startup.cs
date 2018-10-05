@@ -39,7 +39,8 @@ namespace BroadlinkWeb
                     options.UseLoggerFactory(loggreFactory);
                 }
 #if DEBUG
-                options.UseMySQL(this.Configuration.GetConnectionString("DbConnectionMySql"));
+                //options.UseMySQL(this.Configuration.GetConnectionString("DbConnectionMySql"));
+                options.UseMySQL(this.Configuration.GetConnectionString("DbConnectionMySql3"));
 #else
                 options.UseMySQL(this.Configuration.GetConnectionString("DbConnectionMySql2"));
 #endif

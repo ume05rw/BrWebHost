@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace BroadlinkWeb.Models.Entities
 {
+    [Table("controls")]
     public class Control
     {
         [Key]
