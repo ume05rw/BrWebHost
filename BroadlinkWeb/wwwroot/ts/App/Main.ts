@@ -1,5 +1,6 @@
 ﻿/// <reference path="../../lib/jquery/index.d.ts" />
 /// <reference path="../../lib/underscore/index.d.ts" />
+/// <reference path="../Fw/Util/Xhr/Config.ts" />
 import Xhr = Fw.Util.Xhr;
 
 namespace App {
