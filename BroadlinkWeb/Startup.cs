@@ -38,7 +38,12 @@ namespace BroadlinkWeb
                     var loggreFactory = (ILoggerFactory)logService.ImplementationInstance;
                     options.UseLoggerFactory(loggreFactory);
                 }
+#if DEBUG
                 options.UseMySQL(this.Configuration.GetConnectionString("DbConnectionMySql"));
+#else
+                options.UseMySQL(this.Configuration.GetConnectionString("DbConnectionMySql2"));
+#endif
+
             });
 
             services.AddMvc();
