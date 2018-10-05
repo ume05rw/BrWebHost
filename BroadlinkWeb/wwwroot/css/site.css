@@ -31,7 +31,7 @@ body {
     }
 }
 
-/* ViewControllerは基本、全て同じ位置に重ねる。*/
+/* Controllerは基本、全て同じ位置に重ねる。*/
 div.Controller {
     display: none;
     position: absolute;

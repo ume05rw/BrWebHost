@@ -13,8 +13,8 @@ namespace App.Controllers {
         }
 
         private Init(): void {
-            this._btnGoMain = this.View.find('button[name=GoMain]');
-            this._btnDevices = this.View.find('button[name=Discover]');
+            this._btnGoMain = this.View.Elem.find('button[name=GoMain]');
+            this._btnDevices = this.View.Elem.find('button[name=Discover]');
 
             this._btnGoMain.click(() => {
                 this.Manager.show("Main");

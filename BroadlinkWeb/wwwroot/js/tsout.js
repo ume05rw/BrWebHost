@@ -13,6 +13,128 @@ var __extends = (this && this.__extends) || (function () {
 })();
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
+var Fw;
+(function (Fw) {
+    var Controllers;
+    (function (Controllers) {
+        var ControllerBase = /** @class */ (function () {
+            function ControllerBase(jqueryElem, manager) {
+                this.View = new Fw.Views.ControllerView(jqueryElem);
+                this.Manager = manager;
+                this.Id = this.View.Elem.data("controller");
+                this.IsDefaultView = (this.View.Elem.data("default"));
+                if (this.IsDefaultView)
+                    this.View.Elem.show();
+            }
+            return ControllerBase;
+        }());
+        Controllers.ControllerBase = ControllerBase;
+    })(Controllers = Fw.Controllers || (Fw.Controllers = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Fw/Controllers/ControllerBase.ts" />
+var App;
+(function (App) {
+    var Controllers;
+    (function (Controllers) {
+        var MainController = /** @class */ (function (_super) {
+            __extends(MainController, _super);
+            function MainController(elem, manager) {
+                var _this = _super.call(this, elem, manager) || this;
+                _this.Init();
+                return _this;
+            }
+            MainController.prototype.Init = function () {
+                var _this = this;
+                this._btnGoSub1 = this.View.Elem.find('button[name=GoSub1]');
+                this._btnGoSub2 = this.View.Elem.find('button[name=GoSub2]');
+                this._btnGoSub1.click(function () {
+                    // イベント通知でなく、参照保持でよいか？
+                    _this.Manager.show("Sub1");
+                });
+                this._btnGoSub2.click(function () {
+                    // イベント通知でなく、参照保持でよいか？
+                    _this.Manager.show("Sub2");
+                });
+            };
+            return MainController;
+        }(Fw.Controllers.ControllerBase));
+        Controllers.MainController = MainController;
+    })(Controllers = App.Controllers || (App.Controllers = {}));
+})(App || (App = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+var App;
+(function (App) {
+    var Controllers;
+    (function (Controllers) {
+        var Sub1Controller = /** @class */ (function (_super) {
+            __extends(Sub1Controller, _super);
+            function Sub1Controller(elem, manager) {
+                var _this = _super.call(this, elem, manager) || this;
+                _this.Init();
+                return _this;
+            }
+            Sub1Controller.prototype.Init = function () {
+                var _this = this;
+                this._btnGoMain = this.View.Elem.find('button[name=GoMain]');
+                this._btnDevices = this.View.Elem.find('button[name=Discover]');
+                this._btnGoMain.click(function () {
+                    _this.Manager.show("Main");
+                });
+                this._btnDevices.click(function () {
+                    console.log('btnDevices.click');
+                    var params = new Xhr.Params('BrDevices/Discover', Xhr.MethodType.Get);
+                    params.Callback = function (data) {
+                        console.log('Disover:');
+                        console.log(data);
+                    };
+                    Xhr.Query.Invoke(params);
+                });
+            };
+            return Sub1Controller;
+        }(Fw.Controllers.ControllerBase));
+        Controllers.Sub1Controller = Sub1Controller;
+    })(Controllers = App.Controllers || (App.Controllers = {}));
+})(App || (App = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+var App;
+(function (App) {
+    var Controllers;
+    (function (Controllers) {
+        var Sub2Controller = /** @class */ (function (_super) {
+            __extends(Sub2Controller, _super);
+            function Sub2Controller(elem, manager) {
+                var _this = _super.call(this, elem, manager) || this;
+                _this.Init();
+                return _this;
+            }
+            Sub2Controller.prototype.Init = function () {
+                var _this = this;
+                this._btnGoMain = this.View.Elem.find('button[name=GoMain]');
+                this._btnA1Value = this.View.Elem.find('button[name=A1Value]');
+                this._btnGoMain.click(function () {
+                    _this.Manager.show("Main");
+                });
+                this._btnA1Value.click(function () {
+                    console.log('btnA1Value.click');
+                    var params = new Xhr.Params('BrDevices/GetA1SensorValues', Xhr.MethodType.Get);
+                    params.Callback = function (data) {
+                        console.log('GetA1SensorValues:');
+                        console.log(data);
+                    };
+                    Xhr.Query.Invoke(params);
+                });
+            };
+            return Sub2Controller;
+        }(Fw.Controllers.ControllerBase));
+        Controllers.Sub2Controller = Sub2Controller;
+    })(Controllers = App.Controllers || (App.Controllers = {}));
+})(App || (App = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
 var App;
 (function (App) {
     var Models;
@@ -93,128 +215,6 @@ var Fw;
 (function (Fw) {
     var Controllers;
     (function (Controllers) {
-        var ControllerBase = /** @class */ (function () {
-            function ControllerBase(elem, manager) {
-                this.View = elem;
-                this.Manager = manager;
-                this.Id = this.View.data("controller");
-                this.IsDefaultView = (this.View.data("default"));
-                if (this.IsDefaultView)
-                    this.View.show();
-            }
-            return ControllerBase;
-        }());
-        Controllers.ControllerBase = ControllerBase;
-    })(Controllers = Fw.Controllers || (Fw.Controllers = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../../Fw/Controllers/ControllerBase.ts" />
-var App;
-(function (App) {
-    var Controllers;
-    (function (Controllers) {
-        var MainController = /** @class */ (function (_super) {
-            __extends(MainController, _super);
-            function MainController(elem, manager) {
-                var _this = _super.call(this, elem, manager) || this;
-                _this.Init();
-                return _this;
-            }
-            MainController.prototype.Init = function () {
-                var _this = this;
-                this._btnGoSub1 = this.View.find('button[name=GoSub1]');
-                this._btnGoSub2 = this.View.find('button[name=GoSub2]');
-                this._btnGoSub1.click(function () {
-                    // イベント通知でなく、参照保持でよいか？
-                    _this.Manager.show("Sub1");
-                });
-                this._btnGoSub2.click(function () {
-                    // イベント通知でなく、参照保持でよいか？
-                    _this.Manager.show("Sub2");
-                });
-            };
-            return MainController;
-        }(Fw.Controllers.ControllerBase));
-        Controllers.MainController = MainController;
-    })(Controllers = App.Controllers || (App.Controllers = {}));
-})(App || (App = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-var App;
-(function (App) {
-    var Controllers;
-    (function (Controllers) {
-        var Sub1Controller = /** @class */ (function (_super) {
-            __extends(Sub1Controller, _super);
-            function Sub1Controller(elem, manager) {
-                var _this = _super.call(this, elem, manager) || this;
-                _this.Init();
-                return _this;
-            }
-            Sub1Controller.prototype.Init = function () {
-                var _this = this;
-                this._btnGoMain = this.View.find('button[name=GoMain]');
-                this._btnDevices = this.View.find('button[name=Discover]');
-                this._btnGoMain.click(function () {
-                    _this.Manager.show("Main");
-                });
-                this._btnDevices.click(function () {
-                    console.log('btnDevices.click');
-                    var params = new Xhr.Params('BrDevices/Discover', Xhr.MethodType.Get);
-                    params.Callback = function (data) {
-                        console.log('Disover:');
-                        console.log(data);
-                    };
-                    Xhr.Query.Invoke(params);
-                });
-            };
-            return Sub1Controller;
-        }(Fw.Controllers.ControllerBase));
-        Controllers.Sub1Controller = Sub1Controller;
-    })(Controllers = App.Controllers || (App.Controllers = {}));
-})(App || (App = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-var App;
-(function (App) {
-    var Controllers;
-    (function (Controllers) {
-        var Sub2Controller = /** @class */ (function (_super) {
-            __extends(Sub2Controller, _super);
-            function Sub2Controller(elem, manager) {
-                var _this = _super.call(this, elem, manager) || this;
-                _this.Init();
-                return _this;
-            }
-            Sub2Controller.prototype.Init = function () {
-                var _this = this;
-                this._btnGoMain = this.View.find('button[name=GoMain]');
-                this._btnA1Value = this.View.find('button[name=A1Value]');
-                this._btnGoMain.click(function () {
-                    _this.Manager.show("Main");
-                });
-                this._btnA1Value.click(function () {
-                    console.log('btnA1Value.click');
-                    var params = new Xhr.Params('BrDevices/GetA1SensorValues', Xhr.MethodType.Get);
-                    params.Callback = function (data) {
-                        console.log('GetA1SensorValues:');
-                        console.log(data);
-                    };
-                    Xhr.Query.Invoke(params);
-                });
-            };
-            return Sub2Controller;
-        }(Fw.Controllers.ControllerBase));
-        Controllers.Sub2Controller = Sub2Controller;
-    })(Controllers = App.Controllers || (App.Controllers = {}));
-})(App || (App = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-var Fw;
-(function (Fw) {
-    var Controllers;
-    (function (Controllers) {
         var Factory = /** @class */ (function () {
             function Factory() {
             }
@@ -255,16 +255,59 @@ var Fw;
                 if (!target)
                     throw new Error("id not found: " + id);
                 _.each(this._list, function (p) {
-                    p.View.is(':visible')
-                        ? p.View.hide(200)
-                        : p.View.hide();
+                    p.View.Elem.is(':visible')
+                        ? p.View.Elem.hide(200)
+                        : p.View.Elem.hide();
                 });
-                target.View.show(200);
+                target.View.Elem.show(200);
             };
             return Manager;
         }());
         Controllers.Manager = Manager;
     })(Controllers = Fw.Controllers || (Fw.Controllers = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+var Fw;
+(function (Fw) {
+    var Util;
+    (function (Util) {
+        var Xhr;
+        (function (Xhr) {
+            var MethodType;
+            (function (MethodType) {
+                MethodType[MethodType["Get"] = 1] = "Get";
+                MethodType[MethodType["Post"] = 2] = "Post";
+                MethodType[MethodType["Put"] = 3] = "Put";
+                MethodType[MethodType["Delete"] = 4] = "Delete";
+            })(MethodType = Xhr.MethodType || (Xhr.MethodType = {}));
+        })(Xhr = Util.Xhr || (Util.Xhr = {}));
+    })(Util = Fw.Util || (Fw.Util = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+var Fw;
+(function (Fw) {
+    var Util;
+    (function (Util) {
+        var Xhr;
+        (function (Xhr) {
+            var Params = /** @class */ (function () {
+                function Params(url, method, values) {
+                    if (method === void 0) { method = null; }
+                    if (values === void 0) { values = null; }
+                    this.Method = Xhr.MethodType.Post;
+                    this.Values = {};
+                    this.Callback = function () { };
+                    this.Url = url;
+                    this.Method = method || Xhr.MethodType.Post;
+                    this.Values = values || {};
+                }
+                return Params;
+            }());
+            Xhr.Params = Params;
+        })(Xhr = Util.Xhr || (Util.Xhr = {}));
+    })(Util = Fw.Util || (Fw.Util = {}));
 })(Fw || (Fw = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
@@ -384,49 +427,6 @@ var Fw;
     (function (Util) {
         var Xhr;
         (function (Xhr) {
-            var MethodType;
-            (function (MethodType) {
-                MethodType[MethodType["Get"] = 1] = "Get";
-                MethodType[MethodType["Post"] = 2] = "Post";
-                MethodType[MethodType["Put"] = 3] = "Put";
-                MethodType[MethodType["Delete"] = 4] = "Delete";
-            })(MethodType = Xhr.MethodType || (Xhr.MethodType = {}));
-        })(Xhr = Util.Xhr || (Util.Xhr = {}));
-    })(Util = Fw.Util || (Fw.Util = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-var Fw;
-(function (Fw) {
-    var Util;
-    (function (Util) {
-        var Xhr;
-        (function (Xhr) {
-            var Params = /** @class */ (function () {
-                function Params(url, method, values) {
-                    if (method === void 0) { method = null; }
-                    if (values === void 0) { values = null; }
-                    this.Method = Xhr.MethodType.Post;
-                    this.Values = {};
-                    this.Callback = function () { };
-                    this.Url = url;
-                    this.Method = method || Xhr.MethodType.Post;
-                    this.Values = values || {};
-                }
-                return Params;
-            }());
-            Xhr.Params = Params;
-        })(Xhr = Util.Xhr || (Util.Xhr = {}));
-    })(Util = Fw.Util || (Fw.Util = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-var Fw;
-(function (Fw) {
-    var Util;
-    (function (Util) {
-        var Xhr;
-        (function (Xhr) {
             // まだ使わない。
             // API仕様が固まったら、やろうかな。
             var Result = /** @class */ (function () {
@@ -437,5 +437,75 @@ var Fw;
             Xhr.Result = Result;
         })(Xhr = Util.Xhr || (Util.Xhr = {}));
     })(Util = Fw.Util || (Fw.Util = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+var App;
+(function (App) {
+    var View;
+    (function (View) {
+        var CenterLine = /** @class */ (function () {
+            function CenterLine() {
+            }
+            return CenterLine;
+        }());
+        View.CenterLine = CenterLine;
+    })(View = App.View || (App.View = {}));
+})(App || (App = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var ViewBase = /** @class */ (function () {
+            function ViewBase(jqueryElem) {
+                this.Children = new Array();
+                this.Elem = jqueryElem;
+            }
+            ViewBase.prototype.Add = function (view) {
+                if (this.Children.indexOf(view) != -1) {
+                    this.Children.push(view);
+                    this.Elem.append(view.Elem);
+                }
+            };
+            ViewBase.prototype.Remove = function (view) {
+                var index = this.Children.indexOf(view);
+                if (index != -1) {
+                    this.Children.splice(index, 1);
+                    view.Elem.detach();
+                }
+            };
+            ViewBase.prototype.Dispose = function () {
+                _.each(this.Children, function (view) {
+                    view.Dispose();
+                });
+                this.Children = null;
+                this.Elem.remove();
+                this.Elem = null;
+            };
+            return ViewBase;
+        }());
+        Views.ViewBase = ViewBase;
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="./ViewBase.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var ControllerView = /** @class */ (function (_super) {
+            __extends(ControllerView, _super);
+            function ControllerView(jqueryElem) {
+                return _super.call(this, jqueryElem) || this;
+            }
+            return ControllerView;
+        }(Views.ViewBase));
+        Views.ControllerView = ControllerView;
+    })(Views = Fw.Views || (Fw.Views = {}));
 })(Fw || (Fw = {}));
 //# sourceMappingURL=tsout.js.map

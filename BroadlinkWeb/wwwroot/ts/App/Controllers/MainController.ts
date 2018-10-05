@@ -14,8 +14,8 @@ namespace App.Controllers {
         }
 
         private Init(): void {
-            this._btnGoSub1 = this.View.find('button[name=GoSub1]');
-            this._btnGoSub2 = this.View.find('button[name=GoSub2]');
+            this._btnGoSub1 = this.View.Elem.find('button[name=GoSub1]');
+            this._btnGoSub2 = this.View.Elem.find('button[name=GoSub2]');
 
             this._btnGoSub1.click(() => {
                 // イベント通知でなく、参照保持でよいか？

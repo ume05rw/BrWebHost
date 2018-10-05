@@ -8,11 +8,16 @@
   <ItemGroup>
     <Content Remove="wwwroot\js\Page.ts" />
     <Content Remove="wwwroot\ts\App\Main.ts" />
+    <Content Remove="wwwroot\ts\App\Views\CenterLine.ts" />
+    <Content Remove="wwwroot\ts\App\Views\Control.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\Xhr.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\XhrMethodType.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\XhrParams.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\XhrResult.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\Xhr\Config.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\ControllerView.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\IView.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\ViewBase.ts" />
     <Content Remove="wwwroot\ts\PageManager.ts" />
   </ItemGroup>
 
@@ -31,7 +36,6 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\images\icons\" />
-    <Folder Include="wwwroot\ts\App\Views\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,6 +45,8 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\MainController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\Sub1Controller.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\Sub2Controller.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Views\CenterLine.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Views\Control.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\Factory.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\IController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\ControllerBase.ts" />
@@ -50,6 +56,9 @@
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Xhr\MethodType.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Xhr\Params.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Xhr\Result.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ControllerView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\IView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ViewBase.ts" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">

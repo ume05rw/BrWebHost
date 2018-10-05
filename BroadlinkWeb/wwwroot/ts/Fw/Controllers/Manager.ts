@@ -26,13 +26,12 @@ namespace Fw.Controllers {
                 throw new Error("id not found: " + id);
 
             _.each(this._list, function (p) {
-                p.View.is(':visible')
-                    ? p.View.hide(200)
-                    : p.View.hide();
+                p.View.Elem.is(':visible')
+                    ? p.View.Elem.hide(200)
+                    : p.View.Elem.hide();
             });
 
-            target.View.show(200);
+            target.View.Elem.show(200);
         }
     }
-    
 }

@@ -5,7 +5,7 @@ namespace Fw.Controllers {
     export interface IController {
         Id: string;
         IsDefaultView: boolean;
-        View: JQuery;
+        View: Fw.Views.IView;
     }
 }
 

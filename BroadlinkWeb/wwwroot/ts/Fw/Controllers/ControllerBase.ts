@@ -5,17 +5,17 @@ namespace Fw.Controllers {
     export abstract class ControllerBase implements Fw.Controllers.IController {
         public Id: string;
         public IsDefaultView: boolean;
-        public View: JQuery;
+        public View: Fw.Views.IView;
         public Manager: Fw.Controllers.Manager;
 
-        constructor(elem: JQuery, manager: Fw.Controllers.Manager) {
-            this.View = elem;
+        constructor(jqueryElem: JQuery, manager: Fw.Controllers.Manager) {
+            this.View = new Fw.Views.ControllerView(jqueryElem);
             this.Manager = manager;
-            this.Id = this.View.data("controller");
-            this.IsDefaultView = (this.View.data("default"));
+            this.Id = this.View.Elem.data("controller");
+            this.IsDefaultView = (this.View.Elem.data("default"));
 
             if (this.IsDefaultView)
-                this.View.show();
+                this.View.Elem.show();
         }
     }
 }
