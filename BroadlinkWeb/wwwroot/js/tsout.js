@@ -71,17 +71,20 @@ var App;
         function Main() {
         }
         Main.StartUp = function () {
-            var pager = new Fw.Controllers.Manager();
+            var proto = location.protocol;
+            var host = location.hostname;
+            var port = location.port;
+            Fw.Util.Xhr.Config.BaseUrl = proto + '//' + host + ':' + port + '/api/';
+            // コントローラを起動。
+            Main._controllerManager = new Fw.Controllers.Manager();
         };
         return Main;
     }());
     App.Main = Main;
 })(App || (App = {}));
+// アプリケーションを起動する。
+// 以下にはこれ以上書かないこと。
 $(function () {
-    var proto = location.protocol;
-    var host = location.hostname;
-    var port = location.port;
-    Fw.Util.Xhr.Config.BaseUrl = proto + '//' + host + ':' + port + '/api/';
     App.Main.StartUp();
 });
 /// <reference path="../../../lib/jquery/index.d.ts" />

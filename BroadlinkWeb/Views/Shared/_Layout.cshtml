@@ -17,15 +17,11 @@
     </environment>
 </head>
 <body>
-    <div class="container body-content">
-        @RenderBody()
+    <div class="body-content">
+@RenderBody()
 @Html.Partial("MainView")
 @Html.Partial("Sub1View")
 @Html.Partial("Sub2View")
-        <hr />
-        <footer>
-            <p>&copy; 2018 - Do-Be's</p>
-        </footer>
     </div>
 
     <environment include="Development">
