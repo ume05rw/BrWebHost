@@ -7,8 +7,6 @@ namespace App.Controllers {
 
         private _btnGoSub1: JQuery;
         private _btnGoSub2: JQuery;
-        
-        
 
         constructor(elem: JQuery, manager: Fw.Controllers.Manager) {
             super(elem, manager);

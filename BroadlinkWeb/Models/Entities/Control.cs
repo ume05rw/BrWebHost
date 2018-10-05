@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BroadlinkWeb.Models.Entities
 {
-    [Table("controls")]
+    [Table("controls")] // テーブル名を小文字指定しないとLinuxで動作しない。
     public class Control
     {
         [Key]

@@ -2,7 +2,7 @@
 /// <reference path="../../../lib/underscore/index.d.ts" />
 
 namespace Fw.Controllers {
-    export class ControllerBase implements Fw.Controllers.IController {
+    export abstract class ControllerBase implements Fw.Controllers.IController {
         public Id: string;
         public IsDefaultView: boolean;
         public View: JQuery;

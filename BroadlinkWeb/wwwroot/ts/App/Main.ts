@@ -1,5 +1,6 @@
 ﻿/// <reference path="../../lib/jquery/index.d.ts" />
 /// <reference path="../../lib/underscore/index.d.ts" />
+import Xhr = Fw.Util.Xhr;
 
 namespace App {
     export class Main {
@@ -13,6 +14,6 @@ $(function () {
     let proto = location.protocol;
     let host = location.hostname;
     let port = location.port;
-    Fw.Util.Xhr.Query.BaseUrl = proto + '//' + host + ':' + port + '/api/';
+    Fw.Util.Xhr.Config.BaseUrl = proto + '//' + host + ':' + port + '/api/';
     App.Main.StartUp();
 });

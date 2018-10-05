@@ -9,7 +9,7 @@ namespace BroadlinkWeb.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "BrDevices",
+                name: "brdevices",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int(11)", nullable: false)
@@ -28,7 +28,7 @@ namespace BroadlinkWeb.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "BrDevices");
+                name: "brdevices");
         }
     }
 }

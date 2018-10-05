@@ -24,12 +24,12 @@ namespace App.Controllers {
 
                 console.log('btnDevices.click');
 
-                var params = new Fw.Util.Xhr.Params('BrDevices/Discover', Fw.Util.Xhr.MethodType.Get);
+                var params = new Xhr.Params('BrDevices/Discover', Xhr.MethodType.Get);
                 params.Callback = (data) => {
                     console.log('Disover:');
                     console.log(data);
                 }
-                Fw.Util.Xhr.Query.Invoke(params);
+                Xhr.Query.Invoke(params);
             });
         }
     }

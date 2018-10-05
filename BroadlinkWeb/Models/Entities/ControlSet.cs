@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BroadlinkWeb.Models.Entities
 {
-    [Table("controlsets")]
+    [Table("controlsets")] // テーブル名を小文字指定しないとLinuxで動作しない。
     public class ControlSet
     {
         [Key]

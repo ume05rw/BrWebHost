@@ -9,7 +9,7 @@ namespace BroadlinkWeb.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "ControlSets",
+                name: "controlsets",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int(11)", nullable: false)
@@ -29,7 +29,7 @@ namespace BroadlinkWeb.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Icons",
+                name: "icons",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int(11)", nullable: false)
@@ -42,7 +42,7 @@ namespace BroadlinkWeb.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Controlls",
+                name: "controlls",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int(11)", nullable: false)
@@ -75,30 +75,30 @@ namespace BroadlinkWeb.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_Controlls_ControlSetId",
-                table: "Controlls",
+                table: "controlls",
                 column: "ControlSetId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Controlls_IconId",
-                table: "Controlls",
+                table: "controlls",
                 column: "IconId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ControlSets_BrDeviceId",
-                table: "ControlSets",
+                table: "controlsets",
                 column: "BrDeviceId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Controlls");
+                name: "controlls");
 
             migrationBuilder.DropTable(
-                name: "ControlSets");
+                name: "controlsets");
 
             migrationBuilder.DropTable(
-                name: "Icons");
+                name: "icons");
         }
     }
 }

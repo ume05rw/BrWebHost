@@ -11,8 +11,37 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Control = /** @class */ (function () {
+            function Control() {
+            }
+            return Control;
+        }());
+        Models.Control = Control;
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var ControlSet = /** @class */ (function () {
+            function ControlSet() {
+            }
+            return ControlSet;
+        }());
+        Models.ControlSet = ControlSet;
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
 /// <reference path="../../lib/jquery/index.d.ts" />
 /// <reference path="../../lib/underscore/index.d.ts" />
+var Xhr = Fw.Util.Xhr;
 var App;
 (function (App) {
     var Main = /** @class */ (function () {
@@ -29,7 +58,7 @@ $(function () {
     var proto = location.protocol;
     var host = location.hostname;
     var port = location.port;
-    Fw.Util.Xhr.Query.BaseUrl = proto + '//' + host + ':' + port + '/api/';
+    Fw.Util.Xhr.Config.BaseUrl = proto + '//' + host + ':' + port + '/api/';
     App.Main.StartUp();
 });
 /// <reference path="../../../lib/jquery/index.d.ts" />
@@ -52,6 +81,108 @@ var Fw;
         Controllers.ControllerBase = ControllerBase;
     })(Controllers = Fw.Controllers || (Fw.Controllers = {}));
 })(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Fw/Controllers/ControllerBase.ts" />
+var App;
+(function (App) {
+    var Controllers;
+    (function (Controllers) {
+        var MainController = /** @class */ (function (_super) {
+            __extends(MainController, _super);
+            function MainController(elem, manager) {
+                var _this = _super.call(this, elem, manager) || this;
+                _this.Init();
+                return _this;
+            }
+            MainController.prototype.Init = function () {
+                var _this = this;
+                this._btnGoSub1 = this.View.find('button[name=GoSub1]');
+                this._btnGoSub2 = this.View.find('button[name=GoSub2]');
+                this._btnGoSub1.click(function () {
+                    // イベント通知でなく、参照保持でよいか？
+                    _this.Manager.show("Sub1");
+                });
+                this._btnGoSub2.click(function () {
+                    // イベント通知でなく、参照保持でよいか？
+                    _this.Manager.show("Sub2");
+                });
+            };
+            return MainController;
+        }(Fw.Controllers.ControllerBase));
+        Controllers.MainController = MainController;
+    })(Controllers = App.Controllers || (App.Controllers = {}));
+})(App || (App = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+var App;
+(function (App) {
+    var Controllers;
+    (function (Controllers) {
+        var Sub1Controller = /** @class */ (function (_super) {
+            __extends(Sub1Controller, _super);
+            function Sub1Controller(elem, manager) {
+                var _this = _super.call(this, elem, manager) || this;
+                _this.Init();
+                return _this;
+            }
+            Sub1Controller.prototype.Init = function () {
+                var _this = this;
+                this._btnGoMain = this.View.find('button[name=GoMain]');
+                this._btnDevices = this.View.find('button[name=Discover]');
+                this._btnGoMain.click(function () {
+                    _this.Manager.show("Main");
+                });
+                this._btnDevices.click(function () {
+                    console.log('btnDevices.click');
+                    var params = new Xhr.Params('BrDevices/Discover', Xhr.MethodType.Get);
+                    params.Callback = function (data) {
+                        console.log('Disover:');
+                        console.log(data);
+                    };
+                    Xhr.Query.Invoke(params);
+                });
+            };
+            return Sub1Controller;
+        }(Fw.Controllers.ControllerBase));
+        Controllers.Sub1Controller = Sub1Controller;
+    })(Controllers = App.Controllers || (App.Controllers = {}));
+})(App || (App = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+var App;
+(function (App) {
+    var Controllers;
+    (function (Controllers) {
+        var Sub2Controller = /** @class */ (function (_super) {
+            __extends(Sub2Controller, _super);
+            function Sub2Controller(elem, manager) {
+                var _this = _super.call(this, elem, manager) || this;
+                _this.Init();
+                return _this;
+            }
+            Sub2Controller.prototype.Init = function () {
+                var _this = this;
+                this._btnGoMain = this.View.find('button[name=GoMain]');
+                this._btnA1Value = this.View.find('button[name=A1Value]');
+                this._btnGoMain.click(function () {
+                    _this.Manager.show("Main");
+                });
+                this._btnA1Value.click(function () {
+                    console.log('btnA1Value.click');
+                    var params = new Xhr.Params('BrDevices/GetA1SensorValues', Xhr.MethodType.Get);
+                    params.Callback = function (data) {
+                        console.log('GetA1SensorValues:');
+                        console.log(data);
+                    };
+                    Xhr.Query.Invoke(params);
+                });
+            };
+            return Sub2Controller;
+        }(Fw.Controllers.ControllerBase));
+        Controllers.Sub2Controller = Sub2Controller;
+    })(Controllers = App.Controllers || (App.Controllers = {}));
+})(App || (App = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 var Fw;
@@ -109,136 +240,28 @@ var Fw;
         Controllers.Manager = Manager;
     })(Controllers = Fw.Controllers || (Fw.Controllers = {}));
 })(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../../Fw/Controllers/ControllerBase.ts" />
-var App;
-(function (App) {
-    var Controllers;
-    (function (Controllers) {
-        var MainController = /** @class */ (function (_super) {
-            __extends(MainController, _super);
-            function MainController(elem, manager) {
-                var _this = _super.call(this, elem, manager) || this;
-                _this.Init();
-                return _this;
-            }
-            MainController.prototype.Init = function () {
-                var _this = this;
-                this._btnGoSub1 = this.View.find('button[name=GoSub1]');
-                this._btnGoSub2 = this.View.find('button[name=GoSub2]');
-                this._btnGoSub1.click(function () {
-                    // イベント通知でなく、参照保持でよいか？
-                    _this.Manager.show("Sub1");
-                });
-                this._btnGoSub2.click(function () {
-                    // イベント通知でなく、参照保持でよいか？
-                    _this.Manager.show("Sub2");
-                });
-            };
-            return MainController;
-        }(Fw.Controllers.ControllerBase));
-        Controllers.MainController = MainController;
-    })(Controllers = App.Controllers || (App.Controllers = {}));
-})(App || (App = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-var App;
-(function (App) {
-    var Controllers;
-    (function (Controllers) {
-        var Sub1Controller = /** @class */ (function (_super) {
-            __extends(Sub1Controller, _super);
-            function Sub1Controller(elem, manager) {
-                var _this = _super.call(this, elem, manager) || this;
-                _this.Init();
-                return _this;
-            }
-            Sub1Controller.prototype.Init = function () {
-                var _this = this;
-                this._btnGoMain = this.View.find('button[name=GoMain]');
-                this._btnDevices = this.View.find('button[name=Discover]');
-                this._btnGoMain.click(function () {
-                    _this.Manager.show("Main");
-                });
-                this._btnDevices.click(function () {
-                    console.log('btnDevices.click');
-                    var params = new Fw.Util.Xhr.Params('BrDevices/Discover', Fw.Util.Xhr.MethodType.Get);
-                    params.Callback = function (data) {
-                        console.log('Disover:');
-                        console.log(data);
-                    };
-                    Fw.Util.Xhr.Query.Invoke(params);
-                });
-            };
-            return Sub1Controller;
-        }(Fw.Controllers.ControllerBase));
-        Controllers.Sub1Controller = Sub1Controller;
-    })(Controllers = App.Controllers || (App.Controllers = {}));
-})(App || (App = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-var App;
-(function (App) {
-    var Controllers;
-    (function (Controllers) {
-        var Sub2Controller = /** @class */ (function (_super) {
-            __extends(Sub2Controller, _super);
-            function Sub2Controller(elem, manager) {
-                var _this = _super.call(this, elem, manager) || this;
-                _this.Init();
-                return _this;
-            }
-            Sub2Controller.prototype.Init = function () {
-                var _this = this;
-                this._btnGoMain = this.View.find('button[name=GoMain]');
-                this._btnA1Value = this.View.find('button[name=A1Value]');
-                this._btnGoMain.click(function () {
-                    _this.Manager.show("Main");
-                });
-                this._btnA1Value.click(function () {
-                    console.log('btnA1Value.click');
-                    var params = new Fw.Util.Xhr.Params('BrDevices/GetA1SensorValues', Fw.Util.Xhr.MethodType.Get);
-                    params.Callback = function (data) {
-                        console.log('GetA1SensorValues:');
-                        console.log(data);
-                    };
-                    Fw.Util.Xhr.Query.Invoke(params);
-                });
-            };
-            return Sub2Controller;
-        }(Fw.Controllers.ControllerBase));
-        Controllers.Sub2Controller = Sub2Controller;
-    })(Controllers = App.Controllers || (App.Controllers = {}));
-})(App || (App = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-var App;
-(function (App) {
-    var Models;
-    (function (Models) {
-        var Control = /** @class */ (function () {
-            function Control() {
-            }
-            return Control;
-        }());
-        Models.Control = Control;
-    })(Models = App.Models || (App.Models = {}));
-})(App || (App = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-var App;
-(function (App) {
-    var Models;
-    (function (Models) {
-        var ControlSet = /** @class */ (function () {
-            function ControlSet() {
-            }
-            return ControlSet;
-        }());
-        Models.ControlSet = ControlSet;
-    })(Models = App.Models || (App.Models = {}));
-})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+var Fw;
+(function (Fw) {
+    var Util;
+    (function (Util) {
+        var Xhr;
+        (function (Xhr) {
+            var Config = /** @class */ (function () {
+                function Config() {
+                }
+                // ↓App.Mainで書き換える。
+                Config.BaseUrl = location.protocol
+                    + '//' + location.hostname
+                    + ':' + location.port
+                    + '/';
+                return Config;
+            }());
+            Xhr.Config = Config;
+        })(Xhr = Util.Xhr || (Util.Xhr = {}));
+    })(Util = Fw.Util || (Fw.Util = {}));
+})(Fw || (Fw = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 var Fw;
@@ -270,7 +293,7 @@ var Fw;
                         default: method = 'POST';
                     }
                     $.ajax({
-                        url: Query.BaseUrl + params.Url,
+                        url: Xhr.Config.BaseUrl + params.Url,
                         method: method,
                         data: params.Values || null,
                         cache: false,
@@ -300,11 +323,52 @@ var Fw;
                         console.log(data);
                     });
                 };
-                // ↓App.Mainで書き換える。
-                Query.BaseUrl = 'http://localhost/';
                 return Query;
             }());
             Xhr.Query = Query;
+            // functionのexportはやめ。
+            // 全処理をclass記述で行うようにした。
+            //export function Invoke(params: Params): any {
+            //    // 数値になってしまう。
+            //    //let methodToString: string = params.Method.toString().toUpperCase();
+            //    let method: string;
+            //    switch (params.Method) {
+            //        case MethodType.Get: method = 'GET'; break;
+            //        case MethodType.Post: method = 'POST'; break;
+            //        case MethodType.Put: method = 'PUT'; break;
+            //        case MethodType.Delete: method = 'DELETE'; break;
+            //        default: method = 'POST';
+            //    }
+            //    $.ajax({
+            //        url: Config.BaseUrl + params.Url,
+            //        method: method,
+            //        data: params.Values || null,
+            //        cache: false,
+            //        dataType: 'json',
+            //        beforeSend: function (xhr) {
+            //            xhr.setRequestHeader('Accept', 'application/json; charset=utf-8');
+            //        }.bind(this),
+            //    })
+            //    .done(function (data, textStatus, jqXHR) {
+            //        if (_.isFunction(params.Callback))
+            //            params.Callback(data);
+            //    }.bind(this))
+            //    .fail(function (data, textStatus, errorThrown) {
+            //        if (_.isFunction(params.Callback)) {
+            //            params.Callback({
+            //                succeeded: false,
+            //                errors: [
+            //                    {
+            //                        name: '',
+            //                        message: '通信エラーが発生しました。'
+            //                    }
+            //                ]
+            //            });
+            //        };
+            //        console.log('fail');
+            //        console.log(data);
+            //    });
+            //}
         })(Xhr = Util.Xhr || (Util.Xhr = {}));
     })(Util = Fw.Util || (Fw.Util = {}));
 })(Fw || (Fw = {}));
