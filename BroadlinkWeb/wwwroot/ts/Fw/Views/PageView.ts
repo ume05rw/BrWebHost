@@ -3,7 +3,7 @@
 /// <reference path="./ViewBase.ts" />
 
 namespace Fw.Views {
-    export class ControllerView extends ViewBase {
+    export class PageView extends ViewBase {
         constructor(jqueryElem: JQuery) {
             super(jqueryElem);
         }

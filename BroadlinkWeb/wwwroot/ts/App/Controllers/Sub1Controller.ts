@@ -17,7 +17,7 @@ namespace App.Controllers {
             this._btnDevices = this.View.Elem.find('button[name=Discover]');
 
             this._btnGoMain.click(() => {
-                this.Manager.show("Main");
+                this.Manager.Show("Main");
             });
 
             this._btnDevices.click(() => {

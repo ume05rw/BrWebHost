@@ -7,6 +7,7 @@ namespace App.Controllers {
 
         private _btnGoSub1: JQuery;
         private _btnGoSub2: JQuery;
+        private _centerControl: Fw.Views.ControlView;
 
         constructor(elem: JQuery, manager: Fw.Controllers.Manager) {
             super(elem, manager);
@@ -19,13 +20,18 @@ namespace App.Controllers {
 
             this._btnGoSub1.click(() => {
                 // イベント通知でなく、参照保持でよいか？
-                this.Manager.show("Sub1");
+                this.Manager.Show("Sub1");
             });
 
             this._btnGoSub2.click(() => {
                 // イベント通知でなく、参照保持でよいか？
-                this.Manager.show("Sub2");
+                this.Manager.Show("Sub2");
             });
+
+            this._centerControl = new Fw.Views.ControlView();
+            this._centerControl.SetDisplayParams(0, 0, 100, 50, '1155FF');
+            this._centerControl.Label = 'はろー<br/>どうよ？';
+            this.View.Add(this._centerControl);
         }
     }
 }

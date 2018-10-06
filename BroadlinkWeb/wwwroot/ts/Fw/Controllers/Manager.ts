@@ -9,17 +9,17 @@ namespace Fw.Controllers {
             let pages: IController[] = [];
 
             $("div[data-controller]").each(function (i, el) {
-                let $elem = $(el);
-                let name = $elem.data('controller');
-                let instance = Factory.Create(name, $elem, this);
+                const $elem = $(el);
+                const name = $elem.data('controller');
+                const instance = Factory.Create(name, $elem, this);
                 pages.push(instance);
             }.bind(this));
 
             this._list = pages;
         }
 
-        public show(id: string): void {
-            let target = _.find(this._list, function (p) {
+        public Show(id: string): void {
+            const target = _.find(this._list, function (p) {
                 return (p.Id === id);
             });
             if (!target)

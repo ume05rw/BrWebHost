@@ -6,8 +6,15 @@ namespace Fw.Views {
         Elem: JQuery;
         Children: Array<IView>;
 
+        X: number;
+        Y: number;
+        Width: number;
+        Height: number;
+        Color: string;
+
         Add(view: IView): void;
         Remove(view: IView): void;
+        Refresh(): void;
         Dispose(): void;
     }
 }

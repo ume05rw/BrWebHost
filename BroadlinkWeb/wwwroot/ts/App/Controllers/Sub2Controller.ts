@@ -17,7 +17,7 @@ namespace App.Controllers {
             this._btnA1Value = this.View.Elem.find('button[name=A1Value]');
 
             this._btnGoMain.click(() => {
-                this.Manager.show("Main");
+                this.Manager.Show("Main");
             });
 
             this._btnA1Value.click(() => {

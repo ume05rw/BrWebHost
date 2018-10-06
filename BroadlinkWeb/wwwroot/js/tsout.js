@@ -19,7 +19,7 @@ var Fw;
     (function (Controllers) {
         var ControllerBase = /** @class */ (function () {
             function ControllerBase(jqueryElem, manager) {
-                this.View = new Fw.Views.ControllerView(jqueryElem);
+                this.View = new Fw.Views.PageView(jqueryElem);
                 this.Manager = manager;
                 this.Id = this.View.Elem.data("controller");
                 this.IsDefaultView = (this.View.Elem.data("default"));
@@ -51,12 +51,16 @@ var App;
                 this._btnGoSub2 = this.View.Elem.find('button[name=GoSub2]');
                 this._btnGoSub1.click(function () {
                     // イベント通知でなく、参照保持でよいか？
-                    _this.Manager.show("Sub1");
+                    _this.Manager.Show("Sub1");
                 });
                 this._btnGoSub2.click(function () {
                     // イベント通知でなく、参照保持でよいか？
-                    _this.Manager.show("Sub2");
+                    _this.Manager.Show("Sub2");
                 });
+                this._centerControl = new Fw.Views.ControlView();
+                this._centerControl.SetDisplayParams(0, 0, 100, 50, '1155FF');
+                this._centerControl.Label = 'はろー<br/>どうよ？';
+                this.View.Add(this._centerControl);
             };
             return MainController;
         }(Fw.Controllers.ControllerBase));
@@ -81,7 +85,7 @@ var App;
                 this._btnGoMain = this.View.Elem.find('button[name=GoMain]');
                 this._btnDevices = this.View.Elem.find('button[name=Discover]');
                 this._btnGoMain.click(function () {
-                    _this.Manager.show("Main");
+                    _this.Manager.Show("Main");
                 });
                 this._btnDevices.click(function () {
                     console.log('btnDevices.click');
@@ -116,7 +120,7 @@ var App;
                 this._btnGoMain = this.View.Elem.find('button[name=GoMain]');
                 this._btnA1Value = this.View.Elem.find('button[name=A1Value]');
                 this._btnGoMain.click(function () {
-                    _this.Manager.show("Main");
+                    _this.Manager.Show("Main");
                 });
                 this._btnA1Value.click(function () {
                     console.log('btnA1Value.click');
@@ -248,7 +252,7 @@ var Fw;
                 }.bind(this));
                 this._list = pages;
             }
-            Manager.prototype.show = function (id) {
+            Manager.prototype.Show = function (id) {
                 var target = _.find(this._list, function (p) {
                     return (p.Id === id);
                 });
@@ -464,11 +468,87 @@ var Fw;
             function ViewBase(jqueryElem) {
                 this.Children = new Array();
                 this.Elem = jqueryElem;
+                this.Elem.addClass('IView');
             }
+            Object.defineProperty(ViewBase.prototype, "X", {
+                get: function () {
+                    return this._x;
+                },
+                set: function (value) {
+                    this._x = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(ViewBase.prototype, "Y", {
+                get: function () {
+                    return this._y;
+                },
+                set: function (value) {
+                    this._y = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(ViewBase.prototype, "Width", {
+                get: function () {
+                    return this._width;
+                },
+                set: function (value) {
+                    this._width = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(ViewBase.prototype, "Height", {
+                get: function () {
+                    return this._height;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(ViewBase.prototype, "Heght", {
+                set: function (value) {
+                    this._height = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(ViewBase.prototype, "Color", {
+                get: function () {
+                    return this._color;
+                },
+                set: function (value) {
+                    this._color = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            ViewBase.prototype.Init = function () {
+            };
+            ViewBase.prototype.SetDisplayParams = function (x, y, width, height, color) {
+                if (x != undefined && x != null)
+                    this._x = x;
+                if (y != undefined && y != null)
+                    this._y = y;
+                if (width != undefined && width != null)
+                    this._width = width;
+                if (height != undefined && height != null)
+                    this._height = height;
+                if (color != undefined && color != null)
+                    this._color = color;
+                this.Refresh();
+            };
             ViewBase.prototype.Add = function (view) {
-                if (this.Children.indexOf(view) != -1) {
+                if (this.Children.indexOf(view) == -1) {
                     this.Children.push(view);
                     this.Elem.append(view.Elem);
+                    view.Refresh();
                 }
             };
             ViewBase.prototype.Remove = function (view) {
@@ -477,6 +557,29 @@ var Fw;
                     this.Children.splice(index, 1);
                     view.Elem.detach();
                 }
+            };
+            ViewBase.prototype.Refresh = function () {
+                var _this = this;
+                if (this._lastRefreshTimer != null) {
+                    clearTimeout(this._lastRefreshTimer);
+                    this._lastRefreshTimer = null;
+                }
+                this._lastRefreshTimer = setTimeout(function () {
+                    _this.InnerRefresh();
+                }, 10);
+            };
+            ViewBase.prototype.InnerRefresh = function () {
+                var parent = $(this.Elem.parent());
+                if (!parent)
+                    return;
+                var centerX = (parent.width() / 2);
+                var centerY = (parent.height() / 2);
+                var dom = this.Elem.get(0);
+                dom.style.left = (centerX + this._x) + "px";
+                dom.style.top = (centerY + this._y) + "px";
+                dom.style.width = this._width + "px";
+                dom.style.height = this._height + "px";
+                dom.style.color = "#" + this._color;
             };
             ViewBase.prototype.Dispose = function () {
                 _.each(this.Children, function (view) {
@@ -498,14 +601,55 @@ var Fw;
 (function (Fw) {
     var Views;
     (function (Views) {
-        var ControllerView = /** @class */ (function (_super) {
-            __extends(ControllerView, _super);
-            function ControllerView(jqueryElem) {
+        var ControlView = /** @class */ (function (_super) {
+            __extends(ControlView, _super);
+            function ControlView() {
+                var _this = _super.call(this, $('<div></div>')) || this;
+                _this.Init();
+                return _this;
+            }
+            Object.defineProperty(ControlView.prototype, "Label", {
+                get: function () {
+                    return this._label.html();
+                },
+                set: function (value) {
+                    this._label.html(value);
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            ControlView.prototype.Init = function () {
+                _super.prototype.Init.call(this);
+                this.Elem.addClass('ControlView');
+                this._label = $('<span></span>');
+                this.Elem.append(this._label);
+            };
+            ControlView.prototype.InnerRefresh = function () {
+                _super.prototype.InnerRefresh.call(this);
+                var dom = this.Elem.get(0);
+                dom.style.borderColor = "#" + this.Color;
+            };
+            return ControlView;
+        }(Views.ViewBase));
+        Views.ControlView = ControlView;
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="./ViewBase.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var PageView = /** @class */ (function (_super) {
+            __extends(PageView, _super);
+            function PageView(jqueryElem) {
                 return _super.call(this, jqueryElem) || this;
             }
-            return ControllerView;
+            return PageView;
         }(Views.ViewBase));
-        Views.ControllerView = ControllerView;
+        Views.PageView = PageView;
     })(Views = Fw.Views || (Fw.Views = {}));
 })(Fw || (Fw = {}));
 //# sourceMappingURL=tsout.js.map
