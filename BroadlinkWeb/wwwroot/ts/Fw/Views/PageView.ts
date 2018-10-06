@@ -41,6 +41,7 @@ namespace Fw.Views {
             animator.ToParams = Anim.Params.GetCurrent(this);
             animator.ToParams.Opacity = 1.0;
             animator.OnComplete = () => {
+                this.Dom.style.display = `block`;
                 this.Refresh();
             };
             animator.Invoke(duration);

@@ -10,6 +10,8 @@
     <Content Remove="wwwroot\ts\App\Main.ts" />
     <Content Remove="wwwroot\ts\App\Views\CenterLine.ts" />
     <Content Remove="wwwroot\ts\App\Views\Control.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\ControlEvents.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\ViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\Xhr.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\XhrMethodType.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\XhrParams.ts" />
@@ -54,6 +56,8 @@
     <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\IController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\ControllerBase.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\Manager.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\ControlEvents.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\ViewEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Xhr\Config.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Xhr\Query.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Xhr\MethodType.ts" />

@@ -32,6 +32,22 @@ namespace App.Controllers {
             this._centerControl.SetDisplayParams(0, 0, 100, 50, '1155FF');
             this._centerControl.Label = 'はろー<br/>どうよ？';
             this.View.Add(this._centerControl);
+
+            const tmpCtl = new Fw.Views.ControlView();
+            tmpCtl.SetDisplayParams(-100, -100, 200, 200, '666666');
+            tmpCtl.Label = 'くりっく';
+            tmpCtl.AddEventListener(Fw.Events.ControlEvents.SingleClick, () => {
+                console.log('LONG CLICK!!');
+
+                if (this._centerControl.IsVisible()) {
+                    console.log('みえてんで！');
+                    this._centerControl.Hide();
+                } else {
+                    console.log('みえへんで...？');
+                    this._centerControl.Show();
+                }
+            });
+            this.View.Add(tmpCtl);
         }
     }
 }

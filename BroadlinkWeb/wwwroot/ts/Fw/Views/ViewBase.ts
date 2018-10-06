@@ -119,9 +119,15 @@ namespace Fw.Views {
                 return;
 
             const animator = new Anim.Animator(this);
-            animator.ToParams = Anim.Params.GetCurrent(this);
             animator.FromParams = Anim.Params.GetResized(this, 0.8);
             animator.FromParams.Opacity = 0;
+            animator.ToParams = Anim.Params.GetCurrent(this);
+            animator.ToParams.Opacity = 1.0;
+            animator.OnComplete = () => {
+                this.Dom.style.display = `block`;
+                this.Refresh();
+            }
+
             animator.Invoke(duration);
         }
 
@@ -130,9 +136,15 @@ namespace Fw.Views {
                 return;
 
             const animator = new Anim.Animator(this);
+            animator.FromParams = Anim.Params.GetCurrent(this);
+            animator.FromParams.Opacity = 1.0;
             animator.ToParams = Anim.Params.GetResized(this, 0.8);
             animator.ToParams.Opacity = 0.0;
-            animator.FromParams = Anim.Params.GetCurrent(this);
+            animator.OnComplete = () => {
+                this.Dom.style.display = `none`;
+                this.Refresh();
+            };
+
             animator.Invoke(duration);
         }
 
