@@ -1,5 +1,6 @@
 ﻿/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="./Factory.ts" />
 
 namespace Fw.Controllers {
     export class Manager {

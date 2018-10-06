@@ -1,5 +1,8 @@
 ﻿/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Fw/Controllers/IController.ts" />
+/// <reference path="../../Fw/Controllers/Manager.ts" />
+/// <reference path="../../Fw/Views/PageView.ts" />
 
 namespace Fw.Controllers {
     export abstract class ControllerBase implements Fw.Controllers.IController {

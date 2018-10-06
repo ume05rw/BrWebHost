@@ -1,6 +1,9 @@
 ﻿/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../../Fw/Util/Xhr/Config.ts" />
+/// <reference path="../../Fw/Controllers/ControllerBase.ts" />
+/// <reference path="../../Fw/Util/Xhr/Params.ts" />
+/// <reference path="../../Fw/Util/Xhr/MethodType.ts" />
+/// <reference path="../../Fw/Util/Xhr/Query.ts" />
 
 namespace App.Controllers {
     import Xhr = Fw.Util.Xhr;

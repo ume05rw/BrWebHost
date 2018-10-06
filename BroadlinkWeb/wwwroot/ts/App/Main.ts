@@ -1,5 +1,6 @@
 ﻿/// <reference path="../../lib/jquery/index.d.ts" />
 /// <reference path="../../lib/underscore/index.d.ts" />
+/// <reference path="../Fw/Controllers/Manager.ts" />
 /// <reference path="../Fw/Util/Xhr/Config.ts" />
 
 namespace App {

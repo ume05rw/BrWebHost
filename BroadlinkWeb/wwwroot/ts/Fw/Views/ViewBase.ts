@@ -1,5 +1,8 @@
 ﻿/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Fw/Views/Animation/Animator.ts" />
+/// <reference path="../../Fw/Views/Animation/Params.ts" />
+/// <reference path="../../Fw/Events/ViewEvents.ts" />
 
 namespace Fw.Views {
     import Anim = Fw.Views.Animation;

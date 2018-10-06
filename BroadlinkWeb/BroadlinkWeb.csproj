@@ -8,8 +8,6 @@
   <ItemGroup>
     <Content Remove="wwwroot\js\Page.ts" />
     <Content Remove="wwwroot\ts\App\Main.ts" />
-    <Content Remove="wwwroot\ts\App\Views\CenterLine.ts" />
-    <Content Remove="wwwroot\ts\App\Views\Control.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\ControlEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\PageEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\ViewEvents.ts" />
@@ -42,17 +40,15 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\images\icons\" />
+    <Folder Include="wwwroot\ts\App\Models\" />
+    <Folder Include="wwwroot\ts\App\Views\" />
   </ItemGroup>
 
   <ItemGroup>
-    <TypeScriptCompile Include="wwwroot\ts\App\Models\Control.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\App\Models\ControlSet.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Main.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\MainController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\Sub1Controller.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\Sub2Controller.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\App\Views\CenterLine.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\App\Views\Control.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\Factory.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\IController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\ControllerBase.ts" />

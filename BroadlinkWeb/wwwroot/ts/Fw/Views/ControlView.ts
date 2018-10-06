@@ -1,7 +1,7 @@
 ﻿/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Fw/Events/ControlEvents.ts" />
 /// <reference path="./ViewBase.ts" />
-/// <reference path="../Events/ControlEvents.ts" />
 
 namespace Fw.Views {
     import Events = Fw.Events.ControlEvents;

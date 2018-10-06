@@ -1,5 +1,7 @@
 ﻿/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Fw/Views/Animation/Animator.ts" />
+/// <reference path="../../Fw/Views/Animation/Params.ts" />
 /// <reference path="./ViewBase.ts" />
 
 namespace Fw.Views {
