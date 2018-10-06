@@ -2,12 +2,15 @@
 /// <reference path="../../../lib/underscore/index.d.ts" />
 
 namespace Fw.Views {
+    import Anim = Fw.Views.Animation;
+
     export abstract class ViewBase implements IView {
         // Refresh() Multiple execution suppressor
         private _lastRefreshTimer: number;
 
         // Properties
         public Elem: JQuery;
+        public readonly Dom: HTMLElement;
         public Children: Array<IView>;
 
         // Properties with set/get
@@ -60,6 +63,14 @@ namespace Fw.Views {
         constructor(jqueryElem: JQuery) {
             this.Children = new Array<IView>();
             this.Elem = jqueryElem;
+            this.Dom = jqueryElem.get(0) as HTMLElement
+
+            this._width = this.Elem.width();
+            this._height = this.Elem.height();
+            this._x = 0;
+            this._y = 0;
+            this._color = '000000';
+
             this.Elem.addClass('IView');
         }
 
@@ -103,6 +114,32 @@ namespace Fw.Views {
             }
         }
 
+        public Show(duration: number = 200): void {
+            if (this.IsVisible())
+                return;
+
+            const animator = new Anim.Animator(this);
+            animator.ToParams = Anim.Params.GetCurrent(this);
+            animator.FromParams = Anim.Params.GetResized(this, 0.8);
+            animator.FromParams.Opacity = 0;
+            animator.Run(duration);
+        }
+
+        public Hide(duration: number = 200): void {
+            if (!this.IsVisible())
+                return;
+
+            const animator = new Anim.Animator(this);
+            animator.ToParams = Anim.Params.GetResized(this, 0.8);
+            animator.ToParams.Opacity = 0.0;
+            animator.FromParams = Anim.Params.GetCurrent(this);
+            animator.Run(duration);
+        }
+
+        public IsVisible(): boolean {
+            return this.Elem.is(':visible');
+        }
+
         public Refresh(): void {
             if (this._lastRefreshTimer != null) {
                 clearTimeout(this._lastRefreshTimer);
@@ -120,14 +157,16 @@ namespace Fw.Views {
             if (!parent)
                 return;
 
-            const centerX = (parent.width() / 2);
-            const centerY = (parent.height() / 2);
-            const dom = this.Elem.get(0) as HTMLElement;
-            dom.style.left = `${(centerX + this._x)}px`;
-            dom.style.top = `${(centerY + this._y)}px`;
-            dom.style.width = `${this._width}px`;
-            dom.style.height = `${this._height}px`;
-            dom.style.color = `#${this._color}`;
+            const centerLeft = (parent.width() / 2);
+            const centerTop = (parent.height() / 2);
+            const elemLeft = centerLeft + this._x - (this.Width / 2);
+            const elemTop = centerTop + this._y - (this.Height / 2);
+
+            this.Dom.style.left = `${elemLeft}px`;
+            this.Dom.style.top = `${elemTop}px`;
+            this.Dom.style.width = `${this._width}px`;
+            this.Dom.style.height = `${this._height}px`;
+            this.Dom.style.color = `#${this._color}`;
         }
 
         public Dispose(): void {

@@ -3,35 +3,34 @@
 
 namespace Fw.Controllers {
     export class Manager {
-        private _list: IController[];
+        private _controllers: Array<IController>;
 
         constructor() {
-            let pages: IController[] = [];
+            const ctrs: Array<IController> = [];
 
             $("div[data-controller]").each(function (i, el) {
                 const $elem = $(el);
                 const name = $elem.data('controller');
                 const instance = Factory.Create(name, $elem, this);
-                pages.push(instance);
+                ctrs.push(instance);
             }.bind(this));
 
-            this._list = pages;
+            this._controllers = ctrs;
         }
 
         public Show(id: string): void {
-            const target = _.find(this._list, function (p) {
-                return (p.Id === id);
+            const target = _.find(this._controllers, function (c) {
+                return (c.Id === id);
             });
             if (!target)
                 throw new Error("id not found: " + id);
 
-            _.each(this._list, function (p) {
-                p.View.Elem.is(':visible')
-                    ? p.View.Elem.hide(200)
-                    : p.View.Elem.hide();
+            _.each(this._controllers, function (c) {
+                if (c !== target && c.View.IsVisible())
+                    c.View.Hide();
             });
 
-            target.View.Elem.show(200);
+            target.View.Show();
         }
     }
 }

@@ -4,6 +4,7 @@
 namespace Fw.Views {
     export interface IView {
         Elem: JQuery;
+        Dom: HTMLElement;
         Children: Array<IView>;
 
         X: number;
@@ -12,9 +13,14 @@ namespace Fw.Views {
         Height: number;
         Color: string;
 
+        SetDisplayParams(x: number, y: number, width?: number, height?: number, color?: string): void 
         Add(view: IView): void;
         Remove(view: IView): void;
         Refresh(): void;
+        Show(duration?: number): void;
+        Hide(duration?: number): void;
+        IsVisible(): boolean;
+
         Dispose(): void;
     }
 }

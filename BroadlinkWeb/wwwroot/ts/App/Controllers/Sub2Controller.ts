@@ -2,6 +2,8 @@
 /// <reference path="../../../lib/underscore/index.d.ts" />
 
 namespace App.Controllers {
+    import Xhr = Fw.Util.Xhr;
+
     export class Sub2Controller extends Fw.Controllers.ControllerBase {
 
         private _btnGoMain: JQuery;

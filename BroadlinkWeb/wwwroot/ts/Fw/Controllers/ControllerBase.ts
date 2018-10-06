@@ -15,7 +15,7 @@ namespace Fw.Controllers {
             this.IsDefaultView = (this.View.Elem.data("default"));
 
             if (this.IsDefaultView)
-                this.View.Elem.show();
+                this.View.Show();
         }
     }
 }
