@@ -122,7 +122,7 @@ namespace Fw.Views {
             animator.ToParams = Anim.Params.GetCurrent(this);
             animator.FromParams = Anim.Params.GetResized(this, 0.8);
             animator.FromParams.Opacity = 0;
-            animator.Run(duration);
+            animator.Invoke(duration);
         }
 
         public Hide(duration: number = 200): void {
@@ -133,7 +133,7 @@ namespace Fw.Views {
             animator.ToParams = Anim.Params.GetResized(this, 0.8);
             animator.ToParams.Opacity = 0.0;
             animator.FromParams = Anim.Params.GetCurrent(this);
-            animator.Run(duration);
+            animator.Invoke(duration);
         }
 
         public IsVisible(): boolean {

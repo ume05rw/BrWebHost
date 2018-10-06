@@ -40,8 +40,10 @@ namespace Fw.Views {
             animator.FromParams.Opacity = 0.5;
             animator.ToParams = Anim.Params.GetCurrent(this);
             animator.ToParams.Opacity = 1.0;
-
-            animator.Run(duration);
+            animator.OnComplete = () => {
+                this.Refresh();
+            };
+            animator.Invoke(duration);
         }
 
         public Hide(duration: number = 200): void {
@@ -59,14 +61,14 @@ namespace Fw.Views {
                 this.Refresh();
             };
 
-            animator.Run(duration);
+            animator.Invoke(duration);
         }
 
         protected InnerRefresh(): void {
             this.Dom.style.left = `0px`;
             this.Dom.style.top = `0px`;
-            this.Dom.style.width = `${PageView.RootWidth}px`;
-            this.Dom.style.height = `${PageView.RootHeight}px`;
+            this.Dom.style.width = `100%`;
+            this.Dom.style.height = `100%`;
         }
     }
 }

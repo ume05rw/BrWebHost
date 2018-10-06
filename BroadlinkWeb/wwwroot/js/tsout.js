@@ -473,7 +473,7 @@ var Fw;
                     this._view = view;
                     this.ToParams = toParams;
                 }
-                Animator.prototype.Run = function (duration) {
+                Animator.prototype.Invoke = function (duration) {
                     var _this = this;
                     if (duration === void 0) { duration = 200; }
                     if (!duration)
@@ -492,6 +492,29 @@ var Fw;
                     var toY = this._view.Y + this.ToParams.Y;
                     var toLeft = centerLeft + toX - (this.ToParams.Width / 2);
                     var toTop = centerTop + toY - (this.ToParams.Height / 2);
+                    //console.log({
+                    //    name: 'center',
+                    //    left: centerLeft,
+                    //    top: centerTop
+                    //});
+                    //console.log({
+                    //    name: 'from',
+                    //    x: fromX,
+                    //    y: fromY,
+                    //    left: fromLeft,
+                    //    top: fromTop,
+                    //    width: this.FromParams.Width,
+                    //    height: this.FromParams.Height
+                    //});
+                    //console.log({
+                    //    name: 'to',
+                    //    x: toX,
+                    //    y: toY,
+                    //    left: toLeft,
+                    //    top: toTop,
+                    //    width: this.ToParams.Width,
+                    //    height: this.ToParams.Height
+                    //});
                     // アニメーション開始時点の値をセット
                     dom.style.display = "block";
                     dom.style.position = "absolute";
@@ -519,6 +542,7 @@ var Fw;
                     this._view = null;
                     this.FromParams = null;
                     this.ToParams = null;
+                    this.OnComplete = null;
                 };
                 return Animator;
             }());
@@ -694,7 +718,7 @@ var Fw;
                 animator.ToParams = Anim.Params.GetCurrent(this);
                 animator.FromParams = Anim.Params.GetResized(this, 0.8);
                 animator.FromParams.Opacity = 0;
-                animator.Run(duration);
+                animator.Invoke(duration);
             };
             ViewBase.prototype.Hide = function (duration) {
                 if (duration === void 0) { duration = 200; }
@@ -704,7 +728,7 @@ var Fw;
                 animator.ToParams = Anim.Params.GetResized(this, 0.8);
                 animator.ToParams.Opacity = 0.0;
                 animator.FromParams = Anim.Params.GetCurrent(this);
-                animator.Run(duration);
+                animator.Invoke(duration);
             };
             ViewBase.prototype.IsVisible = function () {
                 return this.Elem.is(':visible');
@@ -817,6 +841,7 @@ var Fw;
                 PageView.RootHeight = PageView.RootElem.height();
             };
             PageView.prototype.Show = function (duration) {
+                var _this = this;
                 if (duration === void 0) { duration = 200; }
                 //console.log(`PageView.Show: ${this.Elem.data('controller')}`);
                 if (this.IsVisible())
@@ -826,7 +851,10 @@ var Fw;
                 animator.FromParams.Opacity = 0.5;
                 animator.ToParams = Anim.Params.GetCurrent(this);
                 animator.ToParams.Opacity = 1.0;
-                animator.Run(duration);
+                animator.OnComplete = function () {
+                    _this.Refresh();
+                };
+                animator.Invoke(duration);
             };
             PageView.prototype.Hide = function (duration) {
                 var _this = this;
@@ -843,13 +871,13 @@ var Fw;
                     _this.Dom.style.display = "none";
                     _this.Refresh();
                 };
-                animator.Run(duration);
+                animator.Invoke(duration);
             };
             PageView.prototype.InnerRefresh = function () {
                 this.Dom.style.left = "0px";
                 this.Dom.style.top = "0px";
-                this.Dom.style.width = PageView.RootWidth + "px";
-                this.Dom.style.height = PageView.RootHeight + "px";
+                this.Dom.style.width = "100%";
+                this.Dom.style.height = "100%";
             };
             PageView.RootElem = null;
             PageView.RootWidth = -1;

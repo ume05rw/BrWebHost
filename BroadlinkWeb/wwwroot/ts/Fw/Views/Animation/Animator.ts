@@ -15,7 +15,7 @@ namespace Fw.Views.Animation {
             this.ToParams = toParams;
         }
 
-        public Run(duration: number = 200): void {
+        public Invoke(duration: number = 200): void {
             if (!duration)
                 duration = 200;
 
@@ -36,6 +36,32 @@ namespace Fw.Views.Animation {
             const toY = this._view.Y + this.ToParams.Y;
             const toLeft = centerLeft + toX - (this.ToParams.Width / 2);
             const toTop = centerTop + toY - (this.ToParams.Height / 2);
+
+            //console.log({
+            //    name: 'center',
+            //    left: centerLeft,
+            //    top: centerTop
+            //});
+
+            //console.log({
+            //    name: 'from',
+            //    x: fromX,
+            //    y: fromY,
+            //    left: fromLeft,
+            //    top: fromTop,
+            //    width: this.FromParams.Width,
+            //    height: this.FromParams.Height
+            //});
+
+            //console.log({
+            //    name: 'to',
+            //    x: toX,
+            //    y: toY,
+            //    left: toLeft,
+            //    top: toTop,
+            //    width: this.ToParams.Width,
+            //    height: this.ToParams.Height
+            //});
 
             // アニメーション開始時点の値をセット
             dom.style.display = `block`;
@@ -68,6 +94,7 @@ namespace Fw.Views.Animation {
             this._view = null;
             this.FromParams = null;
             this.ToParams = null;
+            this.OnComplete = null;
         }
     }
 }
