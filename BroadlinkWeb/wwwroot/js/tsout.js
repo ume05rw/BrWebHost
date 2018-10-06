@@ -958,9 +958,33 @@ var Fw;
                 enumerable: true,
                 configurable: true
             });
+            Object.defineProperty(ControlView.prototype, "HasBorder", {
+                get: function () {
+                    return this._hasBorder;
+                },
+                set: function (value) {
+                    this.Dom.style.borderWidth = (value)
+                        ? '1px'
+                        : '0';
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(ControlView.prototype, "BorderRadius", {
+                get: function () {
+                    return this._borderRadius;
+                },
+                set: function (value) {
+                    this.Dom.style.borderRadius = this._borderRadius + "%";
+                },
+                enumerable: true,
+                configurable: true
+            });
             ControlView.prototype.Init = function () {
                 var _this = this;
                 _super.prototype.Init.call(this);
+                this.HasBorder = true;
+                this.BorderRadius = 5;
                 this.Elem.addClass('ControlView');
                 this._label = $('<span></span>');
                 this.Elem.append(this._label);

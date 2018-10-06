@@ -20,10 +20,8 @@ namespace BroadlinkWeb
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
-#if DEBUG
-#else
-                .UseUrls("http://localhost:5004")
-#endif
+                .UseUrls("http://*:5004")
+                //.UseUrls("http://0.0.0.0:5004")
                 .Build();
     }
 }

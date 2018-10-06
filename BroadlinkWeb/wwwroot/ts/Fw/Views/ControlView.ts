@@ -22,6 +22,24 @@ namespace Fw.Views {
             this.Refresh();
         }
 
+        private _hasBorder: boolean;
+        public get HasBorder(): boolean {
+            return this._hasBorder;
+        }
+        public set HasBorder(value: boolean) {
+            this.Dom.style.borderWidth = (value)
+                ? '1px'
+                : '0';
+        }
+
+        private _borderRadius: number;
+        public get BorderRadius(): number {
+            return this._borderRadius;
+        }
+        public set BorderRadius(value: number) {
+            this.Dom.style.borderRadius = `${this._borderRadius}%`;
+        }
+
         constructor() {
             super($('<div></div>'));
             this.Init();
@@ -29,6 +47,9 @@ namespace Fw.Views {
 
         protected Init(): void {
             super.Init();
+
+            this.HasBorder = true;
+            this.BorderRadius = 5;
 
             this.Elem.addClass('ControlView');
             this._label = $('<span></span>');
