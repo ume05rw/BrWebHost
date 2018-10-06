@@ -76,6 +76,9 @@ var App;
                     }
                 });
                 this.View.Add(tmpCtl);
+                this.View.AddEventListener(Fw.Events.PageEvents.Shown, function () {
+                    console.log('MainView.Shown');
+                });
             };
             return MainController;
         }(Fw.Controllers.ControllerBase));
@@ -481,8 +484,12 @@ var Fw;
     var Views;
     (function (Views) {
         var Anim = Fw.Views.Animation;
+        var Events = Fw.Events.ViewEvents;
         var ViewBase = /** @class */ (function () {
             function ViewBase(jqueryElem) {
+                // events
+                this.EventShown = new Event(Events.Shown);
+                this.EventHidden = new Event(Events.Hidden);
                 this.Children = new Array();
                 this.Elem = jqueryElem;
                 this.Dom = jqueryElem.get(0);
@@ -492,6 +499,9 @@ var Fw;
                 this._y = 0;
                 this._color = '000000';
                 this.Elem.addClass('IView');
+                this.IsVisible()
+                    ? this.Dom.dispatchEvent(this.EventShown)
+                    : this.Dom.dispatchEvent(this.EventHidden);
             }
             Object.defineProperty(ViewBase.prototype, "X", {
                 get: function () {
@@ -594,6 +604,7 @@ var Fw;
                 animator.OnComplete = function () {
                     _this.Dom.style.display = "block";
                     _this.Refresh();
+                    _this.Dom.dispatchEvent(_this.EventShown);
                 };
                 animator.Invoke(duration);
             };
@@ -610,6 +621,7 @@ var Fw;
                 animator.OnComplete = function () {
                     _this.Dom.style.display = "none";
                     _this.Refresh();
+                    _this.Dom.dispatchEvent(_this.EventHidden);
                 };
                 animator.Invoke(duration);
             };
@@ -640,6 +652,9 @@ var Fw;
                 this.Dom.style.height = this._height + "px";
                 this.Dom.style.color = "#" + this._color;
             };
+            ViewBase.prototype.AddEventListener = function (name, listener) {
+                this.Dom.addEventListener(name, listener, false);
+            };
             ViewBase.prototype.Dispose = function () {
                 _.each(this.Children, function (view) {
                     view.Dispose();
@@ -647,6 +662,8 @@ var Fw;
                 this.Children = null;
                 this.Elem.remove();
                 this.Elem = null;
+                this.EventShown = null;
+                this.EventHidden = null;
             };
             return ViewBase;
         }());
@@ -705,8 +722,8 @@ var Fw;
             function ControlView() {
                 var _this = _super.call(this, $('<div></div>')) || this;
                 // events
-                _this._eventSingleClick = new Event(Events.SingleClick);
-                _this._eventLongClick = new Event(Events.LongClick);
+                _this.EventSingleClick = new Event(Events.SingleClick);
+                _this.EventLongClick = new Event(Events.LongClick);
                 _this._tapEventTimer = null;
                 _this.Init();
                 return _this;
@@ -735,7 +752,7 @@ var Fw;
                         // ロングタップイベント
                         _this._tapEventTimer = null;
                         //console.log('longtapped');
-                        _this.Dom.dispatchEvent(_this._eventLongClick);
+                        _this.Dom.dispatchEvent(_this.EventLongClick);
                     }, 1000);
                     e.preventDefault();
                 });
@@ -746,7 +763,7 @@ var Fw;
                         _this._tapEventTimer = null;
                         // 以降、シングルタップイベント処理
                         //console.log('singletapped');
-                        _this.Dom.dispatchEvent(_this._eventSingleClick);
+                        _this.Dom.dispatchEvent(_this.EventSingleClick);
                     }
                     else {
                     }
@@ -766,8 +783,12 @@ var Fw;
                 _super.prototype.InnerRefresh.call(this);
                 this.Dom.style.borderColor = "#" + this.Color;
             };
-            ControlView.prototype.AddEventListener = function (name, listener) {
-                this.Dom.addEventListener(name, listener, false);
+            ControlView.prototype.Dispose = function () {
+                this.EventSingleClick = null;
+                this.EventLongClick = null;
+                this._label = null;
+                this._tapEventTimer = null;
+                _super.prototype.Dispose.call(this);
             };
             return ControlView;
         }(Views.ViewBase));
@@ -815,6 +836,7 @@ var Fw;
                 animator.OnComplete = function () {
                     _this.Dom.style.display = "block";
                     _this.Refresh();
+                    _this.Dom.dispatchEvent(_this.EventShown);
                 };
                 animator.Invoke(duration);
             };
@@ -832,6 +854,7 @@ var Fw;
                 animator.OnComplete = function () {
                     _this.Dom.style.display = "none";
                     _this.Refresh();
+                    _this.Dom.dispatchEvent(_this.EventHidden);
                 };
                 animator.Invoke(duration);
             };
@@ -937,29 +960,29 @@ var Fw;
                     var toY = this._view.Y + this.ToParams.Y;
                     var toLeft = centerLeft + toX - (this.ToParams.Width / 2);
                     var toTop = centerTop + toY - (this.ToParams.Height / 2);
-                    console.log({
-                        name: 'center',
-                        left: centerLeft,
-                        top: centerTop
-                    });
-                    console.log({
-                        name: 'from',
-                        x: fromX,
-                        y: fromY,
-                        left: fromLeft,
-                        top: fromTop,
-                        width: this.FromParams.Width,
-                        height: this.FromParams.Height
-                    });
-                    console.log({
-                        name: 'to',
-                        x: toX,
-                        y: toY,
-                        left: toLeft,
-                        top: toTop,
-                        width: this.ToParams.Width,
-                        height: this.ToParams.Height
-                    });
+                    //console.log({
+                    //    name: 'center',
+                    //    left: centerLeft,
+                    //    top: centerTop
+                    //});
+                    //console.log({
+                    //    name: 'from',
+                    //    x: fromX,
+                    //    y: fromY,
+                    //    left: fromLeft,
+                    //    top: fromTop,
+                    //    width: this.FromParams.Width,
+                    //    height: this.FromParams.Height
+                    //});
+                    //console.log({
+                    //    name: 'to',
+                    //    x: toX,
+                    //    y: toY,
+                    //    left: toLeft,
+                    //    top: toTop,
+                    //    width: this.ToParams.Width,
+                    //    height: this.ToParams.Height
+                    //});
                     // アニメーション開始時点の値をセット
                     dom.style.display = "block";
                     dom.style.position = "absolute";
@@ -994,5 +1017,23 @@ var Fw;
             Animation.Animator = Animator;
         })(Animation = Views.Animation || (Views.Animation = {}));
     })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="./ViewEvents.ts" />
+var Fw;
+(function (Fw) {
+    var Events;
+    (function (Events) {
+        var PageEventsClass = /** @class */ (function (_super) {
+            __extends(PageEventsClass, _super);
+            function PageEventsClass() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            return PageEventsClass;
+        }(Events.ViewEventsClass));
+        Events.PageEventsClass = PageEventsClass;
+        Events.PageEvents = new PageEventsClass();
+    })(Events = Fw.Events || (Fw.Events = {}));
 })(Fw || (Fw = {}));
 //# sourceMappingURL=tsout.js.map

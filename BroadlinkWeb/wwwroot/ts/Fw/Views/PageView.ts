@@ -43,6 +43,7 @@ namespace Fw.Views {
             animator.OnComplete = () => {
                 this.Dom.style.display = `block`;
                 this.Refresh();
+                this.Dom.dispatchEvent(this.EventShown);
             };
             animator.Invoke(duration);
         }
@@ -60,6 +61,7 @@ namespace Fw.Views {
             animator.OnComplete = () => {
                 this.Dom.style.display = `none`;
                 this.Refresh();
+                this.Dom.dispatchEvent(this.EventHidden);
             };
 
             animator.Invoke(duration);

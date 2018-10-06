@@ -37,31 +37,31 @@ namespace Fw.Views.Animation {
             const toLeft = centerLeft + toX - (this.ToParams.Width / 2);
             const toTop = centerTop + toY - (this.ToParams.Height / 2);
 
-            console.log({
-                name: 'center',
-                left: centerLeft,
-                top: centerTop
-            });
+            //console.log({
+            //    name: 'center',
+            //    left: centerLeft,
+            //    top: centerTop
+            //});
 
-            console.log({
-                name: 'from',
-                x: fromX,
-                y: fromY,
-                left: fromLeft,
-                top: fromTop,
-                width: this.FromParams.Width,
-                height: this.FromParams.Height
-            });
+            //console.log({
+            //    name: 'from',
+            //    x: fromX,
+            //    y: fromY,
+            //    left: fromLeft,
+            //    top: fromTop,
+            //    width: this.FromParams.Width,
+            //    height: this.FromParams.Height
+            //});
 
-            console.log({
-                name: 'to',
-                x: toX,
-                y: toY,
-                left: toLeft,
-                top: toTop,
-                width: this.ToParams.Width,
-                height: this.ToParams.Height
-            });
+            //console.log({
+            //    name: 'to',
+            //    x: toX,
+            //    y: toY,
+            //    left: toLeft,
+            //    top: toTop,
+            //    width: this.ToParams.Width,
+            //    height: this.ToParams.Height
+            //});
 
             // アニメーション開始時点の値をセット
             dom.style.display = `block`;

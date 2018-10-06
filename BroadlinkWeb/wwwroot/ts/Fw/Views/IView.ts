@@ -21,6 +21,8 @@ namespace Fw.Views {
         Hide(duration?: number): void;
         IsVisible(): boolean;
 
+        AddEventListener(name: string, listener: EventListenerOrEventListenerObject): void;
+
         Dispose(): void;
     }
 }

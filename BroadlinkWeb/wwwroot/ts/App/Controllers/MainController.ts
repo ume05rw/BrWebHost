@@ -48,6 +48,10 @@ namespace App.Controllers {
                 }
             });
             this.View.Add(tmpCtl);
+
+            this.View.AddEventListener(Fw.Events.PageEvents.Shown, () => {
+                console.log('MainView.Shown');
+            });
         }
     }
 }

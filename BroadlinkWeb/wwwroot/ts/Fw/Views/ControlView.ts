@@ -7,8 +7,8 @@ namespace Fw.Views {
     import Events = Fw.Events.ControlEvents;
     export class ControlView extends ViewBase {
         // events
-        private _eventSingleClick: Event = new Event(Events.SingleClick);
-        private _eventLongClick: Event = new Event(Events.LongClick);
+        protected EventSingleClick: Event = new Event(Events.SingleClick);
+        protected EventLongClick: Event = new Event(Events.LongClick);
 
         // properties
         private _label: JQuery;
@@ -42,7 +42,7 @@ namespace Fw.Views {
                     // ロングタップイベント
                     this._tapEventTimer = null;
                     //console.log('longtapped');
-                    this.Dom.dispatchEvent(this._eventLongClick);
+                    this.Dom.dispatchEvent(this.EventLongClick);
                 }, 1000);
 
                 e.preventDefault();
@@ -55,7 +55,7 @@ namespace Fw.Views {
 
                     // 以降、シングルタップイベント処理
                     //console.log('singletapped');
-                    this.Dom.dispatchEvent(this._eventSingleClick);
+                    this.Dom.dispatchEvent(this.EventSingleClick);
                 } else {
                 }
                 e.preventDefault();
@@ -77,8 +77,13 @@ namespace Fw.Views {
             this.Dom.style.borderColor = `#${this.Color}`;
         }
 
-        public AddEventListener(name: string, listener: EventListenerOrEventListenerObject): void {
-            this.Dom.addEventListener(name, listener, false);
+        public Dispose(): void {
+            this.EventSingleClick = null;
+            this.EventLongClick = null;
+            this._label = null;
+            this._tapEventTimer = null;
+
+            super.Dispose();
         }
     }
 }

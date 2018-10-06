@@ -3,8 +3,13 @@
 
 namespace Fw.Views {
     import Anim = Fw.Views.Animation;
+    import Events = Fw.Events.ViewEvents;
 
     export abstract class ViewBase implements IView {
+        // events
+        protected EventShown: Event = new Event(Events.Shown);
+        protected EventHidden: Event = new Event(Events.Hidden);
+
         // Refresh() Multiple execution suppressor
         private _lastRefreshTimer: number;
 
@@ -72,6 +77,10 @@ namespace Fw.Views {
             this._color = '000000';
 
             this.Elem.addClass('IView');
+
+            this.IsVisible()
+                ? this.Dom.dispatchEvent(this.EventShown)
+                : this.Dom.dispatchEvent(this.EventHidden);
         }
 
         protected Init(): void {
@@ -126,6 +135,7 @@ namespace Fw.Views {
             animator.OnComplete = () => {
                 this.Dom.style.display = `block`;
                 this.Refresh();
+                this.Dom.dispatchEvent(this.EventShown);
             }
 
             animator.Invoke(duration);
@@ -143,6 +153,7 @@ namespace Fw.Views {
             animator.OnComplete = () => {
                 this.Dom.style.display = `none`;
                 this.Refresh();
+                this.Dom.dispatchEvent(this.EventHidden);
             };
 
             animator.Invoke(duration);
@@ -181,6 +192,10 @@ namespace Fw.Views {
             this.Dom.style.color = `#${this._color}`;
         }
 
+        public AddEventListener(name: string, listener: EventListenerOrEventListenerObject): void {
+            this.Dom.addEventListener(name, listener, false);
+        }
+
         public Dispose(): void {
             _.each(this.Children, (view) => {
                 view.Dispose();
@@ -189,6 +204,9 @@ namespace Fw.Views {
 
             this.Elem.remove();
             this.Elem = null;
+
+            this.EventShown = null;
+            this.EventHidden = null;
         }
     }
 }
