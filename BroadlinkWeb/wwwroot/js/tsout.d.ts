@@ -10,6 +10,7 @@ declare namespace Fw.Views {
         Width: number;
         Height: number;
         Color: string;
+        BackgroundColor: string;
         SetDisplayParams(x: number, y: number, width?: number, height?: number, color?: string): void;
         Add(view: IView): void;
         Remove(view: IView): void;
@@ -38,17 +39,6 @@ declare namespace Fw.Controllers {
         private _controllers;
         constructor();
         Show(id: string): void;
-    }
-}
-declare namespace Fw.Util.Xhr {
-    class Config {
-        static BaseUrl: string;
-    }
-}
-declare namespace App {
-    class Main {
-        static _controllerManager: Fw.Controllers.Manager;
-        static StartUp(): void;
     }
 }
 declare namespace Fw.Views.Animation {
@@ -100,6 +90,8 @@ declare namespace Fw.Views {
         Heght: number;
         private _color;
         Color: string;
+        private _backgroundColor;
+        BackgroundColor: string;
         constructor(jqueryElem: JQuery);
         protected Init(): void;
         SetDisplayParams(x: number, y: number, width?: number, height?: number, color?: string): void;
@@ -182,6 +174,17 @@ declare namespace App.Controllers {
         private Init;
     }
 }
+declare namespace Fw.Util.Xhr {
+    class Config {
+        static BaseUrl: string;
+    }
+}
+declare namespace App {
+    class Main {
+        static _controllerManager: Fw.Controllers.Manager;
+        static StartUp(): void;
+    }
+}
 declare namespace Fw.Events {
     class ControlEventsClass extends ViewEventsClass {
         readonly SingleClick: string;
@@ -219,5 +222,33 @@ declare namespace Fw.Views {
         protected Init(): void;
         protected InnerRefresh(): void;
         Dispose(): void;
+    }
+}
+declare namespace Fw.Views {
+    class AnchoredControlView extends ControlView {
+        X: number;
+        Y: number;
+        private _ancWidth;
+        Width: number;
+        private _ancHeight;
+        Height: number;
+        private _isAnchorTop;
+        IsAnchorTop: boolean;
+        private _isAnchorLeft;
+        IsAnchorLeft: boolean;
+        private _isAnchorRight;
+        IsAnchorRight: boolean;
+        private _isAnchorBottom;
+        IsAnchorBottom: boolean;
+        private _anchorMarginTop;
+        AnchorMarginTop: number;
+        private _anchorMarginLeft;
+        AnchorMarginLeft: number;
+        private _anchorMarginRight;
+        AnchorMarginRight: number;
+        private _anchorMarginBottom;
+        AnchorMarginBottom: number;
+        protected Init(): void;
+        protected InnerRefresh(): void;
     }
 }

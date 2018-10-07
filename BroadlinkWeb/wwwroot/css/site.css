@@ -20,7 +20,7 @@ body,
     height: 100%;
 }
 .body-content {
-    position: relative;
+    position: static;
 }
 
 /* Make .svg files in the carousel display properly in older browsers */
@@ -70,4 +70,9 @@ div.IController .ControlView > * {
     transform: translateY(-50%);
     width: 100%;
     text-align: center;
+}
+
+/* 相対位置指定ControllerView */
+div.IController .IView.AnchoredControlView {
+    position: absolute;
 }

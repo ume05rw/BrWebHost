@@ -12,6 +12,7 @@ namespace Fw.Views {
         Width: number;
         Height: number;
         Color: string;
+        BackgroundColor: string;
 
         SetDisplayParams(x: number, y: number, width?: number, height?: number, color?: string): void 
         Add(view: IView): void;

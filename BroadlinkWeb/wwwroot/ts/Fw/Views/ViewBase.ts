@@ -67,12 +67,23 @@ namespace Fw.Views {
             this.Refresh();
         }
 
+        private _backgroundColor: string;
+        public get BackgroundColor(): string {
+            return this._backgroundColor;
+        }
+        public set BackgroundColor(value: string) {
+            this._backgroundColor = value;
+            this.Refresh();
+        }
+
 
         constructor(jqueryElem: JQuery) {
             this.Children = new Array<IView>();
             this.Elem = jqueryElem;
             this.Dom = jqueryElem.get(0) as HTMLElement
+        }
 
+        protected Init(): void {
             this._width = this.Elem.width();
             this._height = this.Elem.height();
             this._x = 0;
@@ -84,9 +95,6 @@ namespace Fw.Views {
             this.IsVisible()
                 ? this.Dom.dispatchEvent(this.EventShown)
                 : this.Dom.dispatchEvent(this.EventHidden);
-        }
-
-        protected Init(): void {
         }
 
         public SetDisplayParams(
@@ -193,6 +201,7 @@ namespace Fw.Views {
             this.Dom.style.width = `${this._width}px`;
             this.Dom.style.height = `${this._height}px`;
             this.Dom.style.color = `#${this._color}`;
+            this.Dom.style.backgroundColor = `#${this._backgroundColor}`;
         }
 
         public AddEventListener(name: string, listener: EventListenerOrEventListenerObject): void {

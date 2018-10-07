@@ -63,7 +63,7 @@ namespace Fw.Views {
 
             // プロパティsetterを一度通しておく。
             this.HasBorder = true;
-            this.BorderRadius = 20;
+            this.BorderRadius = 5;
 
             this.Elem.addClass('ControlView');
             this._label = $('<span></span>');

@@ -74,54 +74,6 @@ var Fw;
 })(Fw || (Fw = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
-var Fw;
-(function (Fw) {
-    var Util;
-    (function (Util) {
-        var Xhr;
-        (function (Xhr) {
-            var Config = /** @class */ (function () {
-                function Config() {
-                }
-                // ↓App.Mainで書き換える。
-                Config.BaseUrl = location.protocol
-                    + '//' + location.hostname
-                    + ':' + location.port
-                    + '/';
-                return Config;
-            }());
-            Xhr.Config = Config;
-        })(Xhr = Util.Xhr || (Util.Xhr = {}));
-    })(Util = Fw.Util || (Fw.Util = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../lib/jquery/index.d.ts" />
-/// <reference path="../../lib/underscore/index.d.ts" />
-/// <reference path="../Fw/Controllers/Manager.ts" />
-/// <reference path="../Fw/Util/Xhr/Config.ts" />
-var App;
-(function (App) {
-    var Main = /** @class */ (function () {
-        function Main() {
-        }
-        Main.StartUp = function () {
-            var proto = location.protocol;
-            var host = location.hostname;
-            var port = location.port;
-            Fw.Util.Xhr.Config.BaseUrl = proto + '//' + host + ':' + port + '/api/';
-            // コントローラを起動。
-            Main._controllerManager = new Fw.Controllers.Manager();
-        };
-        return Main;
-    }());
-    App.Main = Main;
-})(App || (App = {}));
-// アプリケーションを起動する。
-// 以下にはこれ以上書かないこと。
-$(function () {
-    App.Main.StartUp();
-});
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../../Fw/Views/IView.ts" />
 var Fw;
 (function (Fw) {
@@ -305,15 +257,6 @@ var Fw;
                 this.Children = new Array();
                 this.Elem = jqueryElem;
                 this.Dom = jqueryElem.get(0);
-                this._width = this.Elem.width();
-                this._height = this.Elem.height();
-                this._x = 0;
-                this._y = 0;
-                this._color = '000000';
-                this.Elem.addClass('IView');
-                this.IsVisible()
-                    ? this.Dom.dispatchEvent(this.EventShown)
-                    : this.Dom.dispatchEvent(this.EventHidden);
             }
             Object.defineProperty(ViewBase.prototype, "X", {
                 get: function () {
@@ -374,7 +317,27 @@ var Fw;
                 enumerable: true,
                 configurable: true
             });
+            Object.defineProperty(ViewBase.prototype, "BackgroundColor", {
+                get: function () {
+                    return this._backgroundColor;
+                },
+                set: function (value) {
+                    this._backgroundColor = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
             ViewBase.prototype.Init = function () {
+                this._width = this.Elem.width();
+                this._height = this.Elem.height();
+                this._x = 0;
+                this._y = 0;
+                this._color = '000000';
+                this.Elem.addClass('IView');
+                this.IsVisible()
+                    ? this.Dom.dispatchEvent(this.EventShown)
+                    : this.Dom.dispatchEvent(this.EventHidden);
             };
             ViewBase.prototype.SetDisplayParams = function (x, y, width, height, color) {
                 if (x != undefined && x != null)
@@ -463,6 +426,7 @@ var Fw;
                 this.Dom.style.width = this._width + "px";
                 this.Dom.style.height = this._height + "px";
                 this.Dom.style.color = "#" + this._color;
+                this.Dom.style.backgroundColor = "#" + this._backgroundColor;
             };
             ViewBase.prototype.AddEventListener = function (name, listener) {
                 this.Dom.addEventListener(name, listener, false);
@@ -632,6 +596,59 @@ var App;
                 this.View.AddEventListener(Fw.Events.PageEvents.Shown, function () {
                     console.log('MainView.Shown');
                 });
+                var ancCtl1 = new Fw.Views.AnchoredControlView();
+                ancCtl1.Label = '右下';
+                ancCtl1.Width = 100;
+                ancCtl1.Height = 30;
+                ancCtl1.IsAnchorRight = true;
+                ancCtl1.IsAnchorBottom = true;
+                ancCtl1.AnchorMarginRight = 40;
+                ancCtl1.AnchorMarginBottom = 5;
+                this.View.Add(ancCtl1);
+                var ancCtl2 = new Fw.Views.AnchoredControlView();
+                ancCtl2.Label = '右上';
+                ancCtl2.Width = 200;
+                ancCtl2.Height = 50;
+                ancCtl2.IsAnchorRight = true;
+                ancCtl2.IsAnchorTop = true;
+                ancCtl2.AnchorMarginRight = 3;
+                ancCtl2.AnchorMarginTop = 3;
+                this.View.Add(ancCtl2);
+                var ancCtl3 = new Fw.Views.AnchoredControlView();
+                ancCtl3.Label = '左下';
+                ancCtl3.Width = 200;
+                ancCtl3.Height = 50;
+                ancCtl3.IsAnchorLeft = true;
+                ancCtl3.IsAnchorBottom = true;
+                ancCtl3.AnchorMarginLeft = 3;
+                ancCtl3.AnchorMarginBottom = 3;
+                this.View.Add(ancCtl3);
+                var ancCtl4 = new Fw.Views.AnchoredControlView();
+                ancCtl4.Label = '左上';
+                ancCtl4.Width = 200;
+                ancCtl4.Height = 50;
+                ancCtl4.IsAnchorLeft = true;
+                ancCtl4.IsAnchorTop = true;
+                ancCtl4.AnchorMarginLeft = 3;
+                ancCtl4.AnchorMarginTop = 3;
+                this.View.Add(ancCtl4);
+                var ancCtl5 = new Fw.Views.AnchoredControlView();
+                ancCtl5.Label = '左右';
+                ancCtl5.Height = 50;
+                ancCtl5.IsAnchorBottom = true;
+                ancCtl5.IsAnchorLeft = true;
+                ancCtl5.IsAnchorRight = true;
+                ancCtl5.AnchorMarginLeft = 150;
+                ancCtl5.AnchorMarginRight = 300;
+                ancCtl5.AnchorMarginBottom = 100;
+                this.View.Add(ancCtl5);
+                var ancCtl6 = new Fw.Views.AnchoredControlView();
+                ancCtl6.Label = '上下';
+                ancCtl6.IsAnchorTop = true;
+                ancCtl6.IsAnchorBottom = true;
+                ancCtl6.AnchorMarginTop = 200;
+                ancCtl6.AnchorMarginBottom = 40;
+                this.View.Add(ancCtl6);
             };
             return MainController;
         }(Fw.Controllers.ControllerBase));
@@ -870,6 +887,54 @@ var App;
         Controllers.Sub2Controller = Sub2Controller;
     })(Controllers = App.Controllers || (App.Controllers = {}));
 })(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+var Fw;
+(function (Fw) {
+    var Util;
+    (function (Util) {
+        var Xhr;
+        (function (Xhr) {
+            var Config = /** @class */ (function () {
+                function Config() {
+                }
+                // ↓App.Mainで書き換える。
+                Config.BaseUrl = location.protocol
+                    + '//' + location.hostname
+                    + ':' + location.port
+                    + '/';
+                return Config;
+            }());
+            Xhr.Config = Config;
+        })(Xhr = Util.Xhr || (Util.Xhr = {}));
+    })(Util = Fw.Util || (Fw.Util = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../lib/jquery/index.d.ts" />
+/// <reference path="../../lib/underscore/index.d.ts" />
+/// <reference path="../Fw/Controllers/Manager.ts" />
+/// <reference path="../Fw/Util/Xhr/Config.ts" />
+var App;
+(function (App) {
+    var Main = /** @class */ (function () {
+        function Main() {
+        }
+        Main.StartUp = function () {
+            var proto = location.protocol;
+            var host = location.hostname;
+            var port = location.port;
+            Fw.Util.Xhr.Config.BaseUrl = proto + '//' + host + ':' + port + '/api/';
+            // コントローラを起動。
+            Main._controllerManager = new Fw.Controllers.Manager();
+        };
+        return Main;
+    }());
+    App.Main = Main;
+})(App || (App = {}));
+// アプリケーションを起動する。
+// 以下にはこれ以上書かないこと。
+$(function () {
+    App.Main.StartUp();
+});
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="./ViewEvents.ts" />
@@ -996,7 +1061,7 @@ var Fw;
                 _super.prototype.Init.call(this);
                 // プロパティsetterを一度通しておく。
                 this.HasBorder = true;
-                this.BorderRadius = 20;
+                this.BorderRadius = 5;
                 this.Elem.addClass('ControlView');
                 this._label = $('<span></span>');
                 this.Elem.append(this._label);
@@ -1048,6 +1113,244 @@ var Fw;
             return ControlView;
         }(Views.ViewBase));
         Views.ControlView = ControlView;
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Fw/Events/ControlEvents.ts" />
+/// <reference path="./ControlView.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var AnchoredControlView = /** @class */ (function (_super) {
+            __extends(AnchoredControlView, _super);
+            function AnchoredControlView() {
+                var _this = _super !== null && _super.apply(this, arguments) || this;
+                _this._ancWidth = null;
+                _this._ancHeight = null;
+                _this._isAnchorTop = false;
+                _this._isAnchorLeft = false;
+                _this._isAnchorRight = false;
+                _this._isAnchorBottom = false;
+                _this._anchorMarginTop = 0;
+                _this._anchorMarginLeft = 0;
+                _this._anchorMarginRight = 0;
+                _this._anchorMarginBottom = 0;
+                return _this;
+            }
+            Object.defineProperty(AnchoredControlView.prototype, "X", {
+                // Disabled Properties
+                get: function () {
+                    var parent = $(this.Elem.parent());
+                    if (!parent)
+                        return null;
+                    var centerLeft = (parent.width() / 2);
+                    var centerTop = (parent.height() / 2);
+                    var offset = this.Elem.offset();
+                    var elemCenterLeft = offset.left + (this.Width / 2);
+                    var elemCenterTop = offset.top + (this.Height / 2);
+                    var elemX = elemCenterLeft - centerLeft;
+                    var elemY = elemCenterTop - centerTop;
+                    return elemX;
+                },
+                set: function (value) {
+                    throw new Error('Not Supported');
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(AnchoredControlView.prototype, "Y", {
+                get: function () {
+                    var parent = $(this.Elem.parent());
+                    if (!parent)
+                        return null;
+                    var centerLeft = (parent.width() / 2);
+                    var centerTop = (parent.height() / 2);
+                    var offset = this.Elem.offset();
+                    var elemCenterLeft = offset.left + (this.Width / 2);
+                    var elemCenterTop = offset.top + (this.Height / 2);
+                    var elemX = elemCenterLeft - centerLeft;
+                    var elemY = elemCenterTop - centerTop;
+                    return elemY;
+                },
+                set: function (value) {
+                    throw new Error('Not Supported');
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(AnchoredControlView.prototype, "Width", {
+                get: function () {
+                    return this.Elem.width();
+                },
+                set: function (value) {
+                    this._ancWidth = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(AnchoredControlView.prototype, "Height", {
+                get: function () {
+                    return this.Elem.height();
+                },
+                set: function (value) {
+                    this._ancHeight = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(AnchoredControlView.prototype, "IsAnchorTop", {
+                get: function () {
+                    return this._isAnchorTop;
+                },
+                set: function (value) {
+                    this._isAnchorTop = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(AnchoredControlView.prototype, "IsAnchorLeft", {
+                get: function () {
+                    return this._isAnchorLeft;
+                },
+                set: function (value) {
+                    this._isAnchorLeft = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(AnchoredControlView.prototype, "IsAnchorRight", {
+                get: function () {
+                    return this._isAnchorRight;
+                },
+                set: function (value) {
+                    this._isAnchorRight = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(AnchoredControlView.prototype, "IsAnchorBottom", {
+                get: function () {
+                    return this._isAnchorBottom;
+                },
+                set: function (value) {
+                    this._isAnchorBottom = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(AnchoredControlView.prototype, "AnchorMarginTop", {
+                get: function () {
+                    return this._anchorMarginTop;
+                },
+                set: function (value) {
+                    this._anchorMarginTop = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(AnchoredControlView.prototype, "AnchorMarginLeft", {
+                get: function () {
+                    return this._anchorMarginLeft;
+                },
+                set: function (value) {
+                    this._anchorMarginLeft = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(AnchoredControlView.prototype, "AnchorMarginRight", {
+                get: function () {
+                    return this._anchorMarginRight;
+                },
+                set: function (value) {
+                    this._anchorMarginRight = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(AnchoredControlView.prototype, "AnchorMarginBottom", {
+                get: function () {
+                    return this._anchorMarginBottom;
+                },
+                set: function (value) {
+                    this._anchorMarginBottom = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            AnchoredControlView.prototype.Init = function () {
+                _super.prototype.Init.call(this);
+                this.Elem.addClass('AnchoredControlView');
+            };
+            AnchoredControlView.prototype.InnerRefresh = function () {
+                var parent = $(this.Elem.parent());
+                if (!parent)
+                    return;
+                var parentWidth = parent.width();
+                var parentHeight = parent.height();
+                var centerLeft = (parentWidth / 2);
+                var centerTop = (parentHeight / 2);
+                var width, height;
+                var left, top;
+                if (this.IsAnchorLeft && this.IsAnchorRight) {
+                    width = parentWidth - this.AnchorMarginLeft - this.AnchorMarginRight;
+                    left = this.AnchorMarginLeft;
+                }
+                else {
+                    width = _.isNumber(this._ancWidth)
+                        ? this._ancWidth
+                        : 10;
+                    if (this.IsAnchorLeft) {
+                        left = this.AnchorMarginLeft;
+                    }
+                    else if (this.IsAnchorRight) {
+                        left = parentWidth - this.AnchorMarginRight - width;
+                    }
+                    else {
+                        left = centerLeft - (width / 2);
+                    }
+                }
+                if (this.IsAnchorTop && this._isAnchorBottom) {
+                    height = parentHeight - this.AnchorMarginTop - this.AnchorMarginBottom;
+                    top = this.AnchorMarginTop;
+                }
+                else {
+                    height = _.isNumber(this._ancHeight)
+                        ? this._ancHeight
+                        : 10;
+                    if (this.IsAnchorTop) {
+                        top = this.AnchorMarginTop;
+                    }
+                    else if (this.IsAnchorBottom) {
+                        top = parentHeight - this.AnchorMarginBottom - height;
+                    }
+                    else {
+                        top = centerTop - (height / 2);
+                    }
+                }
+                this.Dom.style.left = left + "px";
+                this.Dom.style.top = top + "px";
+                this.Dom.style.width = width + "px";
+                this.Dom.style.height = height + "px";
+                this.Dom.style.borderColor = "#" + this.Color;
+                this.Dom.style.color = "#" + this.Color;
+                this.Dom.style.backgroundColor = "#" + this.BackgroundColor;
+            };
+            return AnchoredControlView;
+        }(Views.ControlView));
+        Views.AnchoredControlView = AnchoredControlView;
     })(Views = Fw.Views || (Fw.Views = {}));
 })(Fw || (Fw = {}));
 //# sourceMappingURL=tsout.js.map
