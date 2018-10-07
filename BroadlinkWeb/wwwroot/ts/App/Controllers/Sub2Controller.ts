@@ -41,8 +41,9 @@ namespace App.Controllers {
             })
 
             const btnMove = new Fw.Views.RelocatableControlView();
-            btnMove.SetDisplayParams(0, -200, 60, 60, '1188FF');
-            btnMove.BackgroundColor = 'FF9900';
+            btnMove.SetDisplayParams(60, 60, 0, -200, '#1188FF');
+            
+            btnMove.BackgroundColor = '#FF9900';
             btnMove.Label = '動く？';
             btnMove.AddEventListener(Events.ControlEvents.SingleClick, () => {
                 console.log('btnMove.SingleClick');
@@ -50,7 +51,7 @@ namespace App.Controllers {
             this.View.Add(btnMove);
 
             const btnReset = new Fw.Views.ControlView();
-            btnReset.SetDisplayParams(0, 0, 60, 60, '1188FF');
+            btnReset.SetDisplayParams(60, 60, 0, 0, '#1188FF');
             btnReset.SetAnchor(5, null, 5, null);
             btnReset.Label = 'リセット';
             btnReset.AddEventListener(Events.ControlEvents.SingleClick, () => {

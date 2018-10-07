@@ -7,6 +7,9 @@ namespace Fw.Events {
         public readonly Hidden: string = 'Hidden';
         public readonly Attached: string = 'Attached';
         public readonly Detached: string = 'Detached';
+        public readonly SizeChanged: string = 'SizeChanged';
+        public readonly PositionChanged: string = 'PositionChanged';
+        public readonly AnchorChanged: string = 'AnchorChanged';
     }
     export const ViewEvents: ViewEventsClass = new ViewEventsClass();
 }

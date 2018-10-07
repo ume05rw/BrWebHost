@@ -20,17 +20,17 @@ namespace App.Controllers {
         private Init(): void {
             const header = new Fw.Views.ControlView();
             header.Label = 'ヘッダ';
-            header.Height = 50;
+            header.Size.Height = 50;
             header.SetAnchor(0, 0, 0, null);
-            header.BackgroundColor = '555555';
-            header.Color = 'FFFFFF';
+            header.BackgroundColor = '#555555';
+            header.Color = '#FFFFFF';
             header.HasBorder = false;
             header.BorderRadius = 0;
             this.View.Add(header);
 
             const back = new Fw.Views.ControlView();
-            back.Width = 40;
-            back.Height = 40;
+            back.Size.Width = 40;
+            back.Size.Height = 40;
             back.Label = '戻る';
             back.SetAnchor(null, null, 5, null);
             back.AddEventListener(Events.ControlEvents.SingleClick, () => {
@@ -39,7 +39,9 @@ namespace App.Controllers {
             header.Add(back);
 
             const devices = new Fw.Views.ControlView();
-            devices.SetDisplayParams(0, -200, 60, 60, '8844FF');
+            devices.SetPosition(0, -200);
+            devices.SetSize(60, 60);
+            devices.Color = '#8844FF';
             devices.Label = 'デバイス走査';
             devices.AddEventListener(Events.ControlEvents.SingleClick, () => {
                 var params = new Xhr.Params('BrDevices/Discover', Xhr.MethodType.Get);

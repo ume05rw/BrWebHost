@@ -5,11 +5,9 @@
 
 namespace Fw.Views {
     import Events = Fw.Events.ControlEvents;
-    export class ControlView extends ViewBase {
-        // events
-        protected EventSingleClick: Event = new Event(Events.SingleClick);
-        protected EventLongClick: Event = new Event(Events.LongClick);
+    import Number = Fw.Util.Number;
 
+    export class ControlView extends ViewBase {
         // properties
         private _label: JQuery;
         private _tapEventTimer: number = null;
@@ -37,7 +35,7 @@ namespace Fw.Views {
             return this._borderRadius;
         }
         public set BorderRadius(value: number) {
-            if (isNaN(value) || value === null || value === undefined)
+            if (Number.IsNaN(value) || value === null || value === undefined)
                 value = 0;
 
             if (value < 0)
@@ -77,7 +75,7 @@ namespace Fw.Views {
                     // ロングタップイベント
                     this._tapEventTimer = null;
                     //console.log('longtapped');
-                    this.Dom.dispatchEvent(this.EventLongClick);
+                    this.DispatchEvent(Events.LongClick);
                 }, 1000);
 
                 e.preventDefault();
@@ -90,7 +88,7 @@ namespace Fw.Views {
 
                     // 以降、シングルタップイベント処理
                     //console.log('singletapped');
-                    this.Dom.dispatchEvent(this.EventSingleClick);
+                    this.DispatchEvent(Events.SingleClick);
                 } else {
                 }
                 e.preventDefault();
@@ -109,16 +107,14 @@ namespace Fw.Views {
 
         protected InnerRefresh(): void {
             super.InnerRefresh();
-            this.Dom.style.borderColor = `#${this.Color}`;
+            this.Dom.style.borderColor = `${this.Color}`;
         }
 
         public Dispose(): void {
-            this.EventSingleClick = null;
-            this.EventLongClick = null;
+            super.Dispose();
+
             this._label = null;
             this._tapEventTimer = null;
-
-            super.Dispose();
         }
     }
 }

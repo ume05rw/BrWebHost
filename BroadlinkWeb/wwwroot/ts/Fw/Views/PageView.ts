@@ -6,6 +6,7 @@
 
 namespace Fw.Views {
     import Anim = Fw.Views.Animation;
+    import Events = Fw.Events.ViewEvents;
 
     export class PageView extends ViewBase {
         public static RootElem: JQuery = null;
@@ -45,7 +46,7 @@ namespace Fw.Views {
             animator.OnComplete = () => {
                 this.Dom.style.display = `block`;
                 this.Refresh();
-                this.Dom.dispatchEvent(this.EventShown);
+                this.DispatchEvent(Events.Shown);
             };
             animator.Invoke(duration);
         }
@@ -63,7 +64,7 @@ namespace Fw.Views {
             animator.OnComplete = () => {
                 this.Dom.style.display = `none`;
                 this.Refresh();
-                this.Dom.dispatchEvent(this.EventHidden);
+                this.DispatchEvent(Events.Hidden);
             };
 
             animator.Invoke(duration);

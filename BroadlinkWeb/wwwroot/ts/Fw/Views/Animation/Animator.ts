@@ -29,13 +29,13 @@ namespace Fw.Views.Animation {
             const centerTop = (parent.height() / 2);
             const dom = this._view.Elem.get(0) as HTMLElement;
 
-            const fromX = this._view.X + this.FromParams.X;
-            const fromY = this._view.Y + this.FromParams.Y;
+            const fromX = this._view.Position.X + this.FromParams.X;
+            const fromY = this._view.Position.Y + this.FromParams.Y;
             const fromLeft = centerLeft + fromX - (this.FromParams.Width / 2);
             const fromTop = centerTop + fromY - (this.FromParams.Height / 2);
 
-            const toX = this._view.X + this.ToParams.X;
-            const toY = this._view.Y + this.ToParams.Y;
+            const toX = this._view.Position.X + this.ToParams.X;
+            const toY = this._view.Position.Y + this.ToParams.Y;
             const toLeft = centerLeft + toX - (this.ToParams.Width / 2);
             const toTop = centerTop + toY - (this.ToParams.Height / 2);
 

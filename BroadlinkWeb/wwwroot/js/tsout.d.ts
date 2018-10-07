@@ -5,31 +5,26 @@ declare namespace Fw.Views {
         Elem: JQuery;
         Dom: HTMLElement;
         Children: Array<IView>;
-        X: number;
-        Y: number;
-        Width: number;
-        Height: number;
-        IsAnchorTop: boolean;
-        IsAnchorLeft: boolean;
-        IsAnchorRight: boolean;
-        IsAnchorBottom: boolean;
-        AnchorMarginTop: number;
-        AnchorMarginLeft: number;
-        AnchorMarginRight: number;
-        AnchorMarginBottom: number;
+        Size: Size;
+        Position: Position;
+        Anchor: Anchor;
         Color: string;
         BackgroundColor: string;
-        SetDisplayParams(x: number, y: number, width?: number, height?: number, color?: string): void;
+        SetDisplayParams(width: number, height: number, x: number, y: number, color: string, backgroundColor: string): void;
+        SetSize(width: number, height: number): void;
+        SetPosition(x: number, y: number): void;
         SetAnchor(top: number, left: number, right: number, bottom: number): void;
         Add(view: IView): void;
-        TriggerAttachedEvent(): void;
         Remove(view: IView): void;
-        TriggerDetachedEvent(): void;
         Refresh(): void;
         Show(duration?: number): void;
         Hide(duration?: number): void;
         IsVisible(): boolean;
-        AddEventListener(name: string, listener: EventListenerOrEventListenerObject): void;
+        AddEventListener(name: string, handler: (e: JQueryEventObject) => void): void;
+        DispatchEvent(name: string): void;
+        SuppressEvent(name: string): void;
+        IsSuppressedEvent(name: string): boolean;
+        ResumeEvent(name: string): void;
         Dispose(): void;
     }
 }
@@ -81,61 +76,75 @@ declare namespace Fw.Events {
         readonly Hidden: string;
         readonly Attached: string;
         readonly Detached: string;
+        readonly SizeChanged: string;
+        readonly PositionChanged: string;
+        readonly AnchorChanged: string;
     }
     const ViewEvents: ViewEventsClass;
 }
+declare namespace Fw.Util {
+    class Dump {
+        static Log(value: any): void;
+        static ErrorLog(value: any, message?: string): void;
+        private static GetTimestamp;
+        private static GetDumpedString;
+    }
+}
+declare namespace Fw.Util {
+    class Number {
+        /**
+         * @see ビルトインisNaNでは、isNaN(null) === true になってしまう。
+         * @param value
+         */
+        static IsNaN(value: number): boolean;
+    }
+}
 declare namespace Fw.Views {
-    abstract class ViewBase implements IView {
-        protected EventShown: Event;
-        protected EventHidden: Event;
-        protected EventAttached: Event;
-        protected EventDetached: Event;
-        private _lastRefreshTimer;
-        Elem: JQuery;
-        readonly Dom: HTMLElement;
-        Children: Array<IView>;
-        private _x;
-        X: number;
-        private _y;
-        Y: number;
+    class Size {
+        private _view;
         private _width;
         Width: number;
         private _height;
         Height: number;
-        private _isAnchorTop;
-        IsAnchorTop: boolean;
-        private _isAnchorLeft;
-        IsAnchorLeft: boolean;
-        private _isAnchorRight;
-        IsAnchorRight: boolean;
-        private _isAnchorBottom;
-        IsAnchorBottom: boolean;
-        private _anchorMarginTop;
-        AnchorMarginTop: number;
-        private _anchorMarginLeft;
-        AnchorMarginLeft: number;
-        private _anchorMarginRight;
-        AnchorMarginRight: number;
-        private _anchorMarginBottom;
-        AnchorMarginBottom: number;
+        constructor(view: IView);
+        Dispose(): void;
+    }
+}
+declare namespace Fw.Views {
+    abstract class ViewBase implements IView {
+        private _lastRefreshTimer;
+        private _suppressedEvents;
+        Elem: JQuery;
+        readonly Dom: HTMLElement;
+        Children: Array<IView>;
+        private _size;
+        readonly Size: Size;
+        private _position;
+        readonly Position: Position;
+        private _anchor;
+        readonly Anchor: Anchor;
         private _color;
         Color: string;
         private _backgroundColor;
         BackgroundColor: string;
         constructor(jqueryElem: JQuery);
         protected Init(): void;
-        SetDisplayParams(x: number, y: number, width?: number, height?: number, color?: string): void;
+        SetSize(width: number, height: number): void;
+        SetPosition(x: number, y: number): void;
         SetAnchor(top: number, left: number, right: number, bottom: number): void;
+        SetDisplayParams(width: number, height: number, x?: number, y?: number, color?: string, backgroundColor?: string): void;
         Add(view: IView): void;
-        TriggerAttachedEvent(): void;
         Remove(view: IView): void;
-        TriggerDetachedEvent(): void;
         Show(duration?: number): void;
         Hide(duration?: number): void;
         IsVisible(): boolean;
         Refresh(): void;
         protected InnerRefresh(): void;
-        AddEventListener(name: string, listener: EventListenerOrEventListenerObject): void;
+        AddEventListener(name: string, handler: (e: JQueryEventObject) => void): void;
+        DispatchEvent(name: string): void;
+        SuppressEvent(name: string): void;
+        IsSuppressedEvent(name: string): boolean;
+        ResumeEvent(name: string): void;
         Dispose(): void;
     }
 }
@@ -237,8 +246,6 @@ declare namespace Fw.Util.Xhr {
 }
 declare namespace Fw.Views {
     class ControlView extends ViewBase {
-        protected EventSingleClick: Event;
-        protected EventLongClick: Event;
         private _label;
         private _tapEventTimer;
         Label: string;
@@ -268,5 +275,39 @@ declare namespace Fw.Views {
         protected Init(): void;
         SetRelocatable(relocatable: boolean): void;
         protected InnerRefresh(): void;
+    }
+}
+declare namespace Fw.Views {
+    class Position {
+        private _view;
+        private _x;
+        X: number;
+        private _y;
+        Y: number;
+        constructor(view: IView);
+        Dispose(): void;
+    }
+}
+declare namespace Fw.Views {
+    class Anchor {
+        private _view;
+        private _isAnchoredTop;
+        IsAnchoredTop: boolean;
+        private _marginTop;
+        MarginTop: number;
+        private _isAnchoredLeft;
+        IsAnchoredLeft: boolean;
+        private _marginLeft;
+        MarginLeft: number;
+        private _isAnchoredRight;
+        IsAnchoredRight: boolean;
+        private _marginRight;
+        MarginRight: number;
+        private _isAnchoredBottom;
+        IsAnchoredBottom: boolean;
+        private _marginBottom;
+        MarginBottom: number;
+        constructor(view: IView);
+        Dispose(): void;
     }
 }

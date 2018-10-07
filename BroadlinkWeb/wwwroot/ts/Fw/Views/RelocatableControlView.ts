@@ -43,8 +43,8 @@ namespace Fw.Views {
                     this._isDragging = false;
                 } else {
                     this._isDragging = false;
-                    this.X = Math.round(this.X / this.GridSize) * this.GridSize;
-                    this.Y = Math.round(this.Y / this.GridSize) * this.GridSize;
+                    this.Position.X = Math.round(this.Position.X / this.GridSize) * this.GridSize;
+                    this.Position.Y = Math.round(this.Position.Y / this.GridSize) * this.GridSize;
                     this.Refresh();
                 }
             });
@@ -64,8 +64,8 @@ namespace Fw.Views {
                         const left = e.clientX;
                         const top = e.clientY;
 
-                        this.X = left - centerLeft;
-                        this.Y = top - centerTop;
+                        this.Position.X = left - centerLeft;
+                        this.Position.Y = top - centerTop;
                         this.Refresh();
                     }
                 });
@@ -83,8 +83,8 @@ namespace Fw.Views {
             } else {
                 // 移動可能にする。
                 this._isRelocatable = true;
-                this._beforeX = this.X;
-                this._beforeY = this.Y;
+                this._beforeX = this.Position.X;
+                this._beforeY = this.Position.Y;
                 this.Elem.parent().append(this._shadow);
             }
 
@@ -113,22 +113,22 @@ namespace Fw.Views {
                 const parentHeight = parent.height();
                 const centerLeft = (parentWidth / 2);
                 const centerTop = (parentHeight / 2);
-                const sX = Math.round(this.X / this.GridSize) * this.GridSize;
-                const sY = Math.round(this.Y / this.GridSize) * this.GridSize;
-                const sLeft = centerLeft + sX - (this.Width / 2);
-                const sTop = centerTop + sY - (this.Height / 2);
+                const sX = Math.round(this.Position.X / this.GridSize) * this.GridSize;
+                const sY = Math.round(this.Position.Y / this.GridSize) * this.GridSize;
+                const sLeft = centerLeft + sX - (this.Size.Width / 2);
+                const sTop = centerTop + sY - (this.Size.Height / 2);
 
                 shadowDom.style.display = 'block';
                 shadowDom.style.left = `${sLeft}px`;
                 shadowDom.style.top = `${sTop}px`;
-                shadowDom.style.width = `${this.Width}px`;
-                shadowDom.style.height = `${this.Height}px`;
+                shadowDom.style.width = `${this.Size.Width}px`;
+                shadowDom.style.height = `${this.Size.Height}px`;
                 shadowDom.style.opacity = '0.4';
-                shadowDom.style.color = `#${this.Color}`;
-                shadowDom.style.borderColor = `#${this.Color}`;
+                shadowDom.style.color = `${this.Color}`;
+                shadowDom.style.borderColor = `${this.Color}`;
                 shadowDom.style.borderStyle = 'dashed';
                 shadowDom.style.borderWidth = '2px';
-                shadowDom.style.backgroundColor = `#${this.BackgroundColor}`;
+                shadowDom.style.backgroundColor = `${this.BackgroundColor}`;
             } else {
                 shadowDom.style.display = 'none';
             }

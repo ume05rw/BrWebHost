@@ -11,17 +11,22 @@
     <Content Remove="wwwroot\ts\Fw\Events\ControlEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\PageEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\ViewEvents.ts" />
+    <Content Remove="wwwroot\ts\Fw\Util\Dump.ts" />
+    <Content Remove="wwwroot\ts\Fw\Util\Number.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\Xhr.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\XhrMethodType.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\XhrParams.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\XhrResult.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\Xhr\Config.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\Anchor.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\Animation\Animator.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\Animation\Params.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\ControlView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\IView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\PageView.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\Position.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\RelocatableControlView.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\Size.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\ViewBase.ts" />
     <Content Remove="wwwroot\ts\PageManager.ts" />
   </ItemGroup>
@@ -57,17 +62,22 @@
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\ControlEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\PageEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\ViewEvents.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Dump.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Number.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Xhr\Config.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Xhr\Query.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Xhr\MethodType.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Xhr\Params.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Xhr\Result.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Anchor.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Animation\Animator.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Animation\Params.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ControlView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\IView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\PageView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Position.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\RelocatableControlView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Size.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ViewBase.ts" />
   </ItemGroup>
 

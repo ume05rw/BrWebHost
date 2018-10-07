@@ -29,12 +29,17 @@ namespace App.Controllers {
             });
 
             this._centerControl = new Fw.Views.ControlView();
-            this._centerControl.SetDisplayParams(0, 0, 100, 50, '1155FF');
+            this._centerControl.SetPosition(0, 0);
+            this._centerControl.SetSize(100, 50);
+            this._centerControl.Color = '#1155FF';
             this._centerControl.Label = 'はろー<br/>どうよ？';
             this.View.Add(this._centerControl);
 
             const tmpCtl = new Fw.Views.ControlView();
-            tmpCtl.SetDisplayParams(-100, -100, 200, 200, '666666');
+            tmpCtl.SetPosition(-100, -100);
+            tmpCtl.SetSize(200, 200);
+            tmpCtl.Color = '#666666';
+
             tmpCtl.Label = 'くりっく';
             tmpCtl.AddEventListener(Fw.Events.ControlEvents.SingleClick, () => {
                 console.log('LONG CLICK!!');
@@ -55,42 +60,42 @@ namespace App.Controllers {
 
             const ancCtl1 = new Fw.Views.ControlView();
             ancCtl1.Label = '右下';
-            ancCtl1.Width = 100;
-            ancCtl1.Height = 30;
+            ancCtl1.Size.Width = 100;
+            ancCtl1.Size.Height = 30;
             ancCtl1.SetAnchor(null, null, 40, 5);
             this.View.Add(ancCtl1);
 
             const ancCtl2 = new Fw.Views.ControlView();
             ancCtl2.Label = '右上';
-            ancCtl2.Width = 200;
-            ancCtl2.Height = 50;
+            ancCtl2.Size.Width = 200;
+            ancCtl2.Size.Height = 50;
             ancCtl2.SetAnchor(3, null, 3, null);
             this.View.Add(ancCtl2);
 
             const ancCtl3 = new Fw.Views.ControlView();
             ancCtl3.Label = '左下';
-            ancCtl3.Width = 200;
-            ancCtl3.Height = 50;
+            ancCtl3.Size.Width = 200;
+            ancCtl3.Size.Height = 50;
             ancCtl3.SetAnchor(null, 3, null, 3);
             this.View.Add(ancCtl3);
 
             const ancCtl4 = new Fw.Views.ControlView();
             ancCtl4.Label = '左上';
-            ancCtl4.Width = 200;
-            ancCtl4.Height = 50;
+            ancCtl4.Size.Width = 200;
+            ancCtl4.Size.Height = 50;
             ancCtl4.SetAnchor(60, 3, null, null);
             this.View.Add(ancCtl4);
 
             const ancCtl5 = new Fw.Views.ControlView();
             ancCtl5.Label = '左右';
-            ancCtl5.Height = 50;
+            ancCtl5.Size.Height = 50;
             ancCtl5.SetAnchor(null, 150, 300, 100);
             this.View.Add(ancCtl5);
 
             const ancCtl6 = new Fw.Views.ControlView();
             ancCtl6.Label = '上下';
             ancCtl6.SetAnchor(200, null, null, 40);
-            ancCtl6.Width = 30;
+            ancCtl6.Size.Width = 30;
             this.View.Add(ancCtl6);
         }
     }

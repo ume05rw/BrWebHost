@@ -3,137 +3,41 @@
 /// <reference path="../../Fw/Views/Animation/Animator.ts" />
 /// <reference path="../../Fw/Views/Animation/Params.ts" />
 /// <reference path="../../Fw/Events/ViewEvents.ts" />
+/// <reference path="../../Fw/Util/Dump.ts" />
+/// <reference path="./Size.ts" />
 
 namespace Fw.Views {
     import Anim = Fw.Views.Animation;
     import Events = Fw.Events.ViewEvents;
+    import Dump = Fw.Util.Dump;
 
     export abstract class ViewBase implements IView {
-        // events
-        protected EventShown: Event = new Event(Events.Shown);
-        protected EventHidden: Event = new Event(Events.Hidden);
-        protected EventAttached: Event = new Event(Events.Attached);
-        protected EventDetached: Event = new Event(Events.Detached);
-
         // Refresh() Multiple execution suppressor
         private _lastRefreshTimer: number;
+
+        private _suppressedEvents: Array<string> = new Array<string>();
 
         // Properties
         public Elem: JQuery;
         public readonly Dom: HTMLElement;
         public Children: Array<IView>;
 
-        // Properties with set/get
-        private _x: number = 0;
-        public get X(): number {
-            return this._x;
-        }
-        public set X(value: number) {
-            this._x = value;
-            this.Refresh();
+        private _size: Size;
+        public get Size(): Size {
+            return this._size;
         }
 
-        private _y: number = 0;
-        public get Y(): number {
-            return this._y;
-        }
-        public set Y(value: number) {
-            this._y = value;
-            this.Refresh();
+        private _position: Position;
+        public get Position(): Position {
+            return this._position;
         }
 
-        private _width: number = 0;
-        public get Width(): number {
-            return this._width;
-        }
-        public set Width(value: number) {
-            this._width = value;
-            this.Refresh();
+        private _anchor: Anchor;
+        public get Anchor(): Anchor {
+            return this._anchor;
         }
 
-        private _height: number = 0;
-        public get Height(): number {
-            return this._height;
-        }
-        public set Height(value: number) {
-            this._height = value;
-            this.Refresh();
-        }
-
-        private _isAnchorTop: boolean = false;
-        public get IsAnchorTop(): boolean {
-            return this._isAnchorTop;
-        }
-        public set IsAnchorTop(value: boolean) {
-            this._isAnchorTop = value;
-            this.Refresh();
-        }
-
-        private _isAnchorLeft: boolean = false;
-        public get IsAnchorLeft(): boolean {
-            return this._isAnchorLeft;
-        }
-        public set IsAnchorLeft(value: boolean) {
-            this._isAnchorLeft = value;
-            this.Refresh();
-        }
-
-        private _isAnchorRight: boolean = false;
-        public get IsAnchorRight(): boolean {
-            return this._isAnchorRight;
-        }
-        public set IsAnchorRight(value: boolean) {
-            this._isAnchorRight = value;
-            this.Refresh();
-        }
-
-        private _isAnchorBottom: boolean = false;
-        public get IsAnchorBottom(): boolean {
-            return this._isAnchorBottom;
-        }
-        public set IsAnchorBottom(value: boolean) {
-            this._isAnchorBottom = value;
-            this.Refresh();
-        }
-
-        private _anchorMarginTop: number = 0;
-        public get AnchorMarginTop(): number {
-            return this._anchorMarginTop;
-        }
-        public set AnchorMarginTop(value: number) {
-            this._anchorMarginTop = value;
-            this.Refresh();
-        }
-
-        private _anchorMarginLeft: number = 0;
-        public get AnchorMarginLeft(): number {
-            return this._anchorMarginLeft;
-        }
-        public set AnchorMarginLeft(value: number) {
-            this._anchorMarginLeft = value;
-            this.Refresh();
-        }
-
-        private _anchorMarginRight: number = 0;
-        public get AnchorMarginRight(): number {
-            return this._anchorMarginRight;
-        }
-        public set AnchorMarginRight(value: number) {
-            this._anchorMarginRight = value;
-            this.Refresh();
-        }
-
-        private _anchorMarginBottom: number = 0;
-        public get AnchorMarginBottom(): number {
-            return this._anchorMarginBottom;
-        }
-        public set AnchorMarginBottom(value: number) {
-            this._anchorMarginBottom = value;
-            this.Refresh();
-        }
-
-
-        private _color: string = '000000';
+        private _color: string = '#000000';
         public get Color(): string {
             return this._color;
         }
@@ -142,7 +46,7 @@ namespace Fw.Views {
             this.Refresh();
         }
 
-        private _backgroundColor: string = 'FFFFFF';
+        private _backgroundColor: string = '#FFFFFF';
         public get BackgroundColor(): string {
             return this._backgroundColor;
         }
@@ -161,76 +65,86 @@ namespace Fw.Views {
         }
 
         protected Init(): void {
-            this._width = this.Elem.width();
-            this._height = this.Elem.height();
-            this._x = 0;
-            this._y = 0;
-            this._color = '000000';
+            this._size = new Size(this);
+            this._position = new Position(this);
+            this._anchor = new Anchor(this);
+
+            this._size.Width = this.Elem.width();
+            this._size.Height = this.Elem.height();
+
+            this._color = '#000000';
 
             this.Elem.addClass('IView');
 
             this.IsVisible()
-                ? this.Dom.dispatchEvent(this.EventShown)
-                : this.Dom.dispatchEvent(this.EventHidden);
+                ? this.DispatchEvent(Events.Shown)
+                : this.DispatchEvent(Events.Hidden);
         }
 
-        public SetDisplayParams(
-            x: number,
-            y: number,
-            width?: number,
-            height?: number,
-            color?: string
-        ): void {
-            if (x != undefined && x != null)
-                this._x = x;
-            if (y != undefined && y != null)
-                this._y = y;
-            if (width != undefined && width != null)
-                this._width = width;
-            if (height != undefined && height != null)
-                this._height = height;
-            if (color != undefined && color != null)
-                this._color = color;
-
-            this.Refresh();
+        public SetSize(width: number, height: number) {
+            this.Size.Width = width;
+            this.Size.Height = height;
         }
 
-        public SetAnchor(
-            top: number,
-            left: number,
-            right: number,
-            bottom: number
-        ): void {
+        public SetPosition(x: number, y: number) {
+            this.Position.X = x;
+            this.Position.Y = y;
+        }
 
+        public SetAnchor(top: number, left: number, right: number, bottom: number): void {
             if (_.isNumber(top)) {
-                this._isAnchorTop = true;
-                this._anchorMarginTop = top;
+                this.Anchor.IsAnchoredTop = true;
+                this.Anchor.MarginTop = top;
             } else {
-                this._isAnchorTop = false;
+                this.Anchor.IsAnchoredTop = false;
+                this.Anchor.MarginTop = null;
             }
 
             if (_.isNumber(left)) {
-                this._isAnchorLeft = true;
-                this._anchorMarginLeft = left;
+                this.Anchor.IsAnchoredLeft = true;
+                this.Anchor.MarginLeft = left;
             } else {
-                this._isAnchorLeft = false;
+                this.Anchor.IsAnchoredLeft = false;
+                this.Anchor.MarginLeft = null;
             }
 
             if (_.isNumber(right)) {
-                this._isAnchorRight = true;
-                this._anchorMarginRight = right;
+                this.Anchor.IsAnchoredRight = true;
+                this.Anchor.MarginRight = right;
             } else {
-                this._isAnchorRight = false;
+                this.Anchor.IsAnchoredRight = false;
+                this.Anchor.MarginRight = null;
             }
 
             if (_.isNumber(bottom)) {
-                this._isAnchorBottom = true;
-                this._anchorMarginBottom     = bottom;
+                this.Anchor.IsAnchoredBottom = true;
+                this.Anchor.MarginBottom = bottom;
             } else {
-                this._isAnchorBottom = false;
+                this.Anchor.IsAnchoredBottom = false;
+                this.Anchor.MarginBottom = null;
             }
+        }
 
-            this.Refresh();
+        public SetDisplayParams(
+            width: number,
+            height: number,
+            x: number = undefined,
+            y: number = undefined,
+            color: string = undefined,
+            backgroundColor: string = undefined
+        ): void {
+            if (width !== undefined)
+                this.Size.Width = width;
+            if (height !== undefined)
+                this.Size.Height = height;
+            if (x !== undefined)
+                this.Position.X = x;
+            if (y !== undefined)
+                this.Position.Y = y;
+            if (color !== undefined)
+                this.Color = color;
+            if (backgroundColor !== undefined)
+                this.BackgroundColor = backgroundColor;
         }
 
         public Add(view: IView): void {
@@ -238,12 +152,8 @@ namespace Fw.Views {
                 this.Children.push(view);
                 this.Elem.append(view.Elem);
                 view.Refresh();
-                view.TriggerAttachedEvent();
+                view.DispatchEvent(Events.Attached);
             }
-        }
-
-        public TriggerAttachedEvent(): void {
-            this.Dom.dispatchEvent(this.EventAttached);
         }
 
         public Remove(view: IView): void {
@@ -251,12 +161,8 @@ namespace Fw.Views {
             if (index != -1) {
                 this.Children.splice(index, 1);
                 view.Elem.detach();
-                view.TriggerDetachedEvent();
+                view.DispatchEvent(Events.Detached);
             }
-        }
-
-        public TriggerDetachedEvent(): void {
-            this.Dom.dispatchEvent(this.EventDetached);
         }
 
         public Show(duration: number = 200): void {
@@ -271,7 +177,7 @@ namespace Fw.Views {
             animator.OnComplete = () => {
                 this.Dom.style.display = `block`;
                 this.Refresh();
-                this.Dom.dispatchEvent(this.EventShown);
+                this.DispatchEvent(Events.Shown);
             }
 
             animator.Invoke(duration);
@@ -289,7 +195,7 @@ namespace Fw.Views {
             animator.OnComplete = () => {
                 this.Dom.style.display = `none`;
                 this.Refresh();
-                this.Dom.dispatchEvent(this.EventHidden);
+                this.DispatchEvent(Events.Hidden);
             };
 
             animator.Invoke(duration);
@@ -311,61 +217,97 @@ namespace Fw.Views {
         }
 
         protected InnerRefresh(): void {
-            const parent = $(this.Elem.parent());
+            try {
+                const parent = $(this.Elem.parent());
 
-            if (!parent)
-                return;
+                if (!parent)
+                    return;
 
-            const parentWidth = parent.width();
-            const parentHeight = parent.height();
-            const centerLeft = (parentWidth / 2);
-            const centerTop = (parentHeight / 2);
+                this.SuppressEvent(Events.SizeChanged);
+                this.SuppressEvent(Events.PositionChanged);
 
-            if (this.IsAnchorLeft && this.IsAnchorRight) {
-                this._width = parentWidth - this.AnchorMarginLeft - this.AnchorMarginRight;
-                this._x = this.AnchorMarginLeft - centerLeft + (this._width / 2);
-            } else {
-                this._width = _.isNumber(this._width)
-                    ? this._width
-                    : 30;
+                const parentWidth = parent.width();
+                const parentHeight = parent.height();
+                const centerLeft = (parentWidth / 2);
+                const centerTop = (parentHeight / 2);
 
-                if (this.IsAnchorLeft) {
-                    this._x = this.AnchorMarginLeft - centerLeft + (this._width / 2);
-                } else if (this.IsAnchorRight) {
-                    let left = parentWidth - this.AnchorMarginRight - this._width;
-                    this._x = left - centerLeft + (this._width / 2);
+                if (this.Anchor.IsAnchoredLeft && this.Anchor.IsAnchoredRight) {
+                    this.Size.Width = parentWidth - this.Anchor.MarginLeft - this.Anchor.MarginRight;
+                    this.Position.X = this.Anchor.MarginLeft - centerLeft + (this.Size.Width / 2);
+                } else {
+                    this.Size.Width = _.isNumber(this.Size.Width)
+                        ? this.Size.Width
+                        : 30;
+
+                    if (this.Anchor.IsAnchoredLeft) {
+                        this.Position.X = this.Anchor.MarginLeft - centerLeft + (this.Size.Width / 2);
+                    } else if (this.Anchor.IsAnchoredRight) {
+                        let left = parentWidth - this.Anchor.MarginRight - this.Size.Width;
+                        this.Position.X = left - centerLeft + (this.Size.Width / 2);
+                    }
                 }
-            }
 
-            if (this.IsAnchorTop && this._isAnchorBottom) {
-                this._height = parentHeight - this.AnchorMarginTop - this.AnchorMarginBottom;
-                this._y = this.AnchorMarginTop - centerTop + (this._height / 2);
-            } else {
-                this._height = _.isNumber(this._height)
-                    ? this._height
-                    : 30;
+                if (this.Anchor.IsAnchoredTop && this.Anchor.IsAnchoredBottom) {
+                    this.Size.Height = parentHeight - this.Anchor.MarginTop - this.Anchor.MarginBottom;
+                    this.Position.Y = this.Anchor.MarginTop - centerTop + (this.Size.Height / 2);
+                } else {
+                    this.Size.Height = _.isNumber(this.Size.Height)
+                        ? this.Size.Height
+                        : 30;
 
-                if (this.IsAnchorTop) {
-                    this._y = this.AnchorMarginTop - centerTop + (this._height / 2);
-                } else if (this.IsAnchorBottom) {
-                    let top = parentHeight - this.AnchorMarginBottom - this._height;
-                    this._y = top - centerTop + (this._height / 2);
+                    if (this.Anchor.IsAnchoredTop) {
+                        this.Position.Y = this.Anchor.MarginTop - centerTop + (this.Size.Height / 2);
+                    } else if (this.Anchor.IsAnchoredBottom) {
+                        let top = parentHeight - this.Anchor.MarginBottom - this.Size.Height;
+                        this.Position.Y = top - centerTop + (this.Size.Height / 2);
+                    }
                 }
+
+                const elemLeft = centerLeft + this.Position.X - (this.Size.Width / 2);
+                const elemTop = centerTop + this.Position.Y - (this.Size.Height / 2);
+
+                this.Dom.style.left = `${elemLeft}px`;
+                this.Dom.style.top = `${elemTop}px`;
+                this.Dom.style.width = `${this.Size.Width}px`;
+                this.Dom.style.height = `${this.Size.Height}px`;
+                this.Dom.style.color = `${this._color}`;
+                this.Dom.style.backgroundColor = `${this._backgroundColor}`;
+            } catch (e) {
+                Dump.ErrorLog(e);
+            } finally {
+                this.ResumeEvent(Events.SizeChanged);
+                this.ResumeEvent(Events.PositionChanged);
             }
-
-            const elemLeft = centerLeft + this._x - (this.Width / 2);
-            const elemTop = centerTop + this._y - (this.Height / 2);
-
-            this.Dom.style.left = `${elemLeft}px`;
-            this.Dom.style.top = `${elemTop}px`;
-            this.Dom.style.width = `${this._width}px`;
-            this.Dom.style.height = `${this._height}px`;
-            this.Dom.style.color = `#${this._color}`;
-            this.Dom.style.backgroundColor = `#${this._backgroundColor}`;
         }
 
-        public AddEventListener(name: string, listener: EventListenerOrEventListenerObject): void {
-            this.Dom.addEventListener(name, listener, false);
+        public AddEventListener(name: string, handler: (e: JQueryEventObject) => void): void {
+            this.Elem.bind(name, handler);
+        }
+
+        public DispatchEvent(name: string): void {
+            if (this.IsSuppressedEvent(name))
+                return;
+
+            this.Elem.trigger(name);
+        }
+
+        public SuppressEvent(name: string): void {
+            if (this.IsSuppressedEvent(name))
+                return;
+
+            this._suppressedEvents.push(name);
+        }
+
+        public IsSuppressedEvent(name: string): boolean {
+            return (this._suppressedEvents.indexOf(name) !== -1);
+        }
+
+        public ResumeEvent(name: string): void {
+            if (this.IsSuppressedEvent(name))
+                return;
+
+            const idx = this._suppressedEvents.indexOf(name);
+            this._suppressedEvents.splice(idx, 1);
         }
 
         public Dispose(): void {
@@ -377,8 +319,9 @@ namespace Fw.Views {
             this.Elem.remove();
             this.Elem = null;
 
-            this.EventShown = null;
-            this.EventHidden = null;
+            this._size.Dispose();
+            this._position.Dispose();
+            this._anchor.Dispose();
         }
     }
 }

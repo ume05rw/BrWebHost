@@ -7,37 +7,30 @@ namespace Fw.Views {
         Dom: HTMLElement;
         Children: Array<IView>;
 
-        X: number;
-        Y: number;
-        Width: number;
-        Height: number;
-
-        IsAnchorTop: boolean;
-        IsAnchorLeft: boolean;
-        IsAnchorRight: boolean;
-        IsAnchorBottom: boolean;
-
-        AnchorMarginTop: number;
-        AnchorMarginLeft: number;
-        AnchorMarginRight: number;
-        AnchorMarginBottom: number;
+        Size: Size;
+        Position: Position;
+        Anchor: Anchor;
 
         Color: string;
         BackgroundColor: string;
 
-        SetDisplayParams(x: number, y: number, width?: number, height?: number, color?: string): void 
+        SetDisplayParams(width: number, height: number, x: number, y: number, color: string, backgroundColor: string): void;
+        SetSize(width: number, height: number): void;
+        SetPosition(x: number, y: number): void;
         SetAnchor(top: number, left: number, right: number, bottom: number): void;
 
         Add(view: IView): void;
-        TriggerAttachedEvent(): void;
         Remove(view: IView): void;
-        TriggerDetachedEvent(): void;
         Refresh(): void;
         Show(duration?: number): void;
         Hide(duration?: number): void;
         IsVisible(): boolean;
 
-        AddEventListener(name: string, listener: EventListenerOrEventListenerObject): void;
+        AddEventListener(name: string, handler: (e: JQueryEventObject) => void): void;
+        DispatchEvent(name: string): void;
+        SuppressEvent(name: string): void;
+        IsSuppressedEvent(name: string): boolean;
+        ResumeEvent(name: string): void;
 
         Dispose(): void;
     }
