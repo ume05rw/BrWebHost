@@ -945,8 +945,6 @@ var Fw;
                 _this.EventSingleClick = new Event(Events.SingleClick);
                 _this.EventLongClick = new Event(Events.LongClick);
                 _this._tapEventTimer = null;
-                _this._hasBorder = true;
-                _this._borderRadius = 5;
                 _this.Init();
                 return _this;
             }
@@ -996,6 +994,8 @@ var Fw;
             ControlView.prototype.Init = function () {
                 var _this = this;
                 _super.prototype.Init.call(this);
+                // プロパティsetterを一度通しておく。
+                this.HasBorder = true;
                 this.BorderRadius = 20;
                 this.Elem.addClass('ControlView');
                 this._label = $('<span></span>');
@@ -1050,3 +1050,4 @@ var Fw;
         Views.ControlView = ControlView;
     })(Views = Fw.Views || (Fw.Views = {}));
 })(Fw || (Fw = {}));
+//# sourceMappingURL=tsout.js.map

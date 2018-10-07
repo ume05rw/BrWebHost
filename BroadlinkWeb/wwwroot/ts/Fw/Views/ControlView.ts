@@ -22,7 +22,7 @@ namespace Fw.Views {
             this.Refresh();
         }
 
-        private _hasBorder: boolean = true;
+        private _hasBorder: boolean;
         public get HasBorder(): boolean {
             return this._hasBorder;
         }
@@ -32,7 +32,7 @@ namespace Fw.Views {
                 : '0';
         }
 
-        private _borderRadius: number = 5;
+        private _borderRadius: number;
         public get BorderRadius(): number {
             return this._borderRadius;
         }
@@ -61,6 +61,8 @@ namespace Fw.Views {
         protected Init(): void {
             super.Init();
 
+            // プロパティsetterを一度通しておく。
+            this.HasBorder = true;
             this.BorderRadius = 20;
 
             this.Elem.addClass('ControlView');
