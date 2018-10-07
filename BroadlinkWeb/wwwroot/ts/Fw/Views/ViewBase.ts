@@ -191,6 +191,44 @@ namespace Fw.Views {
             this.Refresh();
         }
 
+        public SetAnchor(
+            top: number,
+            left: number,
+            right: number,
+            bottom: number
+        ): void {
+
+            if (_.isNumber(top)) {
+                this._isAnchorTop = true;
+                this._anchorMarginTop = top;
+            } else {
+                this._isAnchorTop = false;
+            }
+
+            if (_.isNumber(left)) {
+                this._isAnchorLeft = true;
+                this._anchorMarginLeft = left;
+            } else {
+                this._isAnchorLeft = false;
+            }
+
+            if (_.isNumber(right)) {
+                this._isAnchorRight = true;
+                this._anchorMarginRight = right;
+            } else {
+                this._isAnchorRight = false;
+            }
+
+            if (_.isNumber(bottom)) {
+                this._isAnchorBottom = true;
+                this._anchorMarginBottom     = bottom;
+            } else {
+                this._isAnchorBottom = false;
+            }
+
+            this.Refresh();
+        }
+
         public Add(view: IView): void {
             if (this.Children.indexOf(view) == -1) {
                 this.Children.push(view);

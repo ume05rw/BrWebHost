@@ -11,10 +11,23 @@ namespace Fw.Views {
         Y: number;
         Width: number;
         Height: number;
+
+        IsAnchorTop: boolean;
+        IsAnchorLeft: boolean;
+        IsAnchorRight: boolean;
+        IsAnchorBottom: boolean;
+
+        AnchorMarginTop: number;
+        AnchorMarginLeft: number;
+        AnchorMarginRight: number;
+        AnchorMarginBottom: number;
+
         Color: string;
         BackgroundColor: string;
 
         SetDisplayParams(x: number, y: number, width?: number, height?: number, color?: string): void 
+        SetAnchor(top: number, left: number, right: number, bottom: number): void;
+
         Add(view: IView): void;
         Remove(view: IView): void;
         Refresh(): void;

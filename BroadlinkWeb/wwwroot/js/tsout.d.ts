@@ -9,9 +9,18 @@ declare namespace Fw.Views {
         Y: number;
         Width: number;
         Height: number;
+        IsAnchorTop: boolean;
+        IsAnchorLeft: boolean;
+        IsAnchorRight: boolean;
+        IsAnchorBottom: boolean;
+        AnchorMarginTop: number;
+        AnchorMarginLeft: number;
+        AnchorMarginRight: number;
+        AnchorMarginBottom: number;
         Color: string;
         BackgroundColor: string;
         SetDisplayParams(x: number, y: number, width?: number, height?: number, color?: string): void;
+        SetAnchor(top: number, left: number, right: number, bottom: number): void;
         Add(view: IView): void;
         Remove(view: IView): void;
         Refresh(): void;
@@ -39,6 +48,17 @@ declare namespace Fw.Controllers {
         private _controllers;
         constructor();
         Show(id: string): void;
+    }
+}
+declare namespace Fw.Util.Xhr {
+    class Config {
+        static BaseUrl: string;
+    }
+}
+declare namespace App {
+    class Main {
+        static _controllerManager: Fw.Controllers.Manager;
+        static StartUp(): void;
     }
 }
 declare namespace Fw.Views.Animation {
@@ -110,6 +130,7 @@ declare namespace Fw.Views {
         constructor(jqueryElem: JQuery);
         protected Init(): void;
         SetDisplayParams(x: number, y: number, width?: number, height?: number, color?: string): void;
+        SetAnchor(top: number, left: number, right: number, bottom: number): void;
         Add(view: IView): void;
         Remove(view: IView): void;
         Show(duration?: number): void;
@@ -189,17 +210,6 @@ declare namespace App.Controllers {
         private Init;
     }
 }
-declare namespace Fw.Util.Xhr {
-    class Config {
-        static BaseUrl: string;
-    }
-}
-declare namespace App {
-    class Main {
-        static _controllerManager: Fw.Controllers.Manager;
-        static StartUp(): void;
-    }
-}
 declare namespace Fw.Events {
     class ControlEventsClass extends ViewEventsClass {
         readonly SingleClick: string;
@@ -237,17 +247,5 @@ declare namespace Fw.Views {
         protected Init(): void;
         protected InnerRefresh(): void;
         Dispose(): void;
-    }
-}
-declare namespace Fw.Views {
-    class AnchoredControlView extends ControlView {
-        X: number;
-        Y: number;
-        private _ancWidth;
-        Width: number;
-        private _ancHeight;
-        Height: number;
-        protected Init(): void;
-        protected InnerRefresh(): void;
     }
 }
