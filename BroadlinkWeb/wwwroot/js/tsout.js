@@ -254,6 +254,14 @@ var Fw;
                 // events
                 this.EventShown = new Event(Events.Shown);
                 this.EventHidden = new Event(Events.Hidden);
+                this._isAnchorTop = false;
+                this._isAnchorLeft = false;
+                this._isAnchorRight = false;
+                this._isAnchorBottom = false;
+                this._anchorMarginTop = 0;
+                this._anchorMarginLeft = 0;
+                this._anchorMarginRight = 0;
+                this._anchorMarginBottom = 0;
                 this.Children = new Array();
                 this.Elem = jqueryElem;
                 this.Dom = jqueryElem.get(0);
@@ -295,12 +303,96 @@ var Fw;
                 get: function () {
                     return this._height;
                 },
+                set: function (value) {
+                    this._height = value;
+                    this.Refresh();
+                },
                 enumerable: true,
                 configurable: true
             });
-            Object.defineProperty(ViewBase.prototype, "Heght", {
+            Object.defineProperty(ViewBase.prototype, "IsAnchorTop", {
+                get: function () {
+                    return this._isAnchorTop;
+                },
                 set: function (value) {
-                    this._height = value;
+                    this._isAnchorTop = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(ViewBase.prototype, "IsAnchorLeft", {
+                get: function () {
+                    return this._isAnchorLeft;
+                },
+                set: function (value) {
+                    this._isAnchorLeft = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(ViewBase.prototype, "IsAnchorRight", {
+                get: function () {
+                    return this._isAnchorRight;
+                },
+                set: function (value) {
+                    this._isAnchorRight = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(ViewBase.prototype, "IsAnchorBottom", {
+                get: function () {
+                    return this._isAnchorBottom;
+                },
+                set: function (value) {
+                    this._isAnchorBottom = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(ViewBase.prototype, "AnchorMarginTop", {
+                get: function () {
+                    return this._anchorMarginTop;
+                },
+                set: function (value) {
+                    this._anchorMarginTop = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(ViewBase.prototype, "AnchorMarginLeft", {
+                get: function () {
+                    return this._anchorMarginLeft;
+                },
+                set: function (value) {
+                    this._anchorMarginLeft = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(ViewBase.prototype, "AnchorMarginRight", {
+                get: function () {
+                    return this._anchorMarginRight;
+                },
+                set: function (value) {
+                    this._anchorMarginRight = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(ViewBase.prototype, "AnchorMarginBottom", {
+                get: function () {
+                    return this._anchorMarginBottom;
+                },
+                set: function (value) {
+                    this._anchorMarginBottom = value;
                     this.Refresh();
                 },
                 enumerable: true,
@@ -417,8 +509,42 @@ var Fw;
                 var parent = $(this.Elem.parent());
                 if (!parent)
                     return;
-                var centerLeft = (parent.width() / 2);
-                var centerTop = (parent.height() / 2);
+                var parentWidth = parent.width();
+                var parentHeight = parent.height();
+                var centerLeft = (parentWidth / 2);
+                var centerTop = (parentHeight / 2);
+                if (this.IsAnchorLeft && this.IsAnchorRight) {
+                    this._width = parentWidth - this.AnchorMarginLeft - this.AnchorMarginRight;
+                    this._x = this.AnchorMarginLeft - centerLeft + (this._width / 2);
+                }
+                else {
+                    this._width = _.isNumber(this._width)
+                        ? this._width
+                        : 30;
+                    if (this.IsAnchorLeft) {
+                        this._x = this.AnchorMarginLeft - centerLeft + (this._width / 2);
+                    }
+                    else if (this.IsAnchorRight) {
+                        var left = parentWidth - this.AnchorMarginRight - this._width;
+                        this._x = left - centerLeft + (this._width / 2);
+                    }
+                }
+                if (this.IsAnchorTop && this._isAnchorBottom) {
+                    this._height = parentHeight - this.AnchorMarginTop - this.AnchorMarginBottom;
+                    this._y = this.AnchorMarginTop - centerTop + (this._height / 2);
+                }
+                else {
+                    this._height = _.isNumber(this._height)
+                        ? this._height
+                        : 30;
+                    if (this.IsAnchorTop) {
+                        this._y = this.AnchorMarginTop - centerTop + (this._height / 2);
+                    }
+                    else if (this.IsAnchorBottom) {
+                        var top_1 = parentHeight - this.AnchorMarginBottom - this._height;
+                        this._y = top_1 - centerTop + (this._height / 2);
+                    }
+                }
                 var elemLeft = centerLeft + this._x - (this.Width / 2);
                 var elemTop = centerTop + this._y - (this.Height / 2);
                 this.Dom.style.left = elemLeft + "px";
@@ -596,7 +722,7 @@ var App;
                 this.View.AddEventListener(Fw.Events.PageEvents.Shown, function () {
                     console.log('MainView.Shown');
                 });
-                var ancCtl1 = new Fw.Views.AnchoredControlView();
+                var ancCtl1 = new Fw.Views.ControlView();
                 ancCtl1.Label = '右下';
                 ancCtl1.Width = 100;
                 ancCtl1.Height = 30;
@@ -605,7 +731,7 @@ var App;
                 ancCtl1.AnchorMarginRight = 40;
                 ancCtl1.AnchorMarginBottom = 5;
                 this.View.Add(ancCtl1);
-                var ancCtl2 = new Fw.Views.AnchoredControlView();
+                var ancCtl2 = new Fw.Views.ControlView();
                 ancCtl2.Label = '右上';
                 ancCtl2.Width = 200;
                 ancCtl2.Height = 50;
@@ -614,7 +740,7 @@ var App;
                 ancCtl2.AnchorMarginRight = 3;
                 ancCtl2.AnchorMarginTop = 3;
                 this.View.Add(ancCtl2);
-                var ancCtl3 = new Fw.Views.AnchoredControlView();
+                var ancCtl3 = new Fw.Views.ControlView();
                 ancCtl3.Label = '左下';
                 ancCtl3.Width = 200;
                 ancCtl3.Height = 50;
@@ -623,7 +749,7 @@ var App;
                 ancCtl3.AnchorMarginLeft = 3;
                 ancCtl3.AnchorMarginBottom = 3;
                 this.View.Add(ancCtl3);
-                var ancCtl4 = new Fw.Views.AnchoredControlView();
+                var ancCtl4 = new Fw.Views.ControlView();
                 ancCtl4.Label = '左上';
                 ancCtl4.Width = 200;
                 ancCtl4.Height = 50;
@@ -632,7 +758,7 @@ var App;
                 ancCtl4.AnchorMarginLeft = 3;
                 ancCtl4.AnchorMarginTop = 3;
                 this.View.Add(ancCtl4);
-                var ancCtl5 = new Fw.Views.AnchoredControlView();
+                var ancCtl5 = new Fw.Views.ControlView();
                 ancCtl5.Label = '左右';
                 ancCtl5.Height = 50;
                 ancCtl5.IsAnchorBottom = true;
@@ -642,7 +768,7 @@ var App;
                 ancCtl5.AnchorMarginRight = 300;
                 ancCtl5.AnchorMarginBottom = 100;
                 this.View.Add(ancCtl5);
-                var ancCtl6 = new Fw.Views.AnchoredControlView();
+                var ancCtl6 = new Fw.Views.ControlView();
                 ancCtl6.Label = '上下';
                 ancCtl6.IsAnchorTop = true;
                 ancCtl6.IsAnchorBottom = true;
@@ -1129,14 +1255,6 @@ var Fw;
                 var _this = _super !== null && _super.apply(this, arguments) || this;
                 _this._ancWidth = null;
                 _this._ancHeight = null;
-                _this._isAnchorTop = false;
-                _this._isAnchorLeft = false;
-                _this._isAnchorRight = false;
-                _this._isAnchorBottom = false;
-                _this._anchorMarginTop = 0;
-                _this._anchorMarginLeft = 0;
-                _this._anchorMarginRight = 0;
-                _this._anchorMarginBottom = 0;
                 return _this;
             }
             Object.defineProperty(AnchoredControlView.prototype, "X", {
@@ -1202,94 +1320,70 @@ var Fw;
                 enumerable: true,
                 configurable: true
             });
-            Object.defineProperty(AnchoredControlView.prototype, "IsAnchorTop", {
-                get: function () {
-                    return this._isAnchorTop;
-                },
-                set: function (value) {
-                    this._isAnchorTop = value;
-                    this.Refresh();
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(AnchoredControlView.prototype, "IsAnchorLeft", {
-                get: function () {
-                    return this._isAnchorLeft;
-                },
-                set: function (value) {
-                    this._isAnchorLeft = value;
-                    this.Refresh();
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(AnchoredControlView.prototype, "IsAnchorRight", {
-                get: function () {
-                    return this._isAnchorRight;
-                },
-                set: function (value) {
-                    this._isAnchorRight = value;
-                    this.Refresh();
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(AnchoredControlView.prototype, "IsAnchorBottom", {
-                get: function () {
-                    return this._isAnchorBottom;
-                },
-                set: function (value) {
-                    this._isAnchorBottom = value;
-                    this.Refresh();
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(AnchoredControlView.prototype, "AnchorMarginTop", {
-                get: function () {
-                    return this._anchorMarginTop;
-                },
-                set: function (value) {
-                    this._anchorMarginTop = value;
-                    this.Refresh();
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(AnchoredControlView.prototype, "AnchorMarginLeft", {
-                get: function () {
-                    return this._anchorMarginLeft;
-                },
-                set: function (value) {
-                    this._anchorMarginLeft = value;
-                    this.Refresh();
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(AnchoredControlView.prototype, "AnchorMarginRight", {
-                get: function () {
-                    return this._anchorMarginRight;
-                },
-                set: function (value) {
-                    this._anchorMarginRight = value;
-                    this.Refresh();
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(AnchoredControlView.prototype, "AnchorMarginBottom", {
-                get: function () {
-                    return this._anchorMarginBottom;
-                },
-                set: function (value) {
-                    this._anchorMarginBottom = value;
-                    this.Refresh();
-                },
-                enumerable: true,
-                configurable: true
-            });
+            //private _isAnchorTop: boolean = false;
+            //public get IsAnchorTop(): boolean {
+            //    return this._isAnchorTop;
+            //}
+            //public set IsAnchorTop(value: boolean) {
+            //    this._isAnchorTop = value;
+            //    this.Refresh();
+            //}
+            //private _isAnchorLeft: boolean = false;
+            //public get IsAnchorLeft(): boolean {
+            //    return this._isAnchorLeft;
+            //}
+            //public set IsAnchorLeft(value: boolean) {
+            //    this._isAnchorLeft = value;
+            //    this.Refresh();
+            //}
+            //private _isAnchorRight: boolean = false;
+            //public get IsAnchorRight(): boolean {
+            //    return this._isAnchorRight;
+            //}
+            //public set IsAnchorRight(value: boolean) {
+            //    this._isAnchorRight = value;
+            //    this.Refresh();
+            //}
+            //private _isAnchorBottom: boolean = false;
+            //public get IsAnchorBottom(): boolean {
+            //    return this._isAnchorBottom;
+            //}
+            //public set IsAnchorBottom(value: boolean) {
+            //    this._isAnchorBottom = value;
+            //    this.Refresh();
+            //}
+            //private _anchorMarginTop: number = 0;
+            //public get AnchorMarginTop(): number {
+            //    return this._anchorMarginTop;
+            //}
+            //public set AnchorMarginTop(value: number) {
+            //    this._anchorMarginTop = value;
+            //    this.Refresh();
+            //}
+            //private _anchorMarginLeft: number = 0;
+            //public get AnchorMarginLeft(): number {
+            //    return this._anchorMarginLeft;
+            //}
+            //public set AnchorMarginLeft(value: number) {
+            //    this._anchorMarginLeft = value;
+            //    this.Refresh();
+            //}
+            //private _anchorMarginRight: number = 0;
+            //public get AnchorMarginRight(): number {
+            //    return this._anchorMarginRight;
+            //}
+            //public set AnchorMarginRight(value: number) {
+            //    this._anchorMarginRight = value;
+            //    this.Refresh();
+            //}
+            //private _anchorMarginBottom: number = 0;
+            //public get AnchorMarginBottom(): number {
+            //    return this._anchorMarginBottom;
+            //}
+            //public set AnchorMarginBottom(value: number) {
+            //    this._anchorMarginBottom = value;
+            //    this.Refresh();
+            //}
             AnchoredControlView.prototype.Init = function () {
                 _super.prototype.Init.call(this);
                 this.Elem.addClass('AnchoredControlView');
@@ -1322,7 +1416,7 @@ var Fw;
                         left = centerLeft - (width / 2);
                     }
                 }
-                if (this.IsAnchorTop && this._isAnchorBottom) {
+                if (this.IsAnchorTop && this.IsAnchorBottom) {
                     height = parentHeight - this.AnchorMarginTop - this.AnchorMarginBottom;
                     top = this.AnchorMarginTop;
                 }

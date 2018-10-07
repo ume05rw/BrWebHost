@@ -53,10 +53,83 @@ namespace Fw.Views {
         public get Height(): number {
             return this._height;
         }
-        public set Heght(value: number) {
+        public set Height(value: number) {
             this._height = value;
             this.Refresh();
         }
+
+        private _isAnchorTop: boolean = false;
+        public get IsAnchorTop(): boolean {
+            return this._isAnchorTop;
+        }
+        public set IsAnchorTop(value: boolean) {
+            this._isAnchorTop = value;
+            this.Refresh();
+        }
+
+        private _isAnchorLeft: boolean = false;
+        public get IsAnchorLeft(): boolean {
+            return this._isAnchorLeft;
+        }
+        public set IsAnchorLeft(value: boolean) {
+            this._isAnchorLeft = value;
+            this.Refresh();
+        }
+
+        private _isAnchorRight: boolean = false;
+        public get IsAnchorRight(): boolean {
+            return this._isAnchorRight;
+        }
+        public set IsAnchorRight(value: boolean) {
+            this._isAnchorRight = value;
+            this.Refresh();
+        }
+
+        private _isAnchorBottom: boolean = false;
+        public get IsAnchorBottom(): boolean {
+            return this._isAnchorBottom;
+        }
+        public set IsAnchorBottom(value: boolean) {
+            this._isAnchorBottom = value;
+            this.Refresh();
+        }
+
+        private _anchorMarginTop: number = 0;
+        public get AnchorMarginTop(): number {
+            return this._anchorMarginTop;
+        }
+        public set AnchorMarginTop(value: number) {
+            this._anchorMarginTop = value;
+            this.Refresh();
+        }
+
+        private _anchorMarginLeft: number = 0;
+        public get AnchorMarginLeft(): number {
+            return this._anchorMarginLeft;
+        }
+        public set AnchorMarginLeft(value: number) {
+            this._anchorMarginLeft = value;
+            this.Refresh();
+        }
+
+        private _anchorMarginRight: number = 0;
+        public get AnchorMarginRight(): number {
+            return this._anchorMarginRight;
+        }
+        public set AnchorMarginRight(value: number) {
+            this._anchorMarginRight = value;
+            this.Refresh();
+        }
+
+        private _anchorMarginBottom: number = 0;
+        public get AnchorMarginBottom(): number {
+            return this._anchorMarginBottom;
+        }
+        public set AnchorMarginBottom(value: number) {
+            this._anchorMarginBottom = value;
+            this.Refresh();
+        }
+
 
         private _color: string;
         public get Color(): string {
@@ -191,8 +264,43 @@ namespace Fw.Views {
             if (!parent)
                 return;
 
-            const centerLeft = (parent.width() / 2);
-            const centerTop = (parent.height() / 2);
+            const parentWidth = parent.width();
+            const parentHeight = parent.height();
+            const centerLeft = (parentWidth / 2);
+            const centerTop = (parentHeight / 2);
+
+            if (this.IsAnchorLeft && this.IsAnchorRight) {
+                this._width = parentWidth - this.AnchorMarginLeft - this.AnchorMarginRight;
+                this._x = this.AnchorMarginLeft - centerLeft + (this._width / 2);
+            } else {
+                this._width = _.isNumber(this._width)
+                    ? this._width
+                    : 30;
+
+                if (this.IsAnchorLeft) {
+                    this._x = this.AnchorMarginLeft - centerLeft + (this._width / 2);
+                } else if (this.IsAnchorRight) {
+                    let left = parentWidth - this.AnchorMarginRight - this._width;
+                    this._x = left - centerLeft + (this._width / 2);
+                }
+            }
+
+            if (this.IsAnchorTop && this._isAnchorBottom) {
+                this._height = parentHeight - this.AnchorMarginTop - this.AnchorMarginBottom;
+                this._y = this.AnchorMarginTop - centerTop + (this._height / 2);
+            } else {
+                this._height = _.isNumber(this._height)
+                    ? this._height
+                    : 30;
+
+                if (this.IsAnchorTop) {
+                    this._y = this.AnchorMarginTop - centerTop + (this._height / 2);
+                } else if (this.IsAnchorBottom) {
+                    let top = parentHeight - this.AnchorMarginBottom - this._height;
+                    this._y = top - centerTop + (this._height / 2);
+                }
+            }
+
             const elemLeft = centerLeft + this._x - (this.Width / 2);
             const elemTop = centerTop + this._y - (this.Height / 2);
 

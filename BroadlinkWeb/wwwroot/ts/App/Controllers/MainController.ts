@@ -53,7 +53,7 @@ namespace App.Controllers {
                 console.log('MainView.Shown');
             });
 
-            const ancCtl1 = new Fw.Views.AnchoredControlView();
+            const ancCtl1 = new Fw.Views.ControlView();
             ancCtl1.Label = '右下';
             ancCtl1.Width = 100;
             ancCtl1.Height = 30;
@@ -63,7 +63,7 @@ namespace App.Controllers {
             ancCtl1.AnchorMarginBottom = 5;
             this.View.Add(ancCtl1);
 
-            const ancCtl2 = new Fw.Views.AnchoredControlView();
+            const ancCtl2 = new Fw.Views.ControlView();
             ancCtl2.Label = '右上';
             ancCtl2.Width = 200;
             ancCtl2.Height = 50;
@@ -73,7 +73,7 @@ namespace App.Controllers {
             ancCtl2.AnchorMarginTop = 3;
             this.View.Add(ancCtl2);
 
-            const ancCtl3 = new Fw.Views.AnchoredControlView();
+            const ancCtl3 = new Fw.Views.ControlView();
             ancCtl3.Label = '左下';
             ancCtl3.Width = 200;
             ancCtl3.Height = 50;
@@ -83,7 +83,7 @@ namespace App.Controllers {
             ancCtl3.AnchorMarginBottom = 3;
             this.View.Add(ancCtl3);
 
-            const ancCtl4 = new Fw.Views.AnchoredControlView();
+            const ancCtl4 = new Fw.Views.ControlView();
             ancCtl4.Label = '左上';
             ancCtl4.Width = 200;
             ancCtl4.Height = 50;
@@ -93,7 +93,7 @@ namespace App.Controllers {
             ancCtl4.AnchorMarginTop = 3;
             this.View.Add(ancCtl4);
 
-            const ancCtl5 = new Fw.Views.AnchoredControlView();
+            const ancCtl5 = new Fw.Views.ControlView();
             ancCtl5.Label = '左右';
             ancCtl5.Height = 50;
             ancCtl5.IsAnchorBottom = true;
@@ -104,7 +104,7 @@ namespace App.Controllers {
             ancCtl5.AnchorMarginBottom = 100;
             this.View.Add(ancCtl5);
 
-            const ancCtl6 = new Fw.Views.AnchoredControlView();
+            const ancCtl6 = new Fw.Views.ControlView();
             ancCtl6.Label = '上下';
             ancCtl6.IsAnchorTop = true;
             ancCtl6.IsAnchorBottom = true;

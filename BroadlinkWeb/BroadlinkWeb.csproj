@@ -16,7 +16,6 @@
     <Content Remove="wwwroot\ts\Fw\Util\XhrParams.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\XhrResult.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\Xhr\Config.ts" />
-    <Content Remove="wwwroot\ts\Fw\Views\AnchoredControlView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\Animation\Animator.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\Animation\Params.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\ControlView.ts" />
@@ -62,7 +61,6 @@
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Xhr\MethodType.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Xhr\Params.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Xhr\Result.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\AnchoredControlView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Animation\Animator.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Animation\Params.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ControlView.ts" />
