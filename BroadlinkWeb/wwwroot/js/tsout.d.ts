@@ -50,6 +50,17 @@ declare namespace Fw.Controllers {
         Show(id: string): void;
     }
 }
+declare namespace Fw.Util.Xhr {
+    class Config {
+        static BaseUrl: string;
+    }
+}
+declare namespace App {
+    class Main {
+        static _controllerManager: Fw.Controllers.Manager;
+        static StartUp(): void;
+    }
+}
 declare namespace Fw.Views.Animation {
     class Params {
         static GetCurrent(view: Fw.Views.IView): Params;
@@ -183,10 +194,15 @@ declare namespace Fw.Util.Xhr {
         static Invoke(params: Params): any;
     }
 }
+declare namespace Fw.Events {
+    class ControlEventsClass extends ViewEventsClass {
+        readonly SingleClick: string;
+        readonly LongClick: string;
+    }
+    const ControlEvents: ControlEventsClass;
+}
 declare namespace App.Controllers {
     class Sub1Controller extends Fw.Controllers.ControllerBase {
-        private _btnGoMain;
-        private _btnDevices;
         constructor(elem: JQuery, manager: Fw.Controllers.Manager);
         private Init;
     }
@@ -198,24 +214,6 @@ declare namespace App.Controllers {
         constructor(elem: JQuery, manager: Fw.Controllers.Manager);
         private Init;
     }
-}
-declare namespace Fw.Util.Xhr {
-    class Config {
-        static BaseUrl: string;
-    }
-}
-declare namespace App {
-    class Main {
-        static _controllerManager: Fw.Controllers.Manager;
-        static StartUp(): void;
-    }
-}
-declare namespace Fw.Events {
-    class ControlEventsClass extends ViewEventsClass {
-        readonly SingleClick: string;
-        readonly LongClick: string;
-    }
-    const ControlEvents: ControlEventsClass;
 }
 declare namespace Fw.Events {
     class PageEventsClass extends ViewEventsClass {

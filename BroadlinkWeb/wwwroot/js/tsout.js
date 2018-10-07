@@ -74,6 +74,54 @@ var Fw;
 })(Fw || (Fw = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
+var Fw;
+(function (Fw) {
+    var Util;
+    (function (Util) {
+        var Xhr;
+        (function (Xhr) {
+            var Config = /** @class */ (function () {
+                function Config() {
+                }
+                // ↓App.Mainで書き換える。
+                Config.BaseUrl = location.protocol
+                    + '//' + location.hostname
+                    + ':' + location.port
+                    + '/';
+                return Config;
+            }());
+            Xhr.Config = Config;
+        })(Xhr = Util.Xhr || (Util.Xhr = {}));
+    })(Util = Fw.Util || (Fw.Util = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../lib/jquery/index.d.ts" />
+/// <reference path="../../lib/underscore/index.d.ts" />
+/// <reference path="../Fw/Controllers/Manager.ts" />
+/// <reference path="../Fw/Util/Xhr/Config.ts" />
+var App;
+(function (App) {
+    var Main = /** @class */ (function () {
+        function Main() {
+        }
+        Main.StartUp = function () {
+            var proto = location.protocol;
+            var host = location.hostname;
+            var port = location.port;
+            Fw.Util.Xhr.Config.BaseUrl = proto + '//' + host + ':' + port + '/api/';
+            // コントローラを起動。
+            Main._controllerManager = new Fw.Controllers.Manager();
+        };
+        return Main;
+    }());
+    App.Main = Main;
+})(App || (App = {}));
+// アプリケーションを起動する。
+// 以下にはこれ以上書かないこと。
+$(function () {
+    App.Main.StartUp();
+});
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../../Fw/Views/IView.ts" />
 var Fw;
 (function (Fw) {
@@ -956,15 +1004,38 @@ var Fw;
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="./ViewEvents.ts" />
+var Fw;
+(function (Fw) {
+    var Events;
+    (function (Events) {
+        var ControlEventsClass = /** @class */ (function (_super) {
+            __extends(ControlEventsClass, _super);
+            function ControlEventsClass() {
+                var _this = _super !== null && _super.apply(this, arguments) || this;
+                _this.SingleClick = 'SingleClick';
+                _this.LongClick = 'LongClick';
+                return _this;
+            }
+            return ControlEventsClass;
+        }(Events.ViewEventsClass));
+        Events.ControlEventsClass = ControlEventsClass;
+        Events.ControlEvents = new ControlEventsClass();
+    })(Events = Fw.Events || (Fw.Events = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Fw/Controllers/ControllerBase.ts" />
 /// <reference path="../../Fw/Util/Xhr/Params.ts" />
 /// <reference path="../../Fw/Util/Xhr/MethodType.ts" />
 /// <reference path="../../Fw/Util/Xhr/Query.ts" />
+/// <reference path="../../Fw/Events/ControlEvents.ts" />
 var App;
 (function (App) {
     var Controllers;
     (function (Controllers) {
         var Xhr = Fw.Util.Xhr;
+        var Events = Fw.Events;
         var Sub1Controller = /** @class */ (function (_super) {
             __extends(Sub1Controller, _super);
             function Sub1Controller(elem, manager) {
@@ -974,13 +1045,28 @@ var App;
             }
             Sub1Controller.prototype.Init = function () {
                 var _this = this;
-                this._btnGoMain = this.View.Elem.find('button[name=GoMain]');
-                this._btnDevices = this.View.Elem.find('button[name=Discover]');
-                this._btnGoMain.click(function () {
+                var header = new Fw.Views.ControlView();
+                header.Label = 'ヘッダ';
+                header.Height = 50;
+                header.SetAnchor(0, 0, 0, null);
+                header.BackgroundColor = '555555';
+                header.Color = 'FFFFFF';
+                header.HasBorder = false;
+                header.BorderRadius = 0;
+                this.View.Add(header);
+                var back = new Fw.Views.ControlView();
+                back.Width = 40;
+                back.Height = 40;
+                back.Label = '戻る';
+                back.SetAnchor(null, null, 5, null);
+                back.AddEventListener(Events.ControlEvents.SingleClick, function () {
                     _this.Manager.Show("Main");
                 });
-                this._btnDevices.click(function () {
-                    console.log('btnDevices.click');
+                header.Add(back);
+                var devices = new Fw.Views.ControlView();
+                devices.SetDisplayParams(0, -200, 60, 60, '8844FF');
+                devices.Label = 'デバイス走査';
+                devices.AddEventListener(Events.ControlEvents.SingleClick, function () {
                     var params = new Xhr.Params('BrDevices/Discover', Xhr.MethodType.Get);
                     params.Callback = function (data) {
                         console.log('Disover:');
@@ -988,6 +1074,7 @@ var App;
                     };
                     Xhr.Query.Invoke(params);
                 });
+                this.View.Add(devices);
             };
             return Sub1Controller;
         }(Fw.Controllers.ControllerBase));
@@ -1033,75 +1120,6 @@ var App;
         Controllers.Sub2Controller = Sub2Controller;
     })(Controllers = App.Controllers || (App.Controllers = {}));
 })(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-var Fw;
-(function (Fw) {
-    var Util;
-    (function (Util) {
-        var Xhr;
-        (function (Xhr) {
-            var Config = /** @class */ (function () {
-                function Config() {
-                }
-                // ↓App.Mainで書き換える。
-                Config.BaseUrl = location.protocol
-                    + '//' + location.hostname
-                    + ':' + location.port
-                    + '/';
-                return Config;
-            }());
-            Xhr.Config = Config;
-        })(Xhr = Util.Xhr || (Util.Xhr = {}));
-    })(Util = Fw.Util || (Fw.Util = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../lib/jquery/index.d.ts" />
-/// <reference path="../../lib/underscore/index.d.ts" />
-/// <reference path="../Fw/Controllers/Manager.ts" />
-/// <reference path="../Fw/Util/Xhr/Config.ts" />
-var App;
-(function (App) {
-    var Main = /** @class */ (function () {
-        function Main() {
-        }
-        Main.StartUp = function () {
-            var proto = location.protocol;
-            var host = location.hostname;
-            var port = location.port;
-            Fw.Util.Xhr.Config.BaseUrl = proto + '//' + host + ':' + port + '/api/';
-            // コントローラを起動。
-            Main._controllerManager = new Fw.Controllers.Manager();
-        };
-        return Main;
-    }());
-    App.Main = Main;
-})(App || (App = {}));
-// アプリケーションを起動する。
-// 以下にはこれ以上書かないこと。
-$(function () {
-    App.Main.StartUp();
-});
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="./ViewEvents.ts" />
-var Fw;
-(function (Fw) {
-    var Events;
-    (function (Events) {
-        var ControlEventsClass = /** @class */ (function (_super) {
-            __extends(ControlEventsClass, _super);
-            function ControlEventsClass() {
-                var _this = _super !== null && _super.apply(this, arguments) || this;
-                _this.SingleClick = 'SingleClick';
-                _this.LongClick = 'LongClick';
-                return _this;
-            }
-            return ControlEventsClass;
-        }(Events.ViewEventsClass));
-        Events.ControlEventsClass = ControlEventsClass;
-        Events.ControlEvents = new ControlEventsClass();
-    })(Events = Fw.Events || (Fw.Events = {}));
-})(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="./ViewEvents.ts" />
@@ -1209,7 +1227,7 @@ var Fw;
                 this.HasBorder = true;
                 this.BorderRadius = 5;
                 this.Elem.addClass('ControlView');
-                this._label = $('<span></span>');
+                this._label = $('<span class="ControlViewProperty"></span>');
                 this.Elem.append(this._label);
                 this.Elem.bind('touchstart mousedown', function (e) {
                     if (_this._tapEventTimer != null)

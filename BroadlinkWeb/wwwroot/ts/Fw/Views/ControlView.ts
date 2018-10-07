@@ -66,7 +66,7 @@ namespace Fw.Views {
             this.BorderRadius = 5;
 
             this.Elem.addClass('ControlView');
-            this._label = $('<span></span>');
+            this._label = $('<span class="ControlViewProperty"></span>');
             this.Elem.append(this._label);
 
             this.Elem.bind('touchstart mousedown', (e) => {
