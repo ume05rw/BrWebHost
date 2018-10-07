@@ -76,11 +76,11 @@
     <TypeScriptCompileOnSaveEnabled>True</TypeScriptCompileOnSaveEnabled>
     <TypeScriptNoImplicitAny>False</TypeScriptNoImplicitAny>
     <TypeScriptRemoveComments>False</TypeScriptRemoveComments>
-    <TypeScriptOutFile>wwwroot/js/tsout.js</TypeScriptOutFile>
+    <TypeScriptOutFile>webroot/js/tsout.js</TypeScriptOutFile>
     <TypeScriptOutDir></TypeScriptOutDir>
     <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
     <TypeScriptNoEmitOnError>True</TypeScriptNoEmitOnError>
-    <TypeScriptSourceMap>True</TypeScriptSourceMap>
+    <TypeScriptSourceMap>False</TypeScriptSourceMap>
     <TypeScriptMapRoot />
     <TypeScriptSourceRoot></TypeScriptSourceRoot>
   </PropertyGroup>

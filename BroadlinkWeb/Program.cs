@@ -22,6 +22,7 @@ namespace BroadlinkWeb
                 .UseStartup<Startup>()
                 .UseUrls("http://*:5004")
                 //.UseUrls("http://0.0.0.0:5004")
+                //.UseUrls("http://localhost:5004") //<-ホスト名をlocalhostに限定するとき
                 .Build();
     }
 }
