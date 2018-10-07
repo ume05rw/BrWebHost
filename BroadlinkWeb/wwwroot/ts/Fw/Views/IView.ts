@@ -29,7 +29,9 @@ namespace Fw.Views {
         SetAnchor(top: number, left: number, right: number, bottom: number): void;
 
         Add(view: IView): void;
+        TriggerAttachedEvent(): void;
         Remove(view: IView): void;
+        TriggerDetachedEvent(): void;
         Refresh(): void;
         Show(duration?: number): void;
         Hide(duration?: number): void;

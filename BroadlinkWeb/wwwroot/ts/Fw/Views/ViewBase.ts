@@ -12,6 +12,8 @@ namespace Fw.Views {
         // events
         protected EventShown: Event = new Event(Events.Shown);
         protected EventHidden: Event = new Event(Events.Hidden);
+        protected EventAttached: Event = new Event(Events.Attached);
+        protected EventDetached: Event = new Event(Events.Detached);
 
         // Refresh() Multiple execution suppressor
         private _lastRefreshTimer: number;
@@ -236,7 +238,12 @@ namespace Fw.Views {
                 this.Children.push(view);
                 this.Elem.append(view.Elem);
                 view.Refresh();
+                view.TriggerAttachedEvent();
             }
+        }
+
+        public TriggerAttachedEvent(): void {
+            this.Dom.dispatchEvent(this.EventAttached);
         }
 
         public Remove(view: IView): void {
@@ -244,7 +251,12 @@ namespace Fw.Views {
             if (index != -1) {
                 this.Children.splice(index, 1);
                 view.Elem.detach();
+                view.TriggerDetachedEvent();
             }
+        }
+
+        public TriggerDetachedEvent(): void {
+            this.Dom.dispatchEvent(this.EventDetached);
         }
 
         public Show(duration: number = 200): void {

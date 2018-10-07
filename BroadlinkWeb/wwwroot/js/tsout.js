@@ -74,54 +74,6 @@ var Fw;
 })(Fw || (Fw = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
-var Fw;
-(function (Fw) {
-    var Util;
-    (function (Util) {
-        var Xhr;
-        (function (Xhr) {
-            var Config = /** @class */ (function () {
-                function Config() {
-                }
-                // ↓App.Mainで書き換える。
-                Config.BaseUrl = location.protocol
-                    + '//' + location.hostname
-                    + ':' + location.port
-                    + '/';
-                return Config;
-            }());
-            Xhr.Config = Config;
-        })(Xhr = Util.Xhr || (Util.Xhr = {}));
-    })(Util = Fw.Util || (Fw.Util = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../lib/jquery/index.d.ts" />
-/// <reference path="../../lib/underscore/index.d.ts" />
-/// <reference path="../Fw/Controllers/Manager.ts" />
-/// <reference path="../Fw/Util/Xhr/Config.ts" />
-var App;
-(function (App) {
-    var Main = /** @class */ (function () {
-        function Main() {
-        }
-        Main.StartUp = function () {
-            var proto = location.protocol;
-            var host = location.hostname;
-            var port = location.port;
-            Fw.Util.Xhr.Config.BaseUrl = proto + '//' + host + ':' + port + '/api/';
-            // コントローラを起動。
-            Main._controllerManager = new Fw.Controllers.Manager();
-        };
-        return Main;
-    }());
-    App.Main = Main;
-})(App || (App = {}));
-// アプリケーションを起動する。
-// 以下にはこれ以上書かないこと。
-$(function () {
-    App.Main.StartUp();
-});
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../../Fw/Views/IView.ts" />
 var Fw;
 (function (Fw) {
@@ -279,6 +231,8 @@ var Fw;
             function ViewEventsClass() {
                 this.Shown = 'Shown';
                 this.Hidden = 'Hidden';
+                this.Attached = 'Attached';
+                this.Detached = 'Detached';
             }
             return ViewEventsClass;
         }());
@@ -302,6 +256,8 @@ var Fw;
                 // events
                 this.EventShown = new Event(Events.Shown);
                 this.EventHidden = new Event(Events.Hidden);
+                this.EventAttached = new Event(Events.Attached);
+                this.EventDetached = new Event(Events.Detached);
                 // Properties with set/get
                 this._x = 0;
                 this._y = 0;
@@ -536,14 +492,22 @@ var Fw;
                     this.Children.push(view);
                     this.Elem.append(view.Elem);
                     view.Refresh();
+                    view.TriggerAttachedEvent();
                 }
+            };
+            ViewBase.prototype.TriggerAttachedEvent = function () {
+                this.Dom.dispatchEvent(this.EventAttached);
             };
             ViewBase.prototype.Remove = function (view) {
                 var index = this.Children.indexOf(view);
                 if (index != -1) {
                     this.Children.splice(index, 1);
                     view.Elem.detach();
+                    view.TriggerDetachedEvent();
                 }
+            };
+            ViewBase.prototype.TriggerDetachedEvent = function () {
+                this.Dom.dispatchEvent(this.EventDetached);
             };
             ViewBase.prototype.Show = function (duration) {
                 var _this = this;
@@ -1083,14 +1047,17 @@ var App;
 })(App || (App = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Fw/Controllers/ControllerBase.ts" />
 /// <reference path="../../Fw/Util/Xhr/Params.ts" />
 /// <reference path="../../Fw/Util/Xhr/MethodType.ts" />
 /// <reference path="../../Fw/Util/Xhr/Query.ts" />
+/// <reference path="../../Fw/Events/ControlEvents.ts" />
 var App;
 (function (App) {
     var Controllers;
     (function (Controllers) {
         var Xhr = Fw.Util.Xhr;
+        var Events = Fw.Events;
         var Sub2Controller = /** @class */ (function (_super) {
             __extends(Sub2Controller, _super);
             function Sub2Controller(elem, manager) {
@@ -1114,12 +1081,78 @@ var App;
                     };
                     Xhr.Query.Invoke(params);
                 });
+                var btnMove = new Fw.Views.RelocatableControlView();
+                btnMove.SetDisplayParams(0, -200, 60, 60, '1188FF');
+                btnMove.BackgroundColor = 'FF9900';
+                btnMove.Label = '動く？';
+                btnMove.AddEventListener(Events.ControlEvents.SingleClick, function () {
+                    console.log('btnMove.SingleClick');
+                });
+                this.View.Add(btnMove);
+                var btnReset = new Fw.Views.ControlView();
+                btnReset.SetDisplayParams(0, 0, 60, 60, '1188FF');
+                btnReset.SetAnchor(5, null, 5, null);
+                btnReset.Label = 'リセット';
+                btnReset.AddEventListener(Events.ControlEvents.SingleClick, function () {
+                    console.log('btnReset.SingleClick');
+                    if (btnMove.IsRelocatable)
+                        btnMove.SetRelocatable(false);
+                });
+                this.View.Add(btnReset);
             };
             return Sub2Controller;
         }(Fw.Controllers.ControllerBase));
         Controllers.Sub2Controller = Sub2Controller;
     })(Controllers = App.Controllers || (App.Controllers = {}));
 })(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+var Fw;
+(function (Fw) {
+    var Util;
+    (function (Util) {
+        var Xhr;
+        (function (Xhr) {
+            var Config = /** @class */ (function () {
+                function Config() {
+                }
+                // ↓App.Mainで書き換える。
+                Config.BaseUrl = location.protocol
+                    + '//' + location.hostname
+                    + ':' + location.port
+                    + '/';
+                return Config;
+            }());
+            Xhr.Config = Config;
+        })(Xhr = Util.Xhr || (Util.Xhr = {}));
+    })(Util = Fw.Util || (Fw.Util = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../lib/jquery/index.d.ts" />
+/// <reference path="../../lib/underscore/index.d.ts" />
+/// <reference path="../Fw/Controllers/Manager.ts" />
+/// <reference path="../Fw/Util/Xhr/Config.ts" />
+var App;
+(function (App) {
+    var Main = /** @class */ (function () {
+        function Main() {
+        }
+        Main.StartUp = function () {
+            var proto = location.protocol;
+            var host = location.hostname;
+            var port = location.port;
+            Fw.Util.Xhr.Config.BaseUrl = proto + '//' + host + ':' + port + '/api/';
+            // コントローラを起動。
+            Main._controllerManager = new Fw.Controllers.Manager();
+        };
+        return Main;
+    }());
+    App.Main = Main;
+})(App || (App = {}));
+// アプリケーションを起動する。
+// 以下にはこれ以上書かないこと。
+$(function () {
+    App.Main.StartUp();
+});
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="./ViewEvents.ts" />
@@ -1277,6 +1310,140 @@ var Fw;
             return ControlView;
         }(Views.ViewBase));
         Views.ControlView = ControlView;
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Fw/Events/ControlEvents.ts" />
+/// <reference path="./ControlView.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Events = Fw.Events.ControlEvents;
+        var RelocatableControlView = /** @class */ (function (_super) {
+            __extends(RelocatableControlView, _super);
+            function RelocatableControlView() {
+                var _this = _super !== null && _super.apply(this, arguments) || this;
+                _this._isRelocatable = false;
+                _this._beforeX = 0;
+                _this._beforeY = 0;
+                _this._isMouseMoveEventListened = false;
+                _this._isDragging = false;
+                _this.GridSize = 60;
+                return _this;
+            }
+            Object.defineProperty(RelocatableControlView.prototype, "IsRelocatable", {
+                get: function () {
+                    return this._isRelocatable;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            RelocatableControlView.prototype.Init = function () {
+                var _this = this;
+                _super.prototype.Init.call(this);
+                this._shadow = $('<div class="IView ControlView Shadow"></div>');
+                this.AddEventListener(Events.LongClick, function () {
+                    if (!_this._isRelocatable)
+                        _this.SetRelocatable(true);
+                });
+                this.Elem.bind('touchstart mousedown', function (e) {
+                    if (!_this._isRelocatable) {
+                        _this._isDragging = false;
+                    }
+                    else {
+                        _this._isDragging = true;
+                        _this.Refresh();
+                    }
+                });
+                this.Elem.bind('touchend mouseup', function (e) {
+                    if (!_this._isRelocatable) {
+                        _this._isDragging = false;
+                    }
+                    else {
+                        _this._isDragging = false;
+                        _this.X = Math.round(_this.X / _this.GridSize) * _this.GridSize;
+                        _this.Y = Math.round(_this.Y / _this.GridSize) * _this.GridSize;
+                        _this.Refresh();
+                    }
+                });
+                this.AddEventListener(Events.Attached, function () {
+                    var parent = $(_this.Elem.parent());
+                    if (parent.length <= 0 || _this._isMouseMoveEventListened)
+                        return;
+                    _this._isMouseMoveEventListened = true;
+                    parent.bind('touchmove mousemove', function (e) {
+                        if (_this._isRelocatable && _this._isDragging) {
+                            var parentWidth = parent.width();
+                            var parentHeight = parent.height();
+                            var centerLeft = (parentWidth / 2);
+                            var centerTop = (parentHeight / 2);
+                            var left = e.clientX;
+                            var top_2 = e.clientY;
+                            _this.X = left - centerLeft;
+                            _this.Y = top_2 - centerTop;
+                            _this.Refresh();
+                        }
+                    });
+                });
+            };
+            RelocatableControlView.prototype.SetRelocatable = function (relocatable) {
+                console.log('SetRelocatable');
+                if (this._isRelocatable) {
+                    // 固定する。
+                    this._isRelocatable = false;
+                    this._shadow.detach();
+                }
+                else {
+                    // 移動可能にする。
+                    this._isRelocatable = true;
+                    this._beforeX = this.X;
+                    this._beforeY = this.Y;
+                    this.Elem.parent().append(this._shadow);
+                }
+                this.Refresh();
+            };
+            RelocatableControlView.prototype.InnerRefresh = function () {
+                var parent = $(this.Elem.parent());
+                if (!parent)
+                    return;
+                _super.prototype.InnerRefresh.call(this);
+                var shadowDom = this._shadow.get(0);
+                if (!this._isRelocatable) {
+                    shadowDom.style.display = 'none';
+                    this.Dom.style.opacity = '1.0';
+                    return;
+                }
+                this.Dom.style.opacity = '0.7';
+                if (this._isDragging) {
+                    var parentWidth = parent.width();
+                    var parentHeight = parent.height();
+                    var centerLeft = (parentWidth / 2);
+                    var centerTop = (parentHeight / 2);
+                    var sX = Math.round(this.X / this.GridSize) * this.GridSize;
+                    var sY = Math.round(this.Y / this.GridSize) * this.GridSize;
+                    var sLeft = centerLeft + sX - (this.Width / 2);
+                    var sTop = centerTop + sY - (this.Height / 2);
+                    shadowDom.style.display = 'block';
+                    shadowDom.style.left = sLeft + "px";
+                    shadowDom.style.top = sTop + "px";
+                    shadowDom.style.width = this.Width + "px";
+                    shadowDom.style.height = this.Height + "px";
+                    shadowDom.style.opacity = '0.4';
+                    shadowDom.style.color = "#" + this.Color;
+                    shadowDom.style.borderColor = "#" + this.Color;
+                    shadowDom.style.borderStyle = 'dashed';
+                    shadowDom.style.borderWidth = '2px';
+                    shadowDom.style.backgroundColor = "#" + this.BackgroundColor;
+                }
+                else {
+                    shadowDom.style.display = 'none';
+                }
+            };
+            return RelocatableControlView;
+        }(Views.ControlView));
+        Views.RelocatableControlView = RelocatableControlView;
     })(Views = Fw.Views || (Fw.Views = {}));
 })(Fw || (Fw = {}));
 //# sourceMappingURL=tsout.js.map

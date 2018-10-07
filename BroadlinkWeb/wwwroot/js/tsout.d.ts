@@ -22,7 +22,9 @@ declare namespace Fw.Views {
         SetDisplayParams(x: number, y: number, width?: number, height?: number, color?: string): void;
         SetAnchor(top: number, left: number, right: number, bottom: number): void;
         Add(view: IView): void;
+        TriggerAttachedEvent(): void;
         Remove(view: IView): void;
+        TriggerDetachedEvent(): void;
         Refresh(): void;
         Show(duration?: number): void;
         Hide(duration?: number): void;
@@ -48,17 +50,6 @@ declare namespace Fw.Controllers {
         private _controllers;
         constructor();
         Show(id: string): void;
-    }
-}
-declare namespace Fw.Util.Xhr {
-    class Config {
-        static BaseUrl: string;
-    }
-}
-declare namespace App {
-    class Main {
-        static _controllerManager: Fw.Controllers.Manager;
-        static StartUp(): void;
     }
 }
 declare namespace Fw.Views.Animation {
@@ -88,6 +79,8 @@ declare namespace Fw.Events {
     class ViewEventsClass {
         readonly Shown: string;
         readonly Hidden: string;
+        readonly Attached: string;
+        readonly Detached: string;
     }
     const ViewEvents: ViewEventsClass;
 }
@@ -95,6 +88,8 @@ declare namespace Fw.Views {
     abstract class ViewBase implements IView {
         protected EventShown: Event;
         protected EventHidden: Event;
+        protected EventAttached: Event;
+        protected EventDetached: Event;
         private _lastRefreshTimer;
         Elem: JQuery;
         readonly Dom: HTMLElement;
@@ -132,7 +127,9 @@ declare namespace Fw.Views {
         SetDisplayParams(x: number, y: number, width?: number, height?: number, color?: string): void;
         SetAnchor(top: number, left: number, right: number, bottom: number): void;
         Add(view: IView): void;
+        TriggerAttachedEvent(): void;
         Remove(view: IView): void;
+        TriggerDetachedEvent(): void;
         Show(duration?: number): void;
         Hide(duration?: number): void;
         IsVisible(): boolean;
@@ -215,6 +212,17 @@ declare namespace App.Controllers {
         private Init;
     }
 }
+declare namespace Fw.Util.Xhr {
+    class Config {
+        static BaseUrl: string;
+    }
+}
+declare namespace App {
+    class Main {
+        static _controllerManager: Fw.Controllers.Manager;
+        static StartUp(): void;
+    }
+}
 declare namespace Fw.Events {
     class PageEventsClass extends ViewEventsClass {
     }
@@ -245,5 +253,20 @@ declare namespace Fw.Views {
         protected Init(): void;
         protected InnerRefresh(): void;
         Dispose(): void;
+    }
+}
+declare namespace Fw.Views {
+    class RelocatableControlView extends ControlView {
+        private _isRelocatable;
+        readonly IsRelocatable: boolean;
+        private _shadow;
+        private _beforeX;
+        private _beforeY;
+        private _isMouseMoveEventListened;
+        private _isDragging;
+        GridSize: number;
+        protected Init(): void;
+        SetRelocatable(relocatable: boolean): void;
+        protected InnerRefresh(): void;
     }
 }

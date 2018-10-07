@@ -71,3 +71,7 @@ div.IController .ControlView > .ControlViewProperty {
     width: 100%;
     text-align: center;
 }
+
+div.IController .ControlView.Shadow {
+    z-index: -1;
+}

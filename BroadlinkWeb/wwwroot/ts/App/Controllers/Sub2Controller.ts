@@ -1,11 +1,14 @@
 ﻿/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Fw/Controllers/ControllerBase.ts" />
 /// <reference path="../../Fw/Util/Xhr/Params.ts" />
 /// <reference path="../../Fw/Util/Xhr/MethodType.ts" />
 /// <reference path="../../Fw/Util/Xhr/Query.ts" />
+/// <reference path="../../Fw/Events/ControlEvents.ts" />
 
 namespace App.Controllers {
     import Xhr = Fw.Util.Xhr;
+    import Events = Fw.Events;
 
     export class Sub2Controller extends Fw.Controllers.ControllerBase {
 
@@ -36,6 +39,26 @@ namespace App.Controllers {
                 }
                 Xhr.Query.Invoke(params);
             })
+
+            const btnMove = new Fw.Views.RelocatableControlView();
+            btnMove.SetDisplayParams(0, -200, 60, 60, '1188FF');
+            btnMove.BackgroundColor = 'FF9900';
+            btnMove.Label = '動く？';
+            btnMove.AddEventListener(Events.ControlEvents.SingleClick, () => {
+                console.log('btnMove.SingleClick');
+            });
+            this.View.Add(btnMove);
+
+            const btnReset = new Fw.Views.ControlView();
+            btnReset.SetDisplayParams(0, 0, 60, 60, '1188FF');
+            btnReset.SetAnchor(5, null, 5, null);
+            btnReset.Label = 'リセット';
+            btnReset.AddEventListener(Events.ControlEvents.SingleClick, () => {
+                console.log('btnReset.SingleClick');
+                if (btnMove.IsRelocatable)
+                    btnMove.SetRelocatable(false);
+            });
+            this.View.Add(btnReset);
         }
     }
 }
