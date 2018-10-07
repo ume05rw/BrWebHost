@@ -22,7 +22,7 @@ namespace Fw.Views {
         public Children: Array<IView>;
 
         // Properties with set/get
-        private _x: number;
+        private _x: number = 0;
         public get X(): number {
             return this._x;
         }
@@ -31,7 +31,7 @@ namespace Fw.Views {
             this.Refresh();
         }
 
-        private _y: number;
+        private _y: number = 0;
         public get Y(): number {
             return this._y;
         }
@@ -40,7 +40,7 @@ namespace Fw.Views {
             this.Refresh();
         }
 
-        private _width: number;
+        private _width: number = 0;
         public get Width(): number {
             return this._width;
         }
@@ -49,7 +49,7 @@ namespace Fw.Views {
             this.Refresh();
         }
 
-        private _height: number;
+        private _height: number = 0;
         public get Height(): number {
             return this._height;
         }
@@ -131,7 +131,7 @@ namespace Fw.Views {
         }
 
 
-        private _color: string;
+        private _color: string = '000000';
         public get Color(): string {
             return this._color;
         }
@@ -140,7 +140,7 @@ namespace Fw.Views {
             this.Refresh();
         }
 
-        private _backgroundColor: string;
+        private _backgroundColor: string = 'FFFFFF';
         public get BackgroundColor(): string {
             return this._backgroundColor;
         }
@@ -154,6 +154,8 @@ namespace Fw.Views {
             this.Children = new Array<IView>();
             this.Elem = jqueryElem;
             this.Dom = jqueryElem.get(0) as HTMLElement
+
+            this.Init();
         }
 
         protected Init(): void {

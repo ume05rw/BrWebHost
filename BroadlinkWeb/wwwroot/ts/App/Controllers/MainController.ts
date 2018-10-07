@@ -78,7 +78,7 @@ namespace App.Controllers {
             ancCtl4.Label = '左上';
             ancCtl4.Width = 200;
             ancCtl4.Height = 50;
-            ancCtl4.SetAnchor(3, 3, null, null);
+            ancCtl4.SetAnchor(60, 3, null, null);
             this.View.Add(ancCtl4);
 
             const ancCtl5 = new Fw.Views.ControlView();

@@ -71,8 +71,3 @@ div.IController .ControlView > * {
     width: 100%;
     text-align: center;
 }
-
-/* 相対位置指定ControllerView */
-div.IController .IView.AnchoredControlView {
-    position: absolute;
-}

@@ -50,17 +50,6 @@ declare namespace Fw.Controllers {
         Show(id: string): void;
     }
 }
-declare namespace Fw.Util.Xhr {
-    class Config {
-        static BaseUrl: string;
-    }
-}
-declare namespace App {
-    class Main {
-        static _controllerManager: Fw.Controllers.Manager;
-        static StartUp(): void;
-    }
-}
 declare namespace Fw.Views.Animation {
     class Params {
         static GetCurrent(view: Fw.Views.IView): Params;
@@ -208,6 +197,17 @@ declare namespace App.Controllers {
         private _btnA1Value;
         constructor(elem: JQuery, manager: Fw.Controllers.Manager);
         private Init;
+    }
+}
+declare namespace Fw.Util.Xhr {
+    class Config {
+        static BaseUrl: string;
+    }
+}
+declare namespace App {
+    class Main {
+        static _controllerManager: Fw.Controllers.Manager;
+        static StartUp(): void;
     }
 }
 declare namespace Fw.Events {
