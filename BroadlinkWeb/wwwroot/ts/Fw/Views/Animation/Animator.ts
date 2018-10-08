@@ -14,7 +14,10 @@ namespace Fw.Views.Animation {
 
         constructor(view: Fw.Views.IView, toParams?: Params) {
             this._view = view;
-            this.ToParams = toParams;
+            this.FromParams = Animation.Params.GetCurrent(view);
+            this.ToParams = (toParams)
+                ? toParams
+                : Animation.Params.GetCurrent(view);
         }
 
         public Invoke(duration: number = 200): void {

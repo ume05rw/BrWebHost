@@ -8,9 +8,9 @@ namespace Fw.Views.Animation {
             const result = new Params();
             result.X = 0;
             result.Y = 0;
-            result.Width = view.Elem.width();
-            result.Height = view.Elem.height();
-            result.Opacity = Number(view.Elem.get(0).style.opacity);
+            result.Width = view.Size.Width;
+            result.Height = view.Size.Height;
+            result.Opacity = Number(view.Dom.style.opacity || 1);
             return result;
         }
 
@@ -18,16 +18,16 @@ namespace Fw.Views.Animation {
             const result = new Params();
             result.X = 0;
             result.Y = 0;
-            result.Width = (view.Elem.width() * resizeRate);
-            result.Height = (view.Elem.height() * resizeRate);
+            result.Width = (view.Size.Width * resizeRate);
+            result.Height = (view.Size.Height * resizeRate);
             result.Opacity = 0.0;
             return result;
         }
 
         public static GetSlided(view: Fw.Views.IView, xRate: number = 0, yRate: number = 0): Params {
             const result = new Params();
-            const width = view.Elem.width();
-            const height = view.Elem.height();
+            const width = view.Size.Width;
+            const height = view.Size.Height;
             result.X = (width * xRate);
             result.Y = (height * yRate);
             result.Width = width;

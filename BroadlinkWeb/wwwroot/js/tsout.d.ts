@@ -347,6 +347,7 @@ declare namespace Fw.Views {
         InnerPanelCount: number;
         private _innerPanel;
         private _isDragging;
+        private _mouseMoveSuppressor;
         private _dragStartMousePosition;
         private _dragStartPanelPosition;
         constructor(direction: Direction);

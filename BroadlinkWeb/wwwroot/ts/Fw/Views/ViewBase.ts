@@ -212,7 +212,6 @@ namespace Fw.Views {
             const animator = new Anim.Animator(this);
             animator.FromParams = Anim.Params.GetResized(this, 0.8);
             animator.FromParams.Opacity = 0;
-            animator.ToParams = Anim.Params.GetCurrent(this);
             animator.ToParams.Opacity = 1.0;
             animator.OnComplete = () => {
                 this.Dom.style.display = `block`;
@@ -228,7 +227,6 @@ namespace Fw.Views {
                 return;
 
             const animator = new Anim.Animator(this);
-            animator.FromParams = Anim.Params.GetCurrent(this);
             animator.FromParams.Opacity = 1.0;
             animator.ToParams = Anim.Params.GetResized(this, 0.8);
             animator.ToParams.Opacity = 0.0;
@@ -270,7 +268,7 @@ namespace Fw.Views {
 
         protected InnerRefresh(): void {
             try {
-                Dump.Log(`${this.ClassName}.InnerRefresh`);
+                //Dump.Log(`${this.ClassName}.InnerRefresh`);
                 const parent = $(this.Elem.parent());
 
                 if (parent.length <= 0)
@@ -332,13 +330,13 @@ namespace Fw.Views {
                 const elemLeft = pHalfWidth - myHalfWidth + this.Position.X;
                 const elemTop = pHalfHeight - myHalfHeight + this.Position.Y;
 
-                Dump.Log({
-                    left: this.Position.Left,
-                    pHalfWidth: pHalfWidth,
-                    myHalfWidth: myHalfWidth,
-                    positionX: this.Position.X,
-                    elemLeft: elemLeft
-                });
+                //Dump.Log({
+                //    left: this.Position.Left,
+                //    pHalfWidth: pHalfWidth,
+                //    myHalfWidth: myHalfWidth,
+                //    positionX: this.Position.X,
+                //    elemLeft: elemLeft
+                //});
 
                 this.Dom.style.left = `${elemLeft}px`;
                 this.Dom.style.top = `${elemTop}px`;
@@ -368,7 +366,7 @@ namespace Fw.Views {
             if (this.IsSuppressedEvent(name))
                 return;
 
-            Dump.Log(`${this.ClassName}.DispatchEvent: ${name}`);
+            //Dump.Log(`${this.ClassName}.DispatchEvent: ${name}`);
             this.Elem.trigger(name);
         }
 

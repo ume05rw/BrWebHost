@@ -1,10 +1,13 @@
 ﻿/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Fw/Views/Animation/Animator.ts" />
+/// <reference path="../../Fw/Views/Animation/Params.ts" />
 /// <reference path="../../Fw/Events/ControlEvents.ts" />
 /// <reference path="../../Fw/Util/Dump.ts" />
 /// <reference path="./PanelView.ts" />
 
 namespace Fw.Views {
+    import Anim = Fw.Views.Animation;
     import Events = Fw.Events.ControlEvents;
     import Dump = Fw.Util.Dump;
 
@@ -37,6 +40,7 @@ namespace Fw.Views {
 
         private _innerPanel: PanelView;
         private _isDragging: boolean = false;
+        private _mouseMoveSuppressor = false;
         private _dragStartMousePosition: Position;
         private _dragStartPanelPosition: Position;
 
@@ -78,7 +82,7 @@ namespace Fw.Views {
                 this._dragStartPanelPosition.Y = this._innerPanel.Position.Y;
             });
             this._innerPanel.Elem.on('touchmove mousemove', (e) => {
-                if (!this._isDragging)
+                if (!this._isDragging && !this._mouseMoveSuppressor)
                     return;
 
                 if (e.eventPhase !== 2)
@@ -107,7 +111,7 @@ namespace Fw.Views {
                 this._isDragging = false;
                 _.delay(() => {
                     this.AdjustSlidePosition();
-                }, 300);
+                }, 200);
             });
         }
 
@@ -148,37 +152,57 @@ namespace Fw.Views {
         }
 
         private AdjustSlidePosition() {
-            console.log('left: ' + this._innerPanel.Position.Left);
+            const unitWidth = this.Size.Width / 2;
+            const unitHeight = this.Size.Height / 2;
+            const maxLeft = 0;
+            const maxTop = 0;
+            const minLeft = this.Size.Width - this._innerPanel.Size.Width;
+            const minTop = this.Size.Height - this._innerPanel.Size.Height;
+            const left = this._innerPanel.Position.Left;
+            const top = this._innerPanel.Position.Top;
 
-            this._innerPanel.SetPositionByLeftTop(10, null);
+            // 座標値がマイナスのため、floorでなくceilで切り捨てる。
+            let toLeft = Math.ceil(left / unitWidth) * unitWidth;
+            let toTop = Math.ceil(top / unitHeight) * unitHeight;
 
-            //const unitWidth = this.Size.Width / 2;
-            //const unitHeight = this.Size.Height / 2;
-            //const currentLeft = this._innerPanel.Position.Left;
-            //const currentTop = this._innerPanel.Position.Top;
+            if (toLeft < minLeft) {
+                toLeft = minLeft;
+            } else if (maxLeft < toLeft) {
+                toLeft = maxLeft;
+            } else {
+                const remainderLeft = Math.abs(left % unitWidth);
+                if (remainderLeft > (unitWidth / 2))
+                    toLeft -= unitWidth;
+            }
 
-            //const remainderLeft = Math.abs(currentLeft % unitWidth);
-            //const remainderTop = Math.abs(currentTop % unitHeight);
-            //let widthUnitCount = Math.abs(Math.floor(currentLeft / unitWidth));
-            //let heightUnitCount = Math.abs(Math.floor(currentTop / unitHeight));
+            if (toTop < minTop) {
+                toTop = minTop;
+            } else if (maxTop < toTop) {
+                toTop = maxTop;
+            } else {
+                const remainderTop = Math.abs(top % unitHeight);
+                if (remainderTop > (unitHeight / 2))
+                    toTop -= unitHeight;
+            }
 
-            //if (remainderLeft > (unitWidth / 2))
-            //    widthUnitCount++;
-            //if (remainderTop > (unitHeight / 2))
-            //    heightUnitCount++;
+            const animator = new Anim.Animator(this._innerPanel);
+            if (this.Direction === Direction.Horizontal) {
+                animator.ToParams.X = (toLeft - left);
+            } else {
+                animator.ToParams.Y = (toTop - top);
+            }
+            animator.OnComplete = () => {
+                if (this.Direction === Direction.Horizontal) {
+                    this._innerPanel.SetPositionByLeftTop(toLeft, null);
+                } else {
+                    this._innerPanel.SetPositionByLeftTop(null, toTop);
+                }
+                this._mouseMoveSuppressor = false;
+            }
 
-            //const toLeft = widthUnitCount * (-unitWidth);
-            //const toTop = heightUnitCount * (-unitHeight);
-
-            //if (this.Direction === Direction.Horizontal) {
-            //    console.log('toLeft: ' + toLeft);
-            //    this._innerPanel.SetPositionByLeftTop(toLeft, null);
-            //} else {
-            //    console.log('toTop: ' + toTop);
-            //    this._innerPanel.SetPositionByLeftTop(null, toTop);
-            //}
+            this._mouseMoveSuppressor = true;
+            animator.Invoke(500);
         }
-
 
         protected InnerRefresh(): void {
             try {

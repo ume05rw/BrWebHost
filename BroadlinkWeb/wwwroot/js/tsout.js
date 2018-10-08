@@ -93,17 +93,17 @@ var Fw;
                     var result = new Params();
                     result.X = 0;
                     result.Y = 0;
-                    result.Width = view.Elem.width();
-                    result.Height = view.Elem.height();
-                    result.Opacity = Number(view.Elem.get(0).style.opacity);
+                    result.Width = view.Size.Width;
+                    result.Height = view.Size.Height;
+                    result.Opacity = Number(view.Dom.style.opacity || 1);
                     return result;
                 };
                 Params.GetResized = function (view, resizeRate) {
                     var result = new Params();
                     result.X = 0;
                     result.Y = 0;
-                    result.Width = (view.Elem.width() * resizeRate);
-                    result.Height = (view.Elem.height() * resizeRate);
+                    result.Width = (view.Size.Width * resizeRate);
+                    result.Height = (view.Size.Height * resizeRate);
                     result.Opacity = 0.0;
                     return result;
                 };
@@ -111,8 +111,8 @@ var Fw;
                     if (xRate === void 0) { xRate = 0; }
                     if (yRate === void 0) { yRate = 0; }
                     var result = new Params();
-                    var width = view.Elem.width();
-                    var height = view.Elem.height();
+                    var width = view.Size.Width;
+                    var height = view.Size.Height;
                     result.X = (width * xRate);
                     result.Y = (height * yRate);
                     result.Width = width;
@@ -142,7 +142,10 @@ var Fw;
                     this.ToParams = null;
                     this.OnComplete = null;
                     this._view = view;
-                    this.ToParams = toParams;
+                    this.FromParams = Animation.Params.GetCurrent(view);
+                    this.ToParams = (toParams)
+                        ? toParams
+                        : Animation.Params.GetCurrent(view);
                 }
                 Animator.prototype.Invoke = function (duration) {
                     var _this = this;
@@ -561,7 +564,6 @@ var Fw;
                 var animator = new Anim.Animator(this);
                 animator.FromParams = Anim.Params.GetResized(this, 0.8);
                 animator.FromParams.Opacity = 0;
-                animator.ToParams = Anim.Params.GetCurrent(this);
                 animator.ToParams.Opacity = 1.0;
                 animator.OnComplete = function () {
                     _this.Dom.style.display = "block";
@@ -576,7 +578,6 @@ var Fw;
                 if (!this.IsVisible())
                     return;
                 var animator = new Anim.Animator(this);
-                animator.FromParams = Anim.Params.GetCurrent(this);
                 animator.FromParams.Opacity = 1.0;
                 animator.ToParams = Anim.Params.GetResized(this, 0.8);
                 animator.ToParams.Opacity = 0.0;
@@ -611,7 +612,7 @@ var Fw;
             };
             ViewBase.prototype.InnerRefresh = function () {
                 try {
-                    Dump.Log(this.ClassName + ".InnerRefresh");
+                    //Dump.Log(`${this.ClassName}.InnerRefresh`);
                     var parent_1 = $(this.Elem.parent());
                     if (parent_1.length <= 0)
                         return;
@@ -666,13 +667,13 @@ var Fw;
                     var myHalfHeight = this.Size.Height / 2;
                     var elemLeft = pHalfWidth - myHalfWidth + this.Position.X;
                     var elemTop = pHalfHeight - myHalfHeight + this.Position.Y;
-                    Dump.Log({
-                        left: this.Position.Left,
-                        pHalfWidth: pHalfWidth,
-                        myHalfWidth: myHalfWidth,
-                        positionX: this.Position.X,
-                        elemLeft: elemLeft
-                    });
+                    //Dump.Log({
+                    //    left: this.Position.Left,
+                    //    pHalfWidth: pHalfWidth,
+                    //    myHalfWidth: myHalfWidth,
+                    //    positionX: this.Position.X,
+                    //    elemLeft: elemLeft
+                    //});
                     this.Dom.style.left = elemLeft + "px";
                     this.Dom.style.top = elemTop + "px";
                     this.Dom.style.width = this.Size.Width + "px";
@@ -698,7 +699,7 @@ var Fw;
             ViewBase.prototype.DispatchEvent = function (name) {
                 if (this.IsSuppressedEvent(name))
                     return;
-                Dump.Log(this.ClassName + ".DispatchEvent: " + name);
+                //Dump.Log(`${this.ClassName}.DispatchEvent: ${name}`);
                 this.Elem.trigger(name);
             };
             ViewBase.prototype.SuppressEvent = function (name) {
@@ -1885,6 +1886,8 @@ var Fw;
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Fw/Views/Animation/Animator.ts" />
+/// <reference path="../../Fw/Views/Animation/Params.ts" />
 /// <reference path="../../Fw/Events/ControlEvents.ts" />
 /// <reference path="../../Fw/Util/Dump.ts" />
 /// <reference path="./PanelView.ts" />
@@ -1892,6 +1895,7 @@ var Fw;
 (function (Fw) {
     var Views;
     (function (Views) {
+        var Anim = Fw.Views.Animation;
         var Events = Fw.Events.ControlEvents;
         var Dump = Fw.Util.Dump;
         var Direction;
@@ -1906,6 +1910,7 @@ var Fw;
                 _this._innerBackgroundColor = '#F5F5F5';
                 _this._innerPanelCount = 2;
                 _this._isDragging = false;
+                _this._mouseMoveSuppressor = false;
                 _this._delayedResumeMouseEventsTimer = null;
                 _this.ClassName = 'SlidablePanelView';
                 // nullやundefinedを入れさせない。
@@ -1958,7 +1963,7 @@ var Fw;
                     _this._dragStartPanelPosition.Y = _this._innerPanel.Position.Y;
                 });
                 this._innerPanel.Elem.on('touchmove mousemove', function (e) {
-                    if (!_this._isDragging)
+                    if (!_this._isDragging && !_this._mouseMoveSuppressor)
                         return;
                     if (e.eventPhase !== 2)
                         return;
@@ -1984,7 +1989,7 @@ var Fw;
                     _this._isDragging = false;
                     _.delay(function () {
                         _this.AdjustSlidePosition();
-                    }, 300);
+                    }, 200);
                 });
             };
             SlidablePanelView.prototype.DelayedResumeMouseEvents = function () {
@@ -2022,29 +2027,58 @@ var Fw;
                 }
             };
             SlidablePanelView.prototype.AdjustSlidePosition = function () {
-                console.log('left: ' + this._innerPanel.Position.Left);
-                this._innerPanel.SetPositionByLeftTop(10, null);
-                //const unitWidth = this.Size.Width / 2;
-                //const unitHeight = this.Size.Height / 2;
-                //const currentLeft = this._innerPanel.Position.Left;
-                //const currentTop = this._innerPanel.Position.Top;
-                //const remainderLeft = Math.abs(currentLeft % unitWidth);
-                //const remainderTop = Math.abs(currentTop % unitHeight);
-                //let widthUnitCount = Math.abs(Math.floor(currentLeft / unitWidth));
-                //let heightUnitCount = Math.abs(Math.floor(currentTop / unitHeight));
-                //if (remainderLeft > (unitWidth / 2))
-                //    widthUnitCount++;
-                //if (remainderTop > (unitHeight / 2))
-                //    heightUnitCount++;
-                //const toLeft = widthUnitCount * (-unitWidth);
-                //const toTop = heightUnitCount * (-unitHeight);
-                //if (this.Direction === Direction.Horizontal) {
-                //    console.log('toLeft: ' + toLeft);
-                //    this._innerPanel.SetPositionByLeftTop(toLeft, null);
-                //} else {
-                //    console.log('toTop: ' + toTop);
-                //    this._innerPanel.SetPositionByLeftTop(null, toTop);
-                //}
+                var _this = this;
+                var unitWidth = this.Size.Width / 2;
+                var unitHeight = this.Size.Height / 2;
+                var maxLeft = 0;
+                var maxTop = 0;
+                var minLeft = this.Size.Width - this._innerPanel.Size.Width;
+                var minTop = this.Size.Height - this._innerPanel.Size.Height;
+                var left = this._innerPanel.Position.Left;
+                var top = this._innerPanel.Position.Top;
+                // 座標値がマイナスのため、floorでなくceilで切り捨てる。
+                var toLeft = Math.ceil(left / unitWidth) * unitWidth;
+                var toTop = Math.ceil(top / unitHeight) * unitHeight;
+                if (toLeft < minLeft) {
+                    toLeft = minLeft;
+                }
+                else if (maxLeft < toLeft) {
+                    toLeft = maxLeft;
+                }
+                else {
+                    var remainderLeft = Math.abs(left % unitWidth);
+                    if (remainderLeft > (unitWidth / 2))
+                        toLeft -= unitWidth;
+                }
+                if (toTop < minTop) {
+                    toTop = minTop;
+                }
+                else if (maxTop < toTop) {
+                    toTop = maxTop;
+                }
+                else {
+                    var remainderTop = Math.abs(top % unitHeight);
+                    if (remainderTop > (unitHeight / 2))
+                        toTop -= unitHeight;
+                }
+                var animator = new Anim.Animator(this._innerPanel);
+                if (this.Direction === Direction.Horizontal) {
+                    animator.ToParams.X = (toLeft - left);
+                }
+                else {
+                    animator.ToParams.Y = (toTop - top);
+                }
+                animator.OnComplete = function () {
+                    if (_this.Direction === Direction.Horizontal) {
+                        _this._innerPanel.SetPositionByLeftTop(toLeft, null);
+                    }
+                    else {
+                        _this._innerPanel.SetPositionByLeftTop(null, toTop);
+                    }
+                    _this._mouseMoveSuppressor = false;
+                };
+                this._mouseMoveSuppressor = true;
+                animator.Invoke(500);
             };
             SlidablePanelView.prototype.InnerRefresh = function () {
                 try {
