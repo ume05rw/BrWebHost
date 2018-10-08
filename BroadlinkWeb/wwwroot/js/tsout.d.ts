@@ -4,7 +4,9 @@ declare namespace Fw.Views {
     interface IView {
         Elem: JQuery;
         Dom: HTMLElement;
+        Parent: IView;
         Children: Array<IView>;
+        ClassName: string;
         Size: Size;
         Position: Position;
         Anchor: Anchor;
@@ -13,6 +15,7 @@ declare namespace Fw.Views {
         SetDisplayParams(width: number, height: number, x: number, y: number, color: string, backgroundColor: string): void;
         SetSize(width: number, height: number): void;
         SetPosition(x: number, y: number): void;
+        SetPositionByLeftTop(left: number, top: number): void;
         SetAnchor(top: number, left: number, right: number, bottom: number): void;
         Add(view: IView): void;
         Remove(view: IView): void;
@@ -80,6 +83,7 @@ declare namespace Fw.Events {
         readonly SizeChanged: string;
         readonly PositionChanged: string;
         readonly AnchorChanged: string;
+        readonly Initialized: string;
     }
     const ViewEvents: ViewEventsClass;
 }
@@ -107,17 +111,21 @@ declare namespace Fw.Views {
         Width: number;
         private _height;
         Height: number;
-        constructor(view: IView);
+        constructor(view?: IView);
         Dispose(): void;
     }
 }
 declare namespace Fw.Views {
     abstract class ViewBase implements IView {
         private _lastRefreshTimer;
+        private _lastRefreshedTime;
+        private _initialized;
         private _suppressedEvents;
         Elem: JQuery;
         readonly Dom: HTMLElement;
+        Parent: IView;
         Children: Array<IView>;
+        ClassName: string;
         private _size;
         readonly Size: Size;
         private _position;
@@ -133,6 +141,7 @@ declare namespace Fw.Views {
         SetSize(width: number, height: number): void;
         SetPosition(x: number, y: number): void;
         SetAnchor(top: number, left: number, right: number, bottom: number): void;
+        SetPositionByLeftTop(left: number, top: number): void;
         SetDisplayParams(width: number, height: number, x?: number, y?: number, color?: string, backgroundColor?: string): void;
         Add(view: IView): void;
         Remove(view: IView): void;
@@ -265,7 +274,7 @@ declare namespace Fw.Views {
         IsAnchoredBottom: boolean;
         private _marginBottom;
         MarginBottom: number;
-        constructor(view: IView);
+        constructor(view?: IView);
         Dispose(): void;
     }
 }
@@ -294,7 +303,9 @@ declare namespace Fw.Views {
         X: number;
         private _y;
         Y: number;
-        constructor(view: IView);
+        readonly Left: number;
+        readonly Top: number;
+        constructor(view?: IView);
         Dispose(): void;
     }
 }
@@ -308,11 +319,42 @@ declare namespace Fw.Views {
         private _isMouseMoveEventListened;
         private _isDragging;
         GridSize: number;
+        constructor();
         protected Init(): void;
         private OnMouseMove;
         private _delayedResumeMouseEventsTimer;
         private DelayedResumeMouseEvents;
         SetRelocatable(relocatable: boolean): void;
+        protected InnerRefresh(): void;
+    }
+}
+declare namespace Fw.Views {
+    class PanelView extends ControlView {
+        constructor();
+        protected Init(): void;
+    }
+}
+declare namespace Fw.Views {
+    enum Direction {
+        Horizontal = 0,
+        Vertical = 1
+    }
+    class SlidablePanelView extends PanelView {
+        readonly Direction: Direction;
+        private _innerBackgroundColor;
+        InnerBackgroundColor: string;
+        private _innerPanelCount;
+        InnerPanelCount: number;
+        private _innerPanel;
+        private _isDragging;
+        private _dragStartMousePosition;
+        private _dragStartPanelPosition;
+        constructor(direction: Direction);
+        protected Init(): void;
+        private _delayedResumeMouseEventsTimer;
+        private DelayedResumeMouseEvents;
+        private InitView;
+        private AdjustSlidePosition;
         protected InnerRefresh(): void;
     }
 }

@@ -24,9 +24,11 @@
     <Content Remove="wwwroot\ts\Fw\Views\ControlView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\IView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\PageView.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\PanelView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\Position.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\RelocatableControlView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\Size.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\SlidableView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\ViewBase.ts" />
     <Content Remove="wwwroot\ts\PageManager.ts" />
   </ItemGroup>
@@ -75,9 +77,11 @@
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ControlView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\IView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\PageView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\PanelView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Position.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\RelocatableControlView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Size.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\SlidableView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ViewBase.ts" />
   </ItemGroup>
 

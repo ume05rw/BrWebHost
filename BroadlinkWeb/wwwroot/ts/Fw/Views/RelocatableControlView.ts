@@ -22,6 +22,11 @@ namespace Fw.Views {
 
         public GridSize: number = 60;
 
+        constructor() {
+            super();
+            this.ClassName = 'RelocatableControlView';
+        }
+
         protected Init(): void {
             super.Init();
 
@@ -40,6 +45,8 @@ namespace Fw.Views {
                     this.Refresh();
                 }
             });
+
+            // ↓mouseoutイベントは捕捉しない。途切れまくるので。
             this.Elem.on('touchend mouseup', (e) => {
                 if (!this._isRelocatable) {
                     this._isDragging = false;
@@ -73,23 +80,16 @@ namespace Fw.Views {
 
         private OnMouseMove(e: JQueryEventObject): void {
             if (this._isRelocatable && this._isDragging) {
-                const parent = $(this.Elem.parent());
-                const parentWidth = parent.width();
-                const parentHeight = parent.height();
-                const centerLeft = (parentWidth / 2);
-                const centerTop = (parentHeight / 2);
-                const left = e.clientX;
-                const top = e.clientY;
+
+                const left = e.clientX - (this.Size.Width / 2);
+                const top = e.clientY - (this.Size.Height / 2);
+                this.SetPositionByLeftTop(left, top);
 
                 // マウスボタン押下中のクリックイベント発火を抑止する。
                 if (!this.IsSuppressedEvent(Events.LongClick))
                     this.SuppressEvent(Events.LongClick);
                 if (!this.IsSuppressedEvent(Events.SingleClick))
                     this.SuppressEvent(Events.SingleClick);
-
-                this.Position.X = left - centerLeft;
-                this.Position.Y = top - centerTop;
-                this.Refresh();
                 this.DelayedResumeMouseEvents();
             }
         }
@@ -111,8 +111,6 @@ namespace Fw.Views {
         }
 
         public SetRelocatable(relocatable: boolean): void {
-            console.log('SetRelocatable');
-
             if (this._isRelocatable) {
                 // 固定する。
                 this._isRelocatable = false;
@@ -134,6 +132,11 @@ namespace Fw.Views {
             if (parent.length <= 0)
                 return;
 
+            if (!this._isRelocatable) {
+                this.Position.X = Math.round(this.Position.X / this.GridSize) * this.GridSize;
+                this.Position.Y = Math.round(this.Position.Y / this.GridSize) * this.GridSize;
+            }
+
             super.InnerRefresh();
 
             const shadowDom = this._shadow.get(0);
@@ -147,8 +150,13 @@ namespace Fw.Views {
             this.Dom.style.opacity = '0.7';
 
             if (this._isDragging) {
-                const parentWidth = parent.width();
-                const parentHeight = parent.height();
+                const parentWidth = (this.Parent)
+                    ? this.Parent.Size.Width
+                    : parent.width();
+                const parentHeight = (this.Parent)
+                    ? this.Parent.Size.Height
+                    : parent.height();
+
                 const centerLeft = (parentWidth / 2);
                 const centerTop = (parentHeight / 2);
                 const sX = Math.round(this.Position.X / this.GridSize) * this.GridSize;

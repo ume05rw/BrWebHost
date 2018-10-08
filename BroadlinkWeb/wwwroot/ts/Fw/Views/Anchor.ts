@@ -8,7 +8,7 @@ namespace Fw.Views {
     import Number = Fw.Util.Number;
 
     export class Anchor {
-        private _view: IView;
+        private _view: IView = null;
 
         private _isAnchoredTop: boolean = false;
         public get IsAnchoredTop(): boolean {
@@ -22,7 +22,7 @@ namespace Fw.Views {
             const changed = (this._isAnchoredTop !== value);
             this._isAnchoredTop = value;
 
-            if (changed)
+            if (changed && this._view)
                 this._view.DispatchEvent(Events.AnchorChanged);
         }
 
@@ -38,7 +38,7 @@ namespace Fw.Views {
             const changed = (this._marginTop !== value);
             this._marginTop = value;
 
-            if (changed)
+            if (changed && this._view)
                 this._view.DispatchEvent(Events.AnchorChanged);
         }
 
@@ -54,7 +54,7 @@ namespace Fw.Views {
             const changed = (this._isAnchoredLeft !== value);
             this._isAnchoredLeft = value;
 
-            if (changed)
+            if (changed && this._view)
                 this._view.DispatchEvent(Events.AnchorChanged);
         }
 
@@ -70,7 +70,7 @@ namespace Fw.Views {
             const changed = (this._marginLeft !== value);
             this._marginLeft = value;
 
-            if (changed)
+            if (changed && this._view)
                 this._view.DispatchEvent(Events.AnchorChanged);
         }
 
@@ -86,7 +86,7 @@ namespace Fw.Views {
             const changed = (this._isAnchoredRight !== value);
             this._isAnchoredRight = value;
 
-            if (changed)
+            if (changed && this._view)
                 this._view.DispatchEvent(Events.AnchorChanged);
         }
 
@@ -102,7 +102,7 @@ namespace Fw.Views {
             const changed = (this._marginRight !== value);
             this._marginRight = value;
 
-            if (changed)
+            if (changed && this._view)
                 this._view.DispatchEvent(Events.AnchorChanged);
         }
 
@@ -118,7 +118,7 @@ namespace Fw.Views {
             const changed = (this._isAnchoredBottom !== value);
             this._isAnchoredBottom = value;
 
-            if (changed)
+            if (changed && this._view)
                 this._view.DispatchEvent(Events.AnchorChanged);
         }
 
@@ -134,11 +134,11 @@ namespace Fw.Views {
             const changed = (this._marginBottom !== value);
             this._marginBottom = value;
 
-            if (changed)
+            if (changed && this._view)
                 this._view.DispatchEvent(Events.AnchorChanged);
         }
 
-        constructor(view: IView) {
+        constructor(view: IView = null) {
             this._view = view;
         }
 

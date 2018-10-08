@@ -25,24 +25,33 @@ namespace Fw.Views.Animation {
                 this.FromParams = Params.GetCurrent(this._view);
 
             const parent = $(this._view.Elem.parent());
-            const centerLeft = (parent.width() / 2);
-            const centerTop = (parent.height() / 2);
+
+            const parentWidth = (this._view.Parent)
+                ? this._view.Parent.Size.Width
+                : parent.width();
+            const parentHeight = (this._view.Parent)
+                ? this._view.Parent.Size.Height
+                : parent.height();
+
+
+            const pHalfWidth = (parentWidth / 2);
+            const pHalfHeight = (parentHeight / 2);
             const dom = this._view.Elem.get(0) as HTMLElement;
 
             const fromX = this._view.Position.X + this.FromParams.X;
             const fromY = this._view.Position.Y + this.FromParams.Y;
-            const fromLeft = centerLeft + fromX - (this.FromParams.Width / 2);
-            const fromTop = centerTop + fromY - (this.FromParams.Height / 2);
+            const fromLeft = pHalfWidth + fromX - (this.FromParams.Width / 2);
+            const fromTop = pHalfHeight + fromY - (this.FromParams.Height / 2);
 
             const toX = this._view.Position.X + this.ToParams.X;
             const toY = this._view.Position.Y + this.ToParams.Y;
-            const toLeft = centerLeft + toX - (this.ToParams.Width / 2);
-            const toTop = centerTop + toY - (this.ToParams.Height / 2);
+            const toLeft = pHalfWidth + toX - (this.ToParams.Width / 2);
+            const toTop = pHalfHeight + toY - (this.ToParams.Height / 2);
 
             //console.log({
             //    name: 'center',
-            //    left: centerLeft,
-            //    top: centerTop
+            //    left: pHalfWidth,
+            //    top: pHalfHeight
             //});
 
             //console.log({

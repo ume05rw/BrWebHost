@@ -8,7 +8,7 @@ namespace Fw.Views {
     import Number = Fw.Util.Number;
 
     export class Position {
-        private _view: IView;
+        private _view: IView = null;
 
         private _x: number = 0;
         public get X(): number {
@@ -22,7 +22,7 @@ namespace Fw.Views {
             const changed = (this._x !== value);
             this._x = value;
 
-            if (changed)
+            if (changed && this._view)
                 this._view.DispatchEvent(Events.PositionChanged);
         }
 
@@ -38,11 +38,42 @@ namespace Fw.Views {
             const changed = (this._y !== value);
             this._y = value;
 
-            if (changed)
+            if (changed && this._view)
                 this._view.DispatchEvent(Events.PositionChanged);
         }
 
-        constructor(view: IView) {
+        public get Left(): number {
+            if (!this._view)
+                return null;
+
+            const parent = $(this._view.Elem.parent());
+            const parentWidth = (this._view.Parent)
+                ? this._view.Parent.Size.Width
+                : parent.width();
+
+            const pHalfWidth = (parentWidth / 2);
+            const myHalfWidth = (this._view.Size.Width / 2);
+
+            return pHalfWidth - myHalfWidth + this._x;
+        }
+
+        public get Top(): number {
+            if (!this._view)
+                return null;
+
+            const parent = $(this._view.Elem.parent());
+            const parentHeight = (this._view.Parent)
+                ? this._view.Parent.Size.Height
+                : parent.height();
+
+            const pHalfHeight = (parentHeight / 2);
+            const myHalfHeight = (this._view.Size.Height / 2);
+
+            return pHalfHeight - myHalfHeight + this._y;
+        }
+
+
+        constructor(view: IView = null) {
             this._view = view;
         }
 

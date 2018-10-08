@@ -10,6 +10,7 @@ namespace Fw.Events {
         public readonly SizeChanged: string = 'SizeChanged';
         public readonly PositionChanged: string = 'PositionChanged';
         public readonly AnchorChanged: string = 'AnchorChanged';
+        public readonly Initialized: string = 'Initialized';
     }
     export const ViewEvents: ViewEventsClass = new ViewEventsClass();
 }

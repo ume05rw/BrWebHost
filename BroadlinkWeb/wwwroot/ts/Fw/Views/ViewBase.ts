@@ -14,13 +14,18 @@ namespace Fw.Views {
     export abstract class ViewBase implements IView {
         // Refresh() Multiple execution suppressor
         private _lastRefreshTimer: number;
+        private _lastRefreshedTime: Date;
+
+        private _initialized: boolean = false;
 
         private _suppressedEvents: Array<string> = new Array<string>();
 
         // Properties
         public Elem: JQuery;
         public readonly Dom: HTMLElement;
+        public Parent: IView;
         public Children: Array<IView>;
+        public ClassName: string;
 
         private _size: Size;
         public get Size(): Size {
@@ -60,6 +65,7 @@ namespace Fw.Views {
             this.Children = new Array<IView>();
             this.Elem = jqueryElem;
             this.Dom = jqueryElem.get(0) as HTMLElement
+            this.ClassName = 'ViewBase';
 
             this.Init();
         }
@@ -91,12 +97,12 @@ namespace Fw.Views {
                 : this.DispatchEvent(Events.Hidden);
         }
 
-        public SetSize(width: number, height: number) {
+        public SetSize(width: number, height: number): void {
             this.Size.Width = width;
             this.Size.Height = height;
         }
 
-        public SetPosition(x: number, y: number) {
+        public SetPosition(x: number, y: number): void {
             this.Position.X = x;
             this.Position.Y = y;
         }
@@ -135,6 +141,28 @@ namespace Fw.Views {
             }
         }
 
+        public SetPositionByLeftTop(left: number, top: number): void {
+            const parent = $(this.Elem.parent());
+
+            const parentWidth = (this.Parent)
+                ? this.Parent.Size.Width
+                : parent.width();
+            const parentHeight = (this.Parent)
+                ? this.Parent.Size.Height
+                : parent.height();
+
+            const pHalfLeft = (parentWidth / 2);
+            const pHalfTop = (parentHeight / 2);
+
+            const myHalfLeft = (this.Size.Width / 2);
+            const myHalfTop = (this.Size.Height / 2);
+
+            if (_.isNumber(left))
+                this.Position.X = myHalfLeft - pHalfLeft + left;
+            if (_.isNumber(top))
+                this.Position.Y = myHalfTop - pHalfTop + top;
+        }
+
         public SetDisplayParams(
             width: number,
             height: number,
@@ -159,6 +187,7 @@ namespace Fw.Views {
 
         public Add(view: IView): void {
             if (this.Children.indexOf(view) == -1) {
+                view.Parent = this;
                 this.Children.push(view);
                 this.Elem.append(view.Elem);
                 view.Refresh();
@@ -169,6 +198,7 @@ namespace Fw.Views {
         public Remove(view: IView): void {
             const index = this.Children.indexOf(view);
             if (index != -1) {
+                view.Parent = null;
                 this.Children.splice(index, 1);
                 view.Elem.detach();
                 view.DispatchEvent(Events.Detached);
@@ -219,6 +249,18 @@ namespace Fw.Views {
             if (this._lastRefreshTimer != null) {
                 clearTimeout(this._lastRefreshTimer);
                 this._lastRefreshTimer = null;
+
+                if (!this._lastRefreshedTime)
+                    this._lastRefreshedTime = new Date();
+
+                const now = new Date();
+                const elapsed = (now.getTime() - this._lastRefreshedTime.getTime());
+
+                // 描画抑止中でも、300msに一度は描画する。
+                if (elapsed > 300) {
+                    this.InnerRefresh();
+                    return;
+                }
             }
 
             this._lastRefreshTimer = setTimeout(() => {
@@ -228,53 +270,75 @@ namespace Fw.Views {
 
         protected InnerRefresh(): void {
             try {
+                Dump.Log(`${this.ClassName}.InnerRefresh`);
                 const parent = $(this.Elem.parent());
 
                 if (parent.length <= 0)
                     return;
 
+                // 最初の描画開始直前を初期化終了とする。
+                if (!this._initialized) {
+                    this.DispatchEvent(Events.Initialized);
+                    this._initialized = true;
+                }
+
                 this.SuppressEvent(Events.SizeChanged);
                 this.SuppressEvent(Events.PositionChanged);
 
-                const parentWidth = parent.width();
-                const parentHeight = parent.height();
-                const centerLeft = (parentWidth / 2);
-                const centerTop = (parentHeight / 2);
+                const parentWidth = (this.Parent)
+                    ? this.Parent.Size.Width
+                    : parent.width();
+                const parentHeight = (this.Parent)
+                    ? this.Parent.Size.Height
+                    : parent.height();
+
+                const pHalfWidth = (parentWidth / 2);
+                const pHalfHeight = (parentHeight / 2);
 
                 if (this.Anchor.IsAnchoredLeft && this.Anchor.IsAnchoredRight) {
                     this.Size.Width = parentWidth - this.Anchor.MarginLeft - this.Anchor.MarginRight;
-                    this.Position.X = this.Anchor.MarginLeft - centerLeft + (this.Size.Width / 2);
+                    this.Position.X = this.Anchor.MarginLeft - pHalfWidth + (this.Size.Width / 2);
                 } else {
                     this.Size.Width = _.isNumber(this.Size.Width)
                         ? this.Size.Width
                         : 30;
 
                     if (this.Anchor.IsAnchoredLeft) {
-                        this.Position.X = this.Anchor.MarginLeft - centerLeft + (this.Size.Width / 2);
+                        this.Position.X = this.Anchor.MarginLeft - pHalfWidth + (this.Size.Width / 2);
                     } else if (this.Anchor.IsAnchoredRight) {
                         let left = parentWidth - this.Anchor.MarginRight - this.Size.Width;
-                        this.Position.X = left - centerLeft + (this.Size.Width / 2);
+                        this.Position.X = left - pHalfWidth + (this.Size.Width / 2);
                     }
                 }
 
                 if (this.Anchor.IsAnchoredTop && this.Anchor.IsAnchoredBottom) {
                     this.Size.Height = parentHeight - this.Anchor.MarginTop - this.Anchor.MarginBottom;
-                    this.Position.Y = this.Anchor.MarginTop - centerTop + (this.Size.Height / 2);
+                    this.Position.Y = this.Anchor.MarginTop - pHalfHeight + (this.Size.Height / 2);
                 } else {
                     this.Size.Height = _.isNumber(this.Size.Height)
                         ? this.Size.Height
                         : 30;
 
                     if (this.Anchor.IsAnchoredTop) {
-                        this.Position.Y = this.Anchor.MarginTop - centerTop + (this.Size.Height / 2);
+                        this.Position.Y = this.Anchor.MarginTop - pHalfHeight + (this.Size.Height / 2);
                     } else if (this.Anchor.IsAnchoredBottom) {
                         let top = parentHeight - this.Anchor.MarginBottom - this.Size.Height;
-                        this.Position.Y = top - centerTop + (this.Size.Height / 2);
+                        this.Position.Y = top - pHalfHeight + (this.Size.Height / 2);
                     }
                 }
 
-                const elemLeft = centerLeft + this.Position.X - (this.Size.Width / 2);
-                const elemTop = centerTop + this.Position.Y - (this.Size.Height / 2);
+                const myHalfWidth = this.Size.Width / 2;
+                const myHalfHeight = this.Size.Height / 2;
+                const elemLeft = pHalfWidth - myHalfWidth + this.Position.X;
+                const elemTop = pHalfHeight - myHalfHeight + this.Position.Y;
+
+                Dump.Log({
+                    left: this.Position.Left,
+                    pHalfWidth: pHalfWidth,
+                    myHalfWidth: myHalfWidth,
+                    positionX: this.Position.X,
+                    elemLeft: elemLeft
+                });
 
                 this.Dom.style.left = `${elemLeft}px`;
                 this.Dom.style.top = `${elemTop}px`;
@@ -282,6 +346,8 @@ namespace Fw.Views {
                 this.Dom.style.height = `${this.Size.Height}px`;
                 this.Dom.style.color = `${this._color}`;
                 this.Dom.style.backgroundColor = `${this._backgroundColor}`;
+
+                this._lastRefreshedTime = new Date();
             } catch (e) {
                 Dump.ErrorLog(e);
             } finally {
@@ -302,7 +368,7 @@ namespace Fw.Views {
             if (this.IsSuppressedEvent(name))
                 return;
 
-            Dump.Log(`DispatchEvent: ${name}`);
+            Dump.Log(`${this.ClassName}.DispatchEvent: ${name}`);
             this.Elem.trigger(name);
         }
 

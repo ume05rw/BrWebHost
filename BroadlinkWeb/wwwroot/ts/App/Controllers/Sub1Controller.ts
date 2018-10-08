@@ -39,7 +39,7 @@ namespace App.Controllers {
             header.Add(back);
 
             const devices = new Fw.Views.ControlView();
-            devices.SetPosition(0, -200);
+            devices.SetPosition(0, -400);
             devices.SetSize(60, 60);
             devices.Color = '#8844FF';
             devices.Label = 'デバイス走査';
@@ -52,6 +52,12 @@ namespace App.Controllers {
                 Xhr.Query.Invoke(params);
             });
             this.View.Add(devices);
+
+            const slider = new Fw.Views.SlidablePanelView(Fw.Views.Direction.Horizontal);
+            slider.SetSize(100, 50);
+            slider.InnerPanelCount = 2.5;
+            slider.SetAnchor(60, 20, null, null);
+            this.View.Add(slider);
         }
     }
 }

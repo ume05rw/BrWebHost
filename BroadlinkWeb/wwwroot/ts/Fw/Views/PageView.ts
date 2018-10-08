@@ -23,6 +23,8 @@ namespace Fw.Views {
         constructor(jqueryElem: JQuery) {
             super(jqueryElem);
 
+            this.ClassName = 'PageView';
+
             if (PageView.RootElem === null) {
                 PageView.RootElem = jqueryElem.parent();
                 PageView.RefreshRoot();

@@ -1,6 +1,7 @@
 ﻿/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Fw/Events/ControlEvents.ts" />
+/// <reference path="../../Fw/Util/Number.ts" />
 /// <reference path="./ViewBase.ts" />
 
 namespace Fw.Views {
@@ -49,7 +50,8 @@ namespace Fw.Views {
         }
 
         constructor() {
-            super($('<div></div>'));
+            super($('<a></a>'));
+            this.ClassName = 'ControlView';
             this.Init();
         }
 

@@ -8,7 +8,7 @@ namespace Fw.Views {
     import Number = Fw.Util.Number;
 
     export class Size {
-        private _view: IView;
+        private _view: IView = null;
 
         private _width: number = 0;
         public get Width(): number {
@@ -22,7 +22,7 @@ namespace Fw.Views {
             const changed = (this._width !== value);
             this._width = value;
 
-            if (changed)
+            if (changed && this._view)
                 this._view.DispatchEvent(Events.SizeChanged);
         }
 
@@ -38,11 +38,11 @@ namespace Fw.Views {
             const changed = (this._height !== value);
             this._height = value;
 
-            if (changed)
+            if (changed && this._view)
                 this._view.DispatchEvent(Events.SizeChanged);
         }
 
-        constructor(view: IView) {
+        constructor(view: IView = null) {
             this._view = view;
         }
 
