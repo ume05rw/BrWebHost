@@ -5,6 +5,8 @@
 
 namespace Fw.Views {
     import Events = Fw.Events.ControlEvents;
+    import Dump = Fw.Util.Dump;
+
     export class RelocatableControlView extends ControlView {
 
         private _isRelocatable: boolean = false;
@@ -30,7 +32,7 @@ namespace Fw.Views {
                     this.SetRelocatable(true);
             });
 
-            this.Elem.bind('touchstart mousedown', (e) => {
+            this.Elem.on('touchstart mousedown', (e) => {
                 if (!this._isRelocatable) {
                     this._isDragging = false;
                 } else {
@@ -38,7 +40,7 @@ namespace Fw.Views {
                     this.Refresh();
                 }
             });
-            this.Elem.bind('touchend mouseup', (e) => {
+            this.Elem.on('touchend mouseup', (e) => {
                 if (!this._isRelocatable) {
                     this._isDragging = false;
                 } else {
@@ -49,27 +51,63 @@ namespace Fw.Views {
                 }
             });
 
+            const onMouseMove = this.OnMouseMove.bind(this);
+
             this.AddEventListener(Events.Attached, () => {
                 const parent = $(this.Elem.parent());
                 if (parent.length <= 0 || this._isMouseMoveEventListened)
                     return;
 
+                parent.on('touchmove mousemove', onMouseMove);
                 this._isMouseMoveEventListened = true;
-                parent.bind('touchmove mousemove', (e) => {
-                    if (this._isRelocatable && this._isDragging) {
-                        const parentWidth = parent.width();
-                        const parentHeight = parent.height();
-                        const centerLeft = (parentWidth / 2);
-                        const centerTop = (parentHeight / 2);
-                        const left = e.clientX;
-                        const top = e.clientY;
-
-                        this.Position.X = left - centerLeft;
-                        this.Position.Y = top - centerTop;
-                        this.Refresh();
-                    }
-                });
             });
+
+            this.AddEventListener(Events.Detached, () => {
+                const parent = $(this.Elem.parent());
+                if (parent.length <= 0 || !this._isMouseMoveEventListened)
+                    return;
+                parent.off('touchmove mousemove', onMouseMove);
+                this._isMouseMoveEventListened = false;
+            });
+        }
+
+        private OnMouseMove(e: JQueryEventObject): void {
+            if (this._isRelocatable && this._isDragging) {
+                const parent = $(this.Elem.parent());
+                const parentWidth = parent.width();
+                const parentHeight = parent.height();
+                const centerLeft = (parentWidth / 2);
+                const centerTop = (parentHeight / 2);
+                const left = e.clientX;
+                const top = e.clientY;
+
+                // マウスボタン押下中のクリックイベント発火を抑止する。
+                if (!this.IsSuppressedEvent(Events.LongClick))
+                    this.SuppressEvent(Events.LongClick);
+                if (!this.IsSuppressedEvent(Events.SingleClick))
+                    this.SuppressEvent(Events.SingleClick);
+
+                this.Position.X = left - centerLeft;
+                this.Position.Y = top - centerTop;
+                this.Refresh();
+                this.DelayedResumeMouseEvents();
+            }
+        }
+
+        private _delayedResumeMouseEventsTimer: number = null;
+        private DelayedResumeMouseEvents(): void {
+            if (this._delayedResumeMouseEventsTimer !== null) {
+                clearTimeout(this._delayedResumeMouseEventsTimer);
+                this._delayedResumeMouseEventsTimer = null;
+            }
+
+            this._delayedResumeMouseEventsTimer = setTimeout(() => {
+                //Dump.Log('ResumeMouseEvents');
+                if (this.IsSuppressedEvent(Events.LongClick))
+                    this.ResumeEvent(Events.LongClick);
+                if (this.IsSuppressedEvent(Events.SingleClick))
+                    this.ResumeEvent(Events.SingleClick);
+            }, 100);
         }
 
         public SetRelocatable(relocatable: boolean): void {
@@ -93,7 +131,7 @@ namespace Fw.Views {
 
         protected InnerRefresh(): void {
             const parent = $(this.Elem.parent());
-            if (!parent)
+            if (parent.length <= 0)
                 return;
 
             super.InnerRefresh();

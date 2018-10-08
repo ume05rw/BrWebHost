@@ -426,11 +426,21 @@ var Fw;
                 configurable: true
             });
             ViewBase.prototype.Init = function () {
+                var _this = this;
                 this._size = new Views.Size(this);
                 this._position = new Views.Position(this);
                 this._anchor = new Views.Anchor(this);
                 this._size.Width = this.Elem.width();
                 this._size.Height = this.Elem.height();
+                this.AddEventListener(Events.SizeChanged, function () {
+                    _this.Refresh();
+                });
+                this.AddEventListener(Events.PositionChanged, function () {
+                    _this.Refresh();
+                });
+                this.AddEventListener(Events.AnchorChanged, function () {
+                    _this.Refresh();
+                });
                 this._color = '#000000';
                 this.Elem.addClass('IView');
                 this.IsVisible()
@@ -563,7 +573,7 @@ var Fw;
             ViewBase.prototype.InnerRefresh = function () {
                 try {
                     var parent_1 = $(this.Elem.parent());
-                    if (!parent_1)
+                    if (parent_1.length <= 0)
                         return;
                     this.SuppressEvent(Events.SizeChanged);
                     this.SuppressEvent(Events.PositionChanged);
@@ -621,11 +631,15 @@ var Fw;
                 }
             };
             ViewBase.prototype.AddEventListener = function (name, handler) {
-                this.Elem.bind(name, handler);
+                this.Elem.on(name, handler);
+            };
+            ViewBase.prototype.RemoveEventListener = function (name, handler) {
+                this.Elem.off(name, handler);
             };
             ViewBase.prototype.DispatchEvent = function (name) {
                 if (this.IsSuppressedEvent(name))
                     return;
+                Dump.Log("DispatchEvent: " + name);
                 this.Elem.trigger(name);
             };
             ViewBase.prototype.SuppressEvent = function (name) {
@@ -637,7 +651,7 @@ var Fw;
                 return (this._suppressedEvents.indexOf(name) !== -1);
             };
             ViewBase.prototype.ResumeEvent = function (name) {
-                if (this.IsSuppressedEvent(name))
+                if (!this.IsSuppressedEvent(name))
                     return;
                 var idx = this._suppressedEvents.indexOf(name);
                 this._suppressedEvents.splice(idx, 1);
@@ -1234,316 +1248,6 @@ var Fw;
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../../Fw/Events/ControlEvents.ts" />
-/// <reference path="./ViewBase.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var Events = Fw.Events.ControlEvents;
-        var Number = Fw.Util.Number;
-        var ControlView = /** @class */ (function (_super) {
-            __extends(ControlView, _super);
-            function ControlView() {
-                var _this = _super.call(this, $('<div></div>')) || this;
-                _this._tapEventTimer = null;
-                _this.Init();
-                return _this;
-            }
-            Object.defineProperty(ControlView.prototype, "Label", {
-                get: function () {
-                    return this._label.html();
-                },
-                set: function (value) {
-                    this._label.html(value);
-                    this.Refresh();
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(ControlView.prototype, "HasBorder", {
-                get: function () {
-                    return this._hasBorder;
-                },
-                set: function (value) {
-                    this.Dom.style.borderWidth = (value)
-                        ? '1px'
-                        : '0';
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(ControlView.prototype, "BorderRadius", {
-                get: function () {
-                    return this._borderRadius;
-                },
-                set: function (value) {
-                    if (Number.IsNaN(value) || value === null || value === undefined)
-                        value = 0;
-                    if (value < 0)
-                        value = 0;
-                    if (value > 50)
-                        value = 50;
-                    this._borderRadius = value;
-                    this.Dom.style.borderRadius = this._borderRadius + "%";
-                },
-                enumerable: true,
-                configurable: true
-            });
-            /**
-             * @description Initialize
-             */
-            ControlView.prototype.Init = function () {
-                var _this = this;
-                _super.prototype.Init.call(this);
-                // プロパティsetterを一度通しておく。
-                this.HasBorder = true;
-                this.BorderRadius = 5;
-                this.Elem.addClass('ControlView');
-                this._label = $('<span class="ControlViewProperty"></span>');
-                this.Elem.append(this._label);
-                this.Elem.bind('touchstart mousedown', function (e) {
-                    if (_this._tapEventTimer != null)
-                        clearTimeout(_this._tapEventTimer);
-                    _this._tapEventTimer = setTimeout(function () {
-                        // ロングタップイベント
-                        _this._tapEventTimer = null;
-                        //console.log('longtapped');
-                        _this.DispatchEvent(Events.LongClick);
-                    }, 1000);
-                    e.preventDefault();
-                });
-                this.Elem.bind('touchend mouseup', function (e) {
-                    if (_this._tapEventTimer != null) {
-                        // ロングタップ検出中のとき
-                        clearTimeout(_this._tapEventTimer);
-                        _this._tapEventTimer = null;
-                        // 以降、シングルタップイベント処理
-                        //console.log('singletapped');
-                        _this.DispatchEvent(Events.SingleClick);
-                    }
-                    else {
-                    }
-                    e.preventDefault();
-                });
-                this.Elem.bind('mouseout', function (e) {
-                    if (_this._tapEventTimer != null) {
-                        // ロングタップ検出中のとき
-                        clearTimeout(_this._tapEventTimer);
-                        _this._tapEventTimer = null;
-                        //console.log('tap canceled');
-                    }
-                    e.preventDefault();
-                });
-            };
-            ControlView.prototype.InnerRefresh = function () {
-                _super.prototype.InnerRefresh.call(this);
-                this.Dom.style.borderColor = "" + this.Color;
-            };
-            ControlView.prototype.Dispose = function () {
-                _super.prototype.Dispose.call(this);
-                this._label = null;
-                this._tapEventTimer = null;
-            };
-            return ControlView;
-        }(Views.ViewBase));
-        Views.ControlView = ControlView;
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../../Fw/Events/ControlEvents.ts" />
-/// <reference path="./ControlView.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var Events = Fw.Events.ControlEvents;
-        var RelocatableControlView = /** @class */ (function (_super) {
-            __extends(RelocatableControlView, _super);
-            function RelocatableControlView() {
-                var _this = _super !== null && _super.apply(this, arguments) || this;
-                _this._isRelocatable = false;
-                _this._beforeX = 0;
-                _this._beforeY = 0;
-                _this._isMouseMoveEventListened = false;
-                _this._isDragging = false;
-                _this.GridSize = 60;
-                return _this;
-            }
-            Object.defineProperty(RelocatableControlView.prototype, "IsRelocatable", {
-                get: function () {
-                    return this._isRelocatable;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            RelocatableControlView.prototype.Init = function () {
-                var _this = this;
-                _super.prototype.Init.call(this);
-                this._shadow = $('<div class="IView ControlView Shadow"></div>');
-                this.AddEventListener(Events.LongClick, function () {
-                    if (!_this._isRelocatable)
-                        _this.SetRelocatable(true);
-                });
-                this.Elem.bind('touchstart mousedown', function (e) {
-                    if (!_this._isRelocatable) {
-                        _this._isDragging = false;
-                    }
-                    else {
-                        _this._isDragging = true;
-                        _this.Refresh();
-                    }
-                });
-                this.Elem.bind('touchend mouseup', function (e) {
-                    if (!_this._isRelocatable) {
-                        _this._isDragging = false;
-                    }
-                    else {
-                        _this._isDragging = false;
-                        _this.Position.X = Math.round(_this.Position.X / _this.GridSize) * _this.GridSize;
-                        _this.Position.Y = Math.round(_this.Position.Y / _this.GridSize) * _this.GridSize;
-                        _this.Refresh();
-                    }
-                });
-                this.AddEventListener(Events.Attached, function () {
-                    var parent = $(_this.Elem.parent());
-                    if (parent.length <= 0 || _this._isMouseMoveEventListened)
-                        return;
-                    _this._isMouseMoveEventListened = true;
-                    parent.bind('touchmove mousemove', function (e) {
-                        if (_this._isRelocatable && _this._isDragging) {
-                            var parentWidth = parent.width();
-                            var parentHeight = parent.height();
-                            var centerLeft = (parentWidth / 2);
-                            var centerTop = (parentHeight / 2);
-                            var left = e.clientX;
-                            var top_2 = e.clientY;
-                            _this.Position.X = left - centerLeft;
-                            _this.Position.Y = top_2 - centerTop;
-                            _this.Refresh();
-                        }
-                    });
-                });
-            };
-            RelocatableControlView.prototype.SetRelocatable = function (relocatable) {
-                console.log('SetRelocatable');
-                if (this._isRelocatable) {
-                    // 固定する。
-                    this._isRelocatable = false;
-                    this._shadow.detach();
-                }
-                else {
-                    // 移動可能にする。
-                    this._isRelocatable = true;
-                    this._beforeX = this.Position.X;
-                    this._beforeY = this.Position.Y;
-                    this.Elem.parent().append(this._shadow);
-                }
-                this.Refresh();
-            };
-            RelocatableControlView.prototype.InnerRefresh = function () {
-                var parent = $(this.Elem.parent());
-                if (!parent)
-                    return;
-                _super.prototype.InnerRefresh.call(this);
-                var shadowDom = this._shadow.get(0);
-                if (!this._isRelocatable) {
-                    shadowDom.style.display = 'none';
-                    this.Dom.style.opacity = '1.0';
-                    return;
-                }
-                this.Dom.style.opacity = '0.7';
-                if (this._isDragging) {
-                    var parentWidth = parent.width();
-                    var parentHeight = parent.height();
-                    var centerLeft = (parentWidth / 2);
-                    var centerTop = (parentHeight / 2);
-                    var sX = Math.round(this.Position.X / this.GridSize) * this.GridSize;
-                    var sY = Math.round(this.Position.Y / this.GridSize) * this.GridSize;
-                    var sLeft = centerLeft + sX - (this.Size.Width / 2);
-                    var sTop = centerTop + sY - (this.Size.Height / 2);
-                    shadowDom.style.display = 'block';
-                    shadowDom.style.left = sLeft + "px";
-                    shadowDom.style.top = sTop + "px";
-                    shadowDom.style.width = this.Size.Width + "px";
-                    shadowDom.style.height = this.Size.Height + "px";
-                    shadowDom.style.opacity = '0.4';
-                    shadowDom.style.color = "" + this.Color;
-                    shadowDom.style.borderColor = "" + this.Color;
-                    shadowDom.style.borderStyle = 'dashed';
-                    shadowDom.style.borderWidth = '2px';
-                    shadowDom.style.backgroundColor = "" + this.BackgroundColor;
-                }
-                else {
-                    shadowDom.style.display = 'none';
-                }
-            };
-            return RelocatableControlView;
-        }(Views.ControlView));
-        Views.RelocatableControlView = RelocatableControlView;
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../../Fw/Events/ViewEvents.ts" />
-/// <reference path="../../Fw/Util/Number.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var Events = Fw.Events.ViewEvents;
-        var Number = Fw.Util.Number;
-        var Position = /** @class */ (function () {
-            function Position(view) {
-                this._x = 0;
-                this._y = 0;
-                this._view = view;
-            }
-            Object.defineProperty(Position.prototype, "X", {
-                get: function () {
-                    return this._x;
-                },
-                set: function (value) {
-                    // nullは許可、その他は例外
-                    if (Number.IsNaN(value) || value === undefined)
-                        throw new Error("value type not allowed");
-                    var changed = (this._x !== value);
-                    this._x = value;
-                    if (changed)
-                        this._view.DispatchEvent(Events.PositionChanged);
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(Position.prototype, "Y", {
-                get: function () {
-                    return this._y;
-                },
-                set: function (value) {
-                    // nullは許可、その他は例外
-                    if (Number.IsNaN(value) || value === undefined)
-                        throw new Error("value type not allowed");
-                    var changed = (this._y !== value);
-                    this._y = value;
-                    if (changed)
-                        this._view.DispatchEvent(Events.PositionChanged);
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Position.prototype.Dispose = function () {
-                this._view = null;
-                this._x = null;
-                this._y = null;
-            };
-            return Position;
-        }());
-        Views.Position = Position;
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Fw/Events/ViewEvents.ts" />
 /// <reference path="../../Fw/Util/Number.ts" />
 var Fw;
@@ -1706,6 +1410,347 @@ var Fw;
             return Anchor;
         }());
         Views.Anchor = Anchor;
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Fw/Events/ControlEvents.ts" />
+/// <reference path="./ViewBase.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Events = Fw.Events.ControlEvents;
+        var Number = Fw.Util.Number;
+        var ControlView = /** @class */ (function (_super) {
+            __extends(ControlView, _super);
+            function ControlView() {
+                var _this = _super.call(this, $('<div></div>')) || this;
+                _this._tapEventTimer = null;
+                _this.Init();
+                return _this;
+            }
+            Object.defineProperty(ControlView.prototype, "Label", {
+                get: function () {
+                    return this._label.html();
+                },
+                set: function (value) {
+                    this._label.html(value);
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(ControlView.prototype, "HasBorder", {
+                get: function () {
+                    return this._hasBorder;
+                },
+                set: function (value) {
+                    this.Dom.style.borderWidth = (value)
+                        ? '1px'
+                        : '0';
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(ControlView.prototype, "BorderRadius", {
+                get: function () {
+                    return this._borderRadius;
+                },
+                set: function (value) {
+                    if (Number.IsNaN(value) || value === null || value === undefined)
+                        value = 0;
+                    if (value < 0)
+                        value = 0;
+                    if (value > 50)
+                        value = 50;
+                    this._borderRadius = value;
+                    this.Dom.style.borderRadius = this._borderRadius + "%";
+                },
+                enumerable: true,
+                configurable: true
+            });
+            /**
+             * @description Initialize
+             */
+            ControlView.prototype.Init = function () {
+                var _this = this;
+                _super.prototype.Init.call(this);
+                // プロパティsetterを一度通しておく。
+                this.HasBorder = true;
+                this.BorderRadius = 5;
+                this.Elem.addClass('ControlView');
+                this._label = $('<span class="ControlViewProperty"></span>');
+                this.Elem.append(this._label);
+                this.Elem.on('touchstart mousedown', function (e) {
+                    if (_this._tapEventTimer != null)
+                        clearTimeout(_this._tapEventTimer);
+                    _this._tapEventTimer = setTimeout(function () {
+                        // ロングタップイベント
+                        _this._tapEventTimer = null;
+                        //console.log('longtapped');
+                        _this.DispatchEvent(Events.LongClick);
+                    }, 1000);
+                    e.preventDefault();
+                });
+                this.Elem.on('touchend mouseup', function (e) {
+                    if (_this._tapEventTimer != null) {
+                        // ロングタップ検出中のとき
+                        clearTimeout(_this._tapEventTimer);
+                        _this._tapEventTimer = null;
+                        // 以降、シングルタップイベント処理
+                        //console.log('singletapped');
+                        _this.DispatchEvent(Events.SingleClick);
+                    }
+                    else {
+                    }
+                    e.preventDefault();
+                });
+                this.Elem.on('mouseout', function (e) {
+                    if (_this._tapEventTimer != null) {
+                        // ロングタップ検出中のとき
+                        clearTimeout(_this._tapEventTimer);
+                        _this._tapEventTimer = null;
+                        //console.log('tap canceled');
+                    }
+                    e.preventDefault();
+                });
+            };
+            ControlView.prototype.InnerRefresh = function () {
+                _super.prototype.InnerRefresh.call(this);
+                this.Dom.style.borderColor = "" + this.Color;
+            };
+            ControlView.prototype.Dispose = function () {
+                _super.prototype.Dispose.call(this);
+                this._label = null;
+                this._tapEventTimer = null;
+            };
+            return ControlView;
+        }(Views.ViewBase));
+        Views.ControlView = ControlView;
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Fw/Events/ViewEvents.ts" />
+/// <reference path="../../Fw/Util/Number.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Events = Fw.Events.ViewEvents;
+        var Number = Fw.Util.Number;
+        var Position = /** @class */ (function () {
+            function Position(view) {
+                this._x = 0;
+                this._y = 0;
+                this._view = view;
+            }
+            Object.defineProperty(Position.prototype, "X", {
+                get: function () {
+                    return this._x;
+                },
+                set: function (value) {
+                    // nullは許可、その他は例外
+                    if (Number.IsNaN(value) || value === undefined)
+                        throw new Error("value type not allowed");
+                    var changed = (this._x !== value);
+                    this._x = value;
+                    if (changed)
+                        this._view.DispatchEvent(Events.PositionChanged);
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(Position.prototype, "Y", {
+                get: function () {
+                    return this._y;
+                },
+                set: function (value) {
+                    // nullは許可、その他は例外
+                    if (Number.IsNaN(value) || value === undefined)
+                        throw new Error("value type not allowed");
+                    var changed = (this._y !== value);
+                    this._y = value;
+                    if (changed)
+                        this._view.DispatchEvent(Events.PositionChanged);
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Position.prototype.Dispose = function () {
+                this._view = null;
+                this._x = null;
+                this._y = null;
+            };
+            return Position;
+        }());
+        Views.Position = Position;
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Fw/Events/ControlEvents.ts" />
+/// <reference path="./ControlView.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Events = Fw.Events.ControlEvents;
+        var RelocatableControlView = /** @class */ (function (_super) {
+            __extends(RelocatableControlView, _super);
+            function RelocatableControlView() {
+                var _this = _super !== null && _super.apply(this, arguments) || this;
+                _this._isRelocatable = false;
+                _this._beforeX = 0;
+                _this._beforeY = 0;
+                _this._isMouseMoveEventListened = false;
+                _this._isDragging = false;
+                _this.GridSize = 60;
+                _this._delayedResumeMouseEventsTimer = null;
+                return _this;
+            }
+            Object.defineProperty(RelocatableControlView.prototype, "IsRelocatable", {
+                get: function () {
+                    return this._isRelocatable;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            RelocatableControlView.prototype.Init = function () {
+                var _this = this;
+                _super.prototype.Init.call(this);
+                this._shadow = $('<div class="IView ControlView Shadow"></div>');
+                this.AddEventListener(Events.LongClick, function () {
+                    if (!_this._isRelocatable)
+                        _this.SetRelocatable(true);
+                });
+                this.Elem.on('touchstart mousedown', function (e) {
+                    if (!_this._isRelocatable) {
+                        _this._isDragging = false;
+                    }
+                    else {
+                        _this._isDragging = true;
+                        _this.Refresh();
+                    }
+                });
+                this.Elem.on('touchend mouseup', function (e) {
+                    if (!_this._isRelocatable) {
+                        _this._isDragging = false;
+                    }
+                    else {
+                        _this._isDragging = false;
+                        _this.Position.X = Math.round(_this.Position.X / _this.GridSize) * _this.GridSize;
+                        _this.Position.Y = Math.round(_this.Position.Y / _this.GridSize) * _this.GridSize;
+                        _this.Refresh();
+                    }
+                });
+                var onMouseMove = this.OnMouseMove.bind(this);
+                this.AddEventListener(Events.Attached, function () {
+                    var parent = $(_this.Elem.parent());
+                    if (parent.length <= 0 || _this._isMouseMoveEventListened)
+                        return;
+                    parent.on('touchmove mousemove', onMouseMove);
+                    _this._isMouseMoveEventListened = true;
+                });
+                this.AddEventListener(Events.Detached, function () {
+                    var parent = $(_this.Elem.parent());
+                    if (parent.length <= 0 || !_this._isMouseMoveEventListened)
+                        return;
+                    parent.off('touchmove mousemove', onMouseMove);
+                    _this._isMouseMoveEventListened = false;
+                });
+            };
+            RelocatableControlView.prototype.OnMouseMove = function (e) {
+                if (this._isRelocatable && this._isDragging) {
+                    var parent_2 = $(this.Elem.parent());
+                    var parentWidth = parent_2.width();
+                    var parentHeight = parent_2.height();
+                    var centerLeft = (parentWidth / 2);
+                    var centerTop = (parentHeight / 2);
+                    var left = e.clientX;
+                    var top_2 = e.clientY;
+                    // マウスボタン押下中のクリックイベント発火を抑止する。
+                    if (!this.IsSuppressedEvent(Events.LongClick))
+                        this.SuppressEvent(Events.LongClick);
+                    if (!this.IsSuppressedEvent(Events.SingleClick))
+                        this.SuppressEvent(Events.SingleClick);
+                    this.Position.X = left - centerLeft;
+                    this.Position.Y = top_2 - centerTop;
+                    this.Refresh();
+                    this.DelayedResumeMouseEvents();
+                }
+            };
+            RelocatableControlView.prototype.DelayedResumeMouseEvents = function () {
+                var _this = this;
+                if (this._delayedResumeMouseEventsTimer !== null) {
+                    clearTimeout(this._delayedResumeMouseEventsTimer);
+                    this._delayedResumeMouseEventsTimer = null;
+                }
+                this._delayedResumeMouseEventsTimer = setTimeout(function () {
+                    //Dump.Log('ResumeMouseEvents');
+                    if (_this.IsSuppressedEvent(Events.LongClick))
+                        _this.ResumeEvent(Events.LongClick);
+                    if (_this.IsSuppressedEvent(Events.SingleClick))
+                        _this.ResumeEvent(Events.SingleClick);
+                }, 100);
+            };
+            RelocatableControlView.prototype.SetRelocatable = function (relocatable) {
+                console.log('SetRelocatable');
+                if (this._isRelocatable) {
+                    // 固定する。
+                    this._isRelocatable = false;
+                    this._shadow.detach();
+                }
+                else {
+                    // 移動可能にする。
+                    this._isRelocatable = true;
+                    this._beforeX = this.Position.X;
+                    this._beforeY = this.Position.Y;
+                    this.Elem.parent().append(this._shadow);
+                }
+                this.Refresh();
+            };
+            RelocatableControlView.prototype.InnerRefresh = function () {
+                var parent = $(this.Elem.parent());
+                if (parent.length <= 0)
+                    return;
+                _super.prototype.InnerRefresh.call(this);
+                var shadowDom = this._shadow.get(0);
+                if (!this._isRelocatable) {
+                    shadowDom.style.display = 'none';
+                    this.Dom.style.opacity = '1.0';
+                    return;
+                }
+                this.Dom.style.opacity = '0.7';
+                if (this._isDragging) {
+                    var parentWidth = parent.width();
+                    var parentHeight = parent.height();
+                    var centerLeft = (parentWidth / 2);
+                    var centerTop = (parentHeight / 2);
+                    var sX = Math.round(this.Position.X / this.GridSize) * this.GridSize;
+                    var sY = Math.round(this.Position.Y / this.GridSize) * this.GridSize;
+                    var sLeft = centerLeft + sX - (this.Size.Width / 2);
+                    var sTop = centerTop + sY - (this.Size.Height / 2);
+                    shadowDom.style.display = 'block';
+                    shadowDom.style.left = sLeft + "px";
+                    shadowDom.style.top = sTop + "px";
+                    shadowDom.style.width = this.Size.Width + "px";
+                    shadowDom.style.height = this.Size.Height + "px";
+                    shadowDom.style.opacity = '0.4';
+                    shadowDom.style.color = "" + this.Color;
+                    shadowDom.style.borderColor = "" + this.Color;
+                    shadowDom.style.borderStyle = 'dashed';
+                    shadowDom.style.borderWidth = '2px';
+                    shadowDom.style.backgroundColor = "" + this.BackgroundColor;
+                }
+                else {
+                    shadowDom.style.display = 'none';
+                }
+            };
+            return RelocatableControlView;
+        }(Views.ControlView));
+        Views.RelocatableControlView = RelocatableControlView;
     })(Views = Fw.Views || (Fw.Views = {}));
 })(Fw || (Fw = {}));
 //# sourceMappingURL=tsout.js.map

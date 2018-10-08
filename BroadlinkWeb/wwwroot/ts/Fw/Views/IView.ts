@@ -27,6 +27,7 @@ namespace Fw.Views {
         IsVisible(): boolean;
 
         AddEventListener(name: string, handler: (e: JQueryEventObject) => void): void;
+        RemoveEventListener(name: string, handler: (e: JQueryEventObject) => void): void;
         DispatchEvent(name: string): void;
         SuppressEvent(name: string): void;
         IsSuppressedEvent(name: string): boolean;

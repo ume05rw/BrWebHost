@@ -21,6 +21,7 @@ declare namespace Fw.Views {
         Hide(duration?: number): void;
         IsVisible(): boolean;
         AddEventListener(name: string, handler: (e: JQueryEventObject) => void): void;
+        RemoveEventListener(name: string, handler: (e: JQueryEventObject) => void): void;
         DispatchEvent(name: string): void;
         SuppressEvent(name: string): void;
         IsSuppressedEvent(name: string): boolean;
@@ -141,6 +142,7 @@ declare namespace Fw.Views {
         Refresh(): void;
         protected InnerRefresh(): void;
         AddEventListener(name: string, handler: (e: JQueryEventObject) => void): void;
+        RemoveEventListener(name: string, handler: (e: JQueryEventObject) => void): void;
         DispatchEvent(name: string): void;
         SuppressEvent(name: string): void;
         IsSuppressedEvent(name: string): boolean;
@@ -245,50 +247,6 @@ declare namespace Fw.Util.Xhr {
     }
 }
 declare namespace Fw.Views {
-    class ControlView extends ViewBase {
-        private _label;
-        private _tapEventTimer;
-        Label: string;
-        private _hasBorder;
-        HasBorder: boolean;
-        private _borderRadius;
-        BorderRadius: number;
-        constructor();
-        /**
-         * @description Initialize
-         */
-        protected Init(): void;
-        protected InnerRefresh(): void;
-        Dispose(): void;
-    }
-}
-declare namespace Fw.Views {
-    class RelocatableControlView extends ControlView {
-        private _isRelocatable;
-        readonly IsRelocatable: boolean;
-        private _shadow;
-        private _beforeX;
-        private _beforeY;
-        private _isMouseMoveEventListened;
-        private _isDragging;
-        GridSize: number;
-        protected Init(): void;
-        SetRelocatable(relocatable: boolean): void;
-        protected InnerRefresh(): void;
-    }
-}
-declare namespace Fw.Views {
-    class Position {
-        private _view;
-        private _x;
-        X: number;
-        private _y;
-        Y: number;
-        constructor(view: IView);
-        Dispose(): void;
-    }
-}
-declare namespace Fw.Views {
     class Anchor {
         private _view;
         private _isAnchoredTop;
@@ -309,5 +267,52 @@ declare namespace Fw.Views {
         MarginBottom: number;
         constructor(view: IView);
         Dispose(): void;
+    }
+}
+declare namespace Fw.Views {
+    class ControlView extends ViewBase {
+        private _label;
+        private _tapEventTimer;
+        Label: string;
+        private _hasBorder;
+        HasBorder: boolean;
+        private _borderRadius;
+        BorderRadius: number;
+        constructor();
+        /**
+         * @description Initialize
+         */
+        protected Init(): void;
+        protected InnerRefresh(): void;
+        Dispose(): void;
+    }
+}
+declare namespace Fw.Views {
+    class Position {
+        private _view;
+        private _x;
+        X: number;
+        private _y;
+        Y: number;
+        constructor(view: IView);
+        Dispose(): void;
+    }
+}
+declare namespace Fw.Views {
+    class RelocatableControlView extends ControlView {
+        private _isRelocatable;
+        readonly IsRelocatable: boolean;
+        private _shadow;
+        private _beforeX;
+        private _beforeY;
+        private _isMouseMoveEventListened;
+        private _isDragging;
+        GridSize: number;
+        protected Init(): void;
+        private OnMouseMove;
+        private _delayedResumeMouseEventsTimer;
+        private DelayedResumeMouseEvents;
+        SetRelocatable(relocatable: boolean): void;
+        protected InnerRefresh(): void;
     }
 }

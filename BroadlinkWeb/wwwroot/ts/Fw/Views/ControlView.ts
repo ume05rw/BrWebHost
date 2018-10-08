@@ -67,7 +67,7 @@ namespace Fw.Views {
             this._label = $('<span class="ControlViewProperty"></span>');
             this.Elem.append(this._label);
 
-            this.Elem.bind('touchstart mousedown', (e) => {
+            this.Elem.on('touchstart mousedown', (e) => {
                 if (this._tapEventTimer != null)
                     clearTimeout(this._tapEventTimer);
 
@@ -80,7 +80,7 @@ namespace Fw.Views {
 
                 e.preventDefault();
             });
-            this.Elem.bind('touchend mouseup', (e) => {
+            this.Elem.on('touchend mouseup', (e) => {
                 if (this._tapEventTimer != null) {
                     // ロングタップ検出中のとき
                     clearTimeout(this._tapEventTimer);
@@ -93,7 +93,7 @@ namespace Fw.Views {
                 }
                 e.preventDefault();
             });
-            this.Elem.bind('mouseout', (e) => {
+            this.Elem.on('mouseout', (e) => {
                 if (this._tapEventTimer != null) {
                     // ロングタップ検出中のとき
                     clearTimeout(this._tapEventTimer);

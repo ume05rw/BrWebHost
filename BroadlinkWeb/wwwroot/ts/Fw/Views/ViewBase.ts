@@ -72,6 +72,16 @@ namespace Fw.Views {
             this._size.Width = this.Elem.width();
             this._size.Height = this.Elem.height();
 
+            this.AddEventListener(Events.SizeChanged, () => {
+                this.Refresh();
+            });
+            this.AddEventListener(Events.PositionChanged, () => {
+                this.Refresh();
+            });
+            this.AddEventListener(Events.AnchorChanged, () => {
+                this.Refresh();
+            });
+
             this._color = '#000000';
 
             this.Elem.addClass('IView');
@@ -220,7 +230,7 @@ namespace Fw.Views {
             try {
                 const parent = $(this.Elem.parent());
 
-                if (!parent)
+                if (parent.length <= 0)
                     return;
 
                 this.SuppressEvent(Events.SizeChanged);
@@ -281,13 +291,18 @@ namespace Fw.Views {
         }
 
         public AddEventListener(name: string, handler: (e: JQueryEventObject) => void): void {
-            this.Elem.bind(name, handler);
+            this.Elem.on(name, handler);
+        }
+
+        public RemoveEventListener(name: string, handler: (e: JQueryEventObject) => void): void {
+            this.Elem.off(name, handler);
         }
 
         public DispatchEvent(name: string): void {
             if (this.IsSuppressedEvent(name))
                 return;
 
+            Dump.Log(`DispatchEvent: ${name}`);
             this.Elem.trigger(name);
         }
 
@@ -303,7 +318,7 @@ namespace Fw.Views {
         }
 
         public ResumeEvent(name: string): void {
-            if (this.IsSuppressedEvent(name))
+            if (!this.IsSuppressedEvent(name))
                 return;
 
             const idx = this._suppressedEvents.indexOf(name);
