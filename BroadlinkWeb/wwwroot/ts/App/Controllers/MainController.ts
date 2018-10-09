@@ -74,43 +74,43 @@ namespace App.Controllers {
 
             const ancCtl1 = new Fw.Views.ControlView();
             ancCtl1.Label = '右下';
-            ancCtl1.Size.Width = 100;
-            ancCtl1.Size.Height = 30;
+            ancCtl1.SetSize(200, 50);
             ancCtl1.SetAnchor(null, null, 40, 5);
             this.View.Add(ancCtl1);
 
             const ancCtl2 = new Fw.Views.ControlView();
             ancCtl2.Label = '右上';
-            ancCtl2.Size.Width = 200;
-            ancCtl2.Size.Height = 50;
+            ancCtl2.SetSize(200, 50);
             ancCtl2.SetAnchor(3, null, 3, null);
             this.View.Add(ancCtl2);
 
             const ancCtl3 = new Fw.Views.ControlView();
             ancCtl3.Label = '左下';
-            ancCtl3.Size.Width = 200;
-            ancCtl3.Size.Height = 50;
+            ancCtl3.SetSize(300, 100);
             ancCtl3.SetAnchor(null, 3, null, 3);
             this.View.Add(ancCtl3);
+            const img = new Fw.Views.ImageView();
+            img.SetSize(100, 70);
+            img.Source = 'images/icons/home.png';
+            ancCtl3.Add(img);
 
             const ancCtl4 = new Fw.Views.ControlView();
             ancCtl4.Label = '左上';
-            ancCtl4.Size.Width = 200;
-            ancCtl4.Size.Height = 50;
+            ancCtl4.SetSize(200, 50);
             ancCtl4.SetAnchor(60, 3, null, null);
             this.View.Add(ancCtl4);
 
-            const ancCtl5 = new Fw.Views.ControlView();
-            ancCtl5.Label = '左右';
-            ancCtl5.Size.Height = 50;
-            ancCtl5.SetAnchor(null, 150, 300, 100);
-            this.View.Add(ancCtl5);
+            //const ancCtl5 = new Fw.Views.ControlView();
+            //ancCtl5.Label = '左右';
+            //ancCtl5.Size.Height = 50;
+            //ancCtl5.SetAnchor(null, 150, 300, 100);
+            //this.View.Add(ancCtl5);
 
-            const ancCtl6 = new Fw.Views.ControlView();
-            ancCtl6.Label = '上下';
-            ancCtl6.SetAnchor(200, null, null, 40);
-            ancCtl6.Size.Width = 30;
-            this.View.Add(ancCtl6);
+            //const ancCtl6 = new Fw.Views.ControlView();
+            //ancCtl6.Label = '上下';
+            //ancCtl6.SetAnchor(200, null, null, 40);
+            //ancCtl6.Size.Width = 30;
+            //this.View.Add(ancCtl6);
         }
     }
 }

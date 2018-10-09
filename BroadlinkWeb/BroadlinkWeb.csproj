@@ -57,7 +57,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\images\icons\" />
     <Folder Include="wwwroot\ts\App\Models\" />
     <Folder Include="wwwroot\ts\App\Views\" />
   </ItemGroup>
