@@ -1,7 +1,10 @@
 ﻿/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="Property/Anchor.ts" />
 
 namespace Fw.Views {
+    import Property = Fw.Views.Property;
+
     export interface IView {
         Elem: JQuery;
         Dom: HTMLElement;
@@ -9,9 +12,9 @@ namespace Fw.Views {
         Children: Array<IView>;
 
         ClassName: string,
-        Size: Size;
-        Position: Position;
-        Anchor: Anchor;
+        Size: Property.Size;
+        Position: Property.Position;
+        Anchor: Property.Anchor;
 
         Color: string;
         BackgroundColor: string;

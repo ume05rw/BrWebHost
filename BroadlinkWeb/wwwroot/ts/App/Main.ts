@@ -1,9 +1,12 @@
 ﻿/// <reference path="../../lib/jquery/index.d.ts" />
 /// <reference path="../../lib/underscore/index.d.ts" />
+/// <reference path="../Fw/Util/Dump.ts" />
 /// <reference path="../Fw/Controllers/Manager.ts" />
 /// <reference path="../Fw/Util/Xhr/Config.ts" />
 
 namespace App {
+    import Dump = Fw.Util.Dump;
+
     export class Main {
         // 一応、参照を保持しておく。
         public static _controllerManager: Fw.Controllers.Manager;

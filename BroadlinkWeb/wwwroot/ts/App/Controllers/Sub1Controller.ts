@@ -1,14 +1,14 @@
 ﻿/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Fw/Controllers/ControllerBase.ts" />
-/// <reference path="../../Fw/Util/Xhr/Params.ts" />
-/// <reference path="../../Fw/Util/Xhr/MethodType.ts" />
-/// <reference path="../../Fw/Util/Xhr/Query.ts" />
+/// <reference path="../../Fw/Util/Dump.ts" />
 /// <reference path="../../Fw/Events/ControlEvents.ts" />
+/// <reference path="../../Fw/Util/Xhr/Query.ts" />
 
 namespace App.Controllers {
-    import Xhr = Fw.Util.Xhr;
+    import Dump = Fw.Util.Dump;
     import Events = Fw.Events;
+    import Xhr = Fw.Util.Xhr; // <- モデルを実装後は削除する予定
 
     export class Sub1Controller extends Fw.Controllers.ControllerBase {
 
@@ -53,7 +53,7 @@ namespace App.Controllers {
             });
             this.View.Add(devices);
 
-            const slider = new Fw.Views.SlidablePanelView(Fw.Views.Direction.Horizontal);
+            const slider = new Fw.Views.SlidablePanelControlView(Fw.Views.Direction.Horizontal);
             slider.SetSize(100, 50);
             slider.InnerPanelCount = 2.5;
             slider.SetAnchor(60, 20, null, null);

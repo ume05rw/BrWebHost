@@ -1,10 +1,12 @@
 ﻿/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../../Fw/Events/ControlEvents.ts" />
-/// <reference path="../../Fw/Util/Number.ts" />
+/// <reference path="../Events/ControlEvents.ts" />
+/// <reference path="../Util/Dump.ts" />
+/// <reference path="../Util/Number.ts" />
 /// <reference path="./ViewBase.ts" />
 
 namespace Fw.Views {
+    import Dump = Fw.Util.Dump;
     import Events = Fw.Events.ControlEvents;
     import Number = Fw.Util.Number;
 
@@ -52,7 +54,6 @@ namespace Fw.Views {
         constructor() {
             super($('<a></a>'));
             this.ClassName = 'ControlView';
-            this.Init();
         }
 
         /**

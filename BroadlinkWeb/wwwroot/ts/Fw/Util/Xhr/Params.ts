@@ -1,7 +1,10 @@
 ﻿/// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Util/Dump.ts" />
 
 namespace Fw.Util.Xhr {
+    import Dump = Fw.Util.Dump;
+
     export class Params {
         public Url: string;
         public Method: MethodType = MethodType.Post;

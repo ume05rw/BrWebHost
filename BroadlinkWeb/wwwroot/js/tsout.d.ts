@@ -1,15 +1,69 @@
 /// <reference path="../lib/jquery/index.d.ts" />
 /// <reference path="../lib/underscore/index.d.ts" />
+declare namespace Fw.Util {
+    class Dump {
+        static Log(value: any): void;
+        static ErrorLog(value: any, message?: string): void;
+        private static GetTimestamp;
+        private static GetDumpedString;
+    }
+}
+declare namespace Fw.Events {
+    class ViewEventsClass {
+        readonly Shown: string;
+        readonly Hidden: string;
+        readonly Attached: string;
+        readonly Detached: string;
+        readonly SizeChanged: string;
+        readonly PositionChanged: string;
+        readonly AnchorChanged: string;
+        readonly Initialized: string;
+    }
+    const ViewEvents: ViewEventsClass;
+}
+declare namespace Fw.Util {
+    class Number {
+        /**
+         * @see ビルトインisNaNでは、isNaN(null) === true になってしまう。
+         * @param value
+         */
+        static IsNaN(value: number): boolean;
+    }
+}
+declare namespace Fw.Views.Property {
+    class Anchor {
+        private _view;
+        private _isAnchoredTop;
+        IsAnchoredTop: boolean;
+        private _marginTop;
+        MarginTop: number;
+        private _isAnchoredLeft;
+        IsAnchoredLeft: boolean;
+        private _marginLeft;
+        MarginLeft: number;
+        private _isAnchoredRight;
+        IsAnchoredRight: boolean;
+        private _marginRight;
+        MarginRight: number;
+        private _isAnchoredBottom;
+        IsAnchoredBottom: boolean;
+        private _marginBottom;
+        MarginBottom: number;
+        constructor(view?: IView);
+        Dispose(): void;
+    }
+}
 declare namespace Fw.Views {
+    import Property = Fw.Views.Property;
     interface IView {
         Elem: JQuery;
         Dom: HTMLElement;
         Parent: IView;
         Children: Array<IView>;
         ClassName: string;
-        Size: Size;
-        Position: Position;
-        Anchor: Anchor;
+        Size: Property.Size;
+        Position: Property.Position;
+        Anchor: Property.Anchor;
         Color: string;
         BackgroundColor: string;
         SetDisplayParams(width: number, height: number, x: number, y: number, color: string, backgroundColor: string): void;
@@ -51,6 +105,98 @@ declare namespace Fw.Controllers {
         Show(id: string): void;
     }
 }
+declare namespace Fw.Util.Xhr {
+    class Config {
+        static BaseUrl: string;
+    }
+}
+declare namespace App {
+    class Main {
+        static _controllerManager: Fw.Controllers.Manager;
+        static StartUp(): void;
+    }
+}
+declare namespace Fw.Controllers {
+    abstract class ControllerBase implements Fw.Controllers.IController {
+        Id: string;
+        IsDefaultView: boolean;
+        View: Fw.Views.IView;
+        Manager: Fw.Controllers.Manager;
+        constructor(jqueryElem: JQuery, manager: Fw.Controllers.Manager);
+    }
+}
+declare namespace Fw.Events {
+    class ControlEventsClass extends ViewEventsClass {
+        readonly SingleClick: string;
+        readonly LongClick: string;
+    }
+    const ControlEvents: ControlEventsClass;
+}
+declare namespace App.Controllers {
+    class MainController extends Fw.Controllers.ControllerBase {
+        private _btnGoSub1;
+        private _btnGoSub2;
+        private _centerControl;
+        constructor(elem: JQuery, manager: Fw.Controllers.Manager);
+        private Init;
+    }
+}
+declare namespace Fw.Util.Xhr {
+    class Query {
+        static Invoke(params: Params): any;
+    }
+}
+declare namespace App.Controllers {
+    class Sub1Controller extends Fw.Controllers.ControllerBase {
+        constructor(elem: JQuery, manager: Fw.Controllers.Manager);
+        private Init;
+    }
+}
+declare namespace App.Controllers {
+    class Sub2Controller extends Fw.Controllers.ControllerBase {
+        private _btnGoMain;
+        private _btnA1Value;
+        constructor(elem: JQuery, manager: Fw.Controllers.Manager);
+        private Init;
+    }
+}
+declare namespace Fw.Events {
+    class PageEventsClass extends ViewEventsClass {
+    }
+    const PageEvents: PageEventsClass;
+}
+declare namespace Fw {
+    class Startup {
+        static Init(): void;
+    }
+}
+declare namespace Fw.Util.Xhr {
+    enum MethodType {
+        Get = 1,
+        Post = 2,
+        Put = 3,
+        Delete = 4
+    }
+}
+declare namespace Fw.Util.Xhr {
+    class Params {
+        Url: string;
+        Method: MethodType;
+        Values: any;
+        Callback: any;
+        constructor(url: string, method?: MethodType, values?: any);
+    }
+}
+declare namespace Fw.Util.Xhr {
+    class Result {
+        static CreateSucceeded(values: any): Result;
+        static CreateError(errors: any): Result;
+        readonly Succeeded: boolean;
+        readonly Values: any;
+        readonly Errors: any;
+        constructor(succeeded: boolean, values: any, errors: any);
+    }
+}
 declare namespace Fw.Views.Animation {
     class Params {
         static GetCurrent(view: Fw.Views.IView): Params;
@@ -74,37 +220,7 @@ declare namespace Fw.Views.Animation {
         Dispose(): void;
     }
 }
-declare namespace Fw.Events {
-    class ViewEventsClass {
-        readonly Shown: string;
-        readonly Hidden: string;
-        readonly Attached: string;
-        readonly Detached: string;
-        readonly SizeChanged: string;
-        readonly PositionChanged: string;
-        readonly AnchorChanged: string;
-        readonly Initialized: string;
-    }
-    const ViewEvents: ViewEventsClass;
-}
-declare namespace Fw.Util {
-    class Dump {
-        static Log(value: any): void;
-        static ErrorLog(value: any, message?: string): void;
-        private static GetTimestamp;
-        private static GetDumpedString;
-    }
-}
-declare namespace Fw.Util {
-    class Number {
-        /**
-         * @see ビルトインisNaNでは、isNaN(null) === true になってしまう。
-         * @param value
-         */
-        static IsNaN(value: number): boolean;
-    }
-}
-declare namespace Fw.Views {
+declare namespace Fw.Views.Property {
     class Size {
         private _view;
         private _width;
@@ -116,6 +232,7 @@ declare namespace Fw.Views {
     }
 }
 declare namespace Fw.Views {
+    import Property = Fw.Views.Property;
     abstract class ViewBase implements IView {
         private _lastRefreshTimer;
         private _lastRefreshedTime;
@@ -127,11 +244,11 @@ declare namespace Fw.Views {
         Children: Array<IView>;
         ClassName: string;
         private _size;
-        readonly Size: Size;
+        readonly Size: Property.Size;
         private _position;
-        readonly Position: Position;
+        readonly Position: Property.Position;
         private _anchor;
-        readonly Anchor: Anchor;
+        readonly Anchor: Property.Anchor;
         private _color;
         Color: string;
         private _backgroundColor;
@@ -160,122 +277,11 @@ declare namespace Fw.Views {
     }
 }
 declare namespace Fw.Views {
-    class PageView extends ViewBase {
-        static RootElem: JQuery;
-        static RootWidth: number;
-        static RootHeight: number;
-        static RefreshRoot(): void;
-        constructor(jqueryElem: JQuery);
-        Show(duration?: number): void;
-        Hide(duration?: number): void;
-        protected InnerRefresh(): void;
-    }
-}
-declare namespace Fw.Controllers {
-    abstract class ControllerBase implements Fw.Controllers.IController {
-        Id: string;
-        IsDefaultView: boolean;
-        View: Fw.Views.IView;
-        Manager: Fw.Controllers.Manager;
-        constructor(jqueryElem: JQuery, manager: Fw.Controllers.Manager);
-    }
-}
-declare namespace App.Controllers {
-    class MainController extends Fw.Controllers.ControllerBase {
-        private _btnGoSub1;
-        private _btnGoSub2;
-        private _centerControl;
-        constructor(elem: JQuery, manager: Fw.Controllers.Manager);
-        private Init;
-    }
-}
-declare namespace Fw.Util.Xhr {
-    class Params {
-        Url: string;
-        Method: MethodType;
-        Values: any;
-        Callback: any;
-        constructor(url: string, method?: MethodType, values?: any);
-    }
-}
-declare namespace Fw.Util.Xhr {
-    enum MethodType {
-        Get = 1,
-        Post = 2,
-        Put = 3,
-        Delete = 4
-    }
-}
-declare namespace Fw.Util.Xhr {
-    class Query {
-        static Invoke(params: Params): any;
-    }
-}
-declare namespace Fw.Events {
-    class ControlEventsClass extends ViewEventsClass {
-        readonly SingleClick: string;
-        readonly LongClick: string;
-    }
-    const ControlEvents: ControlEventsClass;
-}
-declare namespace App.Controllers {
-    class Sub1Controller extends Fw.Controllers.ControllerBase {
-        constructor(elem: JQuery, manager: Fw.Controllers.Manager);
-        private Init;
-    }
-}
-declare namespace App.Controllers {
-    class Sub2Controller extends Fw.Controllers.ControllerBase {
-        private _btnGoMain;
-        private _btnA1Value;
-        constructor(elem: JQuery, manager: Fw.Controllers.Manager);
-        private Init;
-    }
-}
-declare namespace Fw.Util.Xhr {
-    class Config {
-        static BaseUrl: string;
-    }
-}
-declare namespace App {
-    class Main {
-        static _controllerManager: Fw.Controllers.Manager;
-        static StartUp(): void;
-    }
-}
-declare namespace Fw.Events {
-    class PageEventsClass extends ViewEventsClass {
-    }
-    const PageEvents: PageEventsClass;
-}
-declare namespace Fw.Util.Xhr {
-    class Result {
-        Succeeded: boolean;
-        Values: any;
-        Errors: any;
-    }
-}
-declare namespace Fw.Views {
-    class Anchor {
-        private _view;
-        private _isAnchoredTop;
-        IsAnchoredTop: boolean;
-        private _marginTop;
-        MarginTop: number;
-        private _isAnchoredLeft;
-        IsAnchoredLeft: boolean;
-        private _marginLeft;
-        MarginLeft: number;
-        private _isAnchoredRight;
-        IsAnchoredRight: boolean;
-        private _marginRight;
-        MarginRight: number;
-        private _isAnchoredBottom;
-        IsAnchoredBottom: boolean;
-        private _marginBottom;
-        MarginBottom: number;
-        constructor(view?: IView);
-        Dispose(): void;
+    class ImageView extends ViewBase {
+        private _image;
+        Source: string;
+        constructor();
+        protected Init(): void;
     }
 }
 declare namespace Fw.Views {
@@ -297,6 +303,32 @@ declare namespace Fw.Views {
     }
 }
 declare namespace Fw.Views {
+    class LabelView extends ViewBase {
+        private _label;
+        Text: string;
+        constructor();
+        protected Init(): void;
+    }
+}
+declare namespace Fw.Views {
+    class PageView extends ViewBase {
+        static RootElem: JQuery;
+        static RootWidth: number;
+        static RootHeight: number;
+        static RefreshRoot(): void;
+        constructor(jqueryElem: JQuery);
+        Show(duration?: number): void;
+        Hide(duration?: number): void;
+        protected InnerRefresh(): void;
+    }
+}
+declare namespace Fw.Views {
+    class PanelControlView extends ControlView {
+        constructor();
+        protected Init(): void;
+    }
+}
+declare namespace Fw.Views.Property {
     class Position {
         private _view;
         private _x;
@@ -329,17 +361,11 @@ declare namespace Fw.Views {
     }
 }
 declare namespace Fw.Views {
-    class PanelView extends ControlView {
-        constructor();
-        protected Init(): void;
-    }
-}
-declare namespace Fw.Views {
     enum Direction {
         Horizontal = 0,
         Vertical = 1
     }
-    class SlidablePanelView extends PanelView {
+    class SlidablePanelControlView extends PanelControlView {
         readonly Direction: Direction;
         private _innerBackgroundColor;
         InnerBackgroundColor: string;

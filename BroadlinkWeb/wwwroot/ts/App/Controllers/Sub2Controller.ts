@@ -1,12 +1,11 @@
 ﻿/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Fw/Controllers/ControllerBase.ts" />
-/// <reference path="../../Fw/Util/Xhr/Params.ts" />
-/// <reference path="../../Fw/Util/Xhr/MethodType.ts" />
-/// <reference path="../../Fw/Util/Xhr/Query.ts" />
+/// <reference path="../../Fw/Util/Dump.ts" />
 /// <reference path="../../Fw/Events/ControlEvents.ts" />
 
 namespace App.Controllers {
+    import Dump = Fw.Util.Dump;
     import Xhr = Fw.Util.Xhr;
     import Events = Fw.Events;
 

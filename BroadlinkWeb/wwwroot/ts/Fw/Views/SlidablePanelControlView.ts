@@ -1,22 +1,24 @@
 ﻿/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../../Fw/Views/Animation/Animator.ts" />
-/// <reference path="../../Fw/Views/Animation/Params.ts" />
-/// <reference path="../../Fw/Events/ControlEvents.ts" />
-/// <reference path="../../Fw/Util/Dump.ts" />
-/// <reference path="./PanelView.ts" />
+/// <reference path="../Util/Dump.ts" />
+/// <reference path="../Events/ControlEvents.ts" />
+/// <reference path="Animation/Animator.ts" />
+/// <reference path="Animation/Params.ts" />
+/// <reference path="PanelControlView.ts" />
+/// <reference path="Property/Size.ts" />
 
 namespace Fw.Views {
+    import Dump = Fw.Util.Dump;
+    import Property = Fw.Views.Property;
     import Anim = Fw.Views.Animation;
     import Events = Fw.Events.ControlEvents;
-    import Dump = Fw.Util.Dump;
 
     export enum Direction {
         Horizontal,
         Vertical
     }
 
-    export class SlidablePanelView extends PanelView {
+    export class SlidablePanelControlView extends PanelControlView {
 
         public readonly Direction: Direction;
 
@@ -38,11 +40,11 @@ namespace Fw.Views {
             this.Refresh();
         }
 
-        private _innerPanel: PanelView;
+        private _innerPanel: PanelControlView;
         private _isDragging: boolean = false;
         private _mouseMoveSuppressor = false;
-        private _dragStartMousePosition: Position;
-        private _dragStartPanelPosition: Position;
+        private _dragStartMousePosition: Property.Position;
+        private _dragStartPanelPosition: Property.Position;
 
         constructor(direction: Direction) {
             super();
@@ -58,14 +60,14 @@ namespace Fw.Views {
         protected Init(): void {
             super.Init();
 
-            this._dragStartMousePosition = new Position();
-            this._dragStartPanelPosition = new Position();
+            this._dragStartMousePosition = new Property.Position();
+            this._dragStartPanelPosition = new Property.Position();
 
             this.HasBorder = false;
             this.BorderRadius = 0;
             this.Elem.addClass('SlidablePanelView');
 
-            this._innerPanel = new PanelView();
+            this._innerPanel = new PanelControlView();
             this.Add(this._innerPanel);
 
             this.AddEventListener(Events.Initialized, () => {

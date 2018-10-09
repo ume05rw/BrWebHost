@@ -1,10 +1,13 @@
 ﻿/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../../Fw/Controllers/IController.ts" />
-/// <reference path="../../Fw/Controllers/Manager.ts" />
-/// <reference path="../../Fw/Views/PageView.ts" />
+/// <reference path="../Util/Dump.ts" />
+/// <reference path="IController.ts" />
+/// <reference path="Manager.ts" />
+/* /// <reference path="../Views/PageView.ts" /> */
 
 namespace Fw.Controllers {
+    import Dump = Fw.Util.Dump;
+
     export abstract class ControllerBase implements Fw.Controllers.IController {
         public Id: string;
         public IsDefaultView: boolean;

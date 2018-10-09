@@ -1,9 +1,12 @@
 ﻿/// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Views/IView.ts" />
-/// <reference path="./Params.ts" />
+/// <reference path="../../Util/Dump.ts" />
+/// <reference path="Params.ts" />
+/*/// <reference path="../IView.ts" /> */
 
 namespace Fw.Views.Animation {
+    import Dump = Fw.Util.Dump;
+
     export class Animator {
         private _view: Fw.Views.IView;
 

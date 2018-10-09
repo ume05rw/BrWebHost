@@ -1,8 +1,11 @@
 ﻿/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="./Factory.ts" />
+/// <reference path="../Util/Dump.ts" />
+/// <reference path="Factory.ts" />
 
 namespace Fw.Controllers {
+    import Dump = Fw.Util.Dump;
+
     export class Manager {
         private _controllers: Array<IController>;
 

@@ -1,8 +1,11 @@
 ﻿/// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Views/IView.ts" />
+/// <reference path="../../Util/Dump.ts" />
+/*/// <reference path="../IView.ts" />*/
 
 namespace Fw.Views.Animation {
+    import Dump = Fw.Util.Dump;
+
     export class Params {
         public static GetCurrent(view: Fw.Views.IView): Params {
             const result = new Params();

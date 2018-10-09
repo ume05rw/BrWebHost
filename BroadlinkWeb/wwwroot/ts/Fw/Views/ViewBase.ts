@@ -1,15 +1,16 @@
 ﻿/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../../Fw/Views/Animation/Animator.ts" />
-/// <reference path="../../Fw/Views/Animation/Params.ts" />
-/// <reference path="../../Fw/Events/ViewEvents.ts" />
-/// <reference path="../../Fw/Util/Dump.ts" />
-/// <reference path="./Size.ts" />
+/// <reference path="../Util/Dump.ts" />
+/// <reference path="../Events/ViewEvents.ts" />
+/// <reference path="Animation/Animator.ts" />
+/// <reference path="Animation/Params.ts" />
+/// <reference path="Property/Size.ts" />
 
 namespace Fw.Views {
+    import Dump = Fw.Util.Dump;
+    import Property = Fw.Views.Property;
     import Anim = Fw.Views.Animation;
     import Events = Fw.Events.ViewEvents;
-    import Dump = Fw.Util.Dump;
 
     export abstract class ViewBase implements IView {
         // Refresh() Multiple execution suppressor
@@ -27,18 +28,18 @@ namespace Fw.Views {
         public Children: Array<IView>;
         public ClassName: string;
 
-        private _size: Size;
-        public get Size(): Size {
+        private _size: Property.Size;
+        public get Size(): Property.Size {
             return this._size;
         }
 
-        private _position: Position;
-        public get Position(): Position {
+        private _position: Property.Position;
+        public get Position(): Property.Position {
             return this._position;
         }
 
-        private _anchor: Anchor;
-        public get Anchor(): Anchor {
+        private _anchor: Property.Anchor;
+        public get Anchor(): Property.Anchor {
             return this._anchor;
         }
 
@@ -71,9 +72,9 @@ namespace Fw.Views {
         }
 
         protected Init(): void {
-            this._size = new Size(this);
-            this._position = new Position(this);
-            this._anchor = new Anchor(this);
+            this._size = new Property.Size(this);
+            this._position = new Property.Position(this);
+            this._anchor = new Property.Anchor(this);
 
             this._size.Width = this.Elem.width();
             this._size.Height = this.Elem.height();

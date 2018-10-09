@@ -1,9 +1,11 @@
-﻿/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../../Fw/Events/ViewEvents.ts" />
-/// <reference path="../../Fw/Util/Number.ts" />
+﻿/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Events/ViewEvents.ts" />
+/// <reference path="../../Util/Dump.ts" />
+/// <reference path="../../Util/Number.ts" />
 
-namespace Fw.Views {
+namespace Fw.Views.Property {
+    import Dump = Fw.Util.Dump;
     import Events = Fw.Events.ViewEvents;
     import Number = Fw.Util.Number;
 

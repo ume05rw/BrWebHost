@@ -1,7 +1,10 @@
 ﻿/// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Util/Dump.ts" />
 
 namespace Fw.Util.Xhr {
+    import Dump = Fw.Util.Dump;
+
     export class Query {
         public static Invoke(params: Params): any {
             // 数値になってしまう。
@@ -43,8 +46,8 @@ namespace Fw.Util.Xhr {
                     });
                 };
 
-                console.log('fail');
-                console.log(data);
+                Dump.Log('fail');
+                Dump.Log(data);
             });
         }
     }
