@@ -100,8 +100,11 @@ declare namespace Fw.Controllers {
 }
 declare namespace Fw.Controllers {
     class Manager {
+        private static _instance;
+        static readonly Instance: Manager;
+        static Init(): void;
         private _controllers;
-        constructor();
+        private constructor();
         Show(id: string): void;
     }
 }
@@ -112,7 +115,6 @@ declare namespace Fw.Util.Xhr {
 }
 declare namespace App {
     class Main {
-        static _controllerManager: Fw.Controllers.Manager;
         static StartUp(): void;
     }
 }
@@ -312,10 +314,6 @@ declare namespace Fw.Views {
 }
 declare namespace Fw.Views {
     class PageView extends ViewBase {
-        static RootElem: JQuery;
-        static RootWidth: number;
-        static RootHeight: number;
-        static RefreshRoot(): void;
         constructor(jqueryElem: JQuery);
         Show(duration?: number): void;
         Hide(duration?: number): void;
@@ -358,6 +356,20 @@ declare namespace Fw.Views {
         private DelayedResumeMouseEvents;
         SetRelocatable(relocatable: boolean): void;
         protected InnerRefresh(): void;
+    }
+}
+declare namespace Fw.Views {
+    class Root {
+        private static _instance;
+        static readonly Instance: Root;
+        static Init(selectorString: string): void;
+        Elem: JQuery;
+        readonly Dom: HTMLElement;
+        ClassName: string;
+        private _size;
+        readonly Size: Property.Size;
+        private constructor();
+        Refresh(): void;
     }
 }
 declare namespace Fw.Views {

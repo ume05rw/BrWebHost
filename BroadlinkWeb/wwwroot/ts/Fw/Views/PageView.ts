@@ -1,9 +1,12 @@
 ﻿/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Util/Dump.ts" />
+/// <reference path="../Events/ViewEvents.ts" />
 /// <reference path="Animation/Animator.ts" />
 /// <reference path="Animation/Params.ts" />
+/// <reference path="Property/Size.ts" />
 /// <reference path="ViewBase.ts" />
+
 
 namespace Fw.Views {
     import Dump = Fw.Util.Dump;
@@ -11,30 +14,9 @@ namespace Fw.Views {
     import Events = Fw.Events.ViewEvents;
 
     export class PageView extends ViewBase {
-        public static RootElem: JQuery = null;
-        public static RootWidth: number = -1;
-        public static RootHeight: number = -1;
-        public static RefreshRoot(): void {
-            if (PageView.RootElem === null)
-                return;
-
-            PageView.RootWidth = PageView.RootElem.width();
-            PageView.RootHeight = PageView.RootElem.height();
-        }
-
         constructor(jqueryElem: JQuery) {
             super(jqueryElem);
-
             this.ClassName = 'PageView';
-
-            if (PageView.RootElem === null) {
-                PageView.RootElem = jqueryElem.parent();
-                PageView.RefreshRoot();
-
-                $(window).resize(() => {
-                    PageView.RefreshRoot();
-                });
-            }
         }
 
         public Show(duration: number = 200): void {

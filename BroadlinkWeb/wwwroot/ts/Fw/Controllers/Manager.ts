@@ -7,9 +7,21 @@ namespace Fw.Controllers {
     import Dump = Fw.Util.Dump;
 
     export class Manager {
+        private static _instance: Manager = null;
+        public static get Instance(): Manager {
+            if (!Manager._instance)
+                throw new Error('Manager.Init() has not been executed.');
+
+            return Manager._instance;
+        }
+        public static Init(): void {
+            Manager._instance = new Manager();
+        }
+
+
         private _controllers: Array<IController>;
 
-        constructor() {
+        private constructor() {
             const ctrs: Array<IController> = [];
 
             $("div[data-controller]").each(function (i, el) {

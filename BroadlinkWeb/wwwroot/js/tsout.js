@@ -311,6 +311,18 @@ var Fw;
                 }.bind(this));
                 this._controllers = ctrs;
             }
+            Object.defineProperty(Manager, "Instance", {
+                get: function () {
+                    if (!Manager._instance)
+                        throw new Error('Manager.Init() has not been executed.');
+                    return Manager._instance;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Manager.Init = function () {
+                Manager._instance = new Manager();
+            };
             Manager.prototype.Show = function (id) {
                 var target = _.find(this._controllers, function (c) {
                     return (c.Id === id);
@@ -323,6 +335,7 @@ var Fw;
                 });
                 target.View.Show();
             };
+            Manager._instance = null;
             return Manager;
         }());
         Controllers.Manager = Manager;
@@ -357,12 +370,13 @@ var App;
         function Main() {
         }
         Main.StartUp = function () {
+            // フレームワーク初期化
+            Fw.Startup.Init();
+            // API仕様に応じて、クエリ先URLの土台を作っておく。
             var proto = location.protocol;
             var host = location.hostname;
             var port = location.port;
             Fw.Util.Xhr.Config.BaseUrl = proto + '//' + host + ':' + port + '/api/';
-            // コントローラを起動。
-            Main._controllerManager = new Fw.Controllers.Manager();
         };
         return Main;
     }());
@@ -766,19 +780,24 @@ var Fw;
 })(Fw || (Fw = {}));
 /// <reference path="../../lib/jquery/index.d.ts" />
 /// <reference path="../../lib/underscore/index.d.ts" />
-/// <reference path="./Util/Dump.ts" />
+/// <reference path="Util/Dump.ts" />
+/* /// <reference path="Views/Root.ts" /> */
 var Fw;
 (function (Fw) {
     var Startup = /** @class */ (function () {
         function Startup() {
         }
         Startup.Init = function () {
-            // ↓App.Mainで書き換える。
+            // ↓API仕様に応じて、App.Mainで書き換える。
             Fw.Util.Xhr.Config.BaseUrl
                 = location.protocol
                     + '//' + location.hostname
                     + ':' + location.port
                     + '/';
+            // 画面全体のコンテナを初期化
+            Fw.Views.Root.Init('div.body-content');
+            // Controllers.Managerの初期化
+            Fw.Controllers.Manager.Init();
         };
         return Startup;
     }());
@@ -1649,8 +1668,10 @@ var Fw;
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Util/Dump.ts" />
+/// <reference path="../Events/ViewEvents.ts" />
 /// <reference path="Animation/Animator.ts" />
 /// <reference path="Animation/Params.ts" />
+/// <reference path="Property/Size.ts" />
 /// <reference path="ViewBase.ts" />
 var Fw;
 (function (Fw) {
@@ -1663,21 +1684,8 @@ var Fw;
             function PageView(jqueryElem) {
                 var _this = _super.call(this, jqueryElem) || this;
                 _this.ClassName = 'PageView';
-                if (PageView.RootElem === null) {
-                    PageView.RootElem = jqueryElem.parent();
-                    PageView.RefreshRoot();
-                    $(window).resize(function () {
-                        PageView.RefreshRoot();
-                    });
-                }
                 return _this;
             }
-            PageView.RefreshRoot = function () {
-                if (PageView.RootElem === null)
-                    return;
-                PageView.RootWidth = PageView.RootElem.width();
-                PageView.RootHeight = PageView.RootElem.height();
-            };
             PageView.prototype.Show = function (duration) {
                 var _this = this;
                 if (duration === void 0) { duration = 200; }
@@ -1720,9 +1728,6 @@ var Fw;
                 this.Dom.style.width = "100%";
                 this.Dom.style.height = "100%";
             };
-            PageView.RootElem = null;
-            PageView.RootWidth = -1;
-            PageView.RootHeight = -1;
             return PageView;
         }(Views.ViewBase));
         Views.PageView = PageView;
@@ -2015,6 +2020,56 @@ var Fw;
             return RelocatableControlView;
         }(Views.ControlView));
         Views.RelocatableControlView = RelocatableControlView;
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Util/Dump.ts" />
+/// <reference path="Property/Size.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Root = /** @class */ (function () {
+            function Root(jqueryElem) {
+                var _this = this;
+                this.Elem = jqueryElem;
+                this.Dom = jqueryElem.get(0);
+                this.ClassName = 'Root';
+                this._size = new Views.Property.Size();
+                this.Refresh();
+                $(window).resize(function () {
+                    _this.Refresh();
+                });
+            }
+            Object.defineProperty(Root, "Instance", {
+                get: function () {
+                    if (!Root._instance)
+                        throw new Error('Root.Init() has not been executed.');
+                    return Root._instance;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Root.Init = function (selectorString) {
+                Root._instance = new Root($(selectorString));
+            };
+            Object.defineProperty(Root.prototype, "Size", {
+                get: function () {
+                    return this._size;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Root.prototype.Refresh = function () {
+                // this.Sizeのセッターが無いので、フィールドに直接書き込む。
+                this._size.Width = this.Elem.width();
+                this._size.Height = this.Elem.height();
+            };
+            Root._instance = null;
+            return Root;
+        }());
+        Views.Root = Root;
     })(Views = Fw.Views || (Fw.Views = {}));
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />

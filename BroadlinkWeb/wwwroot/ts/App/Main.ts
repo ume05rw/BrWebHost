@@ -8,17 +8,15 @@ namespace App {
     import Dump = Fw.Util.Dump;
 
     export class Main {
-        // 一応、参照を保持しておく。
-        public static _controllerManager: Fw.Controllers.Manager;
-
         public static StartUp(): void {
+            // フレームワーク初期化
+            Fw.Startup.Init();
+
+            // API仕様に応じて、クエリ先URLの土台を作っておく。
             let proto = location.protocol;
             let host = location.hostname;
             let port = location.port;
             Fw.Util.Xhr.Config.BaseUrl = proto + '//' + host + ':' + port + '/api/';
-
-            // コントローラを起動。
-            Main._controllerManager = new Fw.Controllers.Manager();
         }
     }
 }
