@@ -1,7 +1,7 @@
 ﻿/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Util/Dump.ts" />
-/// <reference path="../Events/ControlEvents.ts" />
+/// <reference path="../Events/ControlViewEvents.ts" />
 /// <reference path="Animation/Animator.ts" />
 /// <reference path="Animation/Params.ts" />
 /// <reference path="PanelControlView.ts" />
@@ -11,7 +11,7 @@ namespace Fw.Views {
     import Dump = Fw.Util.Dump;
     import Property = Fw.Views.Property;
     import Anim = Fw.Views.Animation;
-    import Events = Fw.Events.ControlEvents;
+    import Events = Fw.Events.ControlViewEvents;
 
     export enum Direction {
         Horizontal,
@@ -49,8 +49,6 @@ namespace Fw.Views {
         constructor(direction: Direction) {
             super();
 
-            this.ClassName = 'SlidablePanelView';
-
             // nullやundefinedを入れさせない。
             this.Direction = (direction === Direction.Horizontal)
                 ? Direction.Horizontal
@@ -60,12 +58,14 @@ namespace Fw.Views {
         protected Init(): void {
             super.Init();
 
+            this.SetClassName('SlidablePanelView');
+            this.Elem.addClass(this.ClassName);
+
             this._dragStartMousePosition = new Property.Position();
             this._dragStartPanelPosition = new Property.Position();
 
             this.HasBorder = false;
             this.BorderRadius = 0;
-            this.Elem.addClass('SlidablePanelView');
 
             this._innerPanel = new PanelControlView();
             this.Add(this._innerPanel);
@@ -228,6 +228,21 @@ namespace Fw.Views {
                 Dump.ErrorLog(e);
             } finally {
             }
+        }
+
+        public Dispose(): void {
+            super.Dispose();
+
+            this._innerBackgroundColor = null;
+            this._innerPanelCount = null;
+            this._innerPanel.Dispose();
+            this._innerPanel = null;
+            this._isDragging = null;
+            this._mouseMoveSuppressor = null;
+            this._dragStartMousePosition.Dispose();
+            this._dragStartMousePosition = null;
+            this._dragStartPanelPosition.Dispose();
+            this._dragStartPanelPosition = null;
         }
     }
 }

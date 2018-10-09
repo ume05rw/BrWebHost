@@ -2,7 +2,7 @@
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Fw/Controllers/ControllerBase.ts" />
 /// <reference path="../../Fw/Util/Dump.ts" />
-/// <reference path="../../Fw/Events/ControlEvents.ts" />
+/// <reference path="../../Fw/Events/ControlViewEvents.ts" />
 
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
@@ -44,7 +44,7 @@ namespace App.Controllers {
             
             btnMove.BackgroundColor = '#FF9900';
             btnMove.Label = '動く？';
-            btnMove.AddEventListener(Events.ControlEvents.SingleClick, () => {
+            btnMove.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
                 console.log('btnMove.SingleClick');
             });
             this.View.Add(btnMove);
@@ -53,7 +53,7 @@ namespace App.Controllers {
             btnReset.SetDisplayParams(60, 60, 0, 0, '#1188FF');
             btnReset.SetAnchor(5, null, 5, null);
             btnReset.Label = 'リセット';
-            btnReset.AddEventListener(Events.ControlEvents.SingleClick, () => {
+            btnReset.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
                 console.log('btnReset.SingleClick');
                 if (btnMove.IsRelocatable)
                     btnMove.SetRelocatable(false);

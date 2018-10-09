@@ -16,7 +16,13 @@ namespace Fw.Views {
     export class PageView extends ViewBase {
         constructor(jqueryElem: JQuery) {
             super(jqueryElem);
-            this.ClassName = 'PageView';
+        }
+
+        protected Init(): void {
+            super.Init();
+
+            this.SetClassName('PageView');
+            this.Elem.addClass(this.ClassName);
         }
 
         public Show(duration: number = 200): void {

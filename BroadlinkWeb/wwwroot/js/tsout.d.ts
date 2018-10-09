@@ -8,6 +8,19 @@ declare namespace Fw.Util {
         private static GetDumpedString;
     }
 }
+declare namespace Fw {
+    interface IObject {
+        Elem: JQuery;
+        ClassName: string;
+        AddEventListener(name: string, handler: (e: JQueryEventObject) => void): void;
+        RemoveEventListener(name: string, handler: (e: JQueryEventObject) => void): void;
+        DispatchEvent(name: string): void;
+        SuppressEvent(name: string): void;
+        IsSuppressedEvent(name: string): boolean;
+        ResumeEvent(name: string): void;
+        Dispose(): void;
+    }
+}
 declare namespace Fw.Events {
     class ViewEventsClass {
         readonly Shown: string;
@@ -55,7 +68,7 @@ declare namespace Fw.Views.Property {
 }
 declare namespace Fw.Views {
     import Property = Fw.Views.Property;
-    interface IView {
+    interface IView extends Fw.IObject {
         Elem: JQuery;
         Dom: HTMLElement;
         Parent: IView;
@@ -66,6 +79,7 @@ declare namespace Fw.Views {
         Anchor: Property.Anchor;
         Color: string;
         BackgroundColor: string;
+        SetParent(parent: IView): void;
         SetDisplayParams(width: number, height: number, x: number, y: number, color: string, backgroundColor: string): void;
         SetSize(width: number, height: number): void;
         SetPosition(x: number, y: number): void;
@@ -77,13 +91,6 @@ declare namespace Fw.Views {
         Show(duration?: number): void;
         Hide(duration?: number): void;
         IsVisible(): boolean;
-        AddEventListener(name: string, handler: (e: JQueryEventObject) => void): void;
-        RemoveEventListener(name: string, handler: (e: JQueryEventObject) => void): void;
-        DispatchEvent(name: string): void;
-        SuppressEvent(name: string): void;
-        IsSuppressedEvent(name: string): boolean;
-        ResumeEvent(name: string): void;
-        Dispose(): void;
     }
 }
 declare namespace Fw.Controllers {
@@ -128,11 +135,11 @@ declare namespace Fw.Controllers {
     }
 }
 declare namespace Fw.Events {
-    class ControlEventsClass extends ViewEventsClass {
+    class ControlViewEventsClass extends ViewEventsClass {
         readonly SingleClick: string;
         readonly LongClick: string;
     }
-    const ControlEvents: ControlEventsClass;
+    const ControlViewEvents: ControlViewEventsClass;
 }
 declare namespace App.Controllers {
     class MainController extends Fw.Controllers.ControllerBase {
@@ -163,9 +170,42 @@ declare namespace App.Controllers {
     }
 }
 declare namespace Fw.Events {
-    class PageEventsClass extends ViewEventsClass {
+    class PageViewEventsClass extends ViewEventsClass {
     }
-    const PageEvents: PageEventsClass;
+    const PageViewEvents: PageViewEventsClass;
+}
+declare namespace Fw.Events {
+    class RootEventsClass {
+        readonly Resized: string;
+    }
+    const RootEvents: RootEventsClass;
+}
+declare namespace Fw.Models {
+    interface IModel extends Fw.IObject {
+    }
+}
+declare namespace Fw {
+    abstract class ObjectBase implements Fw.IObject {
+        private _elem;
+        readonly Elem: JQuery;
+        private _className;
+        readonly ClassName: string;
+        private _suppressedEvents;
+        constructor();
+        protected SetClassName(name: string): void;
+        protected SetElem(jqueryElem: JQuery): void;
+        AddEventListener(name: string, handler: (e: JQueryEventObject) => void): void;
+        RemoveEventListener(name: string, handler: (e: JQueryEventObject) => void): void;
+        DispatchEvent(name: string): void;
+        SuppressEvent(name: string): void;
+        IsSuppressedEvent(name: string): boolean;
+        ResumeEvent(name: string): void;
+        Dispose(): void;
+    }
+}
+declare namespace Fw.Models {
+    abstract class ModelBase extends Fw.ObjectBase implements Fw.Models.IModel {
+    }
 }
 declare namespace Fw {
     class Startup {
@@ -235,16 +275,16 @@ declare namespace Fw.Views.Property {
 }
 declare namespace Fw.Views {
     import Property = Fw.Views.Property;
-    abstract class ViewBase implements IView {
+    abstract class ViewBase extends ObjectBase implements IView {
         private _lastRefreshTimer;
         private _lastRefreshedTime;
         private _initialized;
-        private _suppressedEvents;
-        Elem: JQuery;
+        private _dom;
         readonly Dom: HTMLElement;
-        Parent: IView;
-        Children: Array<IView>;
-        ClassName: string;
+        private _parent;
+        readonly Parent: IView;
+        private _children;
+        readonly Children: Array<IView>;
         private _size;
         readonly Size: Property.Size;
         private _position;
@@ -257,6 +297,7 @@ declare namespace Fw.Views {
         BackgroundColor: string;
         constructor(jqueryElem: JQuery);
         protected Init(): void;
+        SetParent(parent: IView): void;
         SetSize(width: number, height: number): void;
         SetPosition(x: number, y: number): void;
         SetAnchor(top: number, left: number, right: number, bottom: number): void;
@@ -269,12 +310,6 @@ declare namespace Fw.Views {
         IsVisible(): boolean;
         Refresh(): void;
         protected InnerRefresh(): void;
-        AddEventListener(name: string, handler: (e: JQueryEventObject) => void): void;
-        RemoveEventListener(name: string, handler: (e: JQueryEventObject) => void): void;
-        DispatchEvent(name: string): void;
-        SuppressEvent(name: string): void;
-        IsSuppressedEvent(name: string): boolean;
-        ResumeEvent(name: string): void;
         Dispose(): void;
     }
 }
@@ -284,6 +319,7 @@ declare namespace Fw.Views {
         Source: string;
         constructor();
         protected Init(): void;
+        Dispose(): void;
     }
 }
 declare namespace Fw.Views {
@@ -310,11 +346,13 @@ declare namespace Fw.Views {
         Text: string;
         constructor();
         protected Init(): void;
+        Dispose(): void;
     }
 }
 declare namespace Fw.Views {
     class PageView extends ViewBase {
         constructor(jqueryElem: JQuery);
+        protected Init(): void;
         Show(duration?: number): void;
         Hide(duration?: number): void;
         protected InnerRefresh(): void;
@@ -322,7 +360,6 @@ declare namespace Fw.Views {
 }
 declare namespace Fw.Views {
     class PanelControlView extends ControlView {
-        constructor();
         protected Init(): void;
     }
 }
@@ -344,32 +381,32 @@ declare namespace Fw.Views {
         private _isRelocatable;
         readonly IsRelocatable: boolean;
         private _shadow;
-        private _beforeX;
-        private _beforeY;
         private _isMouseMoveEventListened;
         private _isDragging;
+        private _gridSize;
         GridSize: number;
-        constructor();
         protected Init(): void;
         private OnMouseMove;
         private _delayedResumeMouseEventsTimer;
         private DelayedResumeMouseEvents;
         SetRelocatable(relocatable: boolean): void;
         protected InnerRefresh(): void;
+        Dispose(): void;
     }
 }
-declare namespace Fw.Views {
-    class Root {
+declare namespace Fw {
+    import Property = Fw.Views.Property;
+    class Root extends ObjectBase {
         private static _instance;
         static readonly Instance: Root;
         static Init(selectorString: string): void;
-        Elem: JQuery;
+        private _dom;
         readonly Dom: HTMLElement;
-        ClassName: string;
         private _size;
         readonly Size: Property.Size;
         private constructor();
         Refresh(): void;
+        Dispose(): void;
     }
 }
 declare namespace Fw.Views {
@@ -395,5 +432,6 @@ declare namespace Fw.Views {
         private InitView;
         private AdjustSlidePosition;
         protected InnerRefresh(): void;
+        Dispose(): void;
     }
 }

@@ -3,7 +3,7 @@
 /// <reference path="ViewEvents.ts" />
 
 namespace Fw.Events {
-    export class PageEventsClass extends ViewEventsClass {
+    export class PageViewEventsClass extends ViewEventsClass {
     }
-    export const PageEvents: PageEventsClass = new PageEventsClass();
+    export const PageViewEvents: PageViewEventsClass = new PageViewEventsClass();
 }

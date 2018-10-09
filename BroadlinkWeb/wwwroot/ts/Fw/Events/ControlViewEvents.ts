@@ -3,9 +3,9 @@
 /// <reference path="ViewEvents.ts" />
 
 namespace Fw.Events {
-    export class ControlEventsClass extends ViewEventsClass {
+    export class ControlViewEventsClass extends ViewEventsClass {
         public readonly SingleClick: string = 'SingleClick';
         public readonly LongClick: string = 'LongClick';
     }
-    export const ControlEvents: ControlEventsClass = new ControlEventsClass();
+    export const ControlViewEvents: ControlViewEventsClass = new ControlViewEventsClass();
 }

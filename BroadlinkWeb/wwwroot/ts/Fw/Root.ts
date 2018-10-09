@@ -1,13 +1,15 @@
-﻿/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../Util/Dump.ts" />
-/// <reference path="Property/Size.ts" />
+﻿/// <reference path="../../lib/jquery/index.d.ts" />
+/// <reference path="../../lib/underscore/index.d.ts" />
+/// <reference path="Events/RootEvents.ts" />
+/// <reference path="Util/Dump.ts" />
+/// <reference path="Views/Property/Size.ts" />
 
-namespace Fw.Views {
+namespace Fw {
     import Dump = Fw.Util.Dump;
-    import Events = Fw.Events.ViewEvents;
+    import Events = Fw.Events.RootEvents;
+    import Property = Fw.Views.Property;
 
-    export class Root {
+    export class Root extends ObjectBase {
         private static _instance: Root = null;
         public static get Instance(): Root {
             if (!Root._instance)
@@ -19,10 +21,10 @@ namespace Fw.Views {
             Root._instance = new Root($(selectorString));
         }
 
-
-        public Elem: JQuery;
-        public readonly Dom: HTMLElement;
-        public ClassName: string;
+        private _dom: HTMLElement;
+        public get Dom(): HTMLElement {
+            return this._dom;
+        }
 
         private _size: Property.Size;
         public get Size(): Property.Size {
@@ -30,14 +32,18 @@ namespace Fw.Views {
         }
 
         private constructor(jqueryElem: JQuery) {
-            this.Elem = jqueryElem;
-            this.Dom = jqueryElem.get(0) as HTMLElement;
-            this.ClassName = 'Root';
+            super();
+
+            this.SetElem(jqueryElem);
+            this.SetClassName('Root');
+
             this._size = new Property.Size();
+            this._dom = jqueryElem.get(0) as HTMLElement;
             this.Refresh();
 
             $(window).resize(() => {
                 this.Refresh();
+                this.DispatchEvent(Events.Resized);
             });
         }
 
@@ -45,6 +51,14 @@ namespace Fw.Views {
             // this.Sizeのセッターが無いので、フィールドに直接書き込む。
             this._size.Width = this.Elem.width();
             this._size.Height = this.Elem.height();
+        }
+
+        public Dispose(): void {
+            super.Dispose();
+
+            this._dom = null;
+            this._size.Dispose();
+            this._size = null;
         }
     }
 }

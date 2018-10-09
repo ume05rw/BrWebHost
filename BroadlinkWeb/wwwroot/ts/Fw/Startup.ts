@@ -17,7 +17,7 @@ namespace Fw {
                 + '/';
 
             // 画面全体のコンテナを初期化
-            Fw.Views.Root.Init('div.body-content');
+            Fw.Root.Init('div.body-content');
 
             // Controllers.Managerの初期化
             Fw.Controllers.Manager.Init();

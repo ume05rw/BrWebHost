@@ -1,12 +1,12 @@
 ﻿/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Util/Dump.ts" />
-/// <reference path="../Events/ControlEvents.ts" />
+/// <reference path="../Events/ControlViewEvents.ts" />
 /// <reference path="ControlView.ts" />
 
 namespace Fw.Views {
     import Dump = Fw.Util.Dump;
-    import Events = Fw.Events.ControlEvents;
+    import Events = Fw.Events.ControlViewEvents;
 
     export class RelocatableControlView extends ControlView {
 
@@ -16,20 +16,24 @@ namespace Fw.Views {
         }
 
         private _shadow: JQuery;
-        private _beforeX: number = 0;
-        private _beforeY: number = 0;
         private _isMouseMoveEventListened: boolean = false;
         private _isDragging: boolean = false;
 
-        public GridSize: number = 60;
-
-        constructor() {
-            super();
-            this.ClassName = 'RelocatableControlView';
+        private _gridSize: number = 60;
+        public get GridSize(): number {
+            return this._gridSize;
         }
+        public set GridSize(value: number) {
+            this._gridSize = value;
+            this.Refresh();
+        }
+
 
         protected Init(): void {
             super.Init();
+
+            this.SetClassName('RelocatableControlView');
+            this.Elem.addClass(this.ClassName);
 
             this._shadow = $('<div class="IView ControlView Shadow"></div>');
 
@@ -119,9 +123,9 @@ namespace Fw.Views {
 
             } else {
                 // 移動可能にする。
+                //this._beforeX = this.Position.X;
+                //this._beforeY = this.Position.Y;
                 this._isRelocatable = true;
-                this._beforeX = this.Position.X;
-                this._beforeY = this.Position.Y;
                 this.Elem.parent().append(this._shadow);
             }
 
@@ -179,6 +183,18 @@ namespace Fw.Views {
             } else {
                 shadowDom.style.display = 'none';
             }
+        }
+
+        public Dispose(): void {
+            super.Dispose();
+
+            this._isRelocatable = null;
+            this._shadow.remove();
+            this._shadow = null;
+            this._isMouseMoveEventListened = null;
+            this._isDragging = null;
+            this._gridSize = null;
+
         }
     }
 }

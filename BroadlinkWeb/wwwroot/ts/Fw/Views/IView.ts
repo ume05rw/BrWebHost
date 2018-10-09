@@ -1,11 +1,12 @@
 ﻿/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../IObject.ts" />
 /// <reference path="Property/Anchor.ts" />
 
 namespace Fw.Views {
     import Property = Fw.Views.Property;
 
-    export interface IView {
+    export interface IView extends Fw.IObject {
         Elem: JQuery;
         Dom: HTMLElement;
         Parent: IView;
@@ -19,6 +20,7 @@ namespace Fw.Views {
         Color: string;
         BackgroundColor: string;
 
+        SetParent(parent: IView): void;
         SetDisplayParams(width: number, height: number, x: number, y: number, color: string, backgroundColor: string): void;
         SetSize(width: number, height: number): void;
         SetPosition(x: number, y: number): void;
@@ -31,14 +33,5 @@ namespace Fw.Views {
         Show(duration?: number): void;
         Hide(duration?: number): void;
         IsVisible(): boolean;
-
-        AddEventListener(name: string, handler: (e: JQueryEventObject) => void): void;
-        RemoveEventListener(name: string, handler: (e: JQueryEventObject) => void): void;
-        DispatchEvent(name: string): void;
-        SuppressEvent(name: string): void;
-        IsSuppressedEvent(name: string): boolean;
-        ResumeEvent(name: string): void;
-
-        Dispose(): void;
     }
 }

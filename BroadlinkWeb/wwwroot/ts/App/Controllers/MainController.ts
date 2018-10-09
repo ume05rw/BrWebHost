@@ -2,7 +2,7 @@
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Fw/Controllers/ControllerBase.ts" />
 /// <reference path="../../Fw/Util/Dump.ts" />
-/// <reference path="../../Fw/Events/ControlEvents.ts" />
+/// <reference path="../../Fw/Events/ControlViewEvents.ts" />
 
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
@@ -45,7 +45,7 @@ namespace App.Controllers {
             tmpCtl.Color = '#666666';
 
             tmpCtl.Label = 'くりっく';
-            tmpCtl.AddEventListener(Fw.Events.ControlEvents.SingleClick, () => {
+            tmpCtl.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
                 console.log('LONG CLICK!!');
 
                 if (this._centerControl.IsVisible()) {
@@ -58,7 +58,7 @@ namespace App.Controllers {
             });
             this.View.Add(tmpCtl);
 
-            this.View.AddEventListener(Fw.Events.PageEvents.Shown, () => {
+            this.View.AddEventListener(Events.PageViewEvents.Shown, () => {
                 console.log('MainView.Shown');
             });
 

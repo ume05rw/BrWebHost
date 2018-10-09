@@ -1,13 +1,13 @@
 ﻿/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../Events/ControlEvents.ts" />
+/// <reference path="../Events/ControlViewEvents.ts" />
 /// <reference path="../Util/Dump.ts" />
 /// <reference path="../Util/Number.ts" />
 /// <reference path="./ViewBase.ts" />
 
 namespace Fw.Views {
     import Dump = Fw.Util.Dump;
-    import Events = Fw.Events.ControlEvents;
+    import Events = Fw.Events.ControlViewEvents;
     import Number = Fw.Util.Number;
 
     export class ControlView extends ViewBase {
@@ -53,7 +53,7 @@ namespace Fw.Views {
 
         constructor() {
             super($('<a></a>'));
-            this.ClassName = 'ControlView';
+            
         }
 
         /**
@@ -62,11 +62,13 @@ namespace Fw.Views {
         protected Init(): void {
             super.Init();
 
+            this.SetClassName('ControlView');
+            this.Elem.addClass(this.ClassName);
+
             // プロパティsetterを一度通しておく。
             this.HasBorder = true;
             this.BorderRadius = 5;
 
-            this.Elem.addClass('ControlView');
             this._label = $('<span class="ControlViewProperty"></span>');
             this.Elem.append(this._label);
 
@@ -118,6 +120,8 @@ namespace Fw.Views {
 
             this._label = null;
             this._tapEventTimer = null;
+            this._hasBorder = null;
+            this._borderRadius = null;
         }
     }
 }

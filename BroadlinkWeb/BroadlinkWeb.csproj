@@ -8,9 +8,14 @@
   <ItemGroup>
     <Content Remove="wwwroot\js\Page.ts" />
     <Content Remove="wwwroot\ts\App\Main.ts" />
-    <Content Remove="wwwroot\ts\Fw\Events\ControlEvents.ts" />
-    <Content Remove="wwwroot\ts\Fw\Events\PageEvents.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\ControlViewEvents.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\PageViewEvents.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\RootEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\ViewEvents.ts" />
+    <Content Remove="wwwroot\ts\Fw\IObject.ts" />
+    <Content Remove="wwwroot\ts\Fw\Models\IModel.ts" />
+    <Content Remove="wwwroot\ts\Fw\Models\ModelBase.ts" />
+    <Content Remove="wwwroot\ts\Fw\ObjectBase.ts" />
     <Content Remove="wwwroot\ts\Fw\Startup.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\Dump.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\Number.ts" />
@@ -65,9 +70,14 @@
     <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\IController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\ControllerBase.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\Manager.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\ControlEvents.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\PageEvents.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\ControlViewEvents.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\PageViewEvents.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\RootEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\ViewEvents.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\IObject.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Models\IModel.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Models\ModelBase.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\ObjectBase.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Startup.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Dump.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Number.ts" />
@@ -88,7 +98,7 @@
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\Position.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\RelocatableControlView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\Size.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Root.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Root.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\SlidablePanelControlView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ViewBase.ts" />
   </ItemGroup>

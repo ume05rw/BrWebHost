@@ -2,7 +2,7 @@
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Fw/Controllers/ControllerBase.ts" />
 /// <reference path="../../Fw/Util/Dump.ts" />
-/// <reference path="../../Fw/Events/ControlEvents.ts" />
+/// <reference path="../../Fw/Events/ControlViewEvents.ts" />
 /// <reference path="../../Fw/Util/Xhr/Query.ts" />
 
 namespace App.Controllers {
@@ -33,7 +33,7 @@ namespace App.Controllers {
             back.Size.Height = 40;
             back.Label = '戻る';
             back.SetAnchor(null, null, 5, null);
-            back.AddEventListener(Events.ControlEvents.SingleClick, () => {
+            back.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
                 this.Manager.Show("Main");
             });
             header.Add(back);
@@ -43,7 +43,7 @@ namespace App.Controllers {
             devices.SetSize(60, 60);
             devices.Color = '#8844FF';
             devices.Label = 'デバイス走査';
-            devices.AddEventListener(Events.ControlEvents.SingleClick, () => {
+            devices.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
                 var params = new Xhr.Params('BrDevices/Discover', Xhr.MethodType.Get);
                 params.Callback = (data) => {
                     console.log('Disover:');

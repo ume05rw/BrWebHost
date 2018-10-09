@@ -1,5 +1,6 @@
 ﻿/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../ObjectBase.ts" />
 /// <reference path="../Util/Dump.ts" />
 /// <reference path="../Events/ViewEvents.ts" />
 /// <reference path="Animation/Animator.ts" />
@@ -12,21 +13,28 @@ namespace Fw.Views {
     import Anim = Fw.Views.Animation;
     import Events = Fw.Events.ViewEvents;
 
-    export abstract class ViewBase implements IView {
+    export abstract class ViewBase extends ObjectBase implements IView {
         // Refresh() Multiple execution suppressor
         private _lastRefreshTimer: number;
         private _lastRefreshedTime: Date;
 
         private _initialized: boolean = false;
 
-        private _suppressedEvents: Array<string> = new Array<string>();
-
         // Properties
-        public Elem: JQuery;
-        public readonly Dom: HTMLElement;
-        public Parent: IView;
-        public Children: Array<IView>;
-        public ClassName: string;
+        private _dom: HTMLElement;
+        public get Dom(): HTMLElement {
+            return this._dom;
+        }
+
+        private _parent: IView;
+        public get Parent(): IView {
+            return this._parent;
+        };
+
+        private _children: Array<IView>;
+        public get Children(): Array<IView> {
+            return this._children;
+        }
 
         private _size: Property.Size;
         public get Size(): Property.Size {
@@ -63,15 +71,19 @@ namespace Fw.Views {
 
 
         constructor(jqueryElem: JQuery) {
-            this.Children = new Array<IView>();
-            this.Elem = jqueryElem;
-            this.Dom = jqueryElem.get(0) as HTMLElement
-            this.ClassName = 'ViewBase';
+            super();
+
+            this.SetElem(jqueryElem);
+            this._dom = jqueryElem.get(0) as HTMLElement;
+            this._children = new Array<IView>();
 
             this.Init();
         }
 
         protected Init(): void {
+            this.SetClassName('ViewBase');
+            this.Elem.addClass('IView');
+
             this._size = new Property.Size(this);
             this._position = new Property.Position(this);
             this._anchor = new Property.Anchor(this);
@@ -91,11 +103,18 @@ namespace Fw.Views {
 
             this._color = '#000000';
 
-            this.Elem.addClass('IView');
-
             this.IsVisible()
                 ? this.DispatchEvent(Events.Shown)
                 : this.DispatchEvent(Events.Hidden);
+
+            // 画面リサイズ時に再描画
+            Fw.Root.Instance.AddEventListener(Fw.Events.RootEvents.Resized, () => {
+                this.Refresh();
+            });
+        }
+
+        public SetParent(parent: IView): void {
+            this._parent = parent;
         }
 
         public SetSize(width: number, height: number): void {
@@ -355,53 +374,27 @@ namespace Fw.Views {
             }
         }
 
-        public AddEventListener(name: string, handler: (e: JQueryEventObject) => void): void {
-            this.Elem.on(name, handler);
-        }
-
-        public RemoveEventListener(name: string, handler: (e: JQueryEventObject) => void): void {
-            this.Elem.off(name, handler);
-        }
-
-        public DispatchEvent(name: string): void {
-            if (this.IsSuppressedEvent(name))
-                return;
-
-            //Dump.Log(`${this.ClassName}.DispatchEvent: ${name}`);
-            this.Elem.trigger(name);
-        }
-
-        public SuppressEvent(name: string): void {
-            if (this.IsSuppressedEvent(name))
-                return;
-
-            this._suppressedEvents.push(name);
-        }
-
-        public IsSuppressedEvent(name: string): boolean {
-            return (this._suppressedEvents.indexOf(name) !== -1);
-        }
-
-        public ResumeEvent(name: string): void {
-            if (!this.IsSuppressedEvent(name))
-                return;
-
-            const idx = this._suppressedEvents.indexOf(name);
-            this._suppressedEvents.splice(idx, 1);
-        }
-
         public Dispose(): void {
+            super.Dispose();
+
             _.each(this.Children, (view) => {
                 view.Dispose();
             });
-            this.Children = null;
+            this._children = null;
 
-            this.Elem.remove();
-            this.Elem = null;
+            this._dom = null;
 
             this._size.Dispose();
+            this._size = null;
+
             this._position.Dispose();
+            this._position = null;
+
             this._anchor.Dispose();
+            this._anchor = null;
+
+            this._color = null;
+            this._backgroundColor = null;
         }
     }
 }
