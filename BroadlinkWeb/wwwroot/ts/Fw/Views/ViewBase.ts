@@ -21,7 +21,7 @@ namespace Fw.Views {
         private _initialized: boolean = false;
 
         // Properties
-        private _dom: HTMLElement;
+        private _dom: HTMLElement = null;
         public get Dom(): HTMLElement {
             return this._dom;
         }
@@ -74,10 +74,17 @@ namespace Fw.Views {
             super();
 
             this.SetElem(jqueryElem);
-            this._dom = jqueryElem.get(0) as HTMLElement;
             this._children = new Array<IView>();
 
             this.Init();
+        }
+
+        protected SetElem(jqueryElem: JQuery): void {
+            if (!jqueryElem)
+                return;
+
+            super.SetElem(jqueryElem);
+            this._dom = jqueryElem.get(0) as HTMLElement;
         }
 
         protected Init(): void {

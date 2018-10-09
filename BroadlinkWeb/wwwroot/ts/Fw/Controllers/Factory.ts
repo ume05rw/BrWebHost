@@ -9,8 +9,9 @@ namespace Fw.Controllers {
     export class Factory {
         // https://qiita.com/kojiy72/items/8e3ac6ae2083d3e1284c
         public static Create(name: string, elem: JQuery, manager: Manager): IController {
-            let classObject = Function('return (App.Controllers.' + name + 'Controller)')();
-            let instance = new classObject(elem, manager);
+            // 文字列からクラスを取得
+            const classObject = Function('return (App.Controllers.' + name + 'Controller)')();
+            const instance = new classObject(elem, manager);
             return instance;
         }
     }

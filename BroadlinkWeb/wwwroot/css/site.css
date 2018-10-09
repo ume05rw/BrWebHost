@@ -23,11 +23,6 @@ body,
     position: static;
 }
 
-/* Make .svg files in the carousel display properly in older browsers */
-.carousel-inner .item img[src$=".svg"] {
-    width: 100%;
-}
-
 /* QR code generator */
 #qrCode {
     margin: 15px;
@@ -61,7 +56,9 @@ div.IController .ControlView {
     border-style: solid;
     background-color: rgba(255, 255, 255, 0.8);
 }
-div.IController .ControlView > .ControlViewProperty {
+div.IController .ControlView > .ControlViewProperty,
+div.IController .ImageView > .ImageViewProperty,
+div.IController .LabelView > .LabelViewProperty {
     position: absolute;
     display: inline-block;
     left: 0;
@@ -76,3 +73,29 @@ div.IController .ControlView > .ControlViewProperty {
 div.IController .ControlView.Shadow {
     z-index: -1;
 }
+
+/*
+    div.IController .ImageView > .ImageViewProperty {
+        position: absolute;
+        display: inline-block;
+        left: 0;
+        top: 50%;
+        -webkit-transform: translateY(-50%);
+        -ms-transform: translateY(-50%);
+        transform: translateY(-50%);
+        width: 100%;
+        text-align: center;
+    }
+
+    div.IController .LabelView > .LabelViewProperty {
+        position: absolute;
+        display: inline-block;
+        left: 0;
+        top: 50%;
+        -webkit-transform: translateY(-50%);
+        -ms-transform: translateY(-50%);
+        transform: translateY(-50%);
+        width: 100%;
+        text-align: center;
+    }
+*/

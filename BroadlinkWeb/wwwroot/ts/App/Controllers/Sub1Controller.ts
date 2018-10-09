@@ -1,6 +1,7 @@
 ﻿/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Fw/Controllers/ControllerBase.ts" />
+/// <reference path="../../Fw/Controllers/Manager.ts" />
 /// <reference path="../../Fw/Util/Dump.ts" />
 /// <reference path="../../Fw/Events/ControlViewEvents.ts" />
 /// <reference path="../../Fw/Util/Xhr/Query.ts" />
@@ -8,12 +9,13 @@
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
     import Events = Fw.Events;
+    import Manager = Fw.Controllers.Manager;
     import Xhr = Fw.Util.Xhr; // <- モデルを実装後は削除する予定
 
     export class Sub1Controller extends Fw.Controllers.ControllerBase {
 
-        constructor(elem: JQuery, manager: Fw.Controllers.Manager) {
-            super(elem, manager);
+        constructor(elem: JQuery) {
+            super(elem);
             this.Init();
         }
 
@@ -34,7 +36,7 @@ namespace App.Controllers {
             back.Label = '戻る';
             back.SetAnchor(null, null, 5, null);
             back.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
-                this.Manager.Show("Main");
+                Manager.Instance.Show("Main");
             });
             header.Add(back);
 
@@ -46,8 +48,8 @@ namespace App.Controllers {
             devices.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
                 var params = new Xhr.Params('BrDevices/Discover', Xhr.MethodType.Get);
                 params.Callback = (data) => {
-                    console.log('Disover:');
-                    console.log(data);
+                    Dump.Log('Disover:');
+                    Dump.Log(data);
                 }
                 Xhr.Query.Invoke(params);
             });

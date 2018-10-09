@@ -10,7 +10,7 @@ namespace Fw {
         public static Init(): void {
 
             // ↓API仕様に応じて、App.Mainで書き換える。
-            Fw.Util.Xhr.Config.BaseUrl
+            Fw.Config.XhrBaseUrl
                 = location.protocol
                 + '//' + location.hostname
                 + ':' + location.port

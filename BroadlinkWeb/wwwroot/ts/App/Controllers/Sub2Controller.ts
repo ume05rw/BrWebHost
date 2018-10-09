@@ -1,6 +1,7 @@
 ﻿/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Fw/Controllers/ControllerBase.ts" />
+/// <reference path="../../Fw/Controllers/Manager.ts" />
 /// <reference path="../../Fw/Util/Dump.ts" />
 /// <reference path="../../Fw/Events/ControlViewEvents.ts" />
 
@@ -8,36 +9,43 @@ namespace App.Controllers {
     import Dump = Fw.Util.Dump;
     import Xhr = Fw.Util.Xhr;
     import Events = Fw.Events;
+    import Manager = Fw.Controllers.Manager;
 
     export class Sub2Controller extends Fw.Controllers.ControllerBase {
 
-        private _btnGoMain: JQuery;
-        private _btnA1Value: JQuery;
-
-        constructor(elem: JQuery, manager: Fw.Controllers.Manager) {
-            super(elem, manager);
+        constructor(elem: JQuery) {
+            super(elem);
             this.Init();
         }
 
         private Init(): void {
-            this._btnGoMain = this.View.Elem.find('button[name=GoMain]');
-            this._btnA1Value = this.View.Elem.find('button[name=A1Value]');
 
-            this._btnGoMain.click(() => {
-                this.Manager.Show("Main");
+            const btnGoMain = new Fw.Views.ControlView();
+            btnGoMain.Label = 'Back Main';
+            btnGoMain.SetSize(80, 30);
+            btnGoMain.SetAnchor(30, 10, null, null);
+            btnGoMain.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
+                // イベント通知でなく、参照保持でよいか？
+                Manager.Instance.Show("Main");
             });
+            this.View.Add(btnGoMain);
 
-            this._btnA1Value.click(() => {
-
-                console.log('btnA1Value.click');
+            const btnA1Value = new Fw.Views.ControlView();
+            btnA1Value.Label = 'A1 Value';
+            btnA1Value.SetSize(80, 30);
+            btnA1Value.SetAnchor(80, 10, null, null);
+            btnA1Value.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
+                Dump.Log('btnA1Value.click');
 
                 var params = new Xhr.Params('BrDevices/GetA1SensorValues', Xhr.MethodType.Get);
                 params.Callback = (data) => {
-                    console.log('GetA1SensorValues:');
-                    console.log(data);
+                    Dump.Log('GetA1SensorValues:');
+                    Dump.Log(data);
                 }
                 Xhr.Query.Invoke(params);
-            })
+            });
+            this.View.Add(btnA1Value);
+
 
             const btnMove = new Fw.Views.RelocatableControlView();
             btnMove.SetDisplayParams(60, 60, 0, -200, '#1188FF');
@@ -45,7 +53,7 @@ namespace App.Controllers {
             btnMove.BackgroundColor = '#FF9900';
             btnMove.Label = '動く？';
             btnMove.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
-                console.log('btnMove.SingleClick');
+                Dump.Log('btnMove.SingleClick');
             });
             this.View.Add(btnMove);
 
@@ -54,7 +62,7 @@ namespace App.Controllers {
             btnReset.SetAnchor(5, null, 5, null);
             btnReset.Label = 'リセット';
             btnReset.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
-                console.log('btnReset.SingleClick');
+                Dump.Log('btnReset.SingleClick');
                 if (btnMove.IsRelocatable)
                     btnMove.SetRelocatable(false);
             });

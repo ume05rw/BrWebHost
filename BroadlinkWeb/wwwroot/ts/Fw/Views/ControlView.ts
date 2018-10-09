@@ -79,7 +79,7 @@ namespace Fw.Views {
                 this._tapEventTimer = setTimeout(() => {
                     // ロングタップイベント
                     this._tapEventTimer = null;
-                    //console.log('longtapped');
+                    //Dump.Log('longtapped');
                     this.DispatchEvent(Events.LongClick);
                 }, 1000);
 
@@ -92,7 +92,7 @@ namespace Fw.Views {
                     this._tapEventTimer = null;
 
                     // 以降、シングルタップイベント処理
-                    //console.log('singletapped');
+                    //Dump.Log('singletapped');
                     this.DispatchEvent(Events.SingleClick);
                 } else {
                 }
@@ -104,7 +104,7 @@ namespace Fw.Views {
                     clearTimeout(this._tapEventTimer);
                     this._tapEventTimer = null;
 
-                    //console.log('tap canceled');
+                    //Dump.Log('tap canceled');
                 }
                 e.preventDefault();
             });

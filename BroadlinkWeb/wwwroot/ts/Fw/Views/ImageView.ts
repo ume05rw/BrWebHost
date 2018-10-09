@@ -30,11 +30,33 @@ namespace Fw.Views {
 
             this.SetClassName('ImageView');
             this.Elem.addClass(this.ClassName);
-            this._image = $('<img class="ControlViewProperty"></img>');
-            this.Elem.append(this._image);
 
             this.Dom.style.borderWidth = '0';
             this.Dom.style.borderRadius = '0';
+
+            this._image = $('<img class="ImageViewProperty"></img>');
+            this._image.on('load', () => {
+                Dump.Log('Image Loaded!!');
+                this.Refresh();
+            });
+
+            this.Elem.append(this._image);
+        }
+
+        protected InnerRefresh(): void {
+            super.InnerRefresh();
+
+            const imgDom = this._image.get(0) as HTMLImageElement;
+            const imgWidth = imgDom.naturalWidth;
+            const imgHeight = imgDom.naturalHeight;
+
+
+            Dump.Log({
+                event: this.ClassName + '.InnerRefresh',
+                imgWidth: imgWidth,
+                imgHeight: imgHeight,
+
+            });
         }
 
         public Dispose(): void {

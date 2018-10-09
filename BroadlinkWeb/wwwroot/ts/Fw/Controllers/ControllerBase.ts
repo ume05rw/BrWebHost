@@ -1,5 +1,6 @@
 ﻿/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Config.ts" />
 /// <reference path="../Util/Dump.ts" />
 /// <reference path="IController.ts" />
 /// <reference path="Manager.ts" />
@@ -7,18 +8,20 @@
 
 namespace Fw.Controllers {
     import Dump = Fw.Util.Dump;
+    import Config = Fw.Config;
 
-    export abstract class ControllerBase implements Fw.Controllers.IController {
+    /**
+     * @see コントローラはイベント等の実装が無いので、IObjectを実装しない。
+     * */
+    export abstract class ControllerBase implements IController {
         public Id: string;
         public IsDefaultView: boolean;
         public View: Fw.Views.IView;
-        public Manager: Fw.Controllers.Manager;
 
-        constructor(jqueryElem: JQuery, manager: Fw.Controllers.Manager) {
+        constructor(jqueryElem: JQuery) {
             this.View = new Fw.Views.PageView(jqueryElem);
-            this.Manager = manager;
-            this.Id = this.View.Elem.data("controller");
-            this.IsDefaultView = (this.View.Elem.data("default"));
+            this.Id = this.View.Elem.attr(Config.PageIdAttribute);
+            this.IsDefaultView = (this.View.Elem.attr(Config.DefaultPageAttribute) === "true");
 
             if (this.IsDefaultView)
                 this.View.Show();

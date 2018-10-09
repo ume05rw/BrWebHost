@@ -54,13 +54,13 @@ namespace Fw.Views.Animation {
             const toLeft = pHalfWidth + toX - (this.ToParams.Width / 2);
             const toTop = pHalfHeight + toY - (this.ToParams.Height / 2);
 
-            //console.log({
+            //Dump.Log({
             //    name: 'center',
             //    left: pHalfWidth,
             //    top: pHalfHeight
             //});
 
-            //console.log({
+            //Dump.Log({
             //    name: 'from',
             //    x: fromX,
             //    y: fromY,
@@ -70,7 +70,7 @@ namespace Fw.Views.Animation {
             //    height: this.FromParams.Height
             //});
 
-            //console.log({
+            //Dump.Log({
             //    name: 'to',
             //    x: toX,
             //    y: toY,

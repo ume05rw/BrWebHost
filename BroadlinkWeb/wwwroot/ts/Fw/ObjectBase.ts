@@ -30,6 +30,9 @@ namespace Fw {
         }
 
         protected SetElem(jqueryElem: JQuery): void {
+            if (!jqueryElem)
+                return;
+
             this._elem = jqueryElem;
         }
 

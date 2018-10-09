@@ -49,6 +49,35 @@ var Fw;
 })(Fw || (Fw = {}));
 /// <reference path="../../lib/jquery/index.d.ts" />
 /// <reference path="../../lib/underscore/index.d.ts" />
+/// <reference path="Util/Dump.ts" />
+/* /// <reference path="Views/Root.ts" /> */
+var Fw;
+(function (Fw) {
+    var Config = /** @class */ (function () {
+        function Config() {
+        }
+        /**
+         * @description Xhrクエリ時の基礎URL
+         */
+        Config.XhrBaseUrl = location.protocol
+            + '//' + location.hostname
+            + ':' + location.port
+            + '/';
+        /**
+         * @description ページ用div.attr識別子
+         */
+        Config.PageIdAttribute = 'data-pageid';
+        /**
+         * @description 起動ページdiv.attr識別子
+         * @see <div data-default="true"></div>
+         */
+        Config.DefaultPageAttribute = 'data-default';
+        return Config;
+    }());
+    Fw.Config = Config;
+})(Fw || (Fw = {}));
+/// <reference path="../../lib/jquery/index.d.ts" />
+/// <reference path="../../lib/underscore/index.d.ts" />
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 var Fw;
@@ -286,6 +315,7 @@ var Fw;
             }
             // https://qiita.com/kojiy72/items/8e3ac6ae2083d3e1284c
             Factory.Create = function (name, elem, manager) {
+                // 文字列からクラスを取得
                 var classObject = Function('return (App.Controllers.' + name + 'Controller)')();
                 var instance = new classObject(elem, manager);
                 return instance;
@@ -297,18 +327,20 @@ var Fw;
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Config.ts" />
 /// <reference path="../Util/Dump.ts" />
 /// <reference path="Factory.ts" />
 var Fw;
 (function (Fw) {
     var Controllers;
     (function (Controllers) {
+        var Config = Fw.Config;
         var Manager = /** @class */ (function () {
             function Manager() {
                 var ctrs = [];
-                $("div[data-controller]").each(function (i, el) {
+                $("div[" + Config.PageIdAttribute + "]").each(function (i, el) {
                     var $elem = $(el);
-                    var name = $elem.data('controller');
+                    var name = $elem.attr(Config.PageIdAttribute);
                     var instance = Controllers.Factory.Create(name, $elem, this);
                     ctrs.push(instance);
                 }.bind(this));
@@ -344,54 +376,9 @@ var Fw;
         Controllers.Manager = Manager;
     })(Controllers = Fw.Controllers || (Fw.Controllers = {}));
 })(Fw || (Fw = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-var Fw;
-(function (Fw) {
-    var Util;
-    (function (Util) {
-        var Xhr;
-        (function (Xhr) {
-            var Config = /** @class */ (function () {
-                function Config() {
-                }
-                Config.BaseUrl = '';
-                return Config;
-            }());
-            Xhr.Config = Config;
-        })(Xhr = Util.Xhr || (Util.Xhr = {}));
-    })(Util = Fw.Util || (Fw.Util = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../lib/jquery/index.d.ts" />
-/// <reference path="../../lib/underscore/index.d.ts" />
-/// <reference path="../Fw/Util/Dump.ts" />
-/// <reference path="../Fw/Controllers/Manager.ts" />
-/// <reference path="../Fw/Util/Xhr/Config.ts" />
-var App;
-(function (App) {
-    var Main = /** @class */ (function () {
-        function Main() {
-        }
-        Main.StartUp = function () {
-            // フレームワーク初期化
-            Fw.Startup.Init();
-            // API仕様に応じて、クエリ先URLの土台を作っておく。
-            var proto = location.protocol;
-            var host = location.hostname;
-            var port = location.port;
-            Fw.Util.Xhr.Config.BaseUrl = proto + '//' + host + ':' + port + '/api/';
-        };
-        return Main;
-    }());
-    App.Main = Main;
-})(App || (App = {}));
-// アプリケーションを起動する。
-// 以下にはこれ以上書かないこと。
-$(function () {
-    App.Main.StartUp();
-});
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Config.ts" />
 /// <reference path="../Util/Dump.ts" />
 /// <reference path="IController.ts" />
 /// <reference path="Manager.ts" />
@@ -400,12 +387,15 @@ var Fw;
 (function (Fw) {
     var Controllers;
     (function (Controllers) {
+        var Config = Fw.Config;
+        /**
+         * @see コントローラはイベント等の実装が無いので、IObjectを実装しない。
+         * */
         var ControllerBase = /** @class */ (function () {
-            function ControllerBase(jqueryElem, manager) {
+            function ControllerBase(jqueryElem) {
                 this.View = new Fw.Views.PageView(jqueryElem);
-                this.Manager = manager;
-                this.Id = this.View.Elem.data("controller");
-                this.IsDefaultView = (this.View.Elem.data("default"));
+                this.Id = this.View.Elem.attr(Config.PageIdAttribute);
+                this.IsDefaultView = (this.View.Elem.attr(Config.DefaultPageAttribute) === "true");
                 if (this.IsDefaultView)
                     this.View.Show();
             }
@@ -438,32 +428,44 @@ var Fw;
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Fw/Controllers/ControllerBase.ts" />
+/// <reference path="../../Fw/Controllers/Manager.ts" />
 /// <reference path="../../Fw/Util/Dump.ts" />
 /// <reference path="../../Fw/Events/ControlViewEvents.ts" />
 var App;
 (function (App) {
     var Controllers;
     (function (Controllers) {
+        var Dump = Fw.Util.Dump;
         var Events = Fw.Events;
+        var Manager = Fw.Controllers.Manager;
         var MainController = /** @class */ (function (_super) {
             __extends(MainController, _super);
-            function MainController(elem, manager) {
-                var _this = _super.call(this, elem, manager) || this;
+            function MainController(elem) {
+                var _this = _super.call(this, elem) || this;
                 _this.Init();
                 return _this;
             }
             MainController.prototype.Init = function () {
                 var _this = this;
-                this._btnGoSub1 = this.View.Elem.find('button[name=GoSub1]');
-                this._btnGoSub2 = this.View.Elem.find('button[name=GoSub2]');
-                this._btnGoSub1.click(function () {
+                var btnGoSub1 = new Fw.Views.ControlView();
+                btnGoSub1.Label = 'Go Sub1';
+                btnGoSub1.SetSize(80, 30);
+                btnGoSub1.SetAnchor(null, 10, null, null);
+                btnGoSub1.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
                     // イベント通知でなく、参照保持でよいか？
-                    _this.Manager.Show("Sub1");
+                    Manager.Instance.Show("Sub1");
                 });
-                this._btnGoSub2.click(function () {
+                this.View.Add(btnGoSub1);
+                var btnGoSub2 = new Fw.Views.ControlView();
+                btnGoSub2.Label = 'Go Sub2';
+                btnGoSub2.SetSize(80, 30);
+                btnGoSub2.Position.Y = 40;
+                btnGoSub2.SetAnchor(null, 10, null, null);
+                btnGoSub2.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
                     // イベント通知でなく、参照保持でよいか？
-                    _this.Manager.Show("Sub2");
+                    Manager.Instance.Show("Sub2");
                 });
+                this.View.Add(btnGoSub2);
                 this._centerControl = new Fw.Views.ControlView();
                 this._centerControl.SetPosition(0, 0);
                 this._centerControl.SetSize(100, 50);
@@ -476,19 +478,19 @@ var App;
                 tmpCtl.Color = '#666666';
                 tmpCtl.Label = 'くりっく';
                 tmpCtl.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
-                    console.log('LONG CLICK!!');
+                    Dump.Log('LONG CLICK!!');
                     if (_this._centerControl.IsVisible()) {
-                        console.log('みえてんで！');
+                        Dump.Log('みえてんで！');
                         _this._centerControl.Hide();
                     }
                     else {
-                        console.log('みえへんで...？');
+                        Dump.Log('みえへんで...？');
                         _this._centerControl.Show();
                     }
                 });
                 this.View.Add(tmpCtl);
                 this.View.AddEventListener(Events.PageViewEvents.Shown, function () {
-                    console.log('MainView.Shown');
+                    Dump.Log('MainView.Shown');
                 });
                 var ancCtl1 = new Fw.Views.ControlView();
                 ancCtl1.Label = '右下';
@@ -533,6 +535,7 @@ var App;
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Util/Dump.ts" />
+/// <reference path="../../Config.ts" />
 var Fw;
 (function (Fw) {
     var Util;
@@ -540,6 +543,7 @@ var Fw;
         var Xhr;
         (function (Xhr) {
             var Dump = Fw.Util.Dump;
+            var Config = Fw.Config;
             var Query = /** @class */ (function () {
                 function Query() {
                 }
@@ -563,7 +567,7 @@ var Fw;
                         default: method = 'POST';
                     }
                     $.ajax({
-                        url: Xhr.Config.BaseUrl + params.Url,
+                        url: Config.XhrBaseUrl + params.Url,
                         method: method,
                         data: params.Values || null,
                         cache: false,
@@ -610,7 +614,7 @@ var Fw;
             //        default: method = 'POST';
             //    }
             //    $.ajax({
-            //        url: Config.BaseUrl + params.Url,
+            //        url: Config.XhrBaseUrl + params.Url,
             //        method: method,
             //        data: params.Values || null,
             //        cache: false,
@@ -635,8 +639,8 @@ var Fw;
             //                ]
             //            });
             //        };
-            //        console.log('fail');
-            //        console.log(data);
+            //        Dump.Log('fail');
+            //        Dump.Log(data);
             //    });
             //}
         })(Xhr = Util.Xhr || (Util.Xhr = {}));
@@ -645,6 +649,7 @@ var Fw;
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Fw/Controllers/ControllerBase.ts" />
+/// <reference path="../../Fw/Controllers/Manager.ts" />
 /// <reference path="../../Fw/Util/Dump.ts" />
 /// <reference path="../../Fw/Events/ControlViewEvents.ts" />
 /// <reference path="../../Fw/Util/Xhr/Query.ts" />
@@ -652,17 +657,18 @@ var App;
 (function (App) {
     var Controllers;
     (function (Controllers) {
+        var Dump = Fw.Util.Dump;
         var Events = Fw.Events;
+        var Manager = Fw.Controllers.Manager;
         var Xhr = Fw.Util.Xhr; // <- モデルを実装後は削除する予定
         var Sub1Controller = /** @class */ (function (_super) {
             __extends(Sub1Controller, _super);
-            function Sub1Controller(elem, manager) {
-                var _this = _super.call(this, elem, manager) || this;
+            function Sub1Controller(elem) {
+                var _this = _super.call(this, elem) || this;
                 _this.Init();
                 return _this;
             }
             Sub1Controller.prototype.Init = function () {
-                var _this = this;
                 var header = new Fw.Views.ControlView();
                 header.Label = 'ヘッダ';
                 header.Size.Height = 50;
@@ -678,7 +684,7 @@ var App;
                 back.Label = '戻る';
                 back.SetAnchor(null, null, 5, null);
                 back.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
-                    _this.Manager.Show("Main");
+                    Manager.Instance.Show("Main");
                 });
                 header.Add(back);
                 var devices = new Fw.Views.ControlView();
@@ -689,8 +695,8 @@ var App;
                 devices.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
                     var params = new Xhr.Params('BrDevices/Discover', Xhr.MethodType.Get);
                     params.Callback = function (data) {
-                        console.log('Disover:');
-                        console.log(data);
+                        Dump.Log('Disover:');
+                        Dump.Log(data);
                     };
                     Xhr.Query.Invoke(params);
                 });
@@ -709,43 +715,54 @@ var App;
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Fw/Controllers/ControllerBase.ts" />
+/// <reference path="../../Fw/Controllers/Manager.ts" />
 /// <reference path="../../Fw/Util/Dump.ts" />
 /// <reference path="../../Fw/Events/ControlViewEvents.ts" />
 var App;
 (function (App) {
     var Controllers;
     (function (Controllers) {
+        var Dump = Fw.Util.Dump;
         var Xhr = Fw.Util.Xhr;
         var Events = Fw.Events;
+        var Manager = Fw.Controllers.Manager;
         var Sub2Controller = /** @class */ (function (_super) {
             __extends(Sub2Controller, _super);
-            function Sub2Controller(elem, manager) {
-                var _this = _super.call(this, elem, manager) || this;
+            function Sub2Controller(elem) {
+                var _this = _super.call(this, elem) || this;
                 _this.Init();
                 return _this;
             }
             Sub2Controller.prototype.Init = function () {
-                var _this = this;
-                this._btnGoMain = this.View.Elem.find('button[name=GoMain]');
-                this._btnA1Value = this.View.Elem.find('button[name=A1Value]');
-                this._btnGoMain.click(function () {
-                    _this.Manager.Show("Main");
+                var btnGoMain = new Fw.Views.ControlView();
+                btnGoMain.Label = 'Back Main';
+                btnGoMain.SetSize(80, 30);
+                btnGoMain.SetAnchor(30, 10, null, null);
+                btnGoMain.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
+                    // イベント通知でなく、参照保持でよいか？
+                    Manager.Instance.Show("Main");
                 });
-                this._btnA1Value.click(function () {
-                    console.log('btnA1Value.click');
+                this.View.Add(btnGoMain);
+                var btnA1Value = new Fw.Views.ControlView();
+                btnA1Value.Label = 'A1 Value';
+                btnA1Value.SetSize(80, 30);
+                btnA1Value.SetAnchor(80, 10, null, null);
+                btnA1Value.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
+                    Dump.Log('btnA1Value.click');
                     var params = new Xhr.Params('BrDevices/GetA1SensorValues', Xhr.MethodType.Get);
                     params.Callback = function (data) {
-                        console.log('GetA1SensorValues:');
-                        console.log(data);
+                        Dump.Log('GetA1SensorValues:');
+                        Dump.Log(data);
                     };
                     Xhr.Query.Invoke(params);
                 });
+                this.View.Add(btnA1Value);
                 var btnMove = new Fw.Views.RelocatableControlView();
                 btnMove.SetDisplayParams(60, 60, 0, -200, '#1188FF');
                 btnMove.BackgroundColor = '#FF9900';
                 btnMove.Label = '動く？';
                 btnMove.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
-                    console.log('btnMove.SingleClick');
+                    Dump.Log('btnMove.SingleClick');
                 });
                 this.View.Add(btnMove);
                 var btnReset = new Fw.Views.ControlView();
@@ -753,7 +770,7 @@ var App;
                 btnReset.SetAnchor(5, null, 5, null);
                 btnReset.Label = 'リセット';
                 btnReset.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
-                    console.log('btnReset.SingleClick');
+                    Dump.Log('btnReset.SingleClick');
                     if (btnMove.IsRelocatable)
                         btnMove.SetRelocatable(false);
                 });
@@ -764,152 +781,33 @@ var App;
         Controllers.Sub2Controller = Sub2Controller;
     })(Controllers = App.Controllers || (App.Controllers = {}));
 })(App || (App = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="ViewEvents.ts" />
-var Fw;
-(function (Fw) {
-    var Events;
-    (function (Events) {
-        var PageViewEventsClass = /** @class */ (function (_super) {
-            __extends(PageViewEventsClass, _super);
-            function PageViewEventsClass() {
-                return _super !== null && _super.apply(this, arguments) || this;
-            }
-            return PageViewEventsClass;
-        }(Events.ViewEventsClass));
-        Events.PageViewEventsClass = PageViewEventsClass;
-        Events.PageViewEvents = new PageViewEventsClass();
-    })(Events = Fw.Events || (Fw.Events = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-var Fw;
-(function (Fw) {
-    var Events;
-    (function (Events) {
-        var RootEventsClass = /** @class */ (function () {
-            function RootEventsClass() {
-                this.Resized = 'Resized';
-            }
-            return RootEventsClass;
-        }());
-        Events.RootEventsClass = RootEventsClass;
-        Events.RootEvents = new RootEventsClass();
-    })(Events = Fw.Events || (Fw.Events = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../IObject.ts" />
 /// <reference path="../../lib/jquery/index.d.ts" />
 /// <reference path="../../lib/underscore/index.d.ts" />
-/// <reference path="Util/Dump.ts" />
-var Fw;
-(function (Fw) {
-    var ObjectBase = /** @class */ (function () {
-        function ObjectBase() {
-            this._elem = $(this);
-            this._suppressedEvents = new Array();
+/// <reference path="../Fw/Util/Dump.ts" />
+/// <reference path="../Fw/Controllers/Manager.ts" />
+var App;
+(function (App) {
+    var Main = /** @class */ (function () {
+        function Main() {
         }
-        Object.defineProperty(ObjectBase.prototype, "Elem", {
-            get: function () {
-                return this._elem;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(ObjectBase.prototype, "ClassName", {
-            get: function () {
-                return this._className;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        ObjectBase.prototype.SetClassName = function (name) {
-            this._className = name;
+        Main.StartUp = function () {
+            // フレームワーク初期化
+            Fw.Startup.Init();
+            // API仕様に応じて、クエリ先URLの土台を作っておく。
+            var proto = location.protocol;
+            var host = location.hostname;
+            var port = location.port;
+            Fw.Config.XhrBaseUrl = proto + '//' + host + ':' + port + '/api/';
         };
-        ObjectBase.prototype.SetElem = function (jqueryElem) {
-            this._elem = jqueryElem;
-        };
-        ObjectBase.prototype.AddEventListener = function (name, handler) {
-            this.Elem.on(name, handler);
-        };
-        ObjectBase.prototype.RemoveEventListener = function (name, handler) {
-            this.Elem.off(name, handler);
-        };
-        ObjectBase.prototype.DispatchEvent = function (name) {
-            if (this.IsSuppressedEvent(name))
-                return;
-            //Dump.Log(`${this.ClassName}.DispatchEvent: ${name}`);
-            this.Elem.trigger(name);
-        };
-        ObjectBase.prototype.SuppressEvent = function (name) {
-            if (this.IsSuppressedEvent(name))
-                return;
-            this._suppressedEvents.push(name);
-        };
-        ObjectBase.prototype.IsSuppressedEvent = function (name) {
-            return (this._suppressedEvents.indexOf(name) !== -1);
-        };
-        ObjectBase.prototype.ResumeEvent = function (name) {
-            if (!this.IsSuppressedEvent(name))
-                return;
-            var idx = this._suppressedEvents.indexOf(name);
-            this._suppressedEvents.splice(idx, 1);
-        };
-        ObjectBase.prototype.Dispose = function () {
-            this._elem.remove();
-            this._elem = null;
-            this._className = null;
-            this._suppressedEvents = null;
-        };
-        return ObjectBase;
+        return Main;
     }());
-    Fw.ObjectBase = ObjectBase;
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../ObjectBase.ts" />
-/// <reference path="IModel.ts" />
-var Fw;
-(function (Fw) {
-    var Models;
-    (function (Models) {
-        var ModelBase = /** @class */ (function (_super) {
-            __extends(ModelBase, _super);
-            function ModelBase() {
-                return _super !== null && _super.apply(this, arguments) || this;
-            }
-            return ModelBase;
-        }(Fw.ObjectBase));
-        Models.ModelBase = ModelBase;
-    })(Models = Fw.Models || (Fw.Models = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../lib/jquery/index.d.ts" />
-/// <reference path="../../lib/underscore/index.d.ts" />
-/// <reference path="Util/Dump.ts" />
-/* /// <reference path="Views/Root.ts" /> */
-var Fw;
-(function (Fw) {
-    var Startup = /** @class */ (function () {
-        function Startup() {
-        }
-        Startup.Init = function () {
-            // ↓API仕様に応じて、App.Mainで書き換える。
-            Fw.Util.Xhr.Config.BaseUrl
-                = location.protocol
-                    + '//' + location.hostname
-                    + ':' + location.port
-                    + '/';
-            // 画面全体のコンテナを初期化
-            Fw.Root.Init('div.body-content');
-            // Controllers.Managerの初期化
-            Fw.Controllers.Manager.Init();
-        };
-        return Startup;
-    }());
-    Fw.Startup = Startup;
-})(Fw || (Fw = {}));
+    App.Main = Main;
+})(App || (App = {}));
+// アプリケーションを起動する。
+// 以下にはこれ以上書かないこと。
+$(function () {
+    App.Main.StartUp();
+});
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 var Fw;
@@ -1085,12 +983,12 @@ var Fw;
                     var toY = this._view.Position.Y + this.ToParams.Y;
                     var toLeft = pHalfWidth + toX - (this.ToParams.Width / 2);
                     var toTop = pHalfHeight + toY - (this.ToParams.Height / 2);
-                    //console.log({
+                    //Dump.Log({
                     //    name: 'center',
                     //    left: pHalfWidth,
                     //    top: pHalfHeight
                     //});
-                    //console.log({
+                    //Dump.Log({
                     //    name: 'from',
                     //    x: fromX,
                     //    y: fromY,
@@ -1099,7 +997,7 @@ var Fw;
                     //    width: this.FromParams.Width,
                     //    height: this.FromParams.Height
                     //});
-                    //console.log({
+                    //Dump.Log({
                     //    name: 'to',
                     //    x: toX,
                     //    y: toY,
@@ -1142,6 +1040,74 @@ var Fw;
             Animation.Animator = Animator;
         })(Animation = Views.Animation || (Views.Animation = {}));
     })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../lib/jquery/index.d.ts" />
+/// <reference path="../../lib/underscore/index.d.ts" />
+/// <reference path="Util/Dump.ts" />
+var Fw;
+(function (Fw) {
+    var ObjectBase = /** @class */ (function () {
+        function ObjectBase() {
+            this._elem = $(this);
+            this._suppressedEvents = new Array();
+        }
+        Object.defineProperty(ObjectBase.prototype, "Elem", {
+            get: function () {
+                return this._elem;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(ObjectBase.prototype, "ClassName", {
+            get: function () {
+                return this._className;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        ObjectBase.prototype.SetClassName = function (name) {
+            this._className = name;
+        };
+        ObjectBase.prototype.SetElem = function (jqueryElem) {
+            if (!jqueryElem)
+                return;
+            this._elem = jqueryElem;
+        };
+        ObjectBase.prototype.AddEventListener = function (name, handler) {
+            this.Elem.on(name, handler);
+        };
+        ObjectBase.prototype.RemoveEventListener = function (name, handler) {
+            this.Elem.off(name, handler);
+        };
+        ObjectBase.prototype.DispatchEvent = function (name) {
+            if (this.IsSuppressedEvent(name))
+                return;
+            //Dump.Log(`${this.ClassName}.DispatchEvent: ${name}`);
+            this.Elem.trigger(name);
+        };
+        ObjectBase.prototype.SuppressEvent = function (name) {
+            if (this.IsSuppressedEvent(name))
+                return;
+            this._suppressedEvents.push(name);
+        };
+        ObjectBase.prototype.IsSuppressedEvent = function (name) {
+            return (this._suppressedEvents.indexOf(name) !== -1);
+        };
+        ObjectBase.prototype.ResumeEvent = function (name) {
+            if (!this.IsSuppressedEvent(name))
+                return;
+            var idx = this._suppressedEvents.indexOf(name);
+            this._suppressedEvents.splice(idx, 1);
+        };
+        ObjectBase.prototype.Dispose = function () {
+            this._elem.remove();
+            this._elem = null;
+            this._className = null;
+            this._suppressedEvents = null;
+        };
+        return ObjectBase;
+    }());
+    Fw.ObjectBase = ObjectBase;
 })(Fw || (Fw = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
@@ -1228,10 +1194,11 @@ var Fw;
             function ViewBase(jqueryElem) {
                 var _this = _super.call(this) || this;
                 _this._initialized = false;
+                // Properties
+                _this._dom = null;
                 _this._color = '#000000';
                 _this._backgroundColor = '#FFFFFF';
                 _this.SetElem(jqueryElem);
-                _this._dom = jqueryElem.get(0);
                 _this._children = new Array();
                 _this.Init();
                 return _this;
@@ -1301,6 +1268,12 @@ var Fw;
                 enumerable: true,
                 configurable: true
             });
+            ViewBase.prototype.SetElem = function (jqueryElem) {
+                if (!jqueryElem)
+                    return;
+                _super.prototype.SetElem.call(this, jqueryElem);
+                this._dom = jqueryElem.get(0);
+            };
             ViewBase.prototype.Init = function () {
                 var _this = this;
                 this.SetClassName('ViewBase');
@@ -1586,51 +1559,6 @@ var Fw;
 /// <reference path="../Events/ControlViewEvents.ts" />
 /// <reference path="../Util/Dump.ts" />
 /// <reference path="../Util/Number.ts" />
-/// <reference path="ViewBase.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var ImageView = /** @class */ (function (_super) {
-            __extends(ImageView, _super);
-            function ImageView() {
-                return _super.call(this, $('<a></a>')) || this;
-            }
-            Object.defineProperty(ImageView.prototype, "Source", {
-                get: function () {
-                    return this._image.attr('src');
-                },
-                set: function (value) {
-                    this._image.attr('src', value);
-                    this.Refresh();
-                },
-                enumerable: true,
-                configurable: true
-            });
-            ImageView.prototype.Init = function () {
-                _super.prototype.Init.call(this);
-                this.SetClassName('ImageView');
-                this.Elem.addClass(this.ClassName);
-                this._image = $('<img class="ControlViewProperty"></img>');
-                this.Elem.append(this._image);
-                this.Dom.style.borderWidth = '0';
-                this.Dom.style.borderRadius = '0';
-            };
-            ImageView.prototype.Dispose = function () {
-                _super.prototype.Dispose.call(this);
-                this._image.remove();
-                this._image = null;
-            };
-            return ImageView;
-        }(Views.ViewBase));
-        Views.ImageView = ImageView;
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../Events/ControlViewEvents.ts" />
-/// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
 /// <reference path="./ViewBase.ts" />
 var Fw;
 (function (Fw) {
@@ -1704,7 +1632,7 @@ var Fw;
                     _this._tapEventTimer = setTimeout(function () {
                         // ロングタップイベント
                         _this._tapEventTimer = null;
-                        //console.log('longtapped');
+                        //Dump.Log('longtapped');
                         _this.DispatchEvent(Events.LongClick);
                     }, 1000);
                     e.preventDefault();
@@ -1715,7 +1643,7 @@ var Fw;
                         clearTimeout(_this._tapEventTimer);
                         _this._tapEventTimer = null;
                         // 以降、シングルタップイベント処理
-                        //console.log('singletapped');
+                        //Dump.Log('singletapped');
                         _this.DispatchEvent(Events.SingleClick);
                     }
                     else {
@@ -1727,7 +1655,7 @@ var Fw;
                         // ロングタップ検出中のとき
                         clearTimeout(_this._tapEventTimer);
                         _this._tapEventTimer = null;
-                        //console.log('tap canceled');
+                        //Dump.Log('tap canceled');
                     }
                     e.preventDefault();
                 });
@@ -1750,52 +1678,36 @@ var Fw;
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../Events/ControlViewEvents.ts" />
-/// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
-/// <reference path="ViewBase.ts" />
+/// <reference path="./Dump.ts" />
 var Fw;
 (function (Fw) {
-    var Views;
-    (function (Views) {
-        var LabelView = /** @class */ (function (_super) {
-            __extends(LabelView, _super);
-            function LabelView() {
-                return _super.call(this, $('<a></a>')) || this;
+    var Util;
+    (function (Util) {
+        var App = /** @class */ (function () {
+            function App() {
             }
-            Object.defineProperty(LabelView.prototype, "Text", {
-                get: function () {
-                    return this._label.html();
-                },
-                set: function (value) {
-                    this._label.html(value);
-                    this.Refresh();
-                },
-                enumerable: true,
-                configurable: true
-            });
-            LabelView.prototype.Init = function () {
-                _super.prototype.Init.call(this);
-                this.SetClassName('LabelView');
-                this.Elem.addClass(this.ClassName);
-                this._label = $('<span class="ControlViewProperty"></span>');
-                this.Elem.append(this._label);
-                this.Dom.style.borderWidth = '0';
-                this.Dom.style.borderRadius = '0';
+            App.CreateId = function () {
+                var id;
+                for (;;) {
+                    id = new Date().getTime().toString(16)
+                        + Math.floor(Math.random() * 1000).toString(16);
+                    if (App._ids.indexOf(id) === -1)
+                        break;
+                }
+                App._ids.push(id);
+                return id;
             };
-            LabelView.prototype.Dispose = function () {
-                _super.prototype.Dispose.call(this);
-                this._label.remove();
-                this._label = null;
-            };
-            return LabelView;
-        }(Views.ViewBase));
-        Views.LabelView = LabelView;
-    })(Views = Fw.Views || (Fw.Views = {}));
+            App._ids = new Array();
+            return App;
+        }());
+        Util.App = App;
+    })(Util = Fw.Util || (Fw.Util = {}));
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Config.ts" />
 /// <reference path="../Util/Dump.ts" />
+/// <reference path="../Util/App.ts" />
 /// <reference path="../Events/ViewEvents.ts" />
 /// <reference path="Animation/Animator.ts" />
 /// <reference path="Animation/Params.ts" />
@@ -1807,20 +1719,38 @@ var Fw;
     (function (Views) {
         var Anim = Fw.Views.Animation;
         var Events = Fw.Events.ViewEvents;
+        var App = Fw.Util.App;
+        var Config = Fw.Config;
         var PageView = /** @class */ (function (_super) {
             __extends(PageView, _super);
             function PageView(jqueryElem) {
                 return _super.call(this, jqueryElem) || this;
             }
+            Object.defineProperty(PageView.prototype, "Id", {
+                get: function () {
+                    return this._id;
+                },
+                enumerable: true,
+                configurable: true
+            });
             PageView.prototype.Init = function () {
                 _super.prototype.Init.call(this);
                 this.SetClassName('PageView');
+                if (this.Dom) {
+                    this._id = this.Elem.data('');
+                }
+                else {
+                    this._id = App.CreateId();
+                    var elem = $("<div class=\"IController\" " + Config.PageIdAttribute + "=\"" + this._id + "\"></div>");
+                    Fw.Root.Instance.Elem.append(elem);
+                    this.SetElem(elem);
+                }
                 this.Elem.addClass(this.ClassName);
             };
             PageView.prototype.Show = function (duration) {
                 var _this = this;
                 if (duration === void 0) { duration = 200; }
-                //console.log(`PageView.Show: ${this.Elem.data('controller')}`);
+                //Dump.Log(`PageView.Show: ${this.Elem.data('controller')}`);
                 if (this.IsVisible())
                     return;
                 var animator = new Anim.Animator(this);
@@ -1838,7 +1768,7 @@ var Fw;
             PageView.prototype.Hide = function (duration) {
                 var _this = this;
                 if (duration === void 0) { duration = 200; }
-                //console.log(`PageView.Hide: ${this.Elem.data('controller')}`);
+                //Dump.Log(`PageView.Hide: ${this.Elem.data('controller')}`);
                 if (!this.IsVisible())
                     return;
                 var animator = new Anim.Animator(this);
@@ -1859,129 +1789,13 @@ var Fw;
                 this.Dom.style.width = "100%";
                 this.Dom.style.height = "100%";
             };
+            PageView.prototype.Dispose = function () {
+                _super.prototype.Dispose.call(this);
+                this._id = null;
+            };
             return PageView;
         }(Views.ViewBase));
         Views.PageView = PageView;
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../Events/ControlViewEvents.ts" />
-/// <reference path="../Util/Dump.ts" />
-/// <reference path="ControlView.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var PanelControlView = /** @class */ (function (_super) {
-            __extends(PanelControlView, _super);
-            function PanelControlView() {
-                return _super !== null && _super.apply(this, arguments) || this;
-            }
-            PanelControlView.prototype.Init = function () {
-                _super.prototype.Init.call(this);
-                this.SetClassName('PanelView');
-                this.Elem.addClass(this.ClassName);
-                this.HasBorder = false;
-                this.BorderRadius = 0;
-            };
-            return PanelControlView;
-        }(Views.ControlView));
-        Views.PanelControlView = PanelControlView;
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../Events/ViewEvents.ts" />
-/// <reference path="../../Util/Dump.ts" />
-/// <reference path="../../Util/Number.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var Property;
-        (function (Property) {
-            var Events = Fw.Events.ViewEvents;
-            var Number = Fw.Util.Number;
-            var Position = /** @class */ (function () {
-                function Position(view) {
-                    if (view === void 0) { view = null; }
-                    this._view = null;
-                    this._x = 0;
-                    this._y = 0;
-                    this._view = view;
-                }
-                Object.defineProperty(Position.prototype, "X", {
-                    get: function () {
-                        return this._x;
-                    },
-                    set: function (value) {
-                        // nullは許可、その他は例外
-                        if (Number.IsNaN(value) || value === undefined)
-                            throw new Error("value type not allowed");
-                        var changed = (this._x !== value);
-                        this._x = value;
-                        if (changed && this._view)
-                            this._view.DispatchEvent(Events.PositionChanged);
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Object.defineProperty(Position.prototype, "Y", {
-                    get: function () {
-                        return this._y;
-                    },
-                    set: function (value) {
-                        // nullは許可、その他は例外
-                        if (Number.IsNaN(value) || value === undefined)
-                            throw new Error("value type not allowed");
-                        var changed = (this._y !== value);
-                        this._y = value;
-                        if (changed && this._view)
-                            this._view.DispatchEvent(Events.PositionChanged);
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Object.defineProperty(Position.prototype, "Left", {
-                    get: function () {
-                        if (!this._view)
-                            return null;
-                        var parent = $(this._view.Elem.parent());
-                        var parentWidth = (this._view.Parent)
-                            ? this._view.Parent.Size.Width
-                            : parent.width();
-                        var pHalfWidth = (parentWidth / 2);
-                        var myHalfWidth = (this._view.Size.Width / 2);
-                        return pHalfWidth - myHalfWidth + this._x;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Object.defineProperty(Position.prototype, "Top", {
-                    get: function () {
-                        if (!this._view)
-                            return null;
-                        var parent = $(this._view.Elem.parent());
-                        var parentHeight = (this._view.Parent)
-                            ? this._view.Parent.Size.Height
-                            : parent.height();
-                        var pHalfHeight = (parentHeight / 2);
-                        var myHalfHeight = (this._view.Size.Height / 2);
-                        return pHalfHeight - myHalfHeight + this._y;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Position.prototype.Dispose = function () {
-                    this._view = null;
-                    this._x = null;
-                    this._y = null;
-                };
-                return Position;
-            }());
-            Property.Position = Position;
-        })(Property = Views.Property || (Views.Property = {}));
     })(Views = Fw.Views || (Fw.Views = {}));
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
@@ -2171,71 +1985,76 @@ var Fw;
         Views.RelocatableControlView = RelocatableControlView;
     })(Views = Fw.Views || (Fw.Views = {}));
 })(Fw || (Fw = {}));
-/// <reference path="../../lib/jquery/index.d.ts" />
-/// <reference path="../../lib/underscore/index.d.ts" />
-/// <reference path="Events/RootEvents.ts" />
-/// <reference path="Util/Dump.ts" />
-/// <reference path="Views/Property/Size.ts" />
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Events/ControlViewEvents.ts" />
+/// <reference path="../Util/Dump.ts" />
+/// <reference path="../Util/Number.ts" />
+/// <reference path="ViewBase.ts" />
 var Fw;
 (function (Fw) {
-    var Events = Fw.Events.RootEvents;
-    var Property = Fw.Views.Property;
-    var Root = /** @class */ (function (_super) {
-        __extends(Root, _super);
-        function Root(jqueryElem) {
-            var _this = _super.call(this) || this;
-            _this.SetElem(jqueryElem);
-            _this.SetClassName('Root');
-            _this._size = new Property.Size();
-            _this._dom = jqueryElem.get(0);
-            _this.Refresh();
-            $(window).resize(function () {
-                _this.Refresh();
-                _this.DispatchEvent(Events.Resized);
+    var Views;
+    (function (Views) {
+        var LabelView = /** @class */ (function (_super) {
+            __extends(LabelView, _super);
+            function LabelView() {
+                return _super.call(this, $('<a></a>')) || this;
+            }
+            Object.defineProperty(LabelView.prototype, "Text", {
+                get: function () {
+                    return this._label.html();
+                },
+                set: function (value) {
+                    this._label.html(value);
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
             });
-            return _this;
-        }
-        Object.defineProperty(Root, "Instance", {
-            get: function () {
-                if (!Root._instance)
-                    throw new Error('Root.Init() has not been executed.');
-                return Root._instance;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Root.Init = function (selectorString) {
-            Root._instance = new Root($(selectorString));
-        };
-        Object.defineProperty(Root.prototype, "Dom", {
-            get: function () {
-                return this._dom;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(Root.prototype, "Size", {
-            get: function () {
-                return this._size;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Root.prototype.Refresh = function () {
-            // this.Sizeのセッターが無いので、フィールドに直接書き込む。
-            this._size.Width = this.Elem.width();
-            this._size.Height = this.Elem.height();
-        };
-        Root.prototype.Dispose = function () {
-            _super.prototype.Dispose.call(this);
-            this._dom = null;
-            this._size.Dispose();
-            this._size = null;
-        };
-        Root._instance = null;
-        return Root;
-    }(Fw.ObjectBase));
-    Fw.Root = Root;
+            LabelView.prototype.Init = function () {
+                _super.prototype.Init.call(this);
+                this.SetClassName('LabelView');
+                this.Elem.addClass(this.ClassName);
+                this._label = $('<span class="ImageViewProperty"></span>');
+                this.Elem.append(this._label);
+                this.Dom.style.borderWidth = '0';
+                this.Dom.style.borderRadius = '0';
+            };
+            LabelView.prototype.Dispose = function () {
+                _super.prototype.Dispose.call(this);
+                this._label.remove();
+                this._label = null;
+            };
+            return LabelView;
+        }(Views.ViewBase));
+        Views.LabelView = LabelView;
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Events/ControlViewEvents.ts" />
+/// <reference path="../Util/Dump.ts" />
+/// <reference path="ControlView.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var PanelControlView = /** @class */ (function (_super) {
+            __extends(PanelControlView, _super);
+            function PanelControlView() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            PanelControlView.prototype.Init = function () {
+                _super.prototype.Init.call(this);
+                this.SetClassName('PanelView');
+                this.Elem.addClass(this.ClassName);
+                this.HasBorder = false;
+                this.BorderRadius = 0;
+            };
+            return PanelControlView;
+        }(Views.ControlView));
+        Views.PanelControlView = PanelControlView;
+    })(Views = Fw.Views || (Fw.Views = {}));
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
@@ -2477,5 +2296,307 @@ var Fw;
         }(Views.PanelControlView));
         Views.SlidablePanelControlView = SlidablePanelControlView;
     })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Events/ViewEvents.ts" />
+/// <reference path="../../Util/Dump.ts" />
+/// <reference path="../../Util/Number.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Property;
+        (function (Property) {
+            var Events = Fw.Events.ViewEvents;
+            var Number = Fw.Util.Number;
+            var Position = /** @class */ (function () {
+                function Position(view) {
+                    if (view === void 0) { view = null; }
+                    this._view = null;
+                    this._x = 0;
+                    this._y = 0;
+                    this._view = view;
+                }
+                Object.defineProperty(Position.prototype, "X", {
+                    get: function () {
+                        return this._x;
+                    },
+                    set: function (value) {
+                        // nullは許可、その他は例外
+                        if (Number.IsNaN(value) || value === undefined)
+                            throw new Error("value type not allowed");
+                        var changed = (this._x !== value);
+                        this._x = value;
+                        if (changed && this._view)
+                            this._view.DispatchEvent(Events.PositionChanged);
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(Position.prototype, "Y", {
+                    get: function () {
+                        return this._y;
+                    },
+                    set: function (value) {
+                        // nullは許可、その他は例外
+                        if (Number.IsNaN(value) || value === undefined)
+                            throw new Error("value type not allowed");
+                        var changed = (this._y !== value);
+                        this._y = value;
+                        if (changed && this._view)
+                            this._view.DispatchEvent(Events.PositionChanged);
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(Position.prototype, "Left", {
+                    get: function () {
+                        if (!this._view)
+                            return null;
+                        var parent = $(this._view.Elem.parent());
+                        var parentWidth = (this._view.Parent)
+                            ? this._view.Parent.Size.Width
+                            : parent.width();
+                        var pHalfWidth = (parentWidth / 2);
+                        var myHalfWidth = (this._view.Size.Width / 2);
+                        return pHalfWidth - myHalfWidth + this._x;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(Position.prototype, "Top", {
+                    get: function () {
+                        if (!this._view)
+                            return null;
+                        var parent = $(this._view.Elem.parent());
+                        var parentHeight = (this._view.Parent)
+                            ? this._view.Parent.Size.Height
+                            : parent.height();
+                        var pHalfHeight = (parentHeight / 2);
+                        var myHalfHeight = (this._view.Size.Height / 2);
+                        return pHalfHeight - myHalfHeight + this._y;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Position.prototype.Dispose = function () {
+                    this._view = null;
+                    this._x = null;
+                    this._y = null;
+                };
+                return Position;
+            }());
+            Property.Position = Position;
+        })(Property = Views.Property || (Views.Property = {}));
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Events/ControlViewEvents.ts" />
+/// <reference path="../Util/Dump.ts" />
+/// <reference path="../Util/Number.ts" />
+/// <reference path="ViewBase.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Dump = Fw.Util.Dump;
+        var ImageView = /** @class */ (function (_super) {
+            __extends(ImageView, _super);
+            function ImageView() {
+                return _super.call(this, $('<a></a>')) || this;
+            }
+            Object.defineProperty(ImageView.prototype, "Source", {
+                get: function () {
+                    return this._image.attr('src');
+                },
+                set: function (value) {
+                    this._image.attr('src', value);
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            ImageView.prototype.Init = function () {
+                var _this = this;
+                _super.prototype.Init.call(this);
+                this.SetClassName('ImageView');
+                this.Elem.addClass(this.ClassName);
+                this.Dom.style.borderWidth = '0';
+                this.Dom.style.borderRadius = '0';
+                this._image = $('<img class="ImageViewProperty"></img>');
+                this._image.on('load', function () {
+                    Dump.Log('Image Loaded!!');
+                    _this.Refresh();
+                });
+                this.Elem.append(this._image);
+            };
+            ImageView.prototype.InnerRefresh = function () {
+                _super.prototype.InnerRefresh.call(this);
+                var imgDom = this._image.get(0);
+                var imgWidth = imgDom.naturalWidth;
+                var imgHeight = imgDom.naturalHeight;
+                Dump.Log({
+                    event: this.ClassName + '.InnerRefresh',
+                    imgWidth: imgWidth,
+                    imgHeight: imgHeight,
+                });
+            };
+            ImageView.prototype.Dispose = function () {
+                _super.prototype.Dispose.call(this);
+                this._image.remove();
+                this._image = null;
+            };
+            return ImageView;
+        }(Views.ViewBase));
+        Views.ImageView = ImageView;
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../lib/jquery/index.d.ts" />
+/// <reference path="../../lib/underscore/index.d.ts" />
+/// <reference path="Util/Dump.ts" />
+/* /// <reference path="Views/Root.ts" /> */
+var Fw;
+(function (Fw) {
+    var Startup = /** @class */ (function () {
+        function Startup() {
+        }
+        Startup.Init = function () {
+            // ↓API仕様に応じて、App.Mainで書き換える。
+            Fw.Config.XhrBaseUrl
+                = location.protocol
+                    + '//' + location.hostname
+                    + ':' + location.port
+                    + '/';
+            // 画面全体のコンテナを初期化
+            Fw.Root.Init('div.body-content');
+            // Controllers.Managerの初期化
+            Fw.Controllers.Manager.Init();
+        };
+        return Startup;
+    }());
+    Fw.Startup = Startup;
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="ViewEvents.ts" />
+var Fw;
+(function (Fw) {
+    var Events;
+    (function (Events) {
+        var PageViewEventsClass = /** @class */ (function (_super) {
+            __extends(PageViewEventsClass, _super);
+            function PageViewEventsClass() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            return PageViewEventsClass;
+        }(Events.ViewEventsClass));
+        Events.PageViewEventsClass = PageViewEventsClass;
+        Events.PageViewEvents = new PageViewEventsClass();
+    })(Events = Fw.Events || (Fw.Events = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../IObject.ts" />
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../ObjectBase.ts" />
+/// <reference path="IModel.ts" />
+var Fw;
+(function (Fw) {
+    var Models;
+    (function (Models) {
+        var ModelBase = /** @class */ (function (_super) {
+            __extends(ModelBase, _super);
+            function ModelBase() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            return ModelBase;
+        }(Fw.ObjectBase));
+        Models.ModelBase = ModelBase;
+    })(Models = Fw.Models || (Fw.Models = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+var Fw;
+(function (Fw) {
+    var Events;
+    (function (Events) {
+        var RootEventsClass = /** @class */ (function () {
+            function RootEventsClass() {
+                this.Resized = 'Resized';
+            }
+            return RootEventsClass;
+        }());
+        Events.RootEventsClass = RootEventsClass;
+        Events.RootEvents = new RootEventsClass();
+    })(Events = Fw.Events || (Fw.Events = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../lib/jquery/index.d.ts" />
+/// <reference path="../../lib/underscore/index.d.ts" />
+/// <reference path="Events/RootEvents.ts" />
+/// <reference path="Util/Dump.ts" />
+/// <reference path="Views/Property/Size.ts" />
+var Fw;
+(function (Fw) {
+    var Events = Fw.Events.RootEvents;
+    var Property = Fw.Views.Property;
+    var Root = /** @class */ (function (_super) {
+        __extends(Root, _super);
+        function Root(jqueryElem) {
+            var _this = _super.call(this) || this;
+            _this.SetElem(jqueryElem);
+            _this.SetClassName('Root');
+            _this._size = new Property.Size();
+            _this._dom = jqueryElem.get(0);
+            _this.Refresh();
+            $(window).resize(function () {
+                _this.Refresh();
+                _this.DispatchEvent(Events.Resized);
+            });
+            return _this;
+        }
+        Object.defineProperty(Root, "Instance", {
+            get: function () {
+                if (!Root._instance)
+                    throw new Error('Root.Init() has not been executed.');
+                return Root._instance;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Root.Init = function (selectorString) {
+            Root._instance = new Root($(selectorString));
+        };
+        Object.defineProperty(Root.prototype, "Dom", {
+            get: function () {
+                return this._dom;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Root.prototype, "Size", {
+            get: function () {
+                return this._size;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Root.prototype.Refresh = function () {
+            // this.Sizeのセッターが無いので、フィールドに直接書き込む。
+            this._size.Width = this.Elem.width();
+            this._size.Height = this.Elem.height();
+        };
+        Root.prototype.Dispose = function () {
+            _super.prototype.Dispose.call(this);
+            this._dom = null;
+            this._size.Dispose();
+            this._size = null;
+        };
+        Root._instance = null;
+        return Root;
+    }(Fw.ObjectBase));
+    Fw.Root = Root;
 })(Fw || (Fw = {}));
 //# sourceMappingURL=tsout.js.map

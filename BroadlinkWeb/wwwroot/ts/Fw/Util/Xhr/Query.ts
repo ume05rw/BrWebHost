@@ -1,9 +1,11 @@
 ﻿/// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Util/Dump.ts" />
+/// <reference path="../../Config.ts" />
 
 namespace Fw.Util.Xhr {
     import Dump = Fw.Util.Dump;
+    import Config = Fw.Config;
 
     export class Query {
         public static Invoke(params: Params): any {
@@ -20,7 +22,7 @@ namespace Fw.Util.Xhr {
             }
 
             $.ajax({
-                url: Config.BaseUrl + params.Url,
+                url: Config.XhrBaseUrl + params.Url,
                 method: method,
                 data: params.Values || null,
                 cache: false,
@@ -69,7 +71,7 @@ namespace Fw.Util.Xhr {
     //    }
 
     //    $.ajax({
-    //        url: Config.BaseUrl + params.Url,
+    //        url: Config.XhrBaseUrl + params.Url,
     //        method: method,
     //        data: params.Values || null,
     //        cache: false,
@@ -94,9 +96,8 @@ namespace Fw.Util.Xhr {
     //                ]
     //            });
     //        };
-
-    //        console.log('fail');
-    //        console.log(data);
+    //        Dump.Log('fail');
+    //        Dump.Log(data);
     //    });
     //}
 }

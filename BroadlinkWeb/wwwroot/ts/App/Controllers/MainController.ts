@@ -1,36 +1,46 @@
 ﻿/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Fw/Controllers/ControllerBase.ts" />
+/// <reference path="../../Fw/Controllers/Manager.ts" />
 /// <reference path="../../Fw/Util/Dump.ts" />
 /// <reference path="../../Fw/Events/ControlViewEvents.ts" />
 
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
     import Events = Fw.Events;
+    import Manager = Fw.Controllers.Manager;
 
     export class MainController extends Fw.Controllers.ControllerBase {
-        private _btnGoSub1: JQuery;
-        private _btnGoSub2: JQuery;
         private _centerControl: Fw.Views.ControlView;
 
-        constructor(elem: JQuery, manager: Fw.Controllers.Manager) {
-            super(elem, manager);
+        constructor(elem: JQuery) {
+            super(elem);
             this.Init();
         }
 
         private Init(): void {
-            this._btnGoSub1 = this.View.Elem.find('button[name=GoSub1]');
-            this._btnGoSub2 = this.View.Elem.find('button[name=GoSub2]');
 
-            this._btnGoSub1.click(() => {
+            const btnGoSub1 = new Fw.Views.ControlView();
+            btnGoSub1.Label = 'Go Sub1';
+            btnGoSub1.SetSize(80, 30);
+            btnGoSub1.SetAnchor(null, 10, null, null);
+            btnGoSub1.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
                 // イベント通知でなく、参照保持でよいか？
-                this.Manager.Show("Sub1");
+                Manager.Instance.Show("Sub1");
             });
+            this.View.Add(btnGoSub1);
 
-            this._btnGoSub2.click(() => {
+            const btnGoSub2 = new Fw.Views.ControlView();
+            btnGoSub2.Label = 'Go Sub2';
+            btnGoSub2.SetSize(80, 30);
+            btnGoSub2.Position.Y = 40;
+            btnGoSub2.SetAnchor(null, 10, null, null);
+            btnGoSub2.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
                 // イベント通知でなく、参照保持でよいか？
-                this.Manager.Show("Sub2");
+                Manager.Instance.Show("Sub2");
             });
+            this.View.Add(btnGoSub2);
+
 
             this._centerControl = new Fw.Views.ControlView();
             this._centerControl.SetPosition(0, 0);
@@ -46,20 +56,20 @@ namespace App.Controllers {
 
             tmpCtl.Label = 'くりっく';
             tmpCtl.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
-                console.log('LONG CLICK!!');
+                Dump.Log('LONG CLICK!!');
 
                 if (this._centerControl.IsVisible()) {
-                    console.log('みえてんで！');
+                    Dump.Log('みえてんで！');
                     this._centerControl.Hide();
                 } else {
-                    console.log('みえへんで...？');
+                    Dump.Log('みえへんで...？');
                     this._centerControl.Show();
                 }
             });
             this.View.Add(tmpCtl);
 
             this.View.AddEventListener(Events.PageViewEvents.Shown, () => {
-                console.log('MainView.Shown');
+                Dump.Log('MainView.Shown');
             });
 
             const ancCtl1 = new Fw.Views.ControlView();

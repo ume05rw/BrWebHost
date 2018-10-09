@@ -1,10 +1,12 @@
 ﻿/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Config.ts" />
 /// <reference path="../Util/Dump.ts" />
 /// <reference path="Factory.ts" />
 
 namespace Fw.Controllers {
     import Dump = Fw.Util.Dump;
+    import Config = Fw.Config;
 
     export class Manager {
         private static _instance: Manager = null;
@@ -24,9 +26,9 @@ namespace Fw.Controllers {
         private constructor() {
             const ctrs: Array<IController> = [];
 
-            $("div[data-controller]").each(function (i, el) {
+            $(`div[${Config.PageIdAttribute}]`).each(function (i, el) {
                 const $elem = $(el);
-                const name = $elem.data('controller');
+                const name = $elem.attr(Config.PageIdAttribute);
                 const instance = Factory.Create(name, $elem, this);
                 ctrs.push(instance);
             }.bind(this));

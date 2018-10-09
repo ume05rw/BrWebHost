@@ -30,7 +30,7 @@ namespace Fw.Views {
 
             this.SetClassName('LabelView');
             this.Elem.addClass(this.ClassName);
-            this._label = $('<span class="ControlViewProperty"></span>');
+            this._label = $('<span class="ImageViewProperty"></span>');
             this.Elem.append(this._label);
 
             this.Dom.style.borderWidth = '0';

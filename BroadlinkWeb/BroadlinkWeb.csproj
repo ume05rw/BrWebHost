@@ -8,6 +8,7 @@
   <ItemGroup>
     <Content Remove="wwwroot\js\Page.ts" />
     <Content Remove="wwwroot\ts\App\Main.ts" />
+    <Content Remove="wwwroot\ts\Fw\Config.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\ControlViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\PageViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\RootEvents.ts" />
@@ -17,13 +18,13 @@
     <Content Remove="wwwroot\ts\Fw\Models\ModelBase.ts" />
     <Content Remove="wwwroot\ts\Fw\ObjectBase.ts" />
     <Content Remove="wwwroot\ts\Fw\Startup.ts" />
+    <Content Remove="wwwroot\ts\Fw\Util\App.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\Dump.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\Number.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\Xhr.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\XhrMethodType.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\XhrParams.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\XhrResult.ts" />
-    <Content Remove="wwwroot\ts\Fw\Util\Xhr\Config.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\Anchor.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\Animation\Animator.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\Animation\Params.ts" />
@@ -66,6 +67,7 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\MainController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\Sub1Controller.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\Sub2Controller.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Config.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\Factory.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\IController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\ControllerBase.ts" />
@@ -79,9 +81,9 @@
     <TypeScriptCompile Include="wwwroot\ts\Fw\Models\ModelBase.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\ObjectBase.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Startup.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Util\App.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Dump.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Number.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Xhr\Config.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Xhr\Query.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Xhr\MethodType.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Xhr\Params.ts" />
