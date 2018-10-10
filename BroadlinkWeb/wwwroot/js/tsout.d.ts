@@ -79,7 +79,12 @@ declare namespace Fw.Views.Property {
         IsAnchoredBottom: boolean;
         private _marginBottom;
         MarginBottom: number;
+        private _hasAnchorX;
+        readonly HasAnchorX: boolean;
+        private _hasAnchorY;
+        readonly HasAnchorY: boolean;
         constructor(view?: IView);
+        SetHasAnchor(hasAnchorX: boolean, hasAnchorY: boolean): void;
         Dispose(): void;
     }
 }
@@ -88,6 +93,7 @@ declare namespace Fw.Views {
     interface IView extends Fw.IObject {
         readonly Elem: JQuery;
         readonly Dom: HTMLElement;
+        readonly Page: PageView;
         readonly Parent: IView;
         readonly Children: Array<IView>;
         readonly Size: Property.Size;
@@ -132,11 +138,6 @@ declare namespace Fw.Controllers {
         private _controllers;
         private constructor();
         Show(id: string): void;
-    }
-}
-declare namespace App {
-    class Main {
-        static StartUp(): void;
     }
 }
 declare namespace Fw.Controllers {
@@ -200,11 +201,9 @@ declare namespace App.Controllers {
         private Init;
     }
 }
-declare namespace Fw.Events {
-    class EventReference {
-        Name: string;
-        Handler: (e: JQueryEventObject) => void;
-        BindedHandler: any;
+declare namespace App {
+    class Main {
+        static StartUp(): void;
     }
 }
 declare namespace Fw.Events {
@@ -220,6 +219,13 @@ declare namespace Fw.Events {
 }
 declare namespace Fw.Models {
     interface IModel extends Fw.IObject {
+    }
+}
+declare namespace Fw.Events {
+    class EventReference {
+        Name: string;
+        Handler: (e: JQueryEventObject) => void;
+        BindedHandler: any;
     }
 }
 declare namespace Fw {
@@ -244,17 +250,6 @@ declare namespace Fw {
 }
 declare namespace Fw.Models {
     abstract class ModelBase extends Fw.ObjectBase implements Fw.Models.IModel {
-    }
-}
-declare namespace Fw {
-    class Startup {
-        static Init(): void;
-    }
-}
-declare namespace Fw.Util {
-    class App {
-        private static _ids;
-        static CreateId(): string;
     }
 }
 declare namespace Fw.Util.Xhr {
@@ -284,6 +279,12 @@ declare namespace Fw.Util.Xhr {
         constructor(succeeded: boolean, values: any, errors: any);
     }
 }
+declare namespace Fw.Util {
+    class App {
+        private static _ids;
+        static CreateId(): string;
+    }
+}
 declare namespace Fw.Views.Animation {
     class Params {
         static GetCurrent(view: Fw.Views.IView): Params;
@@ -308,6 +309,19 @@ declare namespace Fw.Views.Animation {
     }
 }
 declare namespace Fw.Views.Property {
+    class Position {
+        private _view;
+        private _x;
+        X: number;
+        private _y;
+        Y: number;
+        readonly Left: number;
+        readonly Top: number;
+        constructor(view?: IView);
+        Dispose(): void;
+    }
+}
+declare namespace Fw.Views.Property {
     class Size {
         private _view;
         private _width;
@@ -327,6 +341,8 @@ declare namespace Fw.Views {
         private _isSuppressLayout;
         private _dom;
         readonly Dom: HTMLElement;
+        private _page;
+        readonly Page: PageView;
         private _parent;
         Parent: IView;
         private _children;
@@ -344,12 +360,14 @@ declare namespace Fw.Views {
         constructor(jqueryElem: JQuery);
         protected SetElem(jqueryElem: JQuery): void;
         protected Init(): void;
+        private InitPage;
         SetParent(parent: IView): void;
         SetSize(width: number, height: number): void;
         SetPosition(x: number, y: number): void;
         SetAnchor(top: number, left: number, right: number, bottom: number): void;
         SetPositionByLeftTop(left: number, top: number): void;
         SetDisplayParams(width: number, height: number, x?: number, y?: number, color?: string, backgroundColor?: string): void;
+        private InitHasAnchor;
         Add(view: IView): void;
         Remove(view: IView): void;
         Refresh(): void;
@@ -360,20 +378,6 @@ declare namespace Fw.Views {
         Show(duration?: number): void;
         Hide(duration?: number): void;
         IsVisible(): boolean;
-        Dispose(): void;
-    }
-}
-declare namespace Fw.Views {
-    import FitPolicy = Fw.Views.Property.FitPolicy;
-    class ImageView extends ViewBase {
-        private _image;
-        private _src;
-        Src: string;
-        private _firPolicy;
-        FitPolicy: FitPolicy;
-        constructor();
-        protected Init(): void;
-        protected InnerRefresh(): void;
         Dispose(): void;
     }
 }
@@ -390,6 +394,20 @@ declare namespace Fw.Views {
         /**
          * @description Initialize
          */
+        protected Init(): void;
+        protected InnerRefresh(): void;
+        Dispose(): void;
+    }
+}
+declare namespace Fw.Views {
+    import FitPolicy = Fw.Views.Property.FitPolicy;
+    class ImageView extends ViewBase {
+        private _image;
+        private _src;
+        Src: string;
+        private _firPolicy;
+        FitPolicy: FitPolicy;
+        constructor();
         protected Init(): void;
         protected InnerRefresh(): void;
         Dispose(): void;
@@ -430,8 +448,17 @@ declare namespace Fw.Views {
     class PageView extends ViewBase {
         private _id;
         readonly Id: string;
+        private _isDragging;
+        private _dragStartMousePosition;
+        private _dragStartViewPosition;
+        private _isSuppressDrag;
+        private _draggedPosition;
+        readonly DraggedPosition: Property.Position;
         constructor(jqueryElem: JQuery);
         protected Init(): void;
+        SuppressDragging(): void;
+        IsSuppressDragging(): boolean;
+        ResumeDragging(): void;
         Show(duration?: number): void;
         Hide(duration?: number): void;
         protected InnerRefresh(): void;
@@ -441,33 +468,6 @@ declare namespace Fw.Views {
 declare namespace Fw.Views {
     class PanelControlView extends ControlView {
         protected Init(): void;
-    }
-}
-declare namespace Fw.Views.Property {
-    /**
-     * @description font-size
-     */
-    enum FontSize {
-        XxSmall = "xx-small",
-        XSmall = "x-small",
-        Small = "small",
-        Medium = "medium",
-        Large = "large",
-        XLarge = "x-large",
-        XxLarge = "xx-large"
-    }
-}
-declare namespace Fw.Views.Property {
-    class Position {
-        private _view;
-        private _x;
-        X: number;
-        private _y;
-        Y: number;
-        readonly Left: number;
-        readonly Top: number;
-        constructor(view?: IView);
-        Dispose(): void;
     }
 }
 declare namespace Fw.Views {
@@ -488,21 +488,6 @@ declare namespace Fw.Views {
         Dispose(): void;
     }
 }
-declare namespace Fw {
-    import Property = Fw.Views.Property;
-    class Root extends ObjectBase {
-        private static _instance;
-        static readonly Instance: Root;
-        static Init(selectorString: string): void;
-        private _dom;
-        readonly Dom: HTMLElement;
-        private _size;
-        readonly Size: Property.Size;
-        private constructor();
-        Refresh(): void;
-        Dispose(): void;
-    }
-}
 declare namespace Fw.Views {
     enum Direction {
         Horizontal = 0,
@@ -518,7 +503,7 @@ declare namespace Fw.Views {
         private _isDragging;
         private _mouseMoveSuppressor;
         private _dragStartMousePosition;
-        private _dragStartPanelPosition;
+        private _dragStartViewPosition;
         constructor(direction: Direction);
         protected Init(): void;
         private _delayedResumeMouseEventsTimer;
@@ -527,5 +512,41 @@ declare namespace Fw.Views {
         private AdjustSlidePosition;
         protected InnerRefresh(): void;
         Dispose(): void;
+    }
+}
+declare namespace Fw {
+    import Property = Fw.Views.Property;
+    class Root extends ObjectBase {
+        private static _instance;
+        static readonly Instance: Root;
+        static Init(selectorString: string): void;
+        private _dom;
+        readonly Dom: HTMLElement;
+        private _size;
+        readonly Size: Property.Size;
+        private _isDragging;
+        private _dragStartMousePosition;
+        private constructor();
+        Refresh(): void;
+        Dispose(): void;
+    }
+}
+declare namespace Fw {
+    class Startup {
+        static Init(): void;
+    }
+}
+declare namespace Fw.Views.Property {
+    /**
+     * @description font-size
+     */
+    enum FontSize {
+        XxSmall = "xx-small",
+        XSmall = "x-small",
+        Small = "small",
+        Medium = "medium",
+        Large = "large",
+        XLarge = "x-large",
+        XxLarge = "xx-large"
     }
 }

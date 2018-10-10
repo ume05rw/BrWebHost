@@ -91,10 +91,6 @@ namespace Fw.Views {
             this._hiddenSpan.style.fontFamily = this._fontFamily;
 
             this.AddEventListener(Events.Attached, () => {
-                Dump.Log({
-                    parent: this.Parent,
-                    span: this._hiddenSpan,
-                });
                 this.Parent.Elem.append(this._hiddenSpan);
             });
             this.AddEventListener(Events.Detached, () => {
@@ -109,12 +105,6 @@ namespace Fw.Views {
                 this.SuppressLayout();
 
                 if (this._autoSize) {
-                    //Dump.Log({
-                    //    title: 'LabelView.InnerRefresh.AutoSize',
-                    //    offsetWidth: this._hiddenSpan.offsetWidth,
-                    //    offsetHeight: this._hiddenSpan.offsetHeight,
-                    //});
-
                     this.Size.Width = this._hiddenSpan.offsetWidth;
                     this.Size.Height = this._hiddenSpan.offsetHeight;
                 }

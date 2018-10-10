@@ -27,6 +27,11 @@ namespace Fw.Views {
             return this._dom;
         }
 
+        private _page: PageView;
+        public get Page(): PageView {
+            return this._page;
+        }
+
         private _parent: IView;
         public get Parent(): IView {
             return this._parent;
@@ -94,11 +99,13 @@ namespace Fw.Views {
             this.SetClassName('ViewBase');
             this.Elem.addClass('IView');
 
+            this._page = null;
             this._parent = null;
             this._children = new Array<IView>();
             this._size = new Property.Size(this);
             this._position = new Property.Position(this);
             this._anchor = new Property.Anchor(this);
+            this._color = '#000000';
 
             this._size.Width = this.Elem.width();
             this._size.Height = this.Elem.height();
@@ -112,8 +119,18 @@ namespace Fw.Views {
             this.AddEventListener(Events.AnchorChanged, () => {
                 this.Refresh();
             });
-
-            this._color = '#000000';
+            this.AddEventListener(Events.Attached, () => {
+                this.InitPage();
+                this.InitHasAnchor();
+            });
+            this.AddEventListener(Events.Detached, () => {
+                this._page = null;
+                this.InitHasAnchor();
+            });
+            this.AddEventListener(Events.Initialized, () => {
+                this.InitPage();
+                this.InitHasAnchor();
+            });
 
             this.IsVisible()
                 ? this.DispatchEvent(Events.Shown)
@@ -123,6 +140,18 @@ namespace Fw.Views {
             Fw.Root.Instance.AddEventListener(Fw.Events.RootEvents.Resized, () => {
                 this.Refresh();
             });
+        }
+
+        private InitPage(): void {
+            const get = (view: IView) => {
+                if (!view)
+                    return null;
+                else if (view instanceof PageView)
+                    return view;
+                else
+                    return get(view.Parent);
+            };
+            this._page = get(this);
         }
 
         public SetParent(parent: IView): void {
@@ -217,6 +246,28 @@ namespace Fw.Views {
                 this.BackgroundColor = backgroundColor;
         }
 
+        private InitHasAnchor(): void {
+            let hasAnchorX: boolean = (this.Anchor.IsAnchoredLeft || this.Anchor.IsAnchoredRight);
+            let hasAnchorY: boolean = (this.Anchor.IsAnchoredTop || this.Anchor.IsAnchoredBottom);
+
+            const recAnchor = function (view: IView) {
+                if (!view)
+                    return;
+
+                if (!hasAnchorX) {
+                    hasAnchorX = (view.Anchor.IsAnchoredLeft || view.Anchor.IsAnchoredRight);
+                }
+                if (!hasAnchorY) {
+                    hasAnchorY = (view.Anchor.IsAnchoredTop || view.Anchor.IsAnchoredBottom);
+                }
+
+                recAnchor(view.Parent);
+            };
+            recAnchor(this.Parent);
+
+            this.Anchor.SetHasAnchor(hasAnchorX, hasAnchorY);
+        }
+
         public Add(view: IView): void {
             if (this.Children.indexOf(view) == -1) {
                 view.SetParent(this);
@@ -240,6 +291,11 @@ namespace Fw.Views {
         public Refresh(): void {
             if (this._isSuppressLayout)
                 return;
+
+            // 子ViewもRefreshさせる。
+            _.each(this.Children, (view: IView) => {
+                view.Refresh();
+            });
 
             if (this._lastRefreshTimer != null) {
                 clearTimeout(this._lastRefreshTimer);
@@ -271,6 +327,9 @@ namespace Fw.Views {
                 if (parent.length <= 0)
                     return;
 
+                if (!this._page)
+                    this.InitPage();
+
                 this.SuppressEvent(Events.SizeChanged);
                 this.SuppressEvent(Events.PositionChanged);
                 this.SuppressLayout();
@@ -290,6 +349,9 @@ namespace Fw.Views {
 
                 const pHalfWidth = (parentWidth / 2);
                 const pHalfHeight = (parentHeight / 2);
+
+                //let isAnchoredX: boolean = false;
+                //let isAnchoredY: boolean = false;
 
                 if (this.Anchor.IsAnchoredLeft && this.Anchor.IsAnchoredRight) {
                     this.Size.Width = parentWidth - this.Anchor.MarginLeft - this.Anchor.MarginRight;
@@ -325,8 +387,15 @@ namespace Fw.Views {
 
                 const myHalfWidth = this.Size.Width / 2;
                 const myHalfHeight = this.Size.Height / 2;
-                const elemLeft = pHalfWidth - myHalfWidth + this.Position.X;
-                const elemTop = pHalfHeight - myHalfHeight + this.Position.Y;
+                let elemLeft = pHalfWidth - myHalfWidth + this.Position.X;
+                let elemTop = pHalfHeight - myHalfHeight + this.Position.Y;
+
+                if (this.Page) {
+                    if (!this.Anchor.HasAnchorX)
+                        elemLeft += this.Page.DraggedPosition.X;
+                    if (!this.Anchor.HasAnchorY)
+                        elemTop += this.Page.DraggedPosition.Y;
+                }
 
                 //Dump.Log({
                 //    left: this.Position.Left,

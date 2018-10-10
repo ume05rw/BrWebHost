@@ -140,8 +140,24 @@ namespace Fw.Views.Property {
                 this._view.DispatchEvent(Events.AnchorChanged);
         }
 
+        private _hasAnchorX: boolean = false;
+        public get HasAnchorX(): boolean {
+            return this._hasAnchorX;
+        }
+
+        private _hasAnchorY: boolean = false;
+        public get HasAnchorY(): boolean {
+            return this._hasAnchorY;
+        }
+
+
         constructor(view: IView = null) {
             this._view = view;
+        }
+
+        public SetHasAnchor(hasAnchorX: boolean, hasAnchorY: boolean): void {
+            this._hasAnchorX = hasAnchorX;
+            this._hasAnchorY = hasAnchorY;
         }
 
         public Dispose(): void {

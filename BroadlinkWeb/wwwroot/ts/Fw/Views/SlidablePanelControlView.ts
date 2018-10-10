@@ -44,7 +44,7 @@ namespace Fw.Views {
         private _isDragging: boolean = false;
         private _mouseMoveSuppressor = false;
         private _dragStartMousePosition: Property.Position;
-        private _dragStartPanelPosition: Property.Position;
+        private _dragStartViewPosition: Property.Position;
 
         constructor(direction: Direction) {
             super();
@@ -62,7 +62,7 @@ namespace Fw.Views {
             this.Elem.addClass(this.ClassName);
 
             this._dragStartMousePosition = new Property.Position();
-            this._dragStartPanelPosition = new Property.Position();
+            this._dragStartViewPosition = new Property.Position();
 
             this.HasBorder = false;
             this.BorderRadius = 0;
@@ -80,8 +80,8 @@ namespace Fw.Views {
                 this._isDragging = true;
                 this._dragStartMousePosition.X = e.clientX;
                 this._dragStartMousePosition.Y = e.clientY;
-                this._dragStartPanelPosition.X = this._innerPanel.Position.X;
-                this._dragStartPanelPosition.Y = this._innerPanel.Position.Y;
+                this._dragStartViewPosition.X = this._innerPanel.Position.X;
+                this._dragStartViewPosition.Y = this._innerPanel.Position.Y;
             });
             this._innerPanel.Elem.on('touchmove mousemove', (e) => {
                 if (!this._isDragging && !this._mouseMoveSuppressor)
@@ -95,10 +95,10 @@ namespace Fw.Views {
 
                 if (this.Direction === Direction.Horizontal) {
                     // 横方向
-                    this._innerPanel.Position.X = this._dragStartPanelPosition.X + addX;
+                    this._innerPanel.Position.X = this._dragStartViewPosition.X + addX;
                 } else {
                     // 縦方向
-                    this._innerPanel.Position.Y = this._dragStartPanelPosition.Y + addY;
+                    this._innerPanel.Position.Y = this._dragStartViewPosition.Y + addY;
                 }
                 this.Refresh();
 
@@ -241,8 +241,8 @@ namespace Fw.Views {
             this._mouseMoveSuppressor = null;
             this._dragStartMousePosition.Dispose();
             this._dragStartMousePosition = null;
-            this._dragStartPanelPosition.Dispose();
-            this._dragStartPanelPosition = null;
+            this._dragStartViewPosition.Dispose();
+            this._dragStartViewPosition = null;
         }
     }
 }

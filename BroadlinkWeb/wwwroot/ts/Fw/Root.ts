@@ -21,6 +21,7 @@ namespace Fw {
             Root._instance = new Root($(selectorString));
         }
 
+
         private _dom: HTMLElement;
         public get Dom(): HTMLElement {
             return this._dom;
@@ -31,6 +32,9 @@ namespace Fw {
             return this._size;
         }
 
+        private _isDragging: boolean = false;
+        private _dragStartMousePosition: Property.Position;
+
         private constructor(jqueryElem: JQuery) {
             super();
 
@@ -39,12 +43,15 @@ namespace Fw {
 
             this._size = new Property.Size();
             this._dom = jqueryElem.get(0) as HTMLElement;
-            this.Refresh();
+            this._dragStartMousePosition = new Property.Position();
 
-            $(window).resize(() => {
+            const $window = $(window);
+            $window.on('resize', () => {
                 this.Refresh();
                 this.DispatchEvent(Events.Resized);
             });
+
+            this.Refresh();
         }
 
         public Refresh(): void {

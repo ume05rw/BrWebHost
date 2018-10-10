@@ -9,6 +9,7 @@ namespace Fw.Views {
     export interface IView extends Fw.IObject {
         readonly Elem: JQuery;
         readonly Dom: HTMLElement;
+        readonly Page: PageView;
         readonly Parent: IView;
         readonly Children: Array<IView>;
 
