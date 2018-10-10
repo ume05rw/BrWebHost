@@ -448,10 +448,14 @@ declare namespace Fw.Views {
     class PageView extends ViewBase {
         private _id;
         readonly Id: string;
+        private _isNeedDragX;
+        private _isNeedDragY;
         private _isDragging;
+        private _isSuppressDrag;
+        private _minDragPosition;
+        private _maxDragPosition;
         private _dragStartMousePosition;
         private _dragStartViewPosition;
-        private _isSuppressDrag;
         private _draggedPosition;
         readonly DraggedPosition: Property.Position;
         constructor(jqueryElem: JQuery);
@@ -459,6 +463,7 @@ declare namespace Fw.Views {
         SuppressDragging(): void;
         IsSuppressDragging(): boolean;
         ResumeDragging(): void;
+        private DetectToNeedDrags;
         Show(duration?: number): void;
         Hide(duration?: number): void;
         protected InnerRefresh(): void;

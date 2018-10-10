@@ -2282,6 +2282,8 @@ var Fw;
             __extends(PageView, _super);
             function PageView(jqueryElem) {
                 var _this = _super.call(this, jqueryElem) || this;
+                _this._isNeedDragX = false;
+                _this._isNeedDragY = false;
                 _this._isDragging = false;
                 _this._isSuppressDrag = false;
                 return _this;
@@ -2314,6 +2316,8 @@ var Fw;
                     this.SetElem(elem);
                 }
                 this.Elem.addClass(this.ClassName);
+                this._minDragPosition = new Views.Property.Position();
+                this._maxDragPosition = new Views.Property.Position();
                 this._dragStartMousePosition = new Views.Property.Position();
                 this._dragStartViewPosition = new Views.Property.Position();
                 this._draggedPosition = new Views.Property.Position();
@@ -2323,16 +2327,31 @@ var Fw;
                     _this._dragStartMousePosition.Y = e.clientY;
                     _this._dragStartViewPosition.X = _this._draggedPosition.X;
                     _this._dragStartViewPosition.Y = _this._draggedPosition.Y;
+                    _this.DetectToNeedDrags();
                 });
                 this.Elem.on('touchmove mousemove', function (e) {
                     if (!_this._isDragging || _this._isSuppressDrag)
+                        return;
+                    if (!_this._isNeedDragX && !_this._isNeedDragY)
                         return;
                     if (e.eventPhase !== 2)
                         return;
                     var addX = e.clientX - _this._dragStartMousePosition.X;
                     var addY = e.clientY - _this._dragStartMousePosition.Y;
-                    _this._draggedPosition.X = _this._dragStartViewPosition.X + addX;
-                    _this._draggedPosition.Y = _this._dragStartViewPosition.Y + addY;
+                    if (_this._isNeedDragX) {
+                        _this._draggedPosition.X = _this._dragStartViewPosition.X + addX;
+                        if (_this._draggedPosition.X < _this._minDragPosition.X)
+                            _this._draggedPosition.X = _this._minDragPosition.X;
+                        if (_this._maxDragPosition.X < _this._draggedPosition.X)
+                            _this._draggedPosition.X = _this._maxDragPosition.X;
+                    }
+                    if (_this._isNeedDragY) {
+                        _this._draggedPosition.Y = _this._dragStartViewPosition.Y + addY;
+                        if (_this._draggedPosition.Y < _this._minDragPosition.Y)
+                            _this._draggedPosition.Y = _this._minDragPosition.Y;
+                        if (_this._maxDragPosition.Y < _this._draggedPosition.Y)
+                            _this._draggedPosition.Y = _this._maxDragPosition.Y;
+                    }
                     _this.Refresh();
                 });
                 this.Elem.on('touchend mouseup mouseout', function (e) {
@@ -2353,6 +2372,55 @@ var Fw;
             };
             PageView.prototype.ResumeDragging = function () {
                 this._isSuppressDrag = false;
+            };
+            PageView.prototype.DetectToNeedDrags = function () {
+                var phWidth = this.Size.Width / 2;
+                var phHeight = this.Size.Height / 2;
+                var minLeft = 0;
+                var minTop = 0;
+                var maxRight = 0;
+                var maxBottom = 0;
+                _.each(this.Children, function (view) {
+                    var left = phWidth + view.Position.X - (view.Size.Width / 2);
+                    var top = phHeight + view.Position.Y - (view.Size.Height / 2);
+                    var right = phWidth + view.Position.X + (view.Size.Width / 2);
+                    var bottom = phHeight + view.Position.Y + (view.Size.Height / 2);
+                    if (left < minLeft)
+                        minLeft = left;
+                    if (top < minTop)
+                        minTop = top;
+                    if (maxRight < right)
+                        maxRight = right;
+                    if (maxBottom < bottom)
+                        maxBottom = bottom;
+                });
+                this._isNeedDragX = (minLeft < 0 || this.Size.Width < maxRight);
+                this._isNeedDragY = (minTop < 0 || this.Size.Height < maxBottom);
+                var margin = 20;
+                this._minDragPosition.X = (this.Size.Width < maxRight)
+                    ? this.Size.Width - maxRight - margin
+                    : 0;
+                this._minDragPosition.Y = (this.Size.Height < maxBottom)
+                    ? this.Size.Height - maxBottom - margin
+                    : 0;
+                this._maxDragPosition.X = (minLeft < 0)
+                    ? (minLeft * -1) + margin
+                    : 0;
+                this._maxDragPosition.Y = (minTop < 0)
+                    ? (minTop * -1) + margin
+                    : 0;
+                //Dump.Log({
+                //    minLeft: minLeft,
+                //    minTop: minTop,
+                //    maxRight: maxRight,
+                //    maxBottom: maxBottom,
+                //    _isNeedDragX: this._isNeedDragX,
+                //    _isNeedDragY: this._isNeedDragY,
+                //    _minDragPositionX: this._minDragPosition.X,
+                //    _minDragPositionY: this._minDragPosition.Y,
+                //    _maxDragPositionX: this._maxDragPosition.X,
+                //    _maxDragPositionY: this._maxDragPosition.Y,
+                //});
             };
             PageView.prototype.Show = function (duration) {
                 var _this = this;
@@ -2391,39 +2459,8 @@ var Fw;
                 animator.Invoke(duration);
             };
             PageView.prototype.InnerRefresh = function () {
-                var phWidth = this.Size.Width / 2;
-                var phHeight = this.Size.Height / 2;
-                var minLeft = 0;
-                var minTop = 0;
-                var maxRight = 0;
-                var maxBottom = 0;
-                _.each(this.Children, function (view) {
-                    var left = phWidth + view.Position.X - (view.Size.Width / 2);
-                    var top = phHeight + view.Position.Y - (view.Size.Height / 2);
-                    var right = phWidth + view.Position.X + (view.Size.Width / 2);
-                    var bottom = phHeight + view.Position.Y + (view.Size.Width / 2);
-                    if (left < minLeft)
-                        minLeft = left;
-                    if (top < minTop)
-                        minTop = top;
-                    if (maxRight < right)
-                        maxRight = right;
-                    if (maxBottom < bottom)
-                        maxBottom = bottom;
-                });
-                if (minLeft < 0
-                    || minTop < 0
-                    || this.Size.Width < maxRight
-                    || this.Size.Height < maxBottom) {
-                    // はみ出したコンテンツがある -> ページのドラッグ操作あり
-                    this.Dom.style.left = this.Position.X + "px";
-                    this.Dom.style.top = this.Position.Y + "px";
-                }
-                else {
-                    // コンテンツが自身の範囲内 -> ページ固定表示
-                    this.Dom.style.left = "0px";
-                    this.Dom.style.top = "0px";
-                }
+                this.Dom.style.left = "0px";
+                this.Dom.style.top = "0px";
                 this.Dom.style.width = "100%";
                 this.Dom.style.height = "100%";
             };

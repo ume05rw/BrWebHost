@@ -24,10 +24,16 @@ namespace Fw.Views {
             return this._id;
         }
 
+        private _isNeedDragX: boolean = false;
+        private _isNeedDragY: boolean = false;
         private _isDragging: boolean = false;
+        private _isSuppressDrag: boolean = false;
+
+        private _minDragPosition: Property.Position;
+        private _maxDragPosition: Property.Position;
+
         private _dragStartMousePosition: Property.Position;
         private _dragStartViewPosition: Property.Position;
-        private _isSuppressDrag: boolean = false;
 
         private _draggedPosition: Property.Position;
         public get DraggedPosition(): Property.Position {
@@ -54,6 +60,8 @@ namespace Fw.Views {
 
             this.Elem.addClass(this.ClassName);
 
+            this._minDragPosition = new Property.Position();
+            this._maxDragPosition = new Property.Position();
             this._dragStartMousePosition = new Property.Position();
             this._dragStartViewPosition = new Property.Position();
             this._draggedPosition = new Property.Position();
@@ -64,10 +72,14 @@ namespace Fw.Views {
                 this._dragStartMousePosition.Y = e.clientY;
                 this._dragStartViewPosition.X = this._draggedPosition.X;
                 this._dragStartViewPosition.Y = this._draggedPosition.Y;
+                this.DetectToNeedDrags();
             });
 
             this.Elem.on('touchmove mousemove', (e) => {
                 if (!this._isDragging || this._isSuppressDrag)
+                    return;
+
+                if (!this._isNeedDragX && !this._isNeedDragY)
                     return;
 
                 if (e.eventPhase !== 2)
@@ -75,8 +87,25 @@ namespace Fw.Views {
 
                 const addX = e.clientX - this._dragStartMousePosition.X;
                 const addY = e.clientY - this._dragStartMousePosition.Y;
-                this._draggedPosition.X = this._dragStartViewPosition.X + addX;
-                this._draggedPosition.Y = this._dragStartViewPosition.Y + addY;
+
+                if (this._isNeedDragX) {
+                    this._draggedPosition.X = this._dragStartViewPosition.X + addX;
+
+                    if (this._draggedPosition.X < this._minDragPosition.X)
+                        this._draggedPosition.X = this._minDragPosition.X;
+                    if (this._maxDragPosition.X < this._draggedPosition.X)
+                        this._draggedPosition.X = this._maxDragPosition.X;
+                }
+
+                if (this._isNeedDragY) {
+                    this._draggedPosition.Y = this._dragStartViewPosition.Y + addY;
+
+                    if (this._draggedPosition.Y < this._minDragPosition.Y)
+                        this._draggedPosition.Y = this._minDragPosition.Y;
+                    if (this._maxDragPosition.Y < this._draggedPosition.Y)
+                        this._draggedPosition.Y = this._maxDragPosition.Y;
+                }
+
                 this.Refresh();
             });
 
@@ -102,6 +131,61 @@ namespace Fw.Views {
 
         public ResumeDragging(): void {
             this._isSuppressDrag = false;
+        }
+
+        private DetectToNeedDrags(): void {
+            const phWidth: number = this.Size.Width / 2;
+            const phHeight: number = this.Size.Height / 2;
+            let minLeft: number = 0;
+            let minTop: number = 0;
+            let maxRight: number = 0;
+            let maxBottom: number = 0;
+
+            _.each(this.Children, (view: IView) => {
+                const left = phWidth + view.Position.X - (view.Size.Width / 2);
+                const top = phHeight + view.Position.Y - (view.Size.Height / 2);
+                const right = phWidth + view.Position.X + (view.Size.Width / 2);
+                const bottom = phHeight + view.Position.Y + (view.Size.Height / 2);
+
+                if (left < minLeft)
+                    minLeft = left;
+                if (top < minTop)
+                    minTop = top;
+                if (maxRight < right)
+                    maxRight = right;
+                if (maxBottom < bottom)
+                    maxBottom = bottom;
+            });
+
+            this._isNeedDragX = (minLeft < 0 || this.Size.Width < maxRight);
+            this._isNeedDragY = (minTop < 0 || this.Size.Height < maxBottom);
+            const margin = 20;
+
+            this._minDragPosition.X = (this.Size.Width < maxRight)
+                ? this.Size.Width - maxRight - margin
+                : 0;
+            this._minDragPosition.Y = (this.Size.Height < maxBottom)
+                ? this.Size.Height - maxBottom - margin
+                : 0;
+            this._maxDragPosition.X = (minLeft < 0)
+                ? (minLeft * -1) + margin
+                : 0;
+            this._maxDragPosition.Y = (minTop < 0)
+                ? (minTop * -1) + margin
+                : 0;
+
+            //Dump.Log({
+            //    minLeft: minLeft,
+            //    minTop: minTop,
+            //    maxRight: maxRight,
+            //    maxBottom: maxBottom,
+            //    _isNeedDragX: this._isNeedDragX,
+            //    _isNeedDragY: this._isNeedDragY,
+            //    _minDragPositionX: this._minDragPosition.X,
+            //    _minDragPositionY: this._minDragPosition.Y,
+            //    _maxDragPositionX: this._maxDragPosition.X,
+            //    _maxDragPositionY: this._maxDragPosition.Y,
+            //});
         }
 
         public Show(duration: number = 200): void {
@@ -142,42 +226,8 @@ namespace Fw.Views {
         }
 
         protected InnerRefresh(): void {
-            const phWidth: number = this.Size.Width / 2;
-            const phHeight: number = this.Size.Height / 2;
-            let minLeft: number = 0;
-            let minTop: number = 0;
-            let maxRight: number = 0;
-            let maxBottom: number = 0;
-
-            _.each(this.Children, (view: IView) => {
-                const left = phWidth + view.Position.X - (view.Size.Width / 2);
-                const top = phHeight + view.Position.Y - (view.Size.Height / 2);
-                const right = phWidth + view.Position.X + (view.Size.Width / 2);
-                const bottom = phHeight + view.Position.Y + (view.Size.Width / 2);
-
-                if (left < minLeft)
-                    minLeft = left;
-                if (top < minTop)
-                    minTop = top;
-                if (maxRight < right)
-                    maxRight = right;
-                if (maxBottom < bottom)
-                    maxBottom = bottom;
-            });
-
-            if (minLeft < 0
-                || minTop < 0
-                || this.Size.Width < maxRight
-                || this.Size.Height < maxBottom
-            ) {
-                // はみ出したコンテンツがある -> ページのドラッグ操作あり
-                this.Dom.style.left = `${this.Position.X}px`;
-                this.Dom.style.top = `${this.Position.Y}px`;
-            } else {
-                // コンテンツが自身の範囲内 -> ページ固定表示
-                this.Dom.style.left = `0px`;
-                this.Dom.style.top = `0px`;
-            }
+            this.Dom.style.left = `0px`;
+            this.Dom.style.top = `0px`;
             this.Dom.style.width = `100%`;
             this.Dom.style.height = `100%`;
         }
