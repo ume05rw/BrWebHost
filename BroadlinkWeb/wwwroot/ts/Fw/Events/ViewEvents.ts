@@ -9,6 +9,7 @@ namespace Fw.Events {
         public readonly Detached: string = 'Detached';
         public readonly SizeChanged: string = 'SizeChanged';
         public readonly PositionChanged: string = 'PositionChanged';
+        public readonly PositionPolicyChanged: string = 'PositionPolicyChanged';
         public readonly AnchorChanged: string = 'AnchorChanged';
         public readonly Initialized: string = 'Initialized';
     }

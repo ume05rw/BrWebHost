@@ -39,6 +39,7 @@
     <Content Remove="wwwroot\ts\Fw\Views\Property\FitPolicy.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\Property\FontSize.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\Property\FontWeight.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\Property\PositionPolicy.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\RelocatableControlView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\Root.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\Size.ts" />
@@ -105,6 +106,7 @@
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\FontSize.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\FontWeight.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\Position.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\PositionPolicy.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\RelocatableControlView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\Size.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Root.ts" />
