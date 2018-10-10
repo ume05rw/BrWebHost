@@ -171,16 +171,16 @@ namespace Fw.Views {
             this.Size.Height = height;
         }
 
-        public SetXY(x: number, y: number, setPolicy: boolean = true): void {
-            if (setPolicy)
+        public SetXY(x: number, y: number, updatePolicy: boolean = true): void {
+            if (updatePolicy)
                 this.Position.Policy = Property.PositionPolicy.Centering;
 
             this.Position.X = x;
             this.Position.Y = y;
         }
 
-        public SetLeftTop(left: number, top: number, setPolicy: boolean = true): void {
-            if (setPolicy)
+        public SetLeftTop(left: number, top: number, updatePolicy: boolean = true): void {
+            if (updatePolicy)
                 this.Position.Policy = Property.PositionPolicy.LeftTop;
 
             this.Position.Left = left;
