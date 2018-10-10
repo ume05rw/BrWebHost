@@ -530,6 +530,8 @@ declare namespace Fw.Views {
         private _shadow;
         private _isMouseMoveEventListened;
         private _isDragging;
+        private _dragStartMousePosition;
+        private _dragStartViewPosition;
         private _gridSize;
         GridSize: number;
         protected Init(): void;

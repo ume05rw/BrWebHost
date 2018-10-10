@@ -2352,6 +2352,10 @@ var Fw;
                     _this.Size.Height = _this.Elem.height();
                     _this.Refresh();
                 });
+                this.AddEventListener(Events.Initialized, function () {
+                    _this.Size.Width = _this.Elem.width();
+                    _this.Size.Height = _this.Elem.height();
+                });
             };
             PageView.prototype.SuppressDragging = function () {
                 this._isSuppressDrag = true;
@@ -2570,7 +2574,7 @@ var Fw;
                         if (!value)
                             throw new Error("value type not allowed");
                         var changed = (this._policy !== value);
-                        if (changed) {
+                        if (changed && this._view.Parent) {
                             if (this._policy === Property.PositionPolicy.Centering) {
                                 // 更新前が中央ポリシーのとき
                                 // 現在の値を左上ポリシー値に計算して保持させる。
@@ -2792,6 +2796,7 @@ var Fw;
 (function (Fw) {
     var Views;
     (function (Views) {
+        var Dump = Fw.Util.Dump;
         var Events = Fw.Events.ControlViewEvents;
         var RelocatableControlView = /** @class */ (function (_super) {
             __extends(RelocatableControlView, _super);
@@ -2828,6 +2833,8 @@ var Fw;
                 this.SetClassName('RelocatableControlView');
                 this.Elem.addClass(this.ClassName);
                 this._shadow = $('<div class="IView ControlView Shadow"></div>');
+                this._dragStartMousePosition = new Views.Property.Position();
+                this._dragStartViewPosition = new Views.Property.Position();
                 this.AddEventListener(Events.LongClick, function () {
                     if (!_this._isRelocatable)
                         _this.SetRelocatable(true);
@@ -2838,6 +2845,10 @@ var Fw;
                     }
                     else {
                         _this._isDragging = true;
+                        _this._dragStartMousePosition.X = e.pageX;
+                        _this._dragStartMousePosition.Y = e.pageY;
+                        _this._dragStartViewPosition.X = _this.Position.X;
+                        _this._dragStartViewPosition.Y = _this.Position.Y;
                         _this.Refresh();
                     }
                 });
@@ -2871,9 +2882,10 @@ var Fw;
             };
             RelocatableControlView.prototype.OnMouseMove = function (e) {
                 if (this._isRelocatable && this._isDragging) {
-                    var left = e.clientX - (this.Size.Width / 2);
-                    var top_2 = e.clientY - (this.Size.Height / 2);
-                    this.SetLeftTop(left, top_2, false);
+                    var addX = e.pageX - this._dragStartMousePosition.X;
+                    var addY = e.pageY - this._dragStartMousePosition.Y;
+                    this.Position.X = this._dragStartViewPosition.X + addX;
+                    this.Position.Y = this._dragStartViewPosition.Y + addY;
                     // マウスボタン押下中のクリックイベント発火を抑止する。
                     if (!this.IsSuppressedEvent(Events.LongClick))
                         this.SuppressEvent(Events.LongClick);
@@ -2916,8 +2928,14 @@ var Fw;
                 if (parent.length <= 0)
                     return;
                 if (!this._isRelocatable) {
+                    Dump.Log('before');
+                    Dump.Log(this.Position);
+                    Dump.Log('parent');
+                    Dump.Log(this.Parent.Size);
                     this.Position.X = Math.round(this.Position.X / this.GridSize) * this.GridSize;
                     this.Position.Y = Math.round(this.Position.Y / this.GridSize) * this.GridSize;
+                    Dump.Log('after');
+                    Dump.Log(this.Position);
                 }
                 _super.prototype.InnerRefresh.call(this);
                 var shadowDom = this._shadow.get(0);

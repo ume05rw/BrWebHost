@@ -23,7 +23,7 @@ namespace Fw.Views.Property {
 
             const changed = (this._policy !== value);
 
-            if (changed) {
+            if (changed && this._view.Parent) {
                 if (this._policy === PositionPolicy.Centering) {
                     // 更新前が中央ポリシーのとき
                     // 現在の値を左上ポリシー値に計算して保持させる。

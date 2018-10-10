@@ -18,6 +18,8 @@ namespace Fw.Views {
         private _shadow: JQuery;
         private _isMouseMoveEventListened: boolean = false;
         private _isDragging: boolean = false;
+        private _dragStartMousePosition: Property.Position;
+        private _dragStartViewPosition: Property.Position;
 
         private _gridSize: number = 60;
         public get GridSize(): number {
@@ -36,6 +38,8 @@ namespace Fw.Views {
             this.Elem.addClass(this.ClassName);
 
             this._shadow = $('<div class="IView ControlView Shadow"></div>');
+            this._dragStartMousePosition = new Property.Position();
+            this._dragStartViewPosition = new Property.Position();
 
             this.AddEventListener(Events.LongClick, () => {
                 if (!this._isRelocatable)
@@ -47,6 +51,10 @@ namespace Fw.Views {
                     this._isDragging = false;
                 } else {
                     this._isDragging = true;
+                    this._dragStartMousePosition.X = e.pageX;
+                    this._dragStartMousePosition.Y = e.pageY;
+                    this._dragStartViewPosition.X = this.Position.X;
+                    this._dragStartViewPosition.Y = this.Position.Y;
                     this.Refresh();
                 }
             });
@@ -86,9 +94,10 @@ namespace Fw.Views {
         private OnMouseMove(e: JQueryEventObject): void {
             if (this._isRelocatable && this._isDragging) {
 
-                const left = e.clientX - (this.Size.Width / 2);
-                const top = e.clientY - (this.Size.Height / 2);
-                this.SetLeftTop(left, top, false);
+                const addX = e.pageX - this._dragStartMousePosition.X;
+                const addY = e.pageY - this._dragStartMousePosition.Y;
+                this.Position.X = this._dragStartViewPosition.X + addX;
+                this.Position.Y = this._dragStartViewPosition.Y + addY;
 
                 // マウスボタン押下中のクリックイベント発火を抑止する。
                 if (!this.IsSuppressedEvent(Events.LongClick))
@@ -138,8 +147,14 @@ namespace Fw.Views {
                 return;
 
             if (!this._isRelocatable) {
+                Dump.Log('before');
+                Dump.Log(this.Position);
+                Dump.Log('parent');
+                Dump.Log(this.Parent.Size);
                 this.Position.X = Math.round(this.Position.X / this.GridSize) * this.GridSize;
                 this.Position.Y = Math.round(this.Position.Y / this.GridSize) * this.GridSize;
+                Dump.Log('after');
+                Dump.Log(this.Position);
             }
 
             super.InnerRefresh();

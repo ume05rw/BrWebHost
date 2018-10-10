@@ -138,6 +138,11 @@ namespace Fw.Views {
                 this.Size.Height = this.Elem.height();
                 this.Refresh();
             });
+
+            this.AddEventListener(Events.Initialized, () => {
+                this.Size.Width = this.Elem.width();
+                this.Size.Height = this.Elem.height();
+            });
         }
 
         public SuppressDragging(): void {
