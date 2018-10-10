@@ -3,7 +3,7 @@
 /// <reference path="../Config.ts" />
 /// <reference path="../Util/Dump.ts" />
 /// <reference path="../Util/App.ts" />
-/// <reference path="../Events/ViewEvents.ts" />
+/// <reference path="../Events/PageViewEvents.ts" />
 /// <reference path="Animation/Animator.ts" />
 /// <reference path="Animation/Params.ts" />
 /// <reference path="Property/Size.ts" />
@@ -18,12 +18,6 @@ namespace Fw.Views {
     import Config = Fw.Config;
 
     export class PageView extends ViewBase {
-
-        private _id: string;
-        public get Id(): string {
-            return this._id;
-        }
-
         private _isNeedDragX: boolean = false;
         private _isNeedDragY: boolean = false;
         private _isDragging: boolean = false;
@@ -49,11 +43,8 @@ namespace Fw.Views {
 
             this.SetClassName('PageView');
 
-            if (this.Dom) {
-                this._id = this.Elem.data('');
-            } else {
-                this._id = App.CreateId();
-                const elem = $(`<div class="IController" ${Config.PageIdAttribute}="${this._id}"></div>`);
+            if (!this.Dom) {
+                const elem = $(`<div class="IController"></div>`);
                 Fw.Root.Instance.Elem.append(elem);
                 this.SetElem(elem);
             }
@@ -259,7 +250,25 @@ namespace Fw.Views {
         public Dispose(): void {
             super.Dispose();
 
-            this._id = null;
+            this._isNeedDragX = null;
+            this._isNeedDragY = null;
+            this._isDragging = null;
+            this._isSuppressDrag = null;
+
+            this._minDragPosition.Dispose();
+            this._minDragPosition = null;
+
+            this._maxDragPosition.Dispose();
+            this._maxDragPosition = null;
+
+            this._dragStartMousePosition.Dispose();
+            this._dragStartMousePosition = null;
+
+            this._dragStartViewPosition.Dispose();
+            this._dragStartViewPosition = null;
+
+            this._draggedPosition.Dispose();
+            this._draggedPosition = null;
         }
     }
 }

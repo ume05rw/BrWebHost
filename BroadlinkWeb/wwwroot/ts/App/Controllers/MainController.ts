@@ -5,119 +5,53 @@
 /// <reference path="../../Fw/Util/Dump.ts" />
 /// <reference path="../../Fw/Events/ControlViewEvents.ts" />
 /// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
+/// <reference path="../Views/Pages/MainPageView.ts" />
 
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
     import Events = Fw.Events;
     import Manager = Fw.Controllers.Manager;
     import Property = Fw.Views.Property;
+    import Pages = App.Views.Pages;
 
     export class MainController extends Fw.Controllers.ControllerBase {
         private _centerControl: Fw.Views.ControlView;
 
-        constructor(elem: JQuery) {
-            super(elem);
+        constructor(id: string) {
+            super(id);
+
             this.Init();
         }
 
         private Init(): void {
+            this.View = new Pages.MainPageView();
+            const page = this.View as Pages.MainPageView;
 
-            const btnGoSub1 = new Fw.Views.ControlView();
-            btnGoSub1.Label = 'Go Sub1';
-            btnGoSub1.SetSize(80, 30);
-            btnGoSub1.SetAnchor(null, 10, null, null);
-            btnGoSub1.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
+            page.BtnGoSub1.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
                 // イベント通知でなく、参照保持でよいか？
                 Manager.Instance.Show("Sub1");
             });
-            this.View.Add(btnGoSub1);
 
-            const btnGoSub2 = new Fw.Views.ControlView();
-            btnGoSub2.Label = 'Go Sub2';
-            btnGoSub2.SetSize(80, 30);
-            btnGoSub2.Position.Y = 40;
-            btnGoSub2.SetAnchor(null, 10, null, null);
-            btnGoSub2.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
+            page.BtnGoSub2.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
                 // イベント通知でなく、参照保持でよいか？
                 Manager.Instance.Show("Sub2");
             });
-            this.View.Add(btnGoSub2);
 
-
-            this._centerControl = new Fw.Views.ControlView();
-            this._centerControl.SetXY(0, 0);
-            this._centerControl.SetSize(100, 50);
-            this._centerControl.Color = '#1155FF';
-            this._centerControl.Label = 'はろー<br/>どうよ？';
-            this.View.Add(this._centerControl);
-
-            const tmpCtl = new Fw.Views.ControlView();
-            tmpCtl.SetXY(-100, -100);
-            tmpCtl.SetSize(200, 200);
-            tmpCtl.Color = '#666666';
-
-            tmpCtl.Label = 'くりっく';
-            tmpCtl.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
+            page.TmpCtl.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
                 Dump.Log('LONG CLICK!!');
 
-                if (this._centerControl.IsVisible()) {
+                if (page.CenterControl.IsVisible()) {
                     Dump.Log('みえてんで！');
-                    this._centerControl.Hide();
+                    page.CenterControl.Hide();
                 } else {
                     Dump.Log('みえへんで...？');
-                    this._centerControl.Show();
+                    page.CenterControl.Show();
                 }
             });
-            this.View.Add(tmpCtl);
 
             this.View.AddEventListener(Events.PageViewEvents.Shown, () => {
                 Dump.Log('MainView.Shown');
             });
-
-            const ancCtl1 = new Fw.Views.ControlView();
-            ancCtl1.Label = '右下';
-            ancCtl1.SetSize(200, 50);
-            ancCtl1.SetAnchor(null, null, 40, 5);
-            this.View.Add(ancCtl1);
-
-            const ancCtl2 = new Fw.Views.ControlView();
-            ancCtl2.Label = '右上';
-            ancCtl2.SetSize(200, 50);
-            ancCtl2.SetAnchor(3, null, 3, null);
-            this.View.Add(ancCtl2);
-
-            const ancCtl3 = new Fw.Views.ControlView();
-            ancCtl3.Label = '左下';
-            ancCtl3.SetSize(300, 100);
-            ancCtl3.SetAnchor(null, 3, null, 3);
-            this.View.Add(ancCtl3);
-            const img = new Fw.Views.ImageView();
-            img.SetSize(100, 70);
-            img.Src = 'images/icons/home.png';
-            img.FitPolicy = Property.FitPolicy.Cover;
-            ancCtl3.Add(img);
-
-            const ancCtl4 = new Fw.Views.ControlView();
-            ancCtl4.Label = '左上';
-            ancCtl4.SetSize(200, 50);
-            ancCtl4.SetAnchor(60, 3, null, null);
-            this.View.Add(ancCtl4);
-            const label = new Fw.Views.LabelView();
-            label.FontSize = Property.FontSize.XxLarge;
-            label.Text = 'でかいもじ';
-            ancCtl4.Add(label);
-
-            //const ancCtl5 = new Fw.Views.ControlView();
-            //ancCtl5.Label = '左右';
-            //ancCtl5.Size.Height = 50;
-            //ancCtl5.SetAnchor(null, 150, 300, 100);
-            //this.View.Add(ancCtl5);
-
-            //const ancCtl6 = new Fw.Views.ControlView();
-            //ancCtl6.Label = '上下';
-            //ancCtl6.SetAnchor(200, null, null, 40);
-            //ancCtl6.Size.Width = 30;
-            //this.View.Add(ancCtl6);
         }
     }
 }

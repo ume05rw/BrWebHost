@@ -4,18 +4,20 @@
 /// <reference path="../../Fw/Controllers/Manager.ts" />
 /// <reference path="../../Fw/Util/Dump.ts" />
 /// <reference path="../../Fw/Events/ControlViewEvents.ts" />
-/// <reference path="../../Fw/Util/Xhr/Query.ts" />
+/// <reference path="../Models/Entities/BrDevice.ts" />
+/// <reference path="../Models/Stores/BrDeviceStore.ts" />
 
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
     import Events = Fw.Events;
     import Manager = Fw.Controllers.Manager;
-    import Xhr = Fw.Util.Xhr; // <- モデルを実装後は削除する予定
+    import BrDevice = App.Models.Entities.BrDevice;
+    import BrDeviceStore = App.Models.Stores.BrDeviceStore;
 
     export class Sub1Controller extends Fw.Controllers.ControllerBase {
 
-        constructor(elem: JQuery) {
-            super(elem);
+        constructor(id: string, jqueryElem: JQuery) {
+            super(id, jqueryElem);
             this.Init();
         }
 
@@ -46,12 +48,20 @@ namespace App.Controllers {
             devices.Color = '#8844FF';
             devices.Label = 'デバイス走査';
             devices.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
-                var params = new Xhr.Params('BrDevices/Discover', Xhr.MethodType.Get);
-                params.Callback = (data) => {
-                    Dump.Log('Disover:');
-                    Dump.Log(data);
-                }
-                Xhr.Query.Invoke(params);
+                const store = new BrDeviceStore();
+                store.Discover((devices: BrDevice[]) => {
+                    _.each(devices, (dev) => {
+                        Dump.Log({
+                            Id: dev.Id,
+                            Mac: dev.MacAddressString,
+                            Ip: dev.IpAddressString,
+                            Port: dev.Port,
+                            DevType: dev.DeviceType,
+                            DevTypeDetail: dev.DeviceTypeDetal,
+                            IsActive: dev.IsActive
+                        });
+                    });
+                });
             });
             this.View.Add(devices);
 

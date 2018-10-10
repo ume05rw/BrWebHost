@@ -16,15 +16,26 @@ namespace Fw.Controllers {
     export abstract class ControllerBase implements IController {
         public Id: string;
         public IsDefaultView: boolean;
-        public View: Fw.Views.IView;
+        public View: Fw.Views.IView = null;
 
-        constructor(jqueryElem: JQuery) {
-            this.View = new Fw.Views.PageView(jqueryElem);
-            this.Id = this.View.Elem.attr(Config.PageIdAttribute);
+        constructor(id: string, jqueryElem?: JQuery) {
+            if (!id)
+                throw new Error('need Id');
+
+            this.Id = id;
+
+            if (jqueryElem) {
+                this.SetPageViewByJQuery(jqueryElem);
+            }
+        }
+
+        public SetPageViewByJQuery(elem: JQuery): void {
+            this.View = new Fw.Views.PageView(elem);
             this.IsDefaultView = (this.View.Elem.attr(Config.DefaultPageAttribute) === "true");
 
             if (this.IsDefaultView)
                 this.View.Show();
         }
+
     }
 }

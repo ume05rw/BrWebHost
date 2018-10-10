@@ -5,6 +5,7 @@
 
 namespace App {
     import Dump = Fw.Util.Dump;
+    import Manager = Fw.Controllers.Manager;
 
     export class Main {
         public static StartUp(): void {
@@ -12,10 +13,15 @@ namespace App {
             Fw.Startup.Init();
 
             // API仕様に応じて、クエリ先URLの土台を作っておく。
-            let proto = location.protocol;
-            let host = location.hostname;
-            let port = location.port;
+            const proto = location.protocol;
+            const host = location.hostname;
+            const port = location.port;
             Fw.Config.XhrBaseUrl = proto + '//' + host + ':' + port + '/api/';
+
+            const main = new App.Controllers.MainController('Main');
+            main.IsDefaultView = true;
+            Manager.Instance.Add(main);
+            Manager.Instance.Show('Main');
         }
     }
 }

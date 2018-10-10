@@ -129,7 +129,7 @@ declare namespace Fw.Controllers {
 }
 declare namespace Fw.Controllers {
     class Factory {
-        static Create(name: string, elem: JQuery, manager: Manager): IController;
+        static Create(id: string, elem: JQuery): IController;
     }
 }
 declare namespace Fw.Controllers {
@@ -139,6 +139,7 @@ declare namespace Fw.Controllers {
         static Init(): void;
         private _controllers;
         private constructor();
+        Add(controller: IController): void;
         Show(id: string): void;
     }
 }
@@ -150,7 +151,8 @@ declare namespace Fw.Controllers {
         Id: string;
         IsDefaultView: boolean;
         View: Fw.Views.IView;
-        constructor(jqueryElem: JQuery);
+        constructor(id: string, jqueryElem?: JQuery);
+        SetPageViewByJQuery(elem: JQuery): void;
     }
 }
 declare namespace Fw.Events {
@@ -179,40 +181,10 @@ declare namespace Fw.Views.Property {
         Cover = "cover"
     }
 }
-declare namespace App.Controllers {
-    class MainController extends Fw.Controllers.ControllerBase {
-        private _centerControl;
-        constructor(elem: JQuery);
-        private Init;
-    }
-}
-declare namespace Fw.Util.Xhr {
-    class Query {
-        static Invoke(params: Params): any;
-    }
-}
-declare namespace App.Controllers {
-    class Sub1Controller extends Fw.Controllers.ControllerBase {
-        constructor(elem: JQuery);
-        private Init;
-    }
-}
-declare namespace App.Controllers {
-    class Sub2Controller extends Fw.Controllers.ControllerBase {
-        constructor(elem: JQuery);
-        private Init;
-    }
-}
-declare namespace App {
-    class Main {
-        static StartUp(): void;
-    }
-}
-declare namespace Fw.Events {
-    class EventReference {
-        Name: string;
-        Handler: (e: JQueryEventObject) => void;
-        BindedHandler: any;
+declare namespace Fw.Util {
+    class App {
+        private static _ids;
+        static CreateId(): string;
     }
 }
 declare namespace Fw.Events {
@@ -221,14 +193,45 @@ declare namespace Fw.Events {
     }
     const PageViewEvents: PageViewEventsClass;
 }
-declare namespace Fw.Events {
-    class RootEventsClass {
-        readonly Resized: string;
+declare namespace Fw.Views.Animation {
+    class Params {
+        static GetCurrent(view: Fw.Views.IView): Params;
+        static GetResized(view: Fw.Views.IView, resizeRate: number): Params;
+        static GetSlided(view: Fw.Views.IView, xRate?: number, yRate?: number): Params;
+        X: number;
+        Y: number;
+        Width: number;
+        Height: number;
+        Opacity: number;
     }
-    const RootEvents: RootEventsClass;
 }
-declare namespace Fw.Models {
-    interface IModel extends Fw.IObject {
+declare namespace Fw.Views.Animation {
+    class Animator {
+        private _view;
+        FromParams: Params;
+        ToParams: Params;
+        OnComplete: Function;
+        constructor(view: Fw.Views.IView, toParams?: Params);
+        Invoke(duration?: number): void;
+        Dispose(): void;
+    }
+}
+declare namespace Fw.Views.Property {
+    class Size {
+        private _view;
+        private _width;
+        Width: number;
+        private _height;
+        Height: number;
+        constructor(view?: IView);
+        Dispose(): void;
+    }
+}
+declare namespace Fw.Events {
+    class EventReference {
+        Name: string;
+        Handler: (e: JQueryEventObject) => void;
+        BindedHandler: any;
     }
 }
 declare namespace Fw {
@@ -251,9 +254,166 @@ declare namespace Fw {
         Dispose(): void;
     }
 }
-declare namespace Fw.Models {
-    abstract class ModelBase extends Fw.ObjectBase implements Fw.Models.IModel {
+declare namespace Fw.Views {
+    import Property = Fw.Views.Property;
+    abstract class ViewBase extends ObjectBase implements IView {
+        private _lastRefreshTimer;
+        private _lastRefreshedTime;
+        private _initialized;
+        private _isSuppressLayout;
+        private _dom;
+        readonly Dom: HTMLElement;
+        private _page;
+        readonly Page: PageView;
+        private _parent;
+        Parent: IView;
+        private _children;
+        readonly Children: Array<IView>;
+        private _size;
+        readonly Size: Property.Size;
+        private _position;
+        readonly Position: Property.Position;
+        private _anchor;
+        readonly Anchor: Property.Anchor;
+        private _zIndex;
+        ZIndex: number;
+        private _color;
+        Color: string;
+        private _backgroundColor;
+        BackgroundColor: string;
+        constructor(jqueryElem: JQuery);
+        protected SetElem(jqueryElem: JQuery): void;
+        protected Init(): void;
+        protected InitPage(): void;
+        SetParent(parent: IView): void;
+        SetSize(width: number, height: number): void;
+        SetXY(x: number, y: number, updatePolicy?: boolean): void;
+        SetLeftTop(left: number, top: number, updatePolicy?: boolean): void;
+        SetAnchor(top: number, left: number, right: number, bottom: number): void;
+        SetDisplayParams(width: number, height: number, x?: number, y?: number, color?: string, backgroundColor?: string): void;
+        private InitHasAnchor;
+        Add(view: IView): void;
+        Remove(view: IView): void;
+        Refresh(): void;
+        protected InnerRefresh(): void;
+        SuppressLayout(): void;
+        IsSuppressedLayout(): boolean;
+        ResumeLayout(): void;
+        Show(duration?: number): void;
+        Hide(duration?: number): void;
+        IsVisible(): boolean;
+        Dispose(): void;
     }
+}
+declare namespace Fw.Views {
+    class PageView extends ViewBase {
+        private _isNeedDragX;
+        private _isNeedDragY;
+        private _isDragging;
+        private _isSuppressDrag;
+        private _minDragPosition;
+        private _maxDragPosition;
+        private _dragStartMousePosition;
+        private _dragStartViewPosition;
+        private _draggedPosition;
+        readonly DraggedPosition: Property.Position;
+        constructor(jqueryElem: JQuery);
+        protected Init(): void;
+        SuppressDragging(): void;
+        IsSuppressDragging(): boolean;
+        ResumeDragging(): void;
+        private DetectToNeedDrags;
+        Show(duration?: number): void;
+        Hide(duration?: number): void;
+        protected InnerRefresh(): void;
+        Dispose(): void;
+    }
+}
+declare namespace App.Views.Pages {
+    import Views = Fw.Views;
+    class MainPageView extends Fw.Views.PageView {
+        BtnGoSub1: Views.ControlView;
+        BtnGoSub2: Views.ControlView;
+        CenterControl: Views.ControlView;
+        TmpCtl: Views.ControlView;
+        AncCtl1: Views.ControlView;
+        AncCtl2: Views.ControlView;
+        AncCtl3: Views.ControlView;
+        AncCtl4: Views.ControlView;
+        AncCtl5: Views.ControlView;
+        AncCtl6: Views.ControlView;
+        constructor();
+        private Initialize;
+    }
+}
+declare namespace App.Controllers {
+    class MainController extends Fw.Controllers.ControllerBase {
+        private _centerControl;
+        constructor(id: string);
+        private Init;
+    }
+}
+declare namespace Fw.Models.Entities {
+    interface IEntity extends Fw.IObject {
+    }
+}
+declare namespace Fw.Models.Entities {
+    abstract class EntityBase extends Fw.ObjectBase implements IEntity {
+    }
+}
+declare namespace App.Models.Entities {
+    class BrDevice extends Fw.Models.Entities.EntityBase {
+        Id: number;
+        MacAddressString: string;
+        IpAddressString: string;
+        Port: number;
+        DeviceTypeDetailNumber: number;
+        IsActive: boolean;
+        DeviceTypeDetal: string;
+        DeviceType: string;
+    }
+}
+declare namespace Fw.Models.Stores {
+    interface IStore extends Fw.IObject {
+    }
+}
+declare namespace Fw.Models.Stores {
+    abstract class StoreBase extends Fw.ObjectBase implements IStore {
+    }
+}
+declare namespace Fw.Util.Xhr {
+    class Query {
+        static Invoke(params: Params): any;
+    }
+}
+declare namespace App.Models.Stores {
+    import BrDevice = App.Models.Entities.BrDevice;
+    class BrDeviceStore extends Fw.Models.Stores.StoreBase {
+        Discover(callback: (brDevices: BrDevice[]) => void): void;
+    }
+}
+declare namespace App.Controllers {
+    class Sub1Controller extends Fw.Controllers.ControllerBase {
+        constructor(id: string, jqueryElem: JQuery);
+        private Init;
+    }
+}
+declare namespace App.Controllers {
+    class Sub2Controller extends Fw.Controllers.ControllerBase {
+        constructor(id: string, jqueryElem: JQuery);
+        private Init;
+    }
+}
+declare namespace App {
+    class Main {
+        static StartUp(): void;
+    }
+}
+declare namespace Fw.Events {
+    class RootEventsClass {
+        readonly Resized: string;
+    }
+    const RootEvents: RootEventsClass;
 }
 declare namespace Fw.Util.Xhr {
     enum MethodType {
@@ -280,35 +440,6 @@ declare namespace Fw.Util.Xhr {
         readonly Values: any;
         readonly Errors: any;
         constructor(succeeded: boolean, values: any, errors: any);
-    }
-}
-declare namespace Fw.Util {
-    class App {
-        private static _ids;
-        static CreateId(): string;
-    }
-}
-declare namespace Fw.Views.Animation {
-    class Params {
-        static GetCurrent(view: Fw.Views.IView): Params;
-        static GetResized(view: Fw.Views.IView, resizeRate: number): Params;
-        static GetSlided(view: Fw.Views.IView, xRate?: number, yRate?: number): Params;
-        X: number;
-        Y: number;
-        Width: number;
-        Height: number;
-        Opacity: number;
-    }
-}
-declare namespace Fw.Views.Animation {
-    class Animator {
-        private _view;
-        FromParams: Params;
-        ToParams: Params;
-        OnComplete: Function;
-        constructor(view: Fw.Views.IView, toParams?: Params);
-        Invoke(duration?: number): void;
-        Dispose(): void;
     }
 }
 declare namespace Fw.Views.Property {
@@ -369,68 +500,6 @@ declare namespace Fw.Views.Property {
         Dispose(): void;
     }
 }
-declare namespace Fw.Views.Property {
-    class Size {
-        private _view;
-        private _width;
-        Width: number;
-        private _height;
-        Height: number;
-        constructor(view?: IView);
-        Dispose(): void;
-    }
-}
-declare namespace Fw.Views {
-    import Property = Fw.Views.Property;
-    abstract class ViewBase extends ObjectBase implements IView {
-        private _lastRefreshTimer;
-        private _lastRefreshedTime;
-        private _initialized;
-        private _isSuppressLayout;
-        private _dom;
-        readonly Dom: HTMLElement;
-        private _page;
-        readonly Page: PageView;
-        private _parent;
-        Parent: IView;
-        private _children;
-        readonly Children: Array<IView>;
-        private _size;
-        readonly Size: Property.Size;
-        private _position;
-        readonly Position: Property.Position;
-        private _anchor;
-        readonly Anchor: Property.Anchor;
-        private _zIndex;
-        ZIndex: number;
-        private _color;
-        Color: string;
-        private _backgroundColor;
-        BackgroundColor: string;
-        constructor(jqueryElem: JQuery);
-        protected SetElem(jqueryElem: JQuery): void;
-        protected Init(): void;
-        protected InitPage(): void;
-        SetParent(parent: IView): void;
-        SetSize(width: number, height: number): void;
-        SetXY(x: number, y: number, updatePolicy?: boolean): void;
-        SetLeftTop(left: number, top: number, updatePolicy?: boolean): void;
-        SetAnchor(top: number, left: number, right: number, bottom: number): void;
-        SetDisplayParams(width: number, height: number, x?: number, y?: number, color?: string, backgroundColor?: string): void;
-        private InitHasAnchor;
-        Add(view: IView): void;
-        Remove(view: IView): void;
-        Refresh(): void;
-        protected InnerRefresh(): void;
-        SuppressLayout(): void;
-        IsSuppressedLayout(): boolean;
-        ResumeLayout(): void;
-        Show(duration?: number): void;
-        Hide(duration?: number): void;
-        IsVisible(): boolean;
-        Dispose(): void;
-    }
-}
 declare namespace Fw.Views {
     class ControlView extends ViewBase {
         private _label;
@@ -483,32 +552,6 @@ declare namespace Fw.Views {
         private _hiddenSpan;
         constructor();
         protected Init(): void;
-        protected InnerRefresh(): void;
-        Dispose(): void;
-    }
-}
-declare namespace Fw.Views {
-    class PageView extends ViewBase {
-        private _id;
-        readonly Id: string;
-        private _isNeedDragX;
-        private _isNeedDragY;
-        private _isDragging;
-        private _isSuppressDrag;
-        private _minDragPosition;
-        private _maxDragPosition;
-        private _dragStartMousePosition;
-        private _dragStartViewPosition;
-        private _draggedPosition;
-        readonly DraggedPosition: Property.Position;
-        constructor(jqueryElem: JQuery);
-        protected Init(): void;
-        SuppressDragging(): void;
-        IsSuppressDragging(): boolean;
-        ResumeDragging(): void;
-        private DetectToNeedDrags;
-        Show(duration?: number): void;
-        Hide(duration?: number): void;
         protected InnerRefresh(): void;
         Dispose(): void;
     }

@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Serialization;
 
 namespace BroadlinkWeb
 {
@@ -47,7 +48,16 @@ namespace BroadlinkWeb
 
             });
 
-            services.AddMvc();
+            services
+                .AddMvc()
+                .AddJsonOptions(options =>
+                {
+                    options.SerializerSettings.ContractResolver
+                        // APIのJSON応答時、キャメル先頭を小文字で返す場合：
+                        //= new CamelCasePropertyNamesContractResolver();
+                        // キャメル先頭を大文字で返す場合
+                        = new DefaultContractResolver();
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

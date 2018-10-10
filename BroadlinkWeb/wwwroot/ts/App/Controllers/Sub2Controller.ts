@@ -13,8 +13,8 @@ namespace App.Controllers {
 
     export class Sub2Controller extends Fw.Controllers.ControllerBase {
 
-        constructor(elem: JQuery) {
-            super(elem);
+        constructor(id: string, jqueryElem: JQuery) {
+            super(id, jqueryElem);
             this.Init();
         }
 

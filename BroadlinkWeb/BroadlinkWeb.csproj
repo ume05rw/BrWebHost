@@ -8,6 +8,9 @@
   <ItemGroup>
     <Content Remove="wwwroot\js\Page.ts" />
     <Content Remove="wwwroot\ts\App\Main.ts" />
+    <Content Remove="wwwroot\ts\App\Models\Entities\BrDevice.ts" />
+    <Content Remove="wwwroot\ts\App\Models\Stores\BrDeviceStore.ts" />
+    <Content Remove="wwwroot\ts\App\Views\Pages\MainPageView.ts" />
     <Content Remove="wwwroot\ts\Fw\Config.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\ControlViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\EventReference.ts" />
@@ -15,8 +18,10 @@
     <Content Remove="wwwroot\ts\Fw\Events\RootEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\ViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\IObject.ts" />
-    <Content Remove="wwwroot\ts\Fw\Models\IModel.ts" />
-    <Content Remove="wwwroot\ts\Fw\Models\ModelBase.ts" />
+    <Content Remove="wwwroot\ts\Fw\Models\Entities\EntityBase.ts" />
+    <Content Remove="wwwroot\ts\Fw\Models\Entities\IEntity.ts" />
+    <Content Remove="wwwroot\ts\Fw\Models\Stores\IStore.ts" />
+    <Content Remove="wwwroot\ts\Fw\Models\Stores\StoreBase.ts" />
     <Content Remove="wwwroot\ts\Fw\ObjectBase.ts" />
     <Content Remove="wwwroot\ts\Fw\Startup.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\App.ts" />
@@ -62,8 +67,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\ts\App\Models\" />
-    <Folder Include="wwwroot\ts\App\Views\" />
+    <Folder Include="wwwroot\ts\App\Views\Controls\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -71,6 +75,9 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\MainController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\Sub1Controller.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\Sub2Controller.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\BrDevice.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\BrDeviceStore.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\MainPageView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Config.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\Factory.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\IController.ts" />
@@ -82,8 +89,10 @@
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\RootEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\ViewEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\IObject.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Models\IModel.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Models\ModelBase.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Models\Entities\EntityBase.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Models\Entities\IEntity.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Models\Stores\IStore.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Models\Stores\StoreBase.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\ObjectBase.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Startup.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\App.ts" />
