@@ -37,6 +37,9 @@ namespace Fw {
             if (!jqueryElem)
                 return;
 
+            if (this._elem)
+                this._elem.remove();
+
             this._elem = jqueryElem;
         }
 

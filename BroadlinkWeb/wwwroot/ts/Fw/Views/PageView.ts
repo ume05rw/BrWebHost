@@ -34,7 +34,7 @@ namespace Fw.Views {
             return this._draggedPosition;
         }
 
-        constructor(jqueryElem: JQuery) {
+        constructor(jqueryElem?: JQuery) {
             super(jqueryElem);
         }
 
@@ -50,6 +50,9 @@ namespace Fw.Views {
             }
 
             this.Elem.addClass(this.ClassName);
+
+            this.Size.Width = Fw.Root.Instance.Size.Width;
+            this.Size.Height = Fw.Root.Instance.Size.Height;
 
             this._minDragPosition = new Property.Position();
             this._maxDragPosition = new Property.Position();
@@ -123,16 +126,12 @@ namespace Fw.Views {
                 this._isDragging = false;
             });
 
-            // 画面リサイズ時に、自身のサイズを再セットする。
+            // ブラウザのリサイズ時、ページ全体を再描画
             Fw.Root.Instance.AddEventListener(Fw.Events.RootEvents.Resized, () => {
-                this.Size.Width = this.Elem.width();
-                this.Size.Height = this.Elem.height();
+                Dump.Log(`${this.ClassName}.Resized`);
+                this.Size.Width = Fw.Root.Instance.Size.Width;
+                this.Size.Height = Fw.Root.Instance.Size.Height;
                 this.Refresh();
-            });
-
-            this.AddEventListener(Events.Initialized, () => {
-                this.Size.Width = this.Elem.width();
-                this.Size.Height = this.Elem.height();
             });
         }
 
@@ -241,10 +240,15 @@ namespace Fw.Views {
         }
 
         protected InnerRefresh(): void {
-            this.Dom.style.left = `0px`;
-            this.Dom.style.top = `0px`;
+            // 親View(=Root)とPageは常に同サイズなので、X/YがそのままLeft/Topになる。
+            this.Dom.style.left = `${this.Position.X}px`;
+            this.Dom.style.top = `${this.Position.Y}px`;
+
             this.Dom.style.width = `100%`;
             this.Dom.style.height = `100%`;
+            this.Dom.style.zIndex = `${this.ZIndex}`;
+            this.Dom.style.color = `${this.Color}`;
+            this.Dom.style.backgroundColor = `${this.BackgroundColor}`;
         }
 
         public Dispose(): void {
