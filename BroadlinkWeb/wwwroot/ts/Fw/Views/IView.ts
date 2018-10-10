@@ -23,9 +23,9 @@ namespace Fw.Views {
 
         SetParent(parent: IView): void;
         SetSize(width: number, height: number): void;
-        SetPosition(x: number, y: number): void;
+        SetXY(x: number, y: number, setPolicy?: boolean): void;
+        SetLeftTop(left: number, top: number, setPolicy?: boolean): void;
         SetAnchor(top: number, left: number, right: number, bottom: number): void;
-        SetPositionByLeftTop(left: number, top: number): void;
         SetDisplayParams(width: number, height: number, x: number, y: number, color: string, backgroundColor: string): void;
 
         Add(view: IView): void;

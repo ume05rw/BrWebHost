@@ -48,9 +48,13 @@ namespace App.Controllers {
 
 
             const btnMove = new Fw.Views.RelocatableControlView();
-            btnMove.SetDisplayParams(60, 60, 0, -200, '#1188FF');
-            
+            btnMove.SetSize(60, 60);
+            btnMove.Color = '#1188FF';
             btnMove.BackgroundColor = '#FF9900';
+            ///btnMove.SetXY(0, -200);
+            btnMove.SetLeftTop(10, 20);
+            //btnMove.SetDisplayParams(60, 60, 0, -200, '#1188FF');
+            
             btnMove.Label = '動く？';
             btnMove.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
                 Dump.Log('btnMove.SingleClick');

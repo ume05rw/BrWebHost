@@ -171,9 +171,20 @@ namespace Fw.Views {
             this.Size.Height = height;
         }
 
-        public SetPosition(x: number, y: number): void {
+        public SetXY(x: number, y: number, setPolicy: boolean = true): void {
+            if (setPolicy)
+                this.Position.Policy = Property.PositionPolicy.Centering;
+
             this.Position.X = x;
             this.Position.Y = y;
+        }
+
+        public SetLeftTop(left: number, top: number, setPolicy: boolean = true): void {
+            if (setPolicy)
+                this.Position.Policy = Property.PositionPolicy.LeftTop;
+
+            this.Position.Left = left;
+            this.Position.Top = top;
         }
 
         public SetAnchor(top: number, left: number, right: number, bottom: number): void {
@@ -208,28 +219,6 @@ namespace Fw.Views {
                 this.Anchor.IsAnchoredBottom = false;
                 this.Anchor.MarginBottom = null;
             }
-        }
-
-        public SetPositionByLeftTop(left: number, top: number): void {
-            const parent = $(this.Elem.parent());
-
-            const parentWidth = (this.Parent)
-                ? this.Parent.Size.Width
-                : parent.width();
-            const parentHeight = (this.Parent)
-                ? this.Parent.Size.Height
-                : parent.height();
-
-            const pHalfLeft = (parentWidth / 2);
-            const pHalfTop = (parentHeight / 2);
-
-            const myHalfLeft = (this.Size.Width / 2);
-            const myHalfTop = (this.Size.Height / 2);
-
-            if (_.isNumber(left))
-                this.Position.X = myHalfLeft - pHalfLeft + left;
-            if (_.isNumber(top))
-                this.Position.Y = myHalfTop - pHalfTop + top;
         }
 
         public SetDisplayParams(

@@ -22,6 +22,21 @@ namespace Fw.Views.Property {
                 throw new Error("value type not allowed");
 
             const changed = (this._policy !== value);
+
+            if (changed) {
+                if (this._policy === PositionPolicy.Centering) {
+                    // 更新前が中央ポリシーのとき
+                    // 現在の値を左上ポリシー値に計算して保持させる。
+                    this._left = this.Left || 0;
+                    this._top = this.Top || 0;
+                } else {
+                    // 更新前が左上ポリシーのとき
+                    // 現在の値を中央ポリシー値に計算して保持させる。
+                    this._x = this.X || 0;
+                    this._y = this.Y || 0;
+                }
+            }
+
             this._policy = value;
 
             if (changed && this._view)

@@ -41,7 +41,7 @@ namespace App.Controllers {
             header.Add(back);
 
             const devices = new Fw.Views.ControlView();
-            devices.SetPosition(0, -400);
+            devices.SetXY(0, -400);
             devices.SetSize(60, 60);
             devices.Color = '#8844FF';
             devices.Label = 'デバイス走査';

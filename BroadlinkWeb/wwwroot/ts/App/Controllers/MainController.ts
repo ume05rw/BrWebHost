@@ -45,14 +45,14 @@ namespace App.Controllers {
 
 
             this._centerControl = new Fw.Views.ControlView();
-            this._centerControl.SetPosition(0, 0);
+            this._centerControl.SetXY(0, 0);
             this._centerControl.SetSize(100, 50);
             this._centerControl.Color = '#1155FF';
             this._centerControl.Label = 'はろー<br/>どうよ？';
             this.View.Add(this._centerControl);
 
             const tmpCtl = new Fw.Views.ControlView();
-            tmpCtl.SetPosition(-100, -100);
+            tmpCtl.SetXY(-100, -100);
             tmpCtl.SetSize(200, 200);
             tmpCtl.Color = '#666666';
 

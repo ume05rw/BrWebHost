@@ -88,7 +88,7 @@ namespace Fw.Views {
 
                 const left = e.clientX - (this.Size.Width / 2);
                 const top = e.clientY - (this.Size.Height / 2);
-                this.SetPositionByLeftTop(left, top);
+                this.SetLeftTop(left, top, false);
 
                 // マウスボタン押下中のクリックイベント発火を抑止する。
                 if (!this.IsSuppressedEvent(Events.LongClick))

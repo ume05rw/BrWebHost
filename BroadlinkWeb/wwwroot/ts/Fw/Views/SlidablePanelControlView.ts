@@ -196,9 +196,9 @@ namespace Fw.Views {
             }
             animator.OnComplete = () => {
                 if (this.Direction === Direction.Horizontal) {
-                    this._innerPanel.SetPositionByLeftTop(toLeft, null);
+                    this._innerPanel.SetLeftTop(toLeft, null, false);
                 } else {
-                    this._innerPanel.SetPositionByLeftTop(null, toTop);
+                    this._innerPanel.SetLeftTop(null, toTop, false);
                 }
                 this._spcvMouseSuppressor = false;
             }
