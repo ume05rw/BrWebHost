@@ -19,6 +19,7 @@ namespace Fw.Views {
         private _lastRefreshedTime: Date;
 
         private _initialized: boolean = false;
+        private _isSuppressLayout: boolean = false;
 
         // Properties
         private _dom: HTMLElement = null;
@@ -30,6 +31,9 @@ namespace Fw.Views {
         public get Parent(): IView {
             return this._parent;
         };
+        public set Parent(value: IView) {
+            this._parent = value;
+        }
 
         private _children: Array<IView>;
         public get Children(): Array<IView> {
@@ -74,7 +78,6 @@ namespace Fw.Views {
             super();
 
             this.SetElem(jqueryElem);
-            this._children = new Array<IView>();
 
             this.Init();
         }
@@ -91,6 +94,8 @@ namespace Fw.Views {
             this.SetClassName('ViewBase');
             this.Elem.addClass('IView');
 
+            this._parent = null;
+            this._children = new Array<IView>();
             this._size = new Property.Size(this);
             this._position = new Property.Position(this);
             this._anchor = new Property.Anchor(this);
@@ -214,7 +219,7 @@ namespace Fw.Views {
 
         public Add(view: IView): void {
             if (this.Children.indexOf(view) == -1) {
-                view.Parent = this;
+                view.SetParent(this);
                 this.Children.push(view);
                 this.Elem.append(view.Elem);
                 view.Refresh();
@@ -225,52 +230,17 @@ namespace Fw.Views {
         public Remove(view: IView): void {
             const index = this.Children.indexOf(view);
             if (index != -1) {
-                view.Parent = null;
+                view.SetParent(null);
                 this.Children.splice(index, 1);
                 view.Elem.detach();
                 view.DispatchEvent(Events.Detached);
             }
         }
 
-        public Show(duration: number = 200): void {
-            if (this.IsVisible())
-                return;
-
-            const animator = new Anim.Animator(this);
-            animator.FromParams = Anim.Params.GetResized(this, 0.8);
-            animator.FromParams.Opacity = 0;
-            animator.ToParams.Opacity = 1.0;
-            animator.OnComplete = () => {
-                this.Dom.style.display = `block`;
-                this.Refresh();
-                this.DispatchEvent(Events.Shown);
-            }
-
-            animator.Invoke(duration);
-        }
-
-        public Hide(duration: number = 200): void {
-            if (!this.IsVisible())
-                return;
-
-            const animator = new Anim.Animator(this);
-            animator.FromParams.Opacity = 1.0;
-            animator.ToParams = Anim.Params.GetResized(this, 0.8);
-            animator.ToParams.Opacity = 0.0;
-            animator.OnComplete = () => {
-                this.Dom.style.display = `none`;
-                this.Refresh();
-                this.DispatchEvent(Events.Hidden);
-            };
-
-            animator.Invoke(duration);
-        }
-
-        public IsVisible(): boolean {
-            return this.Elem.is(':visible');
-        }
-
         public Refresh(): void {
+            if (this._isSuppressLayout)
+                return;
+
             if (this._lastRefreshTimer != null) {
                 clearTimeout(this._lastRefreshTimer);
                 this._lastRefreshTimer = null;
@@ -301,14 +271,15 @@ namespace Fw.Views {
                 if (parent.length <= 0)
                     return;
 
+                this.SuppressEvent(Events.SizeChanged);
+                this.SuppressEvent(Events.PositionChanged);
+                this.SuppressLayout();
+
                 // 最初の描画開始直前を初期化終了とする。
                 if (!this._initialized) {
                     this.DispatchEvent(Events.Initialized);
                     this._initialized = true;
                 }
-
-                this.SuppressEvent(Events.SizeChanged);
-                this.SuppressEvent(Events.PositionChanged);
 
                 const parentWidth = (this.Parent)
                     ? this.Parent.Size.Width
@@ -378,7 +349,58 @@ namespace Fw.Views {
             } finally {
                 this.ResumeEvent(Events.SizeChanged);
                 this.ResumeEvent(Events.PositionChanged);
+                this.ResumeLayout();
             }
+        }
+
+        public SuppressLayout(): void {
+            this._isSuppressLayout = true;
+        }
+
+        public IsSuppressedLayout(): boolean {
+            return this._isSuppressLayout;
+        }
+
+        public ResumeLayout(): void {
+            this._isSuppressLayout = false;
+        }
+
+        public Show(duration: number = 200): void {
+            if (this.IsVisible())
+                return;
+
+            const animator = new Anim.Animator(this);
+            animator.FromParams = Anim.Params.GetResized(this, 0.8);
+            animator.FromParams.Opacity = 0;
+            animator.ToParams.Opacity = 1.0;
+            animator.OnComplete = () => {
+                this.Dom.style.display = `block`;
+                this.Refresh();
+                this.DispatchEvent(Events.Shown);
+            }
+
+            animator.Invoke(duration);
+        }
+
+        public Hide(duration: number = 200): void {
+            if (!this.IsVisible())
+                return;
+
+            const animator = new Anim.Animator(this);
+            animator.FromParams.Opacity = 1.0;
+            animator.ToParams = Anim.Params.GetResized(this, 0.8);
+            animator.ToParams.Opacity = 0.0;
+            animator.OnComplete = () => {
+                this.Dom.style.display = `none`;
+                this.Refresh();
+                this.DispatchEvent(Events.Hidden);
+            };
+
+            animator.Invoke(duration);
+        }
+
+        public IsVisible(): boolean {
+            return this.Elem.is(':visible');
         }
 
         public Dispose(): void {

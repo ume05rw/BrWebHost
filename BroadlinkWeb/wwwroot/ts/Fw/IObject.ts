@@ -3,8 +3,8 @@
 
 namespace Fw {
     export interface IObject {
-        Elem: JQuery;
-        ClassName: string;
+        readonly Elem: JQuery;
+        readonly ClassName: string;
 
         AddEventListener(name: string, handler: (e: JQueryEventObject) => void): void;
         RemoveEventListener(name: string, handler: (e: JQueryEventObject) => void): void;

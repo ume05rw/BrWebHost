@@ -4,10 +4,13 @@
 namespace Fw.Util {
     export class Dump {
         public static Log(value: any) {
-            const dump = _.isObject(value)
-                ? '\n' + JSON.stringify(value, null, "\t")
-                : value;
-            console.log(`${Dump.GetTimestamp()} :: ${Dump.GetDumpedString(value)}`);
+            try {
+                console.log(`${Dump.GetTimestamp()} :: ${Dump.GetDumpedString(value)}`);
+            } catch (e) {
+                // 引数の循環参照など
+                console.log(`${Dump.GetTimestamp()} ::`);
+                console.log(value);
+            }
         }
 
         public static ErrorLog(value: any, message?: string) {
@@ -15,7 +18,11 @@ namespace Fw.Util {
             console.log('########################################');
             console.log('########################################');
             console.log(`${Dump.GetTimestamp()} :: ERROR!! ${(message ? '[ ' + message + ' ]' : '')}`);
-            console.log(Dump.GetDumpedString(value));
+            try {
+                console.log(Dump.GetDumpedString(value));
+            } catch (e) {
+                console.log(value);
+            }
         }
 
         private static GetTimestamp(): string {

@@ -4,20 +4,33 @@
 /// <reference path="../Util/Dump.ts" />
 /// <reference path="../Util/Number.ts" />
 /// <reference path="ViewBase.ts" />
+/// <reference path="Property/FitPolicy.ts" />
 
 namespace Fw.Views {
     import Dump = Fw.Util.Dump;
     import Events = Fw.Events.ControlViewEvents;
     import Number = Fw.Util.Number;
+    import FitPolicy = Fw.Views.Property.FitPolicy;
 
     export class ImageView extends ViewBase {
-        private _image: JQuery;
+        private _image: HTMLImageElement;
 
-        public get Source(): string {
-            return this._image.attr('src');
+        private _src: string;
+        public get Src(): string {
+            return this._src;
         }
-        public set Source(value: string) {
-            this._image.attr('src', value);
+        public set Src(value: string) {
+            this._src = value;
+            this._image.src = value;
+            this.Refresh();
+        }
+
+        private _firPolicy: FitPolicy;
+        public get FitPolicy(): FitPolicy {
+            return this._firPolicy;
+        }
+        public set FitPolicy(value: FitPolicy) {
+            this._firPolicy = value;
             this.Refresh();
         }
 
@@ -34,36 +47,31 @@ namespace Fw.Views {
             this.Dom.style.borderWidth = '0';
             this.Dom.style.borderRadius = '0';
 
-            this._image = $('<img class="ImageViewProperty"></img>');
-            this._image.on('load', () => {
+            // 注) ImageオブジェクトはDomツリーに入れない。
+            this._image = new Image();
+            this._image.onload = () => {
                 Dump.Log('Image Loaded!!');
                 this.Refresh();
-            });
+            };
 
-            this.Elem.append(this._image);
+            this._firPolicy = FitPolicy.Auto;
         }
 
         protected InnerRefresh(): void {
             super.InnerRefresh();
 
-            const imgDom = this._image.get(0) as HTMLImageElement;
-            const imgWidth = imgDom.naturalWidth;
-            const imgHeight = imgDom.naturalHeight;
-
-
-            Dump.Log({
-                event: this.ClassName + '.InnerRefresh',
-                imgWidth: imgWidth,
-                imgHeight: imgHeight,
-
-            });
+            this.Dom.style.backgroundPosition = 'center center';
+            this.Dom.style.backgroundRepeat = 'no-repeat';
+            this.Dom.style.backgroundSize = this.FitPolicy;
+            this.Dom.style.backgroundImage = `url(${this._src})`;
         }
 
         public Dispose(): void {
             super.Dispose();
 
-            this._image.remove();
             this._image = null;
+            this._src = null;
+            this._firPolicy = null;
         }
     }
 }

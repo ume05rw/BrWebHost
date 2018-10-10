@@ -4,11 +4,13 @@
 /// <reference path="../../Fw/Controllers/Manager.ts" />
 /// <reference path="../../Fw/Util/Dump.ts" />
 /// <reference path="../../Fw/Events/ControlViewEvents.ts" />
+/// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
 
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
     import Events = Fw.Events;
     import Manager = Fw.Controllers.Manager;
+    import Property = Fw.Views.Property;
 
     export class MainController extends Fw.Controllers.ControllerBase {
         private _centerControl: Fw.Views.ControlView;
@@ -91,7 +93,8 @@ namespace App.Controllers {
             this.View.Add(ancCtl3);
             const img = new Fw.Views.ImageView();
             img.SetSize(100, 70);
-            img.Source = 'images/icons/home.png';
+            img.Src = 'images/icons/home.png';
+            img.FitPolicy = Property.FitPolicy.Cover;
             ancCtl3.Add(img);
 
             const ancCtl4 = new Fw.Views.ControlView();
@@ -99,6 +102,10 @@ namespace App.Controllers {
             ancCtl4.SetSize(200, 50);
             ancCtl4.SetAnchor(60, 3, null, null);
             this.View.Add(ancCtl4);
+            const label = new Fw.Views.LabelView();
+            label.FontSize = Property.FontSize.XxLarge;
+            label.Text = 'でかいもじ';
+            ancCtl4.Add(label);
 
             //const ancCtl5 = new Fw.Views.ControlView();
             //ancCtl5.Label = '左右';

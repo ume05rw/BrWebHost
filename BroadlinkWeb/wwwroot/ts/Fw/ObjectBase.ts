@@ -1,9 +1,11 @@
 ﻿/// <reference path="../../lib/jquery/index.d.ts" />
 /// <reference path="../../lib/underscore/index.d.ts" />
+/// <reference path="Events/EventReference.ts" />
 /// <reference path="Util/Dump.ts" />
 
 namespace Fw {
     import Dump = Fw.Util.Dump;
+    import EventReference = Fw.Events.EventReference;
 
     export abstract class ObjectBase implements Fw.IObject {
         // Properties
@@ -17,12 +19,14 @@ namespace Fw {
             return this._className;
         }
 
+        private _eventHandlers: Array<EventReference>;
         private _suppressedEvents: Array<string>;
 
 
         constructor() {
             this._elem = $(this);
             this._suppressedEvents = new Array<string>();
+            this._eventHandlers = new Array<EventReference>();
         }
 
         protected SetClassName(name: string): void {
@@ -37,11 +41,28 @@ namespace Fw {
         }
 
         public AddEventListener(name: string, handler: (e: JQueryEventObject) => void): void {
-            this.Elem.on(name, handler);
+            const eRef = new EventReference();
+            eRef.Name = name;
+            eRef.Handler = handler;
+            eRef.BindedHandler = handler.bind(this);
+
+            this._eventHandlers.push(eRef);
+            this.Elem.on(name, eRef.BindedHandler);
         }
 
         public RemoveEventListener(name: string, handler: (e: JQueryEventObject) => void): void {
-            this.Elem.off(name, handler);
+            let key: number;
+            const eRef = _.find(this._eventHandlers, (er, idx) => {
+                key = idx;
+                return (er.Name === name && er.Handler === handler);
+            });
+
+            if (!eRef) {
+                throw new Error(`${this.ClassName}.${name} event not found.`);
+            }
+
+            this.Elem.off(eRef.Name, eRef.BindedHandler);
+            this._eventHandlers.splice(key, 1);
         }
 
         public DispatchEvent(name: string): void {
@@ -72,6 +93,10 @@ namespace Fw {
         }
 
         public Dispose(): void {
+            _.each(this._eventHandlers, (eRef) => {
+                this.RemoveEventListener(eRef.Name, eRef.Handler);
+            });
+
             this._elem.remove();
             this._elem = null;
             this._className = null;
