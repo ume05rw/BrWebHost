@@ -883,7 +883,9 @@ var Fw;
         var PageViewEventsClass = /** @class */ (function (_super) {
             __extends(PageViewEventsClass, _super);
             function PageViewEventsClass() {
-                return _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
+                _this.Dragging = 'Dragging';
+                return _this;
             }
             return PageViewEventsClass;
         }(Events.ViewEventsClass));
@@ -974,7 +976,8 @@ var Fw;
                 return (er.Name === name && er.Handler === handler);
             });
             if (!eRef) {
-                throw new Error(this.ClassName + "." + name + " event not found.");
+                //throw new Error(`${this.ClassName}.${name} event not found.`);
+                return;
             }
             this.Elem.off(eRef.Name, eRef.BindedHandler);
             this._eventHandlers.splice(key, 1);
@@ -1473,6 +1476,7 @@ var Fw;
                 _this._isSuppressLayout = false;
                 // Properties
                 _this._dom = null;
+                _this._zIndex = 0;
                 _this._color = '#000000';
                 _this._backgroundColor = '#FFFFFF';
                 _this.SetElem(jqueryElem);
@@ -1528,6 +1532,17 @@ var Fw;
             Object.defineProperty(ViewBase.prototype, "Anchor", {
                 get: function () {
                     return this._anchor;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(ViewBase.prototype, "ZIndex", {
+                get: function () {
+                    return this._zIndex;
+                },
+                set: function (value) {
+                    this._zIndex = value;
+                    this.Refresh();
                 },
                 enumerable: true,
                 configurable: true
@@ -1832,6 +1847,7 @@ var Fw;
                     this.Dom.style.top = elemTop + "px";
                     this.Dom.style.width = this.Size.Width + "px";
                     this.Dom.style.height = this.Size.Height + "px";
+                    this.Dom.style.zIndex = "" + this.ZIndex;
                     this.Dom.style.color = "" + this._color;
                     this.Dom.style.backgroundColor = "" + this._backgroundColor;
                     this._lastRefreshedTime = new Date();
@@ -1927,6 +1943,8 @@ var Fw;
             function ControlView() {
                 var _this = _super.call(this, $('<a></a>')) || this;
                 _this._tapEventTimer = null;
+                _this._cvMouseSuppressor = false;
+                _this._cvDelayedResumeEventsTimer = null;
                 return _this;
             }
             Object.defineProperty(ControlView.prototype, "Label", {
@@ -1988,23 +2006,27 @@ var Fw;
                     _this._tapEventTimer = setTimeout(function () {
                         // ロングタップイベント
                         _this._tapEventTimer = null;
+                        // Pageのドラッグ処理中のとき、クリックイベントを抑制する。
+                        if (_this._cvMouseSuppressor)
+                            return;
                         //Dump.Log('longtapped');
                         _this.DispatchEvent(Events.LongClick);
                     }, 1000);
-                    e.preventDefault();
                 });
                 this.Elem.on('touchend mouseup', function (e) {
                     if (_this._tapEventTimer != null) {
                         // ロングタップ検出中のとき
                         clearTimeout(_this._tapEventTimer);
                         _this._tapEventTimer = null;
+                        // Pageのドラッグ処理中のとき、クリックイベントを抑制する。
+                        if (_this._cvMouseSuppressor)
+                            return;
                         // 以降、シングルタップイベント処理
                         //Dump.Log('singletapped');
                         _this.DispatchEvent(Events.SingleClick);
                     }
                     else {
                     }
-                    e.preventDefault();
                 });
                 this.Elem.on('mouseout', function (e) {
                     if (_this._tapEventTimer != null) {
@@ -2013,8 +2035,28 @@ var Fw;
                         _this._tapEventTimer = null;
                         //Dump.Log('tap canceled');
                     }
-                    e.preventDefault();
                 });
+            };
+            ControlView.prototype.InitPage = function () {
+                if (this.Page) {
+                    this.RemoveEventListener(Fw.Events.PageViewEvents.Dragging, this.OnPageDragging);
+                }
+                _super.prototype.InitPage.call(this);
+                if (this.Page) {
+                    this.AddEventListener(Fw.Events.PageViewEvents.Dragging, this.OnPageDragging);
+                }
+            };
+            ControlView.prototype.OnPageDragging = function () {
+                var _this = this;
+                this._cvMouseSuppressor = true;
+                if (this._cvDelayedResumeEventsTimer !== null) {
+                    clearTimeout(this._cvDelayedResumeEventsTimer);
+                    this._cvDelayedResumeEventsTimer = null;
+                }
+                this._cvDelayedResumeEventsTimer = setTimeout(function () {
+                    //Dump.Log('ResumeMouseEvents');
+                    _this._cvMouseSuppressor = false;
+                }, 100);
             };
             ControlView.prototype.InnerRefresh = function () {
                 _super.prototype.InnerRefresh.call(this);
@@ -2024,6 +2066,8 @@ var Fw;
                 _super.prototype.Dispose.call(this);
                 this._label = null;
                 this._tapEventTimer = null;
+                this._cvMouseSuppressor = null;
+                this._cvDelayedResumeEventsTimer = null;
                 this._hasBorder = null;
                 this._borderRadius = null;
             };
@@ -2275,7 +2319,7 @@ var Fw;
     var Views;
     (function (Views) {
         var Anim = Fw.Views.Animation;
-        var Events = Fw.Events.ViewEvents;
+        var Events = Fw.Events.PageViewEvents;
         var App = Fw.Util.App;
         var Config = Fw.Config;
         var PageView = /** @class */ (function (_super) {
@@ -2322,22 +2366,32 @@ var Fw;
                 this._dragStartViewPosition = new Views.Property.Position();
                 this._draggedPosition = new Views.Property.Position();
                 this.Elem.on('touchstart mousedown', function (e) {
+                    //Dump.Log(`${this.ClassName}.MouseDown`);
                     _this._isDragging = true;
-                    _this._dragStartMousePosition.X = e.clientX;
-                    _this._dragStartMousePosition.Y = e.clientY;
+                    _this._dragStartMousePosition.X = e.pageX;
+                    _this._dragStartMousePosition.Y = e.pageY;
                     _this._dragStartViewPosition.X = _this._draggedPosition.X;
                     _this._dragStartViewPosition.Y = _this._draggedPosition.Y;
                     _this.DetectToNeedDrags();
                 });
                 this.Elem.on('touchmove mousemove', function (e) {
+                    //Dump.Log(`${this.ClassName}.MouseMove`);
                     if (!_this._isDragging || _this._isSuppressDrag)
                         return;
                     if (!_this._isNeedDragX && !_this._isNeedDragY)
                         return;
-                    if (e.eventPhase !== 2)
-                        return;
-                    var addX = e.clientX - _this._dragStartMousePosition.X;
-                    var addY = e.clientY - _this._dragStartMousePosition.Y;
+                    //Dump.Log({
+                    //    pageX: e.pageX,
+                    //    pageY: e.pageY,
+                    //    screenX: e.screenX,
+                    //    screenY: e.screenY,
+                    //    clientX: e.clientX,
+                    //    clientY: e.clientY,
+                    //    offsetX: e.offsetX,
+                    //    offsetY: e.offsetY
+                    //});
+                    var addX = e.pageX - _this._dragStartMousePosition.X;
+                    var addY = e.pageY - _this._dragStartMousePosition.Y;
                     if (_this._isNeedDragX) {
                         _this._draggedPosition.X = _this._dragStartViewPosition.X + addX;
                         if (_this._draggedPosition.X < _this._minDragPosition.X)
@@ -2352,9 +2406,15 @@ var Fw;
                         if (_this._maxDragPosition.Y < _this._draggedPosition.Y)
                             _this._draggedPosition.Y = _this._maxDragPosition.Y;
                     }
+                    var dragEventMargin = 10;
+                    if (Math.abs(_this._dragStartMousePosition.X - _this._draggedPosition.X) > dragEventMargin
+                        || Math.abs(_this._dragStartMousePosition.Y - _this._draggedPosition.Y) > dragEventMargin) {
+                        _this.DispatchEvent(Events.Dragging);
+                    }
                     _this.Refresh();
                 });
                 this.Elem.on('touchend mouseup mouseout', function (e) {
+                    //Dump.Log(`${this.ClassName}.MouseUp`);
                     _this._isDragging = false;
                 });
                 // 画面リサイズ時に、自身のサイズを再セットする。
@@ -2714,8 +2774,8 @@ var Fw;
                 _this._innerBackgroundColor = '#F5F5F5';
                 _this._innerPanelCount = 2;
                 _this._isDragging = false;
-                _this._mouseMoveSuppressor = false;
-                _this._delayedResumeMouseEventsTimer = null;
+                _this._spcvMouseSuppressor = false;
+                _this._spcvDelayedResumeEventsTimer = null;
                 // nullやundefinedを入れさせない。
                 _this.Direction = (direction === Direction.Horizontal)
                     ? Direction.Horizontal
@@ -2767,7 +2827,7 @@ var Fw;
                     _this._dragStartViewPosition.Y = _this._innerPanel.Position.Y;
                 });
                 this._innerPanel.Elem.on('touchmove mousemove', function (e) {
-                    if (!_this._isDragging && !_this._mouseMoveSuppressor)
+                    if (!_this._isDragging && !_this._spcvMouseSuppressor)
                         return;
                     if (e.eventPhase !== 2)
                         return;
@@ -2787,7 +2847,7 @@ var Fw;
                         _this.SuppressEvent(Events.LongClick);
                     if (!_this.IsSuppressedEvent(Events.SingleClick))
                         _this.SuppressEvent(Events.SingleClick);
-                    _this.DelayedResumeMouseEvents();
+                    _this.SpcvDelayedResumeMouseEvents();
                 });
                 this._innerPanel.Elem.on('touchend mouseup mouseout', function () {
                     _this._isDragging = false;
@@ -2796,13 +2856,13 @@ var Fw;
                     }, 200);
                 });
             };
-            SlidablePanelControlView.prototype.DelayedResumeMouseEvents = function () {
+            SlidablePanelControlView.prototype.SpcvDelayedResumeMouseEvents = function () {
                 var _this = this;
-                if (this._delayedResumeMouseEventsTimer !== null) {
-                    clearTimeout(this._delayedResumeMouseEventsTimer);
-                    this._delayedResumeMouseEventsTimer = null;
+                if (this._spcvDelayedResumeEventsTimer !== null) {
+                    clearTimeout(this._spcvDelayedResumeEventsTimer);
+                    this._spcvDelayedResumeEventsTimer = null;
                 }
-                this._delayedResumeMouseEventsTimer = setTimeout(function () {
+                this._spcvDelayedResumeEventsTimer = setTimeout(function () {
                     //Dump.Log('ResumeMouseEvents');
                     if (_this.IsSuppressedEvent(Events.LongClick))
                         _this.ResumeEvent(Events.LongClick);
@@ -2879,9 +2939,9 @@ var Fw;
                     else {
                         _this._innerPanel.SetPositionByLeftTop(null, toTop);
                     }
-                    _this._mouseMoveSuppressor = false;
+                    _this._spcvMouseSuppressor = false;
                 };
-                this._mouseMoveSuppressor = true;
+                this._spcvMouseSuppressor = true;
                 animator.Invoke(500);
             };
             SlidablePanelControlView.prototype.InnerRefresh = function () {
@@ -2916,7 +2976,8 @@ var Fw;
                 this._innerPanel.Dispose();
                 this._innerPanel = null;
                 this._isDragging = null;
-                this._mouseMoveSuppressor = null;
+                this._spcvMouseSuppressor = null;
+                this._spcvDelayedResumeEventsTimer = null;
                 this._dragStartMousePosition.Dispose();
                 this._dragStartMousePosition = null;
                 this._dragStartViewPosition.Dispose();

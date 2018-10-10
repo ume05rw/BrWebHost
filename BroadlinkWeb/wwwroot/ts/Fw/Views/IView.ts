@@ -16,6 +16,7 @@ namespace Fw.Views {
         readonly Size: Property.Size;
         readonly Position: Property.Position;
         readonly Anchor: Property.Anchor;
+        ZIndex: number;
 
         Color: string;
         BackgroundColor: string;

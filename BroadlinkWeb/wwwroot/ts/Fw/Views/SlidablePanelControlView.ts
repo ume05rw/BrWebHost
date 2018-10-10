@@ -42,7 +42,8 @@ namespace Fw.Views {
 
         private _innerPanel: PanelControlView;
         private _isDragging: boolean = false;
-        private _mouseMoveSuppressor = false;
+        private _spcvMouseSuppressor = false;
+        private _spcvDelayedResumeEventsTimer: number = null;
         private _dragStartMousePosition: Property.Position;
         private _dragStartViewPosition: Property.Position;
 
@@ -84,7 +85,7 @@ namespace Fw.Views {
                 this._dragStartViewPosition.Y = this._innerPanel.Position.Y;
             });
             this._innerPanel.Elem.on('touchmove mousemove', (e) => {
-                if (!this._isDragging && !this._mouseMoveSuppressor)
+                if (!this._isDragging && !this._spcvMouseSuppressor)
                     return;
 
                 if (e.eventPhase !== 2)
@@ -107,7 +108,7 @@ namespace Fw.Views {
                     this.SuppressEvent(Events.LongClick);
                 if (!this.IsSuppressedEvent(Events.SingleClick))
                     this.SuppressEvent(Events.SingleClick);
-                this.DelayedResumeMouseEvents();
+                this.SpcvDelayedResumeMouseEvents();
             });
             this._innerPanel.Elem.on('touchend mouseup mouseout', () => {
                 this._isDragging = false;
@@ -117,14 +118,14 @@ namespace Fw.Views {
             });
         }
 
-        private _delayedResumeMouseEventsTimer: number = null;
-        private DelayedResumeMouseEvents(): void {
-            if (this._delayedResumeMouseEventsTimer !== null) {
-                clearTimeout(this._delayedResumeMouseEventsTimer);
-                this._delayedResumeMouseEventsTimer = null;
+        
+        private SpcvDelayedResumeMouseEvents(): void {
+            if (this._spcvDelayedResumeEventsTimer !== null) {
+                clearTimeout(this._spcvDelayedResumeEventsTimer);
+                this._spcvDelayedResumeEventsTimer = null;
             }
 
-            this._delayedResumeMouseEventsTimer = setTimeout(() => {
+            this._spcvDelayedResumeEventsTimer = setTimeout(() => {
                 //Dump.Log('ResumeMouseEvents');
                 if (this.IsSuppressedEvent(Events.LongClick))
                     this.ResumeEvent(Events.LongClick);
@@ -199,10 +200,10 @@ namespace Fw.Views {
                 } else {
                     this._innerPanel.SetPositionByLeftTop(null, toTop);
                 }
-                this._mouseMoveSuppressor = false;
+                this._spcvMouseSuppressor = false;
             }
 
-            this._mouseMoveSuppressor = true;
+            this._spcvMouseSuppressor = true;
             animator.Invoke(500);
         }
 
@@ -238,7 +239,8 @@ namespace Fw.Views {
             this._innerPanel.Dispose();
             this._innerPanel = null;
             this._isDragging = null;
-            this._mouseMoveSuppressor = null;
+            this._spcvMouseSuppressor = null;
+            this._spcvDelayedResumeEventsTimer = null;
             this._dragStartMousePosition.Dispose();
             this._dragStartMousePosition = null;
             this._dragStartViewPosition.Dispose();

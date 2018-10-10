@@ -58,7 +58,8 @@ namespace Fw {
             });
 
             if (!eRef) {
-                throw new Error(`${this.ClassName}.${name} event not found.`);
+                //throw new Error(`${this.ClassName}.${name} event not found.`);
+                return;
             }
 
             this.Elem.off(eRef.Name, eRef.BindedHandler);

@@ -59,6 +59,14 @@ namespace Fw.Views {
         public get Anchor(): Property.Anchor {
             return this._anchor;
         }
+        private _zIndex: number = 0;
+        public get ZIndex(): number {
+            return this._zIndex;
+        }
+        public set ZIndex(value: number) {
+            this._zIndex = value;
+            this.Refresh();
+        }
 
         private _color: string = '#000000';
         public get Color(): string {
@@ -142,7 +150,7 @@ namespace Fw.Views {
             });
         }
 
-        private InitPage(): void {
+        protected InitPage(): void {
             const get = (view: IView) => {
                 if (!view)
                     return null;
@@ -409,6 +417,7 @@ namespace Fw.Views {
                 this.Dom.style.top = `${elemTop}px`;
                 this.Dom.style.width = `${this.Size.Width}px`;
                 this.Dom.style.height = `${this.Size.Height}px`;
+                this.Dom.style.zIndex = `${this.ZIndex}`;
                 this.Dom.style.color = `${this._color}`;
                 this.Dom.style.backgroundColor = `${this._backgroundColor}`;
 

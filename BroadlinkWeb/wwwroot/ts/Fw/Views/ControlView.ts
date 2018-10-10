@@ -14,6 +14,8 @@ namespace Fw.Views {
         // properties
         private _label: JQuery;
         private _tapEventTimer: number = null;
+        private _cvMouseSuppressor = false;
+        private _cvDelayedResumeEventsTimer: number = null;
 
         public get Label(): string {
             return this._label.html();
@@ -79,11 +81,14 @@ namespace Fw.Views {
                 this._tapEventTimer = setTimeout(() => {
                     // ロングタップイベント
                     this._tapEventTimer = null;
+
+                    // Pageのドラッグ処理中のとき、クリックイベントを抑制する。
+                    if (this._cvMouseSuppressor)
+                        return;
+
                     //Dump.Log('longtapped');
                     this.DispatchEvent(Events.LongClick);
                 }, 1000);
-
-                e.preventDefault();
             });
             this.Elem.on('touchend mouseup', (e) => {
                 if (this._tapEventTimer != null) {
@@ -91,23 +96,50 @@ namespace Fw.Views {
                     clearTimeout(this._tapEventTimer);
                     this._tapEventTimer = null;
 
+                    // Pageのドラッグ処理中のとき、クリックイベントを抑制する。
+                    if (this._cvMouseSuppressor)
+                        return;
+
                     // 以降、シングルタップイベント処理
                     //Dump.Log('singletapped');
                     this.DispatchEvent(Events.SingleClick);
                 } else {
                 }
-                e.preventDefault();
             });
             this.Elem.on('mouseout', (e) => {
                 if (this._tapEventTimer != null) {
                     // ロングタップ検出中のとき
                     clearTimeout(this._tapEventTimer);
                     this._tapEventTimer = null;
-
                     //Dump.Log('tap canceled');
                 }
-                e.preventDefault();
             });
+        }
+
+        protected InitPage(): void {
+            if (this.Page) {
+                this.RemoveEventListener(Fw.Events.PageViewEvents.Dragging, this.OnPageDragging);
+            }
+
+            super.InitPage();
+
+            if (this.Page) {
+                this.AddEventListener(Fw.Events.PageViewEvents.Dragging, this.OnPageDragging);
+            }
+        }
+
+        private OnPageDragging(): void {
+            this._cvMouseSuppressor = true;
+
+            if (this._cvDelayedResumeEventsTimer !== null) {
+                clearTimeout(this._cvDelayedResumeEventsTimer);
+                this._cvDelayedResumeEventsTimer = null;
+            }
+
+            this._cvDelayedResumeEventsTimer = setTimeout(() => {
+                //Dump.Log('ResumeMouseEvents');
+                this._cvMouseSuppressor = false;
+            }, 100);
         }
 
         protected InnerRefresh(): void {
@@ -120,6 +152,8 @@ namespace Fw.Views {
 
             this._label = null;
             this._tapEventTimer = null;
+            this._cvMouseSuppressor = null;
+            this._cvDelayedResumeEventsTimer = null;
             this._hasBorder = null;
             this._borderRadius = null;
         }

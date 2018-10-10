@@ -13,7 +13,7 @@
 namespace Fw.Views {
     import Dump = Fw.Util.Dump;
     import Anim = Fw.Views.Animation;
-    import Events = Fw.Events.ViewEvents;
+    import Events = Fw.Events.PageViewEvents;
     import App = Fw.Util.App;
     import Config = Fw.Config;
 
@@ -67,26 +67,36 @@ namespace Fw.Views {
             this._draggedPosition = new Property.Position();
 
             this.Elem.on('touchstart mousedown', (e) => {
+                //Dump.Log(`${this.ClassName}.MouseDown`);
                 this._isDragging = true;
-                this._dragStartMousePosition.X = e.clientX;
-                this._dragStartMousePosition.Y = e.clientY;
+                this._dragStartMousePosition.X = e.pageX;
+                this._dragStartMousePosition.Y = e.pageY;
                 this._dragStartViewPosition.X = this._draggedPosition.X;
                 this._dragStartViewPosition.Y = this._draggedPosition.Y;
                 this.DetectToNeedDrags();
             });
 
             this.Elem.on('touchmove mousemove', (e) => {
+                //Dump.Log(`${this.ClassName}.MouseMove`);
                 if (!this._isDragging || this._isSuppressDrag)
                     return;
 
                 if (!this._isNeedDragX && !this._isNeedDragY)
                     return;
 
-                if (e.eventPhase !== 2)
-                    return;
+                //Dump.Log({
+                //    pageX: e.pageX,
+                //    pageY: e.pageY,
+                //    screenX: e.screenX,
+                //    screenY: e.screenY,
+                //    clientX: e.clientX,
+                //    clientY: e.clientY,
+                //    offsetX: e.offsetX,
+                //    offsetY: e.offsetY
+                //});
 
-                const addX = e.clientX - this._dragStartMousePosition.X;
-                const addY = e.clientY - this._dragStartMousePosition.Y;
+                const addX = e.pageX - this._dragStartMousePosition.X;
+                const addY = e.pageY - this._dragStartMousePosition.Y;
 
                 if (this._isNeedDragX) {
                     this._draggedPosition.X = this._dragStartViewPosition.X + addX;
@@ -106,10 +116,19 @@ namespace Fw.Views {
                         this._draggedPosition.Y = this._maxDragPosition.Y;
                 }
 
+                const dragEventMargin = 10;
+                if (
+                    Math.abs(this._dragStartMousePosition.X - this._draggedPosition.X) > dragEventMargin
+                    || Math.abs(this._dragStartMousePosition.Y - this._draggedPosition.Y) > dragEventMargin
+                ) {
+                    this.DispatchEvent(Events.Dragging);
+                }
+                
                 this.Refresh();
             });
 
             this.Elem.on('touchend mouseup mouseout', (e) => {
+                //Dump.Log(`${this.ClassName}.MouseUp`);
                 this._isDragging = false;
             });
 

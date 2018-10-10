@@ -4,6 +4,7 @@
 
 namespace Fw.Events {
     export class PageViewEventsClass extends ViewEventsClass {
+        public readonly Dragging: string = 'Dragging';
     }
     export const PageViewEvents: PageViewEventsClass = new PageViewEventsClass();
 }

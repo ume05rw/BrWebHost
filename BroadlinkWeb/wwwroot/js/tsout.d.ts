@@ -99,6 +99,7 @@ declare namespace Fw.Views {
         readonly Size: Property.Size;
         readonly Position: Property.Position;
         readonly Anchor: Property.Anchor;
+        ZIndex: number;
         Color: string;
         BackgroundColor: string;
         SetParent(parent: IView): void;
@@ -208,6 +209,7 @@ declare namespace App {
 }
 declare namespace Fw.Events {
     class PageViewEventsClass extends ViewEventsClass {
+        readonly Dragging: string;
     }
     const PageViewEvents: PageViewEventsClass;
 }
@@ -353,6 +355,8 @@ declare namespace Fw.Views {
         readonly Position: Property.Position;
         private _anchor;
         readonly Anchor: Property.Anchor;
+        private _zIndex;
+        ZIndex: number;
         private _color;
         Color: string;
         private _backgroundColor;
@@ -360,7 +364,7 @@ declare namespace Fw.Views {
         constructor(jqueryElem: JQuery);
         protected SetElem(jqueryElem: JQuery): void;
         protected Init(): void;
-        private InitPage;
+        protected InitPage(): void;
         SetParent(parent: IView): void;
         SetSize(width: number, height: number): void;
         SetPosition(x: number, y: number): void;
@@ -385,6 +389,8 @@ declare namespace Fw.Views {
     class ControlView extends ViewBase {
         private _label;
         private _tapEventTimer;
+        private _cvMouseSuppressor;
+        private _cvDelayedResumeEventsTimer;
         Label: string;
         private _hasBorder;
         HasBorder: boolean;
@@ -395,6 +401,8 @@ declare namespace Fw.Views {
          * @description Initialize
          */
         protected Init(): void;
+        protected InitPage(): void;
+        private OnPageDragging;
         protected InnerRefresh(): void;
         Dispose(): void;
     }
@@ -506,13 +514,13 @@ declare namespace Fw.Views {
         InnerPanelCount: number;
         private _innerPanel;
         private _isDragging;
-        private _mouseMoveSuppressor;
+        private _spcvMouseSuppressor;
+        private _spcvDelayedResumeEventsTimer;
         private _dragStartMousePosition;
         private _dragStartViewPosition;
         constructor(direction: Direction);
         protected Init(): void;
-        private _delayedResumeMouseEventsTimer;
-        private DelayedResumeMouseEvents;
+        private SpcvDelayedResumeMouseEvents;
         private InitView;
         private AdjustSlidePosition;
         protected InnerRefresh(): void;
