@@ -53,8 +53,15 @@ namespace Fw.Views {
                     this._isDragging = true;
                     this._dragStartMousePosition.X = e.pageX;
                     this._dragStartMousePosition.Y = e.pageY;
-                    this._dragStartViewPosition.X = this.Position.X;
-                    this._dragStartViewPosition.Y = this.Position.Y;
+
+                    if (this.Position.Policy === Property.PositionPolicy.Centering) {
+                        this._dragStartViewPosition.X = this.Position.X;
+                        this._dragStartViewPosition.Y = this.Position.Y;
+                    } else {
+                        this._dragStartViewPosition.X = this.Position.Left;
+                        this._dragStartViewPosition.Y = this.Position.Top;
+                    }
+
                     this.Refresh();
                 }
             });
@@ -65,8 +72,15 @@ namespace Fw.Views {
                     this._isDragging = false;
                 } else {
                     this._isDragging = false;
-                    this.Position.X = Math.round(this.Position.X / this.GridSize) * this.GridSize;
-                    this.Position.Y = Math.round(this.Position.Y / this.GridSize) * this.GridSize;
+
+                    if (this.Position.Policy === Property.PositionPolicy.Centering) {
+                        this.Position.X = Math.round(this.Position.X / this.GridSize) * this.GridSize;
+                        this.Position.Y = Math.round(this.Position.Y / this.GridSize) * this.GridSize;
+                    } else {
+                        this.Position.Left = Math.round(this.Position.Left / this.GridSize) * this.GridSize;
+                        this.Position.Top = Math.round(this.Position.Top     / this.GridSize) * this.GridSize;
+                    }
+
                     this.Refresh();
                 }
             });
@@ -96,8 +110,14 @@ namespace Fw.Views {
 
                 const addX = e.pageX - this._dragStartMousePosition.X;
                 const addY = e.pageY - this._dragStartMousePosition.Y;
-                this.Position.X = this._dragStartViewPosition.X + addX;
-                this.Position.Y = this._dragStartViewPosition.Y + addY;
+
+                if (this.Position.Policy === Property.PositionPolicy.Centering) {
+                    this.Position.X = this._dragStartViewPosition.X + addX;
+                    this.Position.Y = this._dragStartViewPosition.Y + addY;
+                } else {
+                    this.Position.Left = this._dragStartViewPosition.X + addX;
+                    this.Position.Top = this._dragStartViewPosition.Y + addY;
+                }
 
                 // マウスボタン押下中のクリックイベント発火を抑止する。
                 if (!this.IsSuppressedEvent(Events.LongClick))
@@ -132,8 +152,6 @@ namespace Fw.Views {
 
             } else {
                 // 移動可能にする。
-                //this._beforeX = this.Position.X;
-                //this._beforeY = this.Position.Y;
                 this._isRelocatable = true;
                 this.Elem.parent().append(this._shadow);
             }
@@ -147,14 +165,13 @@ namespace Fw.Views {
                 return;
 
             if (!this._isRelocatable) {
-                Dump.Log('before');
-                Dump.Log(this.Position);
-                Dump.Log('parent');
-                Dump.Log(this.Parent.Size);
-                this.Position.X = Math.round(this.Position.X / this.GridSize) * this.GridSize;
-                this.Position.Y = Math.round(this.Position.Y / this.GridSize) * this.GridSize;
-                Dump.Log('after');
-                Dump.Log(this.Position);
+                if (this.Position.Policy === Property.PositionPolicy.Centering) {
+                    this.Position.X = Math.round(this.Position.X / this.GridSize) * this.GridSize;
+                    this.Position.Y = Math.round(this.Position.Y / this.GridSize) * this.GridSize;
+                } else {
+                    this.Position.Left = Math.round(this.Position.Left / this.GridSize) * this.GridSize;
+                    this.Position.Top = Math.round(this.Position.Top / this.GridSize) * this.GridSize;
+                }
             }
 
             super.InnerRefresh();
@@ -179,10 +196,19 @@ namespace Fw.Views {
 
                 const centerLeft = (parentWidth / 2);
                 const centerTop = (parentHeight / 2);
-                const sX = Math.round(this.Position.X / this.GridSize) * this.GridSize;
-                const sY = Math.round(this.Position.Y / this.GridSize) * this.GridSize;
-                const sLeft = centerLeft + sX - (this.Size.Width / 2);
-                const sTop = centerTop + sY - (this.Size.Height / 2);
+
+                let sX: number, sY: number, sLeft: number, sTop: number;
+                if (this.Position.Policy === Property.PositionPolicy.Centering) {
+                    sX = Math.round(this.Position.X / this.GridSize) * this.GridSize;
+                    sY = Math.round(this.Position.Y / this.GridSize) * this.GridSize;
+                    sLeft = centerLeft + sX - (this.Size.Width / 2);
+                    sTop = centerTop + sY - (this.Size.Height / 2);
+                } else {
+                    sX = Math.round(this.Position.Left / this.GridSize) * this.GridSize;
+                    sY = Math.round(this.Position.Top / this.GridSize) * this.GridSize;
+                    sLeft = sX;
+                    sTop = sY;
+                }
 
                 shadowDom.style.display = 'block';
                 shadowDom.style.left = `${sLeft}px`;
@@ -209,7 +235,6 @@ namespace Fw.Views {
             this._isMouseMoveEventListened = null;
             this._isDragging = null;
             this._gridSize = null;
-
         }
     }
 }

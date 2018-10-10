@@ -142,11 +142,6 @@ declare namespace Fw.Controllers {
         Show(id: string): void;
     }
 }
-declare namespace App {
-    class Main {
-        static StartUp(): void;
-    }
-}
 declare namespace Fw.Controllers {
     /**
      * @see コントローラはイベント等の実装が無いので、IObjectを実装しない。
@@ -208,6 +203,11 @@ declare namespace App.Controllers {
         private Init;
     }
 }
+declare namespace App {
+    class Main {
+        static StartUp(): void;
+    }
+}
 declare namespace Fw.Events {
     class EventReference {
         Name: string;
@@ -255,17 +255,6 @@ declare namespace Fw.Models {
     abstract class ModelBase extends Fw.ObjectBase implements Fw.Models.IModel {
     }
 }
-declare namespace Fw {
-    class Startup {
-        static Init(): void;
-    }
-}
-declare namespace Fw.Util {
-    class App {
-        private static _ids;
-        static CreateId(): string;
-    }
-}
 declare namespace Fw.Util.Xhr {
     enum MethodType {
         Get = 1,
@@ -293,6 +282,12 @@ declare namespace Fw.Util.Xhr {
         constructor(succeeded: boolean, values: any, errors: any);
     }
 }
+declare namespace Fw.Util {
+    class App {
+        private static _ids;
+        static CreateId(): string;
+    }
+}
 declare namespace Fw.Views.Animation {
     class Params {
         static GetCurrent(view: Fw.Views.IView): Params;
@@ -313,6 +308,64 @@ declare namespace Fw.Views.Animation {
         OnComplete: Function;
         constructor(view: Fw.Views.IView, toParams?: Params);
         Invoke(duration?: number): void;
+        Dispose(): void;
+    }
+}
+declare namespace Fw.Views.Property {
+    /**
+     * @description font-size
+     */
+    enum FontSize {
+        XxSmall = "xx-small",
+        XSmall = "x-small",
+        Small = "small",
+        Medium = "medium",
+        Large = "large",
+        XLarge = "x-large",
+        XxLarge = "xx-large"
+    }
+}
+declare namespace Fw.Views.Property {
+    /**
+     * @description font-weight
+     */
+    enum FontWeight {
+        Lighter = "lighter",
+        Normal = "normal",
+        Bold = "bold",
+        Bolder = "bolder"
+    }
+}
+declare namespace Fw.Views.Property {
+    /**
+     * @description 配置基準
+     */
+    enum PositionPolicy {
+        /**
+         * 中央ポリシー：親Viewの中心位置からの差分を X, Y で表現する。
+         */
+        Centering = 1,
+        /**
+         * 左上ポリシー：親Viewの左上からの差分を、Left, Top で表現する。
+         */
+        LeftTop = 2
+    }
+}
+declare namespace Fw.Views.Property {
+    class Position {
+        private _view;
+        private _policy;
+        Policy: PositionPolicy;
+        private _x;
+        X: number;
+        private _y;
+        Y: number;
+        private _left;
+        Left: number;
+        private _top;
+        Top: number;
+        constructor(view?: IView);
+        private GetSizeSet;
         Dispose(): void;
     }
 }
@@ -379,20 +432,6 @@ declare namespace Fw.Views {
     }
 }
 declare namespace Fw.Views {
-    import FitPolicy = Fw.Views.Property.FitPolicy;
-    class ImageView extends ViewBase {
-        private _image;
-        private _src;
-        Src: string;
-        private _firPolicy;
-        FitPolicy: FitPolicy;
-        constructor();
-        protected Init(): void;
-        protected InnerRefresh(): void;
-        Dispose(): void;
-    }
-}
-declare namespace Fw.Views {
     class ControlView extends ViewBase {
         private _label;
         private _tapEventTimer;
@@ -414,15 +453,18 @@ declare namespace Fw.Views {
         Dispose(): void;
     }
 }
-declare namespace Fw.Views.Property {
-    /**
-     * @description font-weight
-     */
-    enum FontWeight {
-        Lighter = "lighter",
-        Normal = "normal",
-        Bold = "bold",
-        Bolder = "bolder"
+declare namespace Fw.Views {
+    import FitPolicy = Fw.Views.Property.FitPolicy;
+    class ImageView extends ViewBase {
+        private _image;
+        private _src;
+        Src: string;
+        private _firPolicy;
+        FitPolicy: FitPolicy;
+        constructor();
+        protected Init(): void;
+        protected InnerRefresh(): void;
+        Dispose(): void;
     }
 }
 declare namespace Fw.Views {
@@ -476,53 +518,6 @@ declare namespace Fw.Views {
         protected Init(): void;
     }
 }
-declare namespace Fw.Views.Property {
-    /**
-     * @description font-size
-     */
-    enum FontSize {
-        XxSmall = "xx-small",
-        XSmall = "x-small",
-        Small = "small",
-        Medium = "medium",
-        Large = "large",
-        XLarge = "x-large",
-        XxLarge = "xx-large"
-    }
-}
-declare namespace Fw.Views.Property {
-    /**
-     * @description 配置基準
-     */
-    enum PositionPolicy {
-        /**
-         * 中央ポリシー：親Viewの中心位置からの差分を X, Y で表現する。
-         */
-        Centering = 1,
-        /**
-         * 左上ポリシー：親Viewの左上からの差分を、Left, Top で表現する。
-         */
-        LeftTop = 2
-    }
-}
-declare namespace Fw.Views.Property {
-    class Position {
-        private _view;
-        private _policy;
-        Policy: PositionPolicy;
-        private _x;
-        X: number;
-        private _y;
-        Y: number;
-        private _left;
-        Left: number;
-        private _top;
-        Top: number;
-        constructor(view?: IView);
-        private GetSizeSet;
-        Dispose(): void;
-    }
-}
 declare namespace Fw.Views {
     class RelocatableControlView extends ControlView {
         private _isRelocatable;
@@ -540,23 +535,6 @@ declare namespace Fw.Views {
         private DelayedResumeMouseEvents;
         SetRelocatable(relocatable: boolean): void;
         protected InnerRefresh(): void;
-        Dispose(): void;
-    }
-}
-declare namespace Fw {
-    import Property = Fw.Views.Property;
-    class Root extends ObjectBase {
-        private static _instance;
-        static readonly Instance: Root;
-        static Init(selectorString: string): void;
-        private _dom;
-        readonly Dom: HTMLElement;
-        private _size;
-        readonly Size: Property.Size;
-        private _isDragging;
-        private _dragStartMousePosition;
-        private constructor();
-        Refresh(): void;
         Dispose(): void;
     }
 }
@@ -584,5 +562,27 @@ declare namespace Fw.Views {
         private AdjustSlidePosition;
         protected InnerRefresh(): void;
         Dispose(): void;
+    }
+}
+declare namespace Fw {
+    import Property = Fw.Views.Property;
+    class Root extends ObjectBase {
+        private static _instance;
+        static readonly Instance: Root;
+        static Init(selectorString: string): void;
+        private _dom;
+        readonly Dom: HTMLElement;
+        private _size;
+        readonly Size: Property.Size;
+        private _isDragging;
+        private _dragStartMousePosition;
+        private constructor();
+        Refresh(): void;
+        Dispose(): void;
+    }
+}
+declare namespace Fw {
+    class Startup {
+        static Init(): void;
     }
 }
