@@ -25,27 +25,6 @@ declare namespace Fw {
         static DefaultPageAttribute: string;
     }
 }
-declare namespace Fw.Controllers {
-    class Factory {
-        static Create(id: string, elem: JQuery): IController;
-    }
-}
-declare namespace Fw.Controllers {
-    class Manager {
-        private static _instance;
-        static readonly Instance: Manager;
-        static Init(): void;
-        private _controllers;
-        private constructor();
-        Add(controller: IController): void;
-        Show(id: string): void;
-    }
-}
-declare namespace App {
-    class Main {
-        static StartUp(): void;
-    }
-}
 declare namespace Fw {
     interface IObject {
         readonly Elem: JQuery;
@@ -146,6 +125,22 @@ declare namespace Fw.Controllers {
         Id: string;
         IsDefaultView: boolean;
         View: Fw.Views.IView;
+    }
+}
+declare namespace Fw.Controllers {
+    class Factory {
+        static Create(id: string, elem: JQuery): IController;
+    }
+}
+declare namespace Fw.Controllers {
+    class Manager {
+        private static _instance;
+        static readonly Instance: Manager;
+        static Init(): void;
+        private _controllers;
+        private constructor();
+        Add(controller: IController): void;
+        Show(id: string): void;
     }
 }
 declare namespace Fw.Controllers {
@@ -409,16 +404,16 @@ declare namespace App.Controllers {
         private Init;
     }
 }
+declare namespace App {
+    class Main {
+        static StartUp(): void;
+    }
+}
 declare namespace Fw.Events {
     class RootEventsClass {
         readonly Resized: string;
     }
     const RootEvents: RootEventsClass;
-}
-declare namespace Fw {
-    class Startup {
-        static Init(): void;
-    }
 }
 declare namespace Fw.Util.Xhr {
     enum MethodType {
@@ -447,78 +442,6 @@ declare namespace Fw.Util.Xhr {
         constructor(succeeded: boolean, values: any, errors: any);
     }
 }
-declare namespace Fw.Views {
-    import FitPolicy = Fw.Views.Property.FitPolicy;
-    class ImageView extends ViewBase {
-        private _image;
-        private _src;
-        Src: string;
-        private _firPolicy;
-        FitPolicy: FitPolicy;
-        constructor();
-        protected Init(): void;
-        protected InnerRefresh(): void;
-        Dispose(): void;
-    }
-}
-declare namespace Fw.Views {
-    class ControlView extends ViewBase {
-        private _label;
-        private _tapEventTimer;
-        private _cvMouseSuppressor;
-        private _cvDelayedResumeEventsTimer;
-        Label: string;
-        private _hasBorder;
-        HasBorder: boolean;
-        private _borderRadius;
-        BorderRadius: number;
-        constructor();
-        /**
-         * @description Initialize
-         */
-        protected Init(): void;
-        protected InitPage(): void;
-        private OnPageDragging;
-        protected InnerRefresh(): void;
-        Dispose(): void;
-    }
-}
-declare namespace Fw.Views.Property {
-    /**
-     * @description font-weight
-     */
-    enum FontWeight {
-        Lighter = "lighter",
-        Normal = "normal",
-        Bold = "bold",
-        Bolder = "bolder"
-    }
-}
-declare namespace Fw.Views {
-    import Property = Fw.Views.Property;
-    class LabelView extends ViewBase {
-        private _text;
-        Text: string;
-        private _fontWeight;
-        FontWeight: Property.FontWeight;
-        private _fontSize;
-        FontSize: Property.FontSize;
-        private _fontFamily;
-        FontFamily: string;
-        private _autoSize;
-        AutoSize: boolean;
-        private _hiddenSpan;
-        constructor();
-        protected Init(): void;
-        protected InnerRefresh(): void;
-        Dispose(): void;
-    }
-}
-declare namespace Fw.Views {
-    class PanelControlView extends ControlView {
-        protected Init(): void;
-    }
-}
 declare namespace Fw.Views.Property {
     /**
      * @description font-size
@@ -531,6 +454,17 @@ declare namespace Fw.Views.Property {
         Large = "large",
         XLarge = "x-large",
         XxLarge = "xx-large"
+    }
+}
+declare namespace Fw.Views.Property {
+    /**
+     * @description font-weight
+     */
+    enum FontWeight {
+        Lighter = "lighter",
+        Normal = "normal",
+        Bold = "bold",
+        Bolder = "bolder"
     }
 }
 declare namespace Fw.Views.Property {
@@ -567,6 +501,64 @@ declare namespace Fw.Views.Property {
     }
 }
 declare namespace Fw.Views {
+    class ControlView extends ViewBase {
+        private _label;
+        private _tapEventTimer;
+        private _cvMouseSuppressor;
+        private _cvDelayedResumeEventsTimer;
+        Label: string;
+        private _hasBorder;
+        HasBorder: boolean;
+        private _borderRadius;
+        BorderRadius: number;
+        constructor();
+        protected Init(): void;
+        protected InitPage(): void;
+        private OnPageDragging;
+        protected InnerRefresh(): void;
+        Dispose(): void;
+    }
+}
+declare namespace Fw.Views {
+    import FitPolicy = Fw.Views.Property.FitPolicy;
+    class ImageView extends ViewBase {
+        private _image;
+        private _src;
+        Src: string;
+        private _firPolicy;
+        FitPolicy: FitPolicy;
+        constructor();
+        protected Init(): void;
+        protected InnerRefresh(): void;
+        Dispose(): void;
+    }
+}
+declare namespace Fw.Views {
+    import Property = Fw.Views.Property;
+    class LabelView extends ViewBase {
+        private _text;
+        Text: string;
+        private _fontWeight;
+        FontWeight: Property.FontWeight;
+        private _fontSize;
+        FontSize: Property.FontSize;
+        private _fontFamily;
+        FontFamily: string;
+        private _autoSize;
+        AutoSize: boolean;
+        private _hiddenSpan;
+        constructor();
+        protected Init(): void;
+        protected InnerRefresh(): void;
+        Dispose(): void;
+    }
+}
+declare namespace Fw.Views {
+    class PanelControlView extends ControlView {
+        protected Init(): void;
+    }
+}
+declare namespace Fw.Views {
     class RelocatableControlView extends ControlView {
         private _isRelocatable;
         readonly IsRelocatable: boolean;
@@ -583,23 +575,6 @@ declare namespace Fw.Views {
         private DelayedResumeMouseEvents;
         SetRelocatable(relocatable: boolean): void;
         protected InnerRefresh(): void;
-        Dispose(): void;
-    }
-}
-declare namespace Fw {
-    import Property = Fw.Views.Property;
-    class Root extends ObjectBase {
-        private static _instance;
-        static readonly Instance: Root;
-        static Init(selectorString: string): void;
-        private _dom;
-        readonly Dom: HTMLElement;
-        private _size;
-        readonly Size: Property.Size;
-        private _isDragging;
-        private _dragStartMousePosition;
-        private constructor();
-        Refresh(): void;
         Dispose(): void;
     }
 }
@@ -627,5 +602,35 @@ declare namespace Fw.Views {
         private AdjustSlidePosition;
         protected InnerRefresh(): void;
         Dispose(): void;
+    }
+}
+declare namespace Fw {
+    import Property = Fw.Views.Property;
+    class Root extends ObjectBase {
+        private static _instance;
+        static readonly Instance: Root;
+        static Init(selectorString: string): void;
+        private _dom;
+        readonly Dom: HTMLElement;
+        private _size;
+        readonly Size: Property.Size;
+        private _isDragging;
+        private _dragStartMousePosition;
+        private constructor();
+        Refresh(): void;
+        Dispose(): void;
+    }
+}
+declare namespace Fw {
+    class Startup {
+        static Init(): void;
+    }
+}
+declare namespace Fw.Views {
+    class ButtonView extends ControlView {
+        private _imageView;
+        ImageSrc: string;
+        protected Init(): void;
+        protected InnerRefresh(): void;
     }
 }

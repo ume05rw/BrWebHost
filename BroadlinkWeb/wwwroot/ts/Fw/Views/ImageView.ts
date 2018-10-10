@@ -44,6 +44,8 @@ namespace Fw.Views {
             this.SetClassName('ImageView');
             this.Elem.addClass(this.ClassName);
 
+            this.BackgroundColor = 'transparent';
+
             this.Dom.style.borderWidth = '0';
             this.Dom.style.borderRadius = '0';
 
@@ -63,7 +65,9 @@ namespace Fw.Views {
             this.Dom.style.backgroundPosition = 'center center';
             this.Dom.style.backgroundRepeat = 'no-repeat';
             this.Dom.style.backgroundSize = this.FitPolicy;
-            this.Dom.style.backgroundImage = `url(${this._src})`;
+            this.Dom.style.backgroundImage = (this._src)
+                ? `url(${this._src})`
+                : null;
         }
 
         public Dispose(): void {

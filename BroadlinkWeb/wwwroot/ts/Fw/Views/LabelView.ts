@@ -76,6 +76,8 @@ namespace Fw.Views {
             this.SetClassName('LabelView');
             this.Elem.addClass(this.ClassName);
 
+            this.BackgroundColor = 'transparent';
+
             this.Dom.style.borderWidth = '0';
             this.Dom.style.borderRadius = '0';
 

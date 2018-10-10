@@ -36,13 +36,13 @@ namespace App.Views.Pages {
         private Initialize(): void {
             this.SetClassName('MainPageView');
 
-            this.BtnGoSub1 = new Fw.Views.ControlView();
+            this.BtnGoSub1 = new Fw.Views.ButtonView();
             this.BtnGoSub1.Label = 'Go Sub1';
             this.BtnGoSub1.SetSize(80, 30);
             this.BtnGoSub1.SetAnchor(null, 10, null, null);
             this.Add(this.BtnGoSub1);
 
-            this.BtnGoSub2 = new Fw.Views.ControlView();
+            this.BtnGoSub2 = new Fw.Views.ButtonView();
             this.BtnGoSub2.Label = 'Go Sub2';
             this.BtnGoSub2.SetSize(80, 30);
             this.BtnGoSub2.Position.Y = 40;

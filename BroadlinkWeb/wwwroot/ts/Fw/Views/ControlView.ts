@@ -55,12 +55,8 @@ namespace Fw.Views {
 
         constructor() {
             super($('<a></a>'));
-            
         }
 
-        /**
-         * @description Initialize
-         */
         protected Init(): void {
             super.Init();
 
