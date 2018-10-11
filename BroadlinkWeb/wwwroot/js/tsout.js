@@ -1665,6 +1665,9 @@ var App;
                     img.Src = 'images/icons/home.png';
                     img.FitPolicy = Property.FitPolicy.Cover;
                     this.AncCtl3.Add(img);
+                    this.Toggle = new Fw.Views.ToggleButtonView();
+                    this.Toggle.SetAnchor(150, 10, null, null);
+                    this.Add(this.Toggle);
                     this.AncCtl4 = new Fw.Views.ControlView();
                     this.AncCtl4.Label = '左上';
                     this.AncCtl4.SetSize(200, 50);
@@ -2599,8 +2602,14 @@ var Fw;
             });
             BoxView.prototype.Init = function () {
                 _super.prototype.Init.call(this);
+                this.SetClassName('BoxView');
+                this.Elem.addClass(this.ClassName);
                 this.HasBorder = true;
                 this.BorderRadius = 0;
+            };
+            BoxView.prototype.InnerRefresh = function () {
+                _super.prototype.InnerRefresh.call(this);
+                this.Dom.style.borderColor = "" + this.Color;
             };
             BoxView.prototype.Dispose = function () {
                 _super.prototype.Dispose.call(this);
@@ -2713,7 +2722,6 @@ var Fw;
             };
             ControlView.prototype.InnerRefresh = function () {
                 _super.prototype.InnerRefresh.call(this);
-                this.Dom.style.borderColor = "" + this.Color;
             };
             ControlView.prototype.Dispose = function () {
                 _super.prototype.Dispose.call(this);
@@ -3046,7 +3054,7 @@ var Fw;
             __extends(ButtonView, _super);
             function ButtonView() {
                 var _this = _super !== null && _super.apply(this, arguments) || this;
-                _this._hoverColor = '';
+                _this.HoverColor = '';
                 return _this;
             }
             Object.defineProperty(ButtonView.prototype, "ImageSrc", {
@@ -3055,16 +3063,6 @@ var Fw;
                 },
                 set: function (value) {
                     this._imageView.Src = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(ButtonView.prototype, "HoverColor", {
-                get: function () {
-                    return this._hoverColor;
-                },
-                set: function (value) {
-                    this._hoverColor = value;
                 },
                 enumerable: true,
                 configurable: true
@@ -3087,6 +3085,11 @@ var Fw;
                 this._imageView.Size.Width = this.Size.Width;
                 this._imageView.Size.Height = this.Size.Height;
                 _super.prototype.InnerRefresh.call(this);
+            };
+            ButtonView.prototype.Dispose = function () {
+                _super.prototype.Dispose.call(this);
+                this._imageView = null;
+                this.HoverColor = null;
             };
             return ButtonView;
         }(Views.ControlView));
@@ -3392,6 +3395,115 @@ var Fw;
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Events/ControlViewEvents.ts" />
+/// <reference path="../Util/Dump.ts" />
+/// <reference path="../Util/Number.ts" />
+/// <reference path="ControlView.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Events = Fw.Events.ControlViewEvents;
+        var ToggleButtonView = /** @class */ (function (_super) {
+            __extends(ToggleButtonView, _super);
+            function ToggleButtonView() {
+                var _this = _super !== null && _super.apply(this, arguments) || this;
+                _this.HoverColor = '';
+                _this._value = false;
+                return _this;
+            }
+            Object.defineProperty(ToggleButtonView.prototype, "Value", {
+                get: function () {
+                    return this._value;
+                },
+                set: function (value) {
+                    var changed = (this._value !== value);
+                    if (changed) {
+                        this._value = !this._value;
+                        (this._value)
+                            ? this.SwitchToOn()
+                            : this.SwitchToOff();
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
+            ToggleButtonView.prototype.Init = function () {
+                var _this = this;
+                _super.prototype.Init.call(this);
+                this._value = false;
+                this._overMargin = 5;
+                this.SetClassName('ToggleButtonView');
+                this.Elem.addClass(this.ClassName);
+                // 標準サイズ：50 x 20
+                var width = 50;
+                var height = 20;
+                this.HasBorder = false;
+                this.SetSize(width, height);
+                this._sliderBox = new Views.BoxView();
+                this._sliderBox.Size.Width = this.Size.Width - this._overMargin;
+                this._sliderBox.Size.Height = this.Size.Height - this._overMargin;
+                this._sliderBox.HasBorder = true;
+                this._sliderBox.BorderRadius = 10;
+                this._sliderBox.Color = '#e5e5e5';
+                this._sliderBox.BackgroundColor = '#FFFFFF';
+                this._sliderBox.Dom.style.overflow = 'hidden';
+                this.Add(this._sliderBox);
+                this._maskOn = new Views.BoxView();
+                this._maskOn.Size.Width = this.Size.Width - this._overMargin;
+                this._maskOn.Size.Height = this.Size.Height - this._overMargin;
+                this._maskOn.HasBorder = false;
+                this._maskOn.BorderRadius = 0;
+                this._maskOn.BackgroundColor = '#4e748b';
+                this._maskOn.Position.X = -(this.Size.Width - this._overMargin);
+                this._sliderBox.Add(this._maskOn);
+                this._notch = new Views.BoxView();
+                this._notch.SetSize(this.Size.Height, this.Size.Height);
+                this._notch.HasBorder = true;
+                this._notch.BorderRadius = 50;
+                this._notch.Color = '#e5e5e5';
+                this._notch.BackgroundColor = '#cfcfcf';
+                this._notch.Position.X = -(this.Size.Width / 2) + (this.Size.Height / 2);
+                this.Add(this._notch);
+                this.Elem.hover(function () {
+                    _this.Dom.style.backgroundColor = _this.HoverColor;
+                }, function () {
+                    _this.Dom.style.backgroundColor = _this.BackgroundColor;
+                });
+                this.AddEventListener(Events.SingleClick, function () {
+                    _this._value = !_this._value;
+                    _this.Refresh();
+                });
+            };
+            ToggleButtonView.prototype.SwitchToOn = function () {
+            };
+            ToggleButtonView.prototype.SwitchToOff = function () {
+            };
+            ToggleButtonView.prototype.InnerRefresh = function () {
+                this._sliderBox.Size.Width = this.Size.Width - this._overMargin;
+                this._sliderBox.Size.Height = this.Size.Height - this._overMargin;
+                this._maskOn.Size.Width = this.Size.Width - this._overMargin;
+                this._maskOn.Size.Height = this.Size.Height - this._overMargin;
+                this._notch.SetSize(this.Size.Height, this.Size.Height);
+                this._notch.Position.X = (this.Value)
+                    ? (this.Size.Width / 2) - (this.Size.Height / 2)
+                    : -(this.Size.Width / 2) + (this.Size.Height / 2);
+                this._maskOn.Position.X = (this.Value)
+                    ? 0
+                    : -(this.Size.Width - this._overMargin);
+                _super.prototype.InnerRefresh.call(this);
+            };
+            ToggleButtonView.prototype.Dispose = function () {
+                _super.prototype.Dispose.call(this);
+                this.HoverColor = null;
+            };
+            return ToggleButtonView;
+        }(Views.ControlView));
+        Views.ToggleButtonView = ToggleButtonView;
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="ControlViewEvents.ts" />
 var Fw;
 (function (Fw) {
@@ -3402,6 +3514,8 @@ var Fw;
             function ToggleButtonViewEventsClass() {
                 var _this = _super !== null && _super.apply(this, arguments) || this;
                 _this.Switched = 'Switched';
+                _this.ToOn = 'ToOn';
+                _this.ToOff = 'ToOff';
                 return _this;
             }
             return ToggleButtonViewEventsClass;

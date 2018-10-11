@@ -47,8 +47,16 @@ namespace Fw.Views {
         protected Init(): void {
             super.Init();
 
+            this.SetClassName('BoxView');
+            this.Elem.addClass(this.ClassName);
+
             this.HasBorder = true;
             this.BorderRadius = 0;
+        }
+
+        protected InnerRefresh(): void {
+            super.InnerRefresh();
+            this.Dom.style.borderColor = `${this.Color}`;
         }
 
         public Dispose(): void {

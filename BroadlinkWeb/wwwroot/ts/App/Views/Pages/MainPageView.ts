@@ -18,6 +18,7 @@ namespace App.Views.Pages {
         public BtnGoSub2: Views.ButtonView;
         public CenterControl: Views.ControlView;
         public TmpCtl: Views.ControlView;
+        public Toggle: Views.ToggleButtonView;
         public AncCtl1: Views.ControlView;
         public AncCtl2: Views.ControlView;
         public AncCtl3: Views.ControlView;
@@ -87,6 +88,10 @@ namespace App.Views.Pages {
             img.Src = 'images/icons/home.png';
             img.FitPolicy = Property.FitPolicy.Cover;
             this.AncCtl3.Add(img);
+
+            this.Toggle = new Fw.Views.ToggleButtonView();
+            this.Toggle.SetAnchor(150, 10, null, null);
+            this.Add(this.Toggle);
 
             this.AncCtl4 = new Fw.Views.ControlView();
             this.AncCtl4.Label = '左上';

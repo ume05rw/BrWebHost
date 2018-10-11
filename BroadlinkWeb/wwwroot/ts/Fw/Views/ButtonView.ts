@@ -20,14 +20,7 @@ namespace Fw.Views {
             this._imageView.Src = value;
         }
 
-        private _hoverColor: string = '';
-        public get HoverColor(): string {
-            return this._hoverColor;
-        }
-        public set HoverColor(value: string) {
-            this._hoverColor = value;
-        }
-
+        public HoverColor: string = '';
 
         protected Init(): void {
             super.Init();
@@ -52,6 +45,12 @@ namespace Fw.Views {
             this._imageView.Size.Height = this.Size.Height;
 
             super.InnerRefresh()
+        }
+
+        public Dispose(): void {
+            super.Dispose();
+            this._imageView = null;
+            this.HoverColor = null;
         }
     }
 }

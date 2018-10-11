@@ -341,6 +341,7 @@ declare namespace App.Views.Pages {
         BtnGoSub2: Views.ButtonView;
         CenterControl: Views.ControlView;
         TmpCtl: Views.ControlView;
+        Toggle: Views.ToggleButtonView;
         AncCtl1: Views.ControlView;
         AncCtl2: Views.ControlView;
         AncCtl3: Views.ControlView;
@@ -513,6 +514,7 @@ declare namespace Fw.Views {
         BorderRadius: number;
         constructor();
         protected Init(): void;
+        protected InnerRefresh(): void;
         Dispose(): void;
     }
 }
@@ -591,10 +593,10 @@ declare namespace Fw.Views {
     class ButtonView extends ControlView {
         private _imageView;
         ImageSrc: string;
-        private _hoverColor;
         HoverColor: string;
         protected Init(): void;
         protected InnerRefresh(): void;
+        Dispose(): void;
     }
 }
 declare namespace Fw.Events {
@@ -637,9 +639,27 @@ declare namespace Fw.Events {
     }
     const RelocatableViewEvents: RelocatableViewEventsClass;
 }
+declare namespace Fw.Views {
+    class ToggleButtonView extends ControlView {
+        HoverColor: string;
+        private _value;
+        Value: boolean;
+        private _overMargin;
+        private _sliderBox;
+        private _notch;
+        private _maskOn;
+        protected Init(): void;
+        private SwitchToOn;
+        private SwitchToOff;
+        protected InnerRefresh(): void;
+        Dispose(): void;
+    }
+}
 declare namespace Fw.Events {
     class ToggleButtonViewEventsClass extends ControlViewEventsClass {
         readonly Switched: string;
+        readonly ToOn: string;
+        readonly ToOff: string;
     }
     const ToggleButtonViewEvents: ToggleButtonViewEventsClass;
 }

@@ -112,7 +112,6 @@ namespace Fw.Views {
 
         protected InnerRefresh(): void {
             super.InnerRefresh();
-            this.Dom.style.borderColor = `${this.Color}`;
         }
 
         public Dispose(): void {
