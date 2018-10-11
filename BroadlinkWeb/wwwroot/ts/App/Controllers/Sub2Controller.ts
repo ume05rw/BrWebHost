@@ -47,7 +47,7 @@ namespace App.Controllers {
             this.View.Add(btnA1Value);
 
 
-            const btnMove = new Fw.Views.RelocatableControlView();
+            const btnMove = new Fw.Views.RelocatableButtonView();
             btnMove.SetSize(60, 60);
             btnMove.Color = '#1188FF';
             btnMove.BackgroundColor = '#FF9900';

@@ -52,12 +52,8 @@ div.IController .ControlView.Shadow {
 }
 
 div.IController .ControlView.ButtonView {
-    opacity: 1.0;
+    transition: all 0.3s ease;
 }
-div.IController .ControlView.ButtonView:hover {
-    opacity: 0.8;
-}
-
 
 div.FinalizerIsNotExists {
     /* VSのCSSインデントが邪魔なので末尾に置いておく。 */

@@ -2,13 +2,13 @@
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Util/Dump.ts" />
 /// <reference path="../Events/ControlViewEvents.ts" />
-/// <reference path="ControlView.ts" />
+/// <reference path="ButtonView.ts" />
 
 namespace Fw.Views {
     import Dump = Fw.Util.Dump;
     import Events = Fw.Events.ControlViewEvents;
 
-    export class RelocatableControlView extends ControlView {
+    export class RelocatableButtonView extends ButtonView {
 
         private _isRelocatable: boolean = false;
         public get IsRelocatable(): boolean {

@@ -20,6 +20,15 @@ namespace Fw.Views {
             this._imageView.Src = value;
         }
 
+        private _hoverColor: string = '';
+        public get HoverColor(): string {
+            return this._hoverColor;
+        }
+        public set HoverColor(value: string) {
+            this._hoverColor = value;
+        }
+
+
         protected Init(): void {
             super.Init();
 
@@ -29,6 +38,12 @@ namespace Fw.Views {
             this._imageView = new ImageView();
             this._imageView.Src = null;
             this.Add(this._imageView);
+
+            this.Elem.hover(() => {
+                this.Dom.style.backgroundColor = this.HoverColor;
+            }, () => {
+                this.Dom.style.backgroundColor = this.BackgroundColor;
+            });
         }
 
         protected InnerRefresh(): void {

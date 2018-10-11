@@ -14,8 +14,8 @@ namespace App.Views.Pages {
 
     export class MainPageView extends Fw.Views.PageView {
 
-        public BtnGoSub1: Views.ControlView;
-        public BtnGoSub2: Views.ControlView;
+        public BtnGoSub1: Views.ButtonView;
+        public BtnGoSub2: Views.ButtonView;
         public CenterControl: Views.ControlView;
         public TmpCtl: Views.ControlView;
         public AncCtl1: Views.ControlView;
@@ -40,6 +40,8 @@ namespace App.Views.Pages {
             this.BtnGoSub1.Label = 'Go Sub1';
             this.BtnGoSub1.SetSize(80, 30);
             this.BtnGoSub1.SetAnchor(null, 10, null, null);
+            this.BtnGoSub1.BackgroundColor = '#add8e6';
+            this.BtnGoSub1.HoverColor = '#6495ed';
             this.Add(this.BtnGoSub1);
 
             this.BtnGoSub2 = new Fw.Views.ButtonView();
