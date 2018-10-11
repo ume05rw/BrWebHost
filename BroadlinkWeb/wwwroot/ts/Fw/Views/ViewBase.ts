@@ -105,7 +105,7 @@ namespace Fw.Views {
 
         protected Init(): void {
             this.SetClassName('ViewBase');
-            this.Elem.addClass('IView');
+            this.Elem.addClass('IView TransAnimation');
 
             this._page = null;
             this._parent = null;

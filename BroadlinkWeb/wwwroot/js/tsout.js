@@ -664,6 +664,7 @@ var Fw;
                     var toY = this._view.Position.Y + this.ToParams.Y;
                     var toLeft = pHalfWidth + toX - (this.ToParams.Width / 2);
                     var toTop = pHalfHeight + toY - (this.ToParams.Height / 2);
+                    var hasTransAnimation = this._view.Elem.hasClass('TransAnimation');
                     //Dump.Log({
                     //    name: 'center',
                     //    left: pHalfWidth,
@@ -695,6 +696,8 @@ var Fw;
                     dom.style.width = this.FromParams.Width + "px";
                     dom.style.height = this.FromParams.Height + "px";
                     dom.style.opacity = "" + this.FromParams.Opacity;
+                    if (hasTransAnimation)
+                        this._view.Elem.removeClass('TransAnimation');
                     // アニメーション終了時点の値をセット
                     this._view.Elem.animate({
                         'left': toLeft + "px",
@@ -705,6 +708,8 @@ var Fw;
                     }, {
                         'duration': duration,
                         'complete': function () {
+                            if (hasTransAnimation)
+                                _this._view.Elem.addClass('TransAnimation');
                             if (_.isFunction(_this.OnComplete))
                                 _this.OnComplete();
                         }
@@ -1018,7 +1023,7 @@ var Fw;
             ViewBase.prototype.Init = function () {
                 var _this = this;
                 this.SetClassName('ViewBase');
-                this.Elem.addClass('IView');
+                this.Elem.addClass('IView TransAnimation');
                 this._page = null;
                 this._parent = null;
                 this._children = new Array();
@@ -2152,6 +2157,78 @@ $(function () {
 });
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="ControlViewEvents.ts" />
+var Fw;
+(function (Fw) {
+    var Events;
+    (function (Events) {
+        var ButtonViewEventsClass = /** @class */ (function (_super) {
+            __extends(ButtonViewEventsClass, _super);
+            function ButtonViewEventsClass() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            return ButtonViewEventsClass;
+        }(Events.ControlViewEventsClass));
+        Events.ButtonViewEventsClass = ButtonViewEventsClass;
+        Events.ButtonViewEvents = new ButtonViewEventsClass();
+    })(Events = Fw.Events || (Fw.Events = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="ViewEvents.ts" />
+var Fw;
+(function (Fw) {
+    var Events;
+    (function (Events) {
+        var ImageViewEventsClass = /** @class */ (function (_super) {
+            __extends(ImageViewEventsClass, _super);
+            function ImageViewEventsClass() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            return ImageViewEventsClass;
+        }(Events.ViewEventsClass));
+        Events.ImageViewEventsClass = ImageViewEventsClass;
+        Events.ImageViewEvents = new ImageViewEventsClass();
+    })(Events = Fw.Events || (Fw.Events = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="ViewEvents.ts" />
+var Fw;
+(function (Fw) {
+    var Events;
+    (function (Events) {
+        var LabelViewEventsClass = /** @class */ (function (_super) {
+            __extends(LabelViewEventsClass, _super);
+            function LabelViewEventsClass() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            return LabelViewEventsClass;
+        }(Events.ViewEventsClass));
+        Events.LabelViewEventsClass = LabelViewEventsClass;
+        Events.LabelViewEvents = new LabelViewEventsClass();
+    })(Events = Fw.Events || (Fw.Events = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="ButtonViewEvents.ts" />
+var Fw;
+(function (Fw) {
+    var Events;
+    (function (Events) {
+        var RelocatableViewEventsClass = /** @class */ (function (_super) {
+            __extends(RelocatableViewEventsClass, _super);
+            function RelocatableViewEventsClass() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            return RelocatableViewEventsClass;
+        }(Events.ButtonViewEventsClass));
+        Events.RelocatableViewEventsClass = RelocatableViewEventsClass;
+        Events.RelocatableViewEvents = new RelocatableViewEventsClass();
+    })(Events = Fw.Events || (Fw.Events = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
 var Fw;
 (function (Fw) {
     var Events;
@@ -2164,6 +2241,46 @@ var Fw;
         }());
         Events.RootEventsClass = RootEventsClass;
         Events.RootEvents = new RootEventsClass();
+    })(Events = Fw.Events || (Fw.Events = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="BoxViewEvents.ts" />
+var Fw;
+(function (Fw) {
+    var Events;
+    (function (Events) {
+        var SlidableBoxViewEventsClass = /** @class */ (function (_super) {
+            __extends(SlidableBoxViewEventsClass, _super);
+            function SlidableBoxViewEventsClass() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            return SlidableBoxViewEventsClass;
+        }(Events.BoxViewEventsClass));
+        Events.SlidableBoxViewEventsClass = SlidableBoxViewEventsClass;
+        Events.SlidableBoxViewEvents = new SlidableBoxViewEventsClass();
+    })(Events = Fw.Events || (Fw.Events = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="ControlViewEvents.ts" />
+var Fw;
+(function (Fw) {
+    var Events;
+    (function (Events) {
+        var ToggleButtonViewEventsClass = /** @class */ (function (_super) {
+            __extends(ToggleButtonViewEventsClass, _super);
+            function ToggleButtonViewEventsClass() {
+                var _this = _super !== null && _super.apply(this, arguments) || this;
+                _this.Switched = 'Switched';
+                _this.ToOn = 'ToOn';
+                _this.ToOff = 'ToOff';
+                return _this;
+            }
+            return ToggleButtonViewEventsClass;
+        }(Events.ControlViewEventsClass));
+        Events.ToggleButtonViewEventsClass = ToggleButtonViewEventsClass;
+        Events.ToggleButtonViewEvents = new ToggleButtonViewEventsClass();
     })(Events = Fw.Events || (Fw.Events = {}));
 })(Fw || (Fw = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
@@ -2740,6 +2857,62 @@ var Fw;
 /// <reference path="../Events/ControlViewEvents.ts" />
 /// <reference path="../Util/Dump.ts" />
 /// <reference path="../Util/Number.ts" />
+/// <reference path="ControlView.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var ButtonView = /** @class */ (function (_super) {
+            __extends(ButtonView, _super);
+            function ButtonView() {
+                var _this = _super !== null && _super.apply(this, arguments) || this;
+                _this.HoverColor = '';
+                return _this;
+            }
+            Object.defineProperty(ButtonView.prototype, "ImageSrc", {
+                get: function () {
+                    return this._imageView.Src;
+                },
+                set: function (value) {
+                    this._imageView.Src = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            ButtonView.prototype.Init = function () {
+                var _this = this;
+                _super.prototype.Init.call(this);
+                this.SetClassName('ButtonView');
+                this.Elem.addClass(this.ClassName);
+                this._imageView = new Views.ImageView();
+                this._imageView.Src = null;
+                this.Add(this._imageView);
+                this.Elem.hover(function () {
+                    _this.Dom.style.backgroundColor = _this.HoverColor;
+                }, function () {
+                    _this.Dom.style.backgroundColor = _this.BackgroundColor;
+                });
+            };
+            ButtonView.prototype.InnerRefresh = function () {
+                this._imageView.Size.Width = this.Size.Width;
+                this._imageView.Size.Height = this.Size.Height;
+                _super.prototype.InnerRefresh.call(this);
+            };
+            ButtonView.prototype.Dispose = function () {
+                _super.prototype.Dispose.call(this);
+                this._imageView = null;
+                this.HoverColor = null;
+            };
+            return ButtonView;
+        }(Views.ControlView));
+        Views.ButtonView = ButtonView;
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Events/ControlViewEvents.ts" />
+/// <reference path="../Util/Dump.ts" />
+/// <reference path="../Util/Number.ts" />
 /// <reference path="ViewBase.ts" />
 /// <reference path="Property/FitPolicy.ts" />
 var Fw;
@@ -2945,174 +3118,6 @@ var Fw;
         }(Views.ViewBase));
         Views.LabelView = LabelView;
     })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../lib/jquery/index.d.ts" />
-/// <reference path="../../lib/underscore/index.d.ts" />
-/// <reference path="Events/RootEvents.ts" />
-/// <reference path="Util/Dump.ts" />
-/// <reference path="Views/Property/Size.ts" />
-var Fw;
-(function (Fw) {
-    var Events = Fw.Events.RootEvents;
-    var Property = Fw.Views.Property;
-    var Root = /** @class */ (function (_super) {
-        __extends(Root, _super);
-        function Root(jqueryElem) {
-            var _this = _super.call(this) || this;
-            _this._isDragging = false;
-            _this.SetElem(jqueryElem);
-            _this.SetClassName('Root');
-            _this._size = new Property.Size();
-            _this._dom = jqueryElem.get(0);
-            _this._dragStartMousePosition = new Property.Position();
-            var $window = $(window);
-            $window.on('resize', function () {
-                _this.Refresh();
-                _this.DispatchEvent(Events.Resized);
-            });
-            _this.Refresh();
-            return _this;
-        }
-        Object.defineProperty(Root, "Instance", {
-            get: function () {
-                if (!Root._instance)
-                    throw new Error('Root.Init() has not been executed.');
-                return Root._instance;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Root.Init = function (selectorString) {
-            Root._instance = new Root($(selectorString));
-        };
-        Object.defineProperty(Root.prototype, "Dom", {
-            get: function () {
-                return this._dom;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(Root.prototype, "Size", {
-            get: function () {
-                return this._size;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Root.prototype.Refresh = function () {
-            // this.Sizeのセッターが無いので、フィールドに直接書き込む。
-            this._size.Width = this.Elem.width();
-            this._size.Height = this.Elem.height();
-        };
-        Root.prototype.Dispose = function () {
-            _super.prototype.Dispose.call(this);
-            this._dom = null;
-            this._size.Dispose();
-            this._size = null;
-        };
-        Root._instance = null;
-        return Root;
-    }(Fw.ObjectBase));
-    Fw.Root = Root;
-})(Fw || (Fw = {}));
-/// <reference path="../../lib/jquery/index.d.ts" />
-/// <reference path="../../lib/underscore/index.d.ts" />
-/// <reference path="Util/Dump.ts" />
-/* /// <reference path="Views/Root.ts" /> */
-var Fw;
-(function (Fw) {
-    var Startup = /** @class */ (function () {
-        function Startup() {
-        }
-        Startup.Init = function () {
-            // ↓API仕様に応じて、App.Mainで書き換える。
-            Fw.Config.XhrBaseUrl
-                = location.protocol
-                    + '//' + location.hostname
-                    + ':' + location.port
-                    + '/';
-            // 画面全体のコンテナを初期化
-            Fw.Root.Init('div.body-content');
-            // Controllers.Managerの初期化
-            Fw.Controllers.Manager.Init();
-        };
-        return Startup;
-    }());
-    Fw.Startup = Startup;
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../Events/ControlViewEvents.ts" />
-/// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
-/// <reference path="ControlView.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var ButtonView = /** @class */ (function (_super) {
-            __extends(ButtonView, _super);
-            function ButtonView() {
-                var _this = _super !== null && _super.apply(this, arguments) || this;
-                _this.HoverColor = '';
-                return _this;
-            }
-            Object.defineProperty(ButtonView.prototype, "ImageSrc", {
-                get: function () {
-                    return this._imageView.Src;
-                },
-                set: function (value) {
-                    this._imageView.Src = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            ButtonView.prototype.Init = function () {
-                var _this = this;
-                _super.prototype.Init.call(this);
-                this.SetClassName('ButtonView');
-                this.Elem.addClass(this.ClassName);
-                this._imageView = new Views.ImageView();
-                this._imageView.Src = null;
-                this.Add(this._imageView);
-                this.Elem.hover(function () {
-                    _this.Dom.style.backgroundColor = _this.HoverColor;
-                }, function () {
-                    _this.Dom.style.backgroundColor = _this.BackgroundColor;
-                });
-            };
-            ButtonView.prototype.InnerRefresh = function () {
-                this._imageView.Size.Width = this.Size.Width;
-                this._imageView.Size.Height = this.Size.Height;
-                _super.prototype.InnerRefresh.call(this);
-            };
-            ButtonView.prototype.Dispose = function () {
-                _super.prototype.Dispose.call(this);
-                this._imageView = null;
-                this.HoverColor = null;
-            };
-            return ButtonView;
-        }(Views.ControlView));
-        Views.ButtonView = ButtonView;
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="ControlViewEvents.ts" />
-var Fw;
-(function (Fw) {
-    var Events;
-    (function (Events) {
-        var ButtonViewEventsClass = /** @class */ (function (_super) {
-            __extends(ButtonViewEventsClass, _super);
-            function ButtonViewEventsClass() {
-                return _super !== null && _super.apply(this, arguments) || this;
-            }
-            return ButtonViewEventsClass;
-        }(Events.ControlViewEventsClass));
-        Events.ButtonViewEventsClass = ButtonViewEventsClass;
-        Events.ButtonViewEvents = new ButtonViewEventsClass();
-    })(Events = Fw.Events || (Fw.Events = {}));
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
@@ -3341,209 +3346,6 @@ var Fw;
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="ViewEvents.ts" />
-var Fw;
-(function (Fw) {
-    var Events;
-    (function (Events) {
-        var ImageViewEventsClass = /** @class */ (function (_super) {
-            __extends(ImageViewEventsClass, _super);
-            function ImageViewEventsClass() {
-                return _super !== null && _super.apply(this, arguments) || this;
-            }
-            return ImageViewEventsClass;
-        }(Events.ViewEventsClass));
-        Events.ImageViewEventsClass = ImageViewEventsClass;
-        Events.ImageViewEvents = new ImageViewEventsClass();
-    })(Events = Fw.Events || (Fw.Events = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="ViewEvents.ts" />
-var Fw;
-(function (Fw) {
-    var Events;
-    (function (Events) {
-        var LabelViewEventsClass = /** @class */ (function (_super) {
-            __extends(LabelViewEventsClass, _super);
-            function LabelViewEventsClass() {
-                return _super !== null && _super.apply(this, arguments) || this;
-            }
-            return LabelViewEventsClass;
-        }(Events.ViewEventsClass));
-        Events.LabelViewEventsClass = LabelViewEventsClass;
-        Events.LabelViewEvents = new LabelViewEventsClass();
-    })(Events = Fw.Events || (Fw.Events = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="ButtonViewEvents.ts" />
-var Fw;
-(function (Fw) {
-    var Events;
-    (function (Events) {
-        var RelocatableViewEventsClass = /** @class */ (function (_super) {
-            __extends(RelocatableViewEventsClass, _super);
-            function RelocatableViewEventsClass() {
-                return _super !== null && _super.apply(this, arguments) || this;
-            }
-            return RelocatableViewEventsClass;
-        }(Events.ButtonViewEventsClass));
-        Events.RelocatableViewEventsClass = RelocatableViewEventsClass;
-        Events.RelocatableViewEvents = new RelocatableViewEventsClass();
-    })(Events = Fw.Events || (Fw.Events = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../Events/ControlViewEvents.ts" />
-/// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
-/// <reference path="ControlView.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var Events = Fw.Events.ControlViewEvents;
-        var ToggleButtonView = /** @class */ (function (_super) {
-            __extends(ToggleButtonView, _super);
-            function ToggleButtonView() {
-                var _this = _super !== null && _super.apply(this, arguments) || this;
-                _this.HoverColor = '';
-                _this._value = false;
-                return _this;
-            }
-            Object.defineProperty(ToggleButtonView.prototype, "Value", {
-                get: function () {
-                    return this._value;
-                },
-                set: function (value) {
-                    var changed = (this._value !== value);
-                    if (changed) {
-                        this._value = !this._value;
-                        (this._value)
-                            ? this.SwitchToOn()
-                            : this.SwitchToOff();
-                    }
-                },
-                enumerable: true,
-                configurable: true
-            });
-            ToggleButtonView.prototype.Init = function () {
-                var _this = this;
-                _super.prototype.Init.call(this);
-                this._value = false;
-                this._overMargin = 5;
-                this.SetClassName('ToggleButtonView');
-                this.Elem.addClass(this.ClassName);
-                // 標準サイズ：50 x 20
-                var width = 50;
-                var height = 20;
-                this.HasBorder = false;
-                this.SetSize(width, height);
-                this._sliderBox = new Views.BoxView();
-                this._sliderBox.Size.Width = this.Size.Width - this._overMargin;
-                this._sliderBox.Size.Height = this.Size.Height - this._overMargin;
-                this._sliderBox.HasBorder = true;
-                this._sliderBox.BorderRadius = 10;
-                this._sliderBox.Color = '#e5e5e5';
-                this._sliderBox.BackgroundColor = '#FFFFFF';
-                this._sliderBox.Dom.style.overflow = 'hidden';
-                this.Add(this._sliderBox);
-                this._maskOn = new Views.BoxView();
-                this._maskOn.Size.Width = this.Size.Width - this._overMargin;
-                this._maskOn.Size.Height = this.Size.Height - this._overMargin;
-                this._maskOn.HasBorder = false;
-                this._maskOn.BorderRadius = 0;
-                this._maskOn.BackgroundColor = '#4e748b';
-                this._maskOn.Position.X = -(this.Size.Width - this._overMargin);
-                this._sliderBox.Add(this._maskOn);
-                this._notch = new Views.BoxView();
-                this._notch.SetSize(this.Size.Height, this.Size.Height);
-                this._notch.HasBorder = true;
-                this._notch.BorderRadius = 50;
-                this._notch.Color = '#e5e5e5';
-                this._notch.BackgroundColor = '#cfcfcf';
-                this._notch.Position.X = -(this.Size.Width / 2) + (this.Size.Height / 2);
-                this.Add(this._notch);
-                this.Elem.hover(function () {
-                    _this.Dom.style.backgroundColor = _this.HoverColor;
-                }, function () {
-                    _this.Dom.style.backgroundColor = _this.BackgroundColor;
-                });
-                this.AddEventListener(Events.SingleClick, function () {
-                    _this._value = !_this._value;
-                    _this.Refresh();
-                });
-            };
-            ToggleButtonView.prototype.SwitchToOn = function () {
-            };
-            ToggleButtonView.prototype.SwitchToOff = function () {
-            };
-            ToggleButtonView.prototype.InnerRefresh = function () {
-                this._sliderBox.Size.Width = this.Size.Width - this._overMargin;
-                this._sliderBox.Size.Height = this.Size.Height - this._overMargin;
-                this._maskOn.Size.Width = this.Size.Width - this._overMargin;
-                this._maskOn.Size.Height = this.Size.Height - this._overMargin;
-                this._notch.SetSize(this.Size.Height, this.Size.Height);
-                this._notch.Position.X = (this.Value)
-                    ? (this.Size.Width / 2) - (this.Size.Height / 2)
-                    : -(this.Size.Width / 2) + (this.Size.Height / 2);
-                this._maskOn.Position.X = (this.Value)
-                    ? 0
-                    : -(this.Size.Width - this._overMargin);
-                _super.prototype.InnerRefresh.call(this);
-            };
-            ToggleButtonView.prototype.Dispose = function () {
-                _super.prototype.Dispose.call(this);
-                this.HoverColor = null;
-            };
-            return ToggleButtonView;
-        }(Views.ControlView));
-        Views.ToggleButtonView = ToggleButtonView;
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="ControlViewEvents.ts" />
-var Fw;
-(function (Fw) {
-    var Events;
-    (function (Events) {
-        var ToggleButtonViewEventsClass = /** @class */ (function (_super) {
-            __extends(ToggleButtonViewEventsClass, _super);
-            function ToggleButtonViewEventsClass() {
-                var _this = _super !== null && _super.apply(this, arguments) || this;
-                _this.Switched = 'Switched';
-                _this.ToOn = 'ToOn';
-                _this.ToOff = 'ToOff';
-                return _this;
-            }
-            return ToggleButtonViewEventsClass;
-        }(Events.ControlViewEventsClass));
-        Events.ToggleButtonViewEventsClass = ToggleButtonViewEventsClass;
-        Events.ToggleButtonViewEvents = new ToggleButtonViewEventsClass();
-    })(Events = Fw.Events || (Fw.Events = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="BoxViewEvents.ts" />
-var Fw;
-(function (Fw) {
-    var Events;
-    (function (Events) {
-        var SlidableBoxViewEventsClass = /** @class */ (function (_super) {
-            __extends(SlidableBoxViewEventsClass, _super);
-            function SlidableBoxViewEventsClass() {
-                return _super !== null && _super.apply(this, arguments) || this;
-            }
-            return SlidableBoxViewEventsClass;
-        }(Events.BoxViewEventsClass));
-        Events.SlidableBoxViewEventsClass = SlidableBoxViewEventsClass;
-        Events.SlidableBoxViewEvents = new SlidableBoxViewEventsClass();
-    })(Events = Fw.Events || (Fw.Events = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Util/Dump.ts" />
 /// <reference path="../Events/SlidableBoxViewEvents.ts" />
 /// <reference path="Animation/Animator.ts" />
@@ -3571,7 +3373,6 @@ var Fw;
                 _this._innerBoxCount = 2;
                 _this._isDragging = false;
                 _this._spcvMouseSuppressor = false;
-                _this._spcvDelayedResumeEventsTimer = null;
                 // nullやundefinedを入れさせない。
                 _this.Direction = (direction === Direction.Horizontal)
                     ? Direction.Horizontal
@@ -3610,6 +3411,8 @@ var Fw;
                 this.HasBorder = false;
                 this.BorderRadius = 0;
                 this._innerBox = new Views.BoxView();
+                this._innerBox.HasBorder = false;
+                this._innerBox.Elem.removeClass('TransAnimation');
                 this.Add(this._innerBox);
                 this.AddEventListener(Events.Initialized, function () {
                     _this.InitView();
@@ -3649,7 +3452,7 @@ var Fw;
             SlidableBoxView.prototype.InitView = function () {
                 if (this.Direction === Direction.Horizontal) {
                     // 横方向
-                    this.Dom.style.overflowX = 'scroll';
+                    this.Dom.style.overflowX = 'hidden'; //'scroll';
                     this.Dom.style.overflowY = 'hidden';
                     this._innerBox.Size.Width = this.Size.Width * this.InnerPanelCount;
                     this._innerBox.Size.Height = this.Size.Height;
@@ -3658,7 +3461,7 @@ var Fw;
                 }
                 else {
                     // 縦方向
-                    this.Dom.style.overflowY = 'scroll';
+                    this.Dom.style.overflowY = 'hidden'; //'scroll';
                     this.Dom.style.overflowX = 'hidden';
                     this._innerBox.Size.Height = this.Size.Height * this.InnerPanelCount;
                     this._innerBox.Size.Width = this.Size.Width;
@@ -3724,14 +3527,14 @@ var Fw;
                 try {
                     if (this.Direction === Direction.Horizontal) {
                         // 横方向
-                        this.Dom.style.overflowX = 'scroll';
+                        this.Dom.style.overflowX = 'hidden'; //'scroll';
                         this.Dom.style.overflowY = 'hidden';
                         this._innerBox.Size.Width = this.Size.Width * this.InnerPanelCount;
                         this._innerBox.Size.Height = this.Size.Height;
                     }
                     else {
                         // 縦方向
-                        this.Dom.style.overflowY = 'scroll';
+                        this.Dom.style.overflowY = 'hidden'; //'scroll';
                         this.Dom.style.overflowX = 'hidden';
                         this._innerBox.Size.Height = this.Size.Height * this.InnerPanelCount;
                         this._innerBox.Size.Width = this.Size.Width;
@@ -3753,7 +3556,6 @@ var Fw;
                 this._innerBox = null;
                 this._isDragging = null;
                 this._spcvMouseSuppressor = null;
-                this._spcvDelayedResumeEventsTimer = null;
                 this._dragStartMousePosition.Dispose();
                 this._dragStartMousePosition = null;
                 this._dragStartViewPosition.Dispose();
@@ -3763,5 +3565,208 @@ var Fw;
         }(Views.BoxView));
         Views.SlidableBoxView = SlidableBoxView;
     })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Events/ControlViewEvents.ts" />
+/// <reference path="../Util/Dump.ts" />
+/// <reference path="../Util/Number.ts" />
+/// <reference path="ControlView.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Events = Fw.Events.ControlViewEvents;
+        var ToggleButtonView = /** @class */ (function (_super) {
+            __extends(ToggleButtonView, _super);
+            function ToggleButtonView() {
+                var _this = _super !== null && _super.apply(this, arguments) || this;
+                _this.HoverColor = '';
+                _this._value = false;
+                return _this;
+            }
+            Object.defineProperty(ToggleButtonView.prototype, "Value", {
+                get: function () {
+                    return this._value;
+                },
+                set: function (value) {
+                    var changed = (this._value !== value);
+                    if (changed) {
+                        this._value = !this._value;
+                        (this._value)
+                            ? this.SwitchToOn()
+                            : this.SwitchToOff();
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
+            ToggleButtonView.prototype.Init = function () {
+                var _this = this;
+                _super.prototype.Init.call(this);
+                this._value = false;
+                this._overMargin = 5;
+                this.SetClassName('ToggleButtonView');
+                this.Elem.addClass(this.ClassName);
+                // 標準サイズ：50 x 20
+                var width = 50;
+                var height = 20;
+                this.HasBorder = false;
+                this.SetSize(width, height);
+                this._sliderBox = new Views.BoxView();
+                this._sliderBox.Size.Width = this.Size.Width - this._overMargin;
+                this._sliderBox.Size.Height = this.Size.Height - this._overMargin;
+                this._sliderBox.HasBorder = true;
+                this._sliderBox.BorderRadius = 15;
+                this._sliderBox.Color = '#e5e5e5';
+                this._sliderBox.BackgroundColor = '#FFFFFF';
+                this._sliderBox.Dom.style.overflow = 'hidden';
+                this.Add(this._sliderBox);
+                this._maskOn = new Views.BoxView();
+                this._maskOn.Size.Width = this.Size.Width - this._overMargin;
+                this._maskOn.Size.Height = this.Size.Height - this._overMargin;
+                this._maskOn.HasBorder = false;
+                this._maskOn.BorderRadius = 15;
+                this._maskOn.BackgroundColor = '#4e748b';
+                this._maskOn.Position.X = -(this.Size.Width - this._overMargin);
+                this._sliderBox.Add(this._maskOn);
+                this._notch = new Views.BoxView();
+                this._notch.SetSize(this.Size.Height, this.Size.Height);
+                this._notch.HasBorder = true;
+                this._notch.BorderRadius = 50;
+                this._notch.Color = '#e5e5e5';
+                this._notch.BackgroundColor = '#cfcfcf';
+                this._notch.Position.X = -(this.Size.Width / 2) + (this.Size.Height / 2);
+                this.Add(this._notch);
+                this.Elem.hover(function () {
+                    _this.Dom.style.backgroundColor = _this.HoverColor;
+                }, function () {
+                    _this.Dom.style.backgroundColor = _this.BackgroundColor;
+                });
+                this.AddEventListener(Events.SingleClick, function () {
+                    _this._value = !_this._value;
+                    _this.Refresh();
+                });
+            };
+            ToggleButtonView.prototype.SwitchToOn = function () {
+            };
+            ToggleButtonView.prototype.SwitchToOff = function () {
+            };
+            ToggleButtonView.prototype.InnerRefresh = function () {
+                this._sliderBox.Size.Width = this.Size.Width - this._overMargin;
+                this._sliderBox.Size.Height = this.Size.Height - this._overMargin;
+                this._maskOn.Size.Width = this.Size.Width - this._overMargin;
+                this._maskOn.Size.Height = this.Size.Height - this._overMargin;
+                this._notch.SetSize(this.Size.Height, this.Size.Height);
+                this._notch.Position.X = (this.Value)
+                    ? (this.Size.Width / 2) - (this.Size.Height / 2)
+                    : -(this.Size.Width / 2) + (this.Size.Height / 2);
+                this._maskOn.Position.X = (this.Value)
+                    ? 0
+                    : -(this.Size.Width - this._overMargin);
+                _super.prototype.InnerRefresh.call(this);
+            };
+            ToggleButtonView.prototype.Dispose = function () {
+                _super.prototype.Dispose.call(this);
+                this.HoverColor = null;
+            };
+            return ToggleButtonView;
+        }(Views.ControlView));
+        Views.ToggleButtonView = ToggleButtonView;
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../lib/jquery/index.d.ts" />
+/// <reference path="../../lib/underscore/index.d.ts" />
+/// <reference path="Events/RootEvents.ts" />
+/// <reference path="Util/Dump.ts" />
+/// <reference path="Views/Property/Size.ts" />
+var Fw;
+(function (Fw) {
+    var Events = Fw.Events.RootEvents;
+    var Property = Fw.Views.Property;
+    var Root = /** @class */ (function (_super) {
+        __extends(Root, _super);
+        function Root(jqueryElem) {
+            var _this = _super.call(this) || this;
+            _this._isDragging = false;
+            _this.SetElem(jqueryElem);
+            _this.SetClassName('Root');
+            _this._size = new Property.Size();
+            _this._dom = jqueryElem.get(0);
+            _this._dragStartMousePosition = new Property.Position();
+            var $window = $(window);
+            $window.on('resize', function () {
+                _this.Refresh();
+                _this.DispatchEvent(Events.Resized);
+            });
+            _this.Refresh();
+            return _this;
+        }
+        Object.defineProperty(Root, "Instance", {
+            get: function () {
+                if (!Root._instance)
+                    throw new Error('Root.Init() has not been executed.');
+                return Root._instance;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Root.Init = function (selectorString) {
+            Root._instance = new Root($(selectorString));
+        };
+        Object.defineProperty(Root.prototype, "Dom", {
+            get: function () {
+                return this._dom;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Root.prototype, "Size", {
+            get: function () {
+                return this._size;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Root.prototype.Refresh = function () {
+            // this.Sizeのセッターが無いので、フィールドに直接書き込む。
+            this._size.Width = this.Elem.width();
+            this._size.Height = this.Elem.height();
+        };
+        Root.prototype.Dispose = function () {
+            _super.prototype.Dispose.call(this);
+            this._dom = null;
+            this._size.Dispose();
+            this._size = null;
+        };
+        Root._instance = null;
+        return Root;
+    }(Fw.ObjectBase));
+    Fw.Root = Root;
+})(Fw || (Fw = {}));
+/// <reference path="../../lib/jquery/index.d.ts" />
+/// <reference path="../../lib/underscore/index.d.ts" />
+/// <reference path="Util/Dump.ts" />
+/* /// <reference path="Views/Root.ts" /> */
+var Fw;
+(function (Fw) {
+    var Startup = /** @class */ (function () {
+        function Startup() {
+        }
+        Startup.Init = function () {
+            // ↓API仕様に応じて、App.Mainで書き換える。
+            Fw.Config.XhrBaseUrl
+                = location.protocol
+                    + '//' + location.hostname
+                    + ':' + location.port
+                    + '/';
+            // 画面全体のコンテナを初期化
+            Fw.Root.Init('div.body-content');
+            // Controllers.Managerの初期化
+            Fw.Controllers.Manager.Init();
+        };
+        return Startup;
+    }());
+    Fw.Startup = Startup;
 })(Fw || (Fw = {}));
 //# sourceMappingURL=tsout.js.map

@@ -43,7 +43,6 @@ namespace Fw.Views {
         private _innerBox: BoxView;
         private _isDragging: boolean = false;
         private _spcvMouseSuppressor = false;
-        private _spcvDelayedResumeEventsTimer: number = null;
         private _dragStartMousePosition: Property.Position;
         private _dragStartViewPosition: Property.Position;
 
@@ -69,6 +68,8 @@ namespace Fw.Views {
             this.BorderRadius = 0;
 
             this._innerBox = new BoxView();
+            this._innerBox.HasBorder = false;
+            this._innerBox.Elem.removeClass('TransAnimation');
             this.Add(this._innerBox);
 
             this.AddEventListener(Events.Initialized, () => {
@@ -114,7 +115,7 @@ namespace Fw.Views {
         private InitView(): void {
             if (this.Direction === Direction.Horizontal) {
                 // 横方向
-                this.Dom.style.overflowX = 'scroll';
+                this.Dom.style.overflowX = 'hidden';//'scroll';
                 this.Dom.style.overflowY = 'hidden';
                 this._innerBox.Size.Width = this.Size.Width * this.InnerPanelCount;
                 this._innerBox.Size.Height = this.Size.Height;
@@ -122,7 +123,7 @@ namespace Fw.Views {
                 this._innerBox.Position.Y = 0;
             } else {
                 // 縦方向
-                this.Dom.style.overflowY = 'scroll';
+                this.Dom.style.overflowY = 'hidden';//'scroll';
                 this.Dom.style.overflowX = 'hidden';
                 this._innerBox.Size.Height = this.Size.Height * this.InnerPanelCount;
                 this._innerBox.Size.Width = this.Size.Width;
@@ -188,13 +189,13 @@ namespace Fw.Views {
             try {
                 if (this.Direction === Direction.Horizontal) {
                     // 横方向
-                    this.Dom.style.overflowX = 'scroll';
+                    this.Dom.style.overflowX = 'hidden';//'scroll';
                     this.Dom.style.overflowY = 'hidden';
                     this._innerBox.Size.Width = this.Size.Width * this.InnerPanelCount;
                     this._innerBox.Size.Height = this.Size.Height;
                 } else {
                     // 縦方向
-                    this.Dom.style.overflowY = 'scroll';
+                    this.Dom.style.overflowY = 'hidden';//'scroll';
                     this.Dom.style.overflowX = 'hidden';
                     this._innerBox.Size.Height = this.Size.Height * this.InnerPanelCount;
                     this._innerBox.Size.Width = this.Size.Width;
@@ -217,7 +218,6 @@ namespace Fw.Views {
             this._innerBox = null;
             this._isDragging = null;
             this._spcvMouseSuppressor = null;
-            this._spcvDelayedResumeEventsTimer = null;
             this._dragStartMousePosition.Dispose();
             this._dragStartMousePosition = null;
             this._dragStartViewPosition.Dispose();

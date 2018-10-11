@@ -53,7 +53,7 @@ namespace Fw.Views {
             this._sliderBox.Size.Width = this.Size.Width - this._overMargin;
             this._sliderBox.Size.Height = this.Size.Height - this._overMargin;
             this._sliderBox.HasBorder = true;
-            this._sliderBox.BorderRadius = 10;
+            this._sliderBox.BorderRadius = 15;
             this._sliderBox.Color = '#e5e5e5';
             this._sliderBox.BackgroundColor = '#FFFFFF';
             this._sliderBox.Dom.style.overflow = 'hidden';
@@ -63,7 +63,7 @@ namespace Fw.Views {
             this._maskOn.Size.Width = this.Size.Width - this._overMargin;
             this._maskOn.Size.Height = this.Size.Height - this._overMargin;
             this._maskOn.HasBorder = false;
-            this._maskOn.BorderRadius = 0;
+            this._maskOn.BorderRadius = 15;
             this._maskOn.BackgroundColor = '#4e748b';
             this._maskOn.Position.X = - (this.Size.Width - this._overMargin);
             this._sliderBox.Add(this._maskOn);

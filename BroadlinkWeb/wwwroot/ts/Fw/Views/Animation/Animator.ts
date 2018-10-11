@@ -54,6 +54,8 @@ namespace Fw.Views.Animation {
             const toLeft = pHalfWidth + toX - (this.ToParams.Width / 2);
             const toTop = pHalfHeight + toY - (this.ToParams.Height / 2);
 
+            const hasTransAnimation = this._view.Elem.hasClass('TransAnimation');
+
             //Dump.Log({
             //    name: 'center',
             //    left: pHalfWidth,
@@ -88,6 +90,8 @@ namespace Fw.Views.Animation {
             dom.style.width = `${this.FromParams.Width}px`;
             dom.style.height = `${this.FromParams.Height}px`;
             dom.style.opacity = `${this.FromParams.Opacity}`;
+            if (hasTransAnimation)
+                this._view.Elem.removeClass('TransAnimation');
 
             // アニメーション終了時点の値をセット
             this._view.Elem.animate(
@@ -100,6 +104,9 @@ namespace Fw.Views.Animation {
                 }, {
                     'duration': duration,
                     'complete': () => {
+                        if (hasTransAnimation)
+                            this._view.Elem.addClass('TransAnimation');
+
                         if (_.isFunction(this.OnComplete))
                             this.OnComplete();
                     }

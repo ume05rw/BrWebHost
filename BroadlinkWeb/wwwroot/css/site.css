@@ -22,17 +22,18 @@ div.IController > * {
     position: static;
 }
 
-/* View用の要素 */
+/* Viewの基礎設定 */
 div.IController .IView {
     position: absolute;
-}
-
-div.IController .BoxView {
     display: block;
     border-style: solid;
-    background-color: rgba(255, 255, 255, 0.8);
+}
+/* Viewのアニメーション */
+div.IController .IView.TransAnimation {
+    transition: all 0.15s ease-in-out;
 }
 
+/* ラベル／画像等のインライン要素は中央配置 */
 div.IController .ControlView > .ControlViewProperty,
 div.IController .ImageView > .ImageViewProperty,
 div.IController .LabelView > .LabelViewProperty {
@@ -46,30 +47,24 @@ div.IController .LabelView > .LabelViewProperty {
     width: 100%;
     text-align: center;
 }
-div.IController .ControlView {
-    transition: all 0.3s ease;
-}
-div.IController .ControlView.Shadow {
+
+/* ドラッグ時等の配置先ターゲットシャドウ */
+div.IController .IView.Shadow {
     z-index: -1;
-    transition: all 0.3s ease;
 }
 
+/* ボタン背景色のホバーアニメーション */
 div.IController .ControlView.ButtonView {
-    transition: all 0.3s ease;
-}
-div.IController .ControlView.ButtonView:hover {
-    cursor: pointer;
+    transition: background-color, 0.3s ease-in-out;
 }
 
-div.IController .ControlView.ToggleButtonView,
-div.IController .ControlView.ToggleButtonView .BoxView {
-    transition: all 0.3s ease;
-}
-
+/* ボタンホバー*/
+div.IController .ControlView.ButtonView:hover, 
 div.IController .ControlView.ToggleButtonView:hover {
     cursor: pointer;
 }
 
-div.FinalizerIsNotExists {
-    /* VSのCSSインデントが邪魔なので末尾に置いておく。 */
+/* トグルボタンのノッチ移動アニメーション */
+div.IController .ControlView.ToggleButtonView .BoxView {
+    transition: all 0.3s ease-in-out;
 }
