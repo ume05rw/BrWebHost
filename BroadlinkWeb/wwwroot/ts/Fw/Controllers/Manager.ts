@@ -55,5 +55,13 @@ namespace Fw.Controllers {
 
             target.View.Show();
         }
+
+        public ShowOnce(controller: IController): void {
+            _.each(this._controllers, function (c) {
+                c.View.Hide();
+            });
+
+            controller.View.Show();
+        }
     }
 }

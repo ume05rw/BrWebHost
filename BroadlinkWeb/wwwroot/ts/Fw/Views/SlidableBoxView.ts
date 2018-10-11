@@ -84,9 +84,10 @@ namespace Fw.Views {
                 this._dragStartMousePosition.Y = e.clientY;
                 this._dragStartViewPosition.X = this._innerBox.Position.X;
                 this._dragStartViewPosition.Y = this._innerBox.Position.Y;
+                //Fw.Root.Instance.SetTextSelection(false);
             });
             this._innerBox.Elem.on('touchmove mousemove', (e) => {
-                if (!this._isDragging && !this._spcvMouseSuppressor)
+                if (!this._isDragging || this._spcvMouseSuppressor)
                     return;
 
                 if (e.eventPhase !== 2)
@@ -106,6 +107,7 @@ namespace Fw.Views {
             });
             this._innerBox.Elem.on('touchend mouseup mouseout', () => {
                 this._isDragging = false;
+                //Fw.Root.Instance.SetTextSelection(true);
                 _.delay(() => {
                     this.AdjustSlidePosition();
                 }, 200);

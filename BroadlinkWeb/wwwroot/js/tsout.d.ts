@@ -109,6 +109,8 @@ declare namespace Fw.Views {
         SetLeftTop(left: number, top: number, updatePolicy?: boolean): void;
         SetAnchor(top: number, left: number, right: number, bottom: number): void;
         SetDisplayParams(width: number, height: number, x: number, y: number, color: string, backgroundColor: string): void;
+        SetTransAnimation(enable: boolean): void;
+        HasTransAnimation(): boolean;
         Add(view: IView): void;
         Remove(view: IView): void;
         Refresh(): void;
@@ -141,6 +143,7 @@ declare namespace Fw.Controllers {
         private constructor();
         Add(controller: IController): void;
         Show(id: string): void;
+        ShowOnce(controller: IController): void;
     }
 }
 declare namespace Fw.Controllers {
@@ -156,6 +159,7 @@ declare namespace Fw.Controllers {
         constructor(id: string, jqueryElem?: JQuery);
         SetClassName(name: string): void;
         SetPageViewByJQuery(elem: JQuery): void;
+        Dispose(): void;
     }
 }
 declare namespace Fw.Events {
@@ -299,6 +303,8 @@ declare namespace Fw.Views {
         SetLeftTop(left: number, top: number, updatePolicy?: boolean): void;
         SetAnchor(top: number, left: number, right: number, bottom: number): void;
         SetDisplayParams(width: number, height: number, x?: number, y?: number, color?: string, backgroundColor?: string): void;
+        SetTransAnimation(enable: boolean): void;
+        HasTransAnimation(): boolean;
         private InitHasAnchor;
         Add(view: IView): void;
         Remove(view: IView): void;
@@ -344,24 +350,16 @@ declare namespace Fw.Views {
 declare namespace App.Views.Pages {
     import Views = Fw.Views;
     class MainPageView extends Fw.Views.PageView {
+        Header: Views.BoxView;
         BtnGoSub1: Views.ButtonView;
         BtnGoSub2: Views.ButtonView;
-        CenterControl: Views.ControlView;
-        TmpCtl: Views.ControlView;
-        Toggle: Views.ToggleButtonView;
-        AncCtl1: Views.ButtonView;
-        AncCtl2: Views.ButtonView;
-        AncCtl3: Views.ButtonView;
-        AncCtl4: Views.ButtonView;
-        AncCtl5: Views.ButtonView;
-        AncCtl6: Views.ButtonView;
+        BtnGoDynamic: Views.ButtonView;
         constructor();
         private Initialize;
     }
 }
 declare namespace App.Controllers {
     class MainController extends Fw.Controllers.ControllerBase {
-        private _centerControl;
         constructor(id: string);
         private Init;
     }
@@ -578,6 +576,9 @@ declare namespace Fw.Views {
     class ButtonView extends ControlView {
         private _imageView;
         ImageSrc: string;
+        /**
+         * @see publicプロパティの初期化タイミングに注意。コンストラクタ実行後に値がセットされる。
+         */
         HoverColor: string;
         protected Init(): void;
         protected InnerRefresh(): void;
@@ -631,8 +632,8 @@ declare namespace Fw.Views {
         GridSize: number;
         protected Init(): void;
         private OnMouseMove;
-        private _delayedResumeMouseEventsTimer;
-        private DelayedResumeMouseEvents;
+        private _delayedResumeTimer;
+        private DelayedResume;
         SetRelocatable(relocatable: boolean): void;
         protected InnerRefresh(): void;
         Dispose(): void;
@@ -693,6 +694,7 @@ declare namespace Fw {
         private constructor();
         Mask(): void;
         UnMask(): void;
+        SetTextSelection(enable: boolean): void;
         Refresh(): void;
         Dispose(): void;
     }
@@ -700,5 +702,29 @@ declare namespace Fw {
 declare namespace Fw {
     class Startup {
         static Init(): void;
+    }
+}
+declare namespace App.Views.Pages {
+    import Views = Fw.Views;
+    class LayoutCheckPageView extends Fw.Views.PageView {
+        BtnGoSub1: Views.ButtonView;
+        BtnGoSub2: Views.ButtonView;
+        CenterControl: Views.ControlView;
+        TmpCtl: Views.ControlView;
+        Toggle: Views.ToggleButtonView;
+        AncCtl1: Views.ButtonView;
+        AncCtl2: Views.ButtonView;
+        AncCtl3: Views.ButtonView;
+        AncCtl4: Views.ButtonView;
+        AncCtl5: Views.ButtonView;
+        AncCtl6: Views.ButtonView;
+        constructor();
+        private Initialize;
+    }
+}
+declare namespace App.Controllers {
+    class LayoutCheckController extends Fw.Controllers.ControllerBase {
+        constructor(id: string);
+        private Init;
     }
 }

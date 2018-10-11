@@ -243,6 +243,17 @@ namespace Fw.Views {
                 this.BackgroundColor = backgroundColor;
         }
 
+        public SetTransAnimation(enable: boolean): void {
+            if (enable && !this.Elem.hasClass('TransAnimation'))
+                this.Elem.addClass('TransAnimation');
+            else if (!enable && this.Elem.hasClass('TransAnimation'))
+                this.Elem.removeClass('TransAnimation');
+        }
+
+        public HasTransAnimation(): boolean {
+            return this.Elem.hasClass('TransAnimation');
+        }
+
         private InitHasAnchor(): void {
             let hasAnchorX: boolean = (this.Anchor.IsAnchoredLeft || this.Anchor.IsAnchoredRight);
             let hasAnchorY: boolean = (this.Anchor.IsAnchoredTop || this.Anchor.IsAnchoredBottom);

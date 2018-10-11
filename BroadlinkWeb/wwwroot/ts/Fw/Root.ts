@@ -96,6 +96,13 @@ namespace Fw {
             this.Refresh();
         }
 
+        public SetTextSelection(enable: boolean): void {
+            if (enable && this.Elem.hasClass('TextUnselect'))
+                this.Elem.removeClass('TextUnselect');
+            else if (!enable && !this.Elem.hasClass('TextUnselect'))
+                this.Elem.addClass('TextUnselect');
+        }
+
         public Refresh(): void {
             // this.Sizeのセッターが無いので、フィールドに直接書き込む。
             this._size.Width = this.Elem.width();

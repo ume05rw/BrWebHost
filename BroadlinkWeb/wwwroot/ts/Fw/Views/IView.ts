@@ -28,6 +28,9 @@ namespace Fw.Views {
         SetAnchor(top: number, left: number, right: number, bottom: number): void;
         SetDisplayParams(width: number, height: number, x: number, y: number, color: string, backgroundColor: string): void;
 
+        SetTransAnimation(enable: boolean): void;
+        HasTransAnimation(): boolean;
+
         Add(view: IView): void;
         Remove(view: IView): void;
 

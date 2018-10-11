@@ -48,5 +48,13 @@ namespace Fw.Controllers {
                 this.View.Show();
         }
 
+        public Dispose(): void {
+            this.View.Dispose();
+            this.View = null;
+
+            this.Id = null;
+            this.IsDefaultView = null;
+            this._className = null;
+        }
     }
 }

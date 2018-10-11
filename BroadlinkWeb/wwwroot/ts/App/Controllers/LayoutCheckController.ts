@@ -14,7 +14,7 @@ namespace App.Controllers {
     import Property = Fw.Views.Property;
     import Pages = App.Views.Pages;
 
-    export class MainController extends Fw.Controllers.ControllerBase {
+    export class LayoutCheckController extends Fw.Controllers.ControllerBase {
 
         constructor(id: string) {
             super(id);
@@ -23,10 +23,10 @@ namespace App.Controllers {
         }
 
         private Init(): void {
-            this.SetClassName('MainController');
+            this.SetClassName('LayoutCheckController');
 
-            this.View = new Pages.MainPageView();
-            const page = this.View as Pages.MainPageView;
+            this.View = new Pages.LayoutCheckPageView();
+            const page = this.View as Pages.LayoutCheckPageView;
 
             page.BtnGoSub1.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
                 // イベント通知でなく、参照保持でよいか？
@@ -38,10 +38,26 @@ namespace App.Controllers {
                 Manager.Instance.Show("Sub2");
             });
 
-            page.BtnGoDynamic.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
-                // イベント通知でなく、参照保持でよいか？
-                const ctr = new LayoutCheckController('LayoutCheck');
-                Manager.Instance.ShowOnce(ctr);
+            page.TmpCtl.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
+                Dump.Log(`${this.ClassName}.SingleClick1`);
+                if (page.CenterControl.IsVisible()) {
+                    Dump.Log('みえてんで！');
+                    page.CenterControl.Hide();
+                } else {
+                    Dump.Log('みえへんで...？');
+                    page.CenterControl.Show();
+                }
+            });
+
+            this.View.AddEventListener(Events.PageViewEvents.Shown, () => {
+                Dump.Log(`${this.ClassName}.Shown`);
+            });
+
+            page.AncCtl4.AddEventListener(Events.ButtonViewEvents.SingleClick, () => {
+                //Dump.Log(`${this.ClassName}.SingleClick2`);
+                page.IsMasked
+                    ? page.UnMask()
+                    : page.Mask();
             });
         }
     }

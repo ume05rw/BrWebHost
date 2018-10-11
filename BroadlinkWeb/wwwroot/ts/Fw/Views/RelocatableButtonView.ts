@@ -124,23 +124,25 @@ namespace Fw.Views {
                     this.SuppressEvent(Events.LongClick);
                 if (!this.IsSuppressedEvent(Events.SingleClick))
                     this.SuppressEvent(Events.SingleClick);
-                this.DelayedResumeMouseEvents();
+                Fw.Root.Instance.SetTextSelection(false);
+                this.DelayedResume();
             }
         }
 
-        private _delayedResumeMouseEventsTimer: number = null;
-        private DelayedResumeMouseEvents(): void {
-            if (this._delayedResumeMouseEventsTimer !== null) {
-                clearTimeout(this._delayedResumeMouseEventsTimer);
-                this._delayedResumeMouseEventsTimer = null;
+        private _delayedResumeTimer: number = null;
+        private DelayedResume(): void {
+            if (this._delayedResumeTimer !== null) {
+                clearTimeout(this._delayedResumeTimer);
+                this._delayedResumeTimer = null;
             }
 
-            this._delayedResumeMouseEventsTimer = setTimeout(() => {
+            this._delayedResumeTimer = setTimeout(() => {
                 //Dump.Log('ResumeMouseEvents');
                 if (this.IsSuppressedEvent(Events.LongClick))
                     this.ResumeEvent(Events.LongClick);
                 if (this.IsSuppressedEvent(Events.SingleClick))
                     this.ResumeEvent(Events.SingleClick);
+                Fw.Root.Instance.SetTextSelection(true);
             }, 100);
         }
 

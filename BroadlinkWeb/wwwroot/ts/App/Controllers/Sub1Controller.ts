@@ -32,20 +32,18 @@ namespace App.Controllers {
             header.BorderRadius = 0;
             this.View.Add(header);
 
-            const back = new Fw.Views.ControlView();
-            back.Size.Width = 40;
-            back.Size.Height = 40;
-            back.Label = '戻る';
-            back.SetAnchor(null, null, 5, null);
+            const back = new Fw.Views.ButtonView();
+            back.SetSize(40, 40);
+            back.Label = '<<';
+            back.SetAnchor(null, 5, null, null);
             back.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
                 Manager.Instance.Show("Main");
             });
             header.Add(back);
 
-            const devices = new Fw.Views.ControlView();
-            devices.SetXY(0, -400);
-            devices.SetSize(60, 60);
-            devices.Color = '#8844FF';
+            const devices = new Fw.Views.ButtonView();
+            devices.SetSize(80, 30);
+            devices.SetLeftTop(10, 70);
             devices.Label = 'デバイス走査';
             devices.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
                 const store = new BrDeviceStore();
@@ -66,9 +64,9 @@ namespace App.Controllers {
             this.View.Add(devices);
 
             const slider = new Fw.Views.SlidableBoxView(Fw.Views.Direction.Horizontal);
-            slider.SetSize(100, 50);
+            slider.SetSize(400, 200);
+            devices.SetLeftTop(10, 120);
             slider.InnerPanelCount = 2.5;
-            slider.SetAnchor(60, 20, null, null);
             this.View.Add(slider);
         }
     }

@@ -405,6 +405,12 @@ var Fw;
                 });
                 target.View.Show();
             };
+            Manager.prototype.ShowOnce = function (controller) {
+                _.each(this._controllers, function (c) {
+                    c.View.Hide();
+                });
+                controller.View.Show();
+            };
             Manager._instance = null;
             return Manager;
         }());
@@ -452,6 +458,13 @@ var Fw;
                 this.IsDefaultView = (this.View.Elem.attr(Config.DefaultPageAttribute) === "true");
                 if (this.IsDefaultView)
                     this.View.Show();
+            };
+            ControllerBase.prototype.Dispose = function () {
+                this.View.Dispose();
+                this.View = null;
+                this.Id = null;
+                this.IsDefaultView = null;
+                this._className = null;
             };
             return ControllerBase;
         }());
@@ -675,7 +688,7 @@ var Fw;
                     var toY = this._view.Position.Y + this.ToParams.Y;
                     var toLeft = pHalfWidth + toX - (this.ToParams.Width / 2);
                     var toTop = pHalfHeight + toY - (this.ToParams.Height / 2);
-                    var hasTransAnimation = this._view.Elem.hasClass('TransAnimation');
+                    var hasTransAnimation = this._view.HasTransAnimation();
                     //Dump.Log({
                     //    name: 'center',
                     //    left: pHalfWidth,
@@ -708,7 +721,7 @@ var Fw;
                     dom.style.height = this.FromParams.Height + "px";
                     dom.style.opacity = "" + this.FromParams.Opacity;
                     if (hasTransAnimation)
-                        this._view.Elem.removeClass('TransAnimation');
+                        this._view.SetTransAnimation(false);
                     // アニメーション終了時点の値をセット
                     this._view.Elem.animate({
                         'left': toLeft + "px",
@@ -720,7 +733,7 @@ var Fw;
                         'duration': duration,
                         'complete': function () {
                             if (hasTransAnimation)
-                                _this._view.Elem.addClass('TransAnimation');
+                                _this._view.SetTransAnimation(true);
                             if (_.isFunction(_this.OnComplete))
                                 _this.OnComplete();
                         }
@@ -1156,6 +1169,15 @@ var Fw;
                     this.Color = color;
                 if (backgroundColor !== undefined)
                     this.BackgroundColor = backgroundColor;
+            };
+            ViewBase.prototype.SetTransAnimation = function (enable) {
+                if (enable && !this.Elem.hasClass('TransAnimation'))
+                    this.Elem.addClass('TransAnimation');
+                else if (!enable && this.Elem.hasClass('TransAnimation'))
+                    this.Elem.removeClass('TransAnimation');
+            };
+            ViewBase.prototype.HasTransAnimation = function () {
+                return this.Elem.hasClass('TransAnimation');
             };
             ViewBase.prototype.InitHasAnchor = function () {
                 var hasAnchorX = (this.Anchor.IsAnchoredLeft || this.Anchor.IsAnchoredRight);
@@ -1654,6 +1676,7 @@ var App;
     (function (Views_1) {
         var Pages;
         (function (Pages) {
+            var Views = Fw.Views;
             var Property = Fw.Views.Property;
             var MainPageView = /** @class */ (function (_super) {
                 __extends(MainPageView, _super);
@@ -1666,71 +1689,33 @@ var App;
                 }
                 MainPageView.prototype.Initialize = function () {
                     this.SetClassName('MainPageView');
+                    this.Header = new Views.BoxView();
+                    this.Header.Size.Height = 50;
+                    this.Header.SetAnchor(0, 0, 0, null);
+                    this.Header.BackgroundColor = '#555555';
+                    this.Header.Color = '#FFFFFF';
+                    this.Header.HasBorder = false;
+                    this.Add(this.Header);
+                    var headerLabel = new Views.LabelView();
+                    headerLabel.Text = 'Broadlink Web Host(仮題)';
+                    headerLabel.FontSize = Property.FontSize.Large;
+                    headerLabel.Color = '#FFFFFF';
+                    this.Header.Add(headerLabel);
                     this.BtnGoSub1 = new Fw.Views.ButtonView();
-                    this.BtnGoSub1.Label = 'Go Sub1';
+                    this.BtnGoSub1.Label = 'Show Sub1';
                     this.BtnGoSub1.SetSize(80, 30);
-                    this.BtnGoSub1.SetAnchor(null, 10, null, null);
+                    this.BtnGoSub1.SetLeftTop(10, 70);
                     this.Add(this.BtnGoSub1);
                     this.BtnGoSub2 = new Fw.Views.ButtonView();
-                    this.BtnGoSub2.Label = 'Go Sub2';
+                    this.BtnGoSub2.Label = 'Show Sub2';
                     this.BtnGoSub2.SetSize(80, 30);
-                    this.BtnGoSub2.Position.Y = 40;
-                    this.BtnGoSub2.SetAnchor(null, 10, null, null);
+                    this.BtnGoSub2.SetLeftTop(10, 120);
                     this.Add(this.BtnGoSub2);
-                    this.CenterControl = new Fw.Views.ControlView();
-                    this.CenterControl.SetXY(0, 0);
-                    this.CenterControl.SetSize(100, 50);
-                    this.CenterControl.Color = '#1155FF';
-                    this.CenterControl.Label = 'はろー<br/>どうよ？';
-                    this.Add(this.CenterControl);
-                    this.TmpCtl = new Fw.Views.ControlView();
-                    this.TmpCtl.SetXY(-100, -100);
-                    this.TmpCtl.SetSize(200, 200);
-                    this.TmpCtl.Color = '#666666';
-                    this.TmpCtl.Label = 'くりっく';
-                    this.Add(this.TmpCtl);
-                    this.AncCtl1 = new Fw.Views.ButtonView();
-                    this.AncCtl1.Label = '右下';
-                    this.AncCtl1.SetSize(200, 50);
-                    this.AncCtl1.SetAnchor(null, null, 40, 5);
-                    this.Add(this.AncCtl1);
-                    this.AncCtl2 = new Fw.Views.ButtonView();
-                    this.AncCtl2.Label = '右上';
-                    this.AncCtl2.SetSize(200, 50);
-                    this.AncCtl2.SetAnchor(3, null, 3, null);
-                    this.Add(this.AncCtl2);
-                    var label = new Fw.Views.LabelView();
-                    label.FontSize = Property.FontSize.XxLarge;
-                    label.Text = 'らべるやで';
-                    this.AncCtl2.Add(label);
-                    this.AncCtl3 = new Fw.Views.ButtonView();
-                    this.AncCtl3.Label = '左下';
-                    this.AncCtl3.SetSize(300, 100);
-                    this.AncCtl3.SetAnchor(null, 3, null, 3);
-                    this.Add(this.AncCtl3);
-                    var img = new Fw.Views.ImageView();
-                    img.SetSize(100, 70);
-                    img.Src = 'images/icons/home.png';
-                    img.FitPolicy = Property.FitPolicy.Cover;
-                    this.AncCtl3.Add(img);
-                    this.Toggle = new Fw.Views.ToggleButtonView();
-                    this.Toggle.SetAnchor(150, 10, null, null);
-                    this.Add(this.Toggle);
-                    this.AncCtl4 = new Fw.Views.ButtonView();
-                    this.AncCtl4.Label = 'マスク';
-                    this.AncCtl4.SetSize(200, 50);
-                    this.AncCtl4.SetAnchor(60, 3, null, null);
-                    this.Add(this.AncCtl4);
-                    //this.AncCtl5 = new Fw.Views.ButtonView();
-                    //this.AncCtl5.Label = '左右';
-                    //this.AncCtl5.Size.Height = 50;
-                    //this.AncCtl5.SetAnchor(null, 150, 300, 100);
-                    //this.Add(this.AncCtl5);
-                    //this.AncCtl6 = new Fw.Views.ButtonView();
-                    //this.AncCtl6.Label = '上下';
-                    //this.AncCtl6.SetAnchor(200, null, null, 40);
-                    //this.AncCtl6.Size.Width = 30;
-                    //this.Add(this.AncCtl6);
+                    this.BtnGoDynamic = new Fw.Views.ButtonView();
+                    this.BtnGoDynamic.Label = 'Show LayoutCheck';
+                    this.BtnGoDynamic.SetSize(80, 30);
+                    this.BtnGoDynamic.SetLeftTop(10, 170);
+                    this.Add(this.BtnGoDynamic);
                 };
                 return MainPageView;
             }(Fw.Views.PageView));
@@ -1750,7 +1735,6 @@ var App;
 (function (App) {
     var Controllers;
     (function (Controllers) {
-        var Dump = Fw.Util.Dump;
         var Events = Fw.Events;
         var Manager = Fw.Controllers.Manager;
         var Pages = App.Views.Pages;
@@ -1762,7 +1746,6 @@ var App;
                 return _this;
             }
             MainController.prototype.Init = function () {
-                var _this = this;
                 this.SetClassName('MainController');
                 this.View = new Pages.MainPageView();
                 var page = this.View;
@@ -1774,25 +1757,10 @@ var App;
                     // イベント通知でなく、参照保持でよいか？
                     Manager.Instance.Show("Sub2");
                 });
-                page.TmpCtl.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
-                    Dump.Log(_this.ClassName + ".SingleClick1");
-                    if (page.CenterControl.IsVisible()) {
-                        Dump.Log('みえてんで！');
-                        page.CenterControl.Hide();
-                    }
-                    else {
-                        Dump.Log('みえへんで...？');
-                        page.CenterControl.Show();
-                    }
-                });
-                this.View.AddEventListener(Events.PageViewEvents.Shown, function () {
-                    Dump.Log(_this.ClassName + ".Shown");
-                });
-                page.AncCtl4.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
-                    //Dump.Log(`${this.ClassName}.SingleClick2`);
-                    page.IsMasked
-                        ? page.UnMask()
-                        : page.Mask();
+                page.BtnGoDynamic.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
+                    // イベント通知でなく、参照保持でよいか？
+                    var ctr = new Controllers.LayoutCheckController('LayoutCheck');
+                    Manager.Instance.ShowOnce(ctr);
                 });
             };
             return MainController;
@@ -2055,19 +2023,17 @@ var App;
                 header.HasBorder = false;
                 header.BorderRadius = 0;
                 this.View.Add(header);
-                var back = new Fw.Views.ControlView();
-                back.Size.Width = 40;
-                back.Size.Height = 40;
-                back.Label = '戻る';
-                back.SetAnchor(null, null, 5, null);
+                var back = new Fw.Views.ButtonView();
+                back.SetSize(40, 40);
+                back.Label = '<<';
+                back.SetAnchor(null, 5, null, null);
                 back.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
                     Manager.Instance.Show("Main");
                 });
                 header.Add(back);
-                var devices = new Fw.Views.ControlView();
-                devices.SetXY(0, -400);
-                devices.SetSize(60, 60);
-                devices.Color = '#8844FF';
+                var devices = new Fw.Views.ButtonView();
+                devices.SetSize(80, 30);
+                devices.SetLeftTop(10, 70);
                 devices.Label = 'デバイス走査';
                 devices.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
                     var store = new BrDeviceStore();
@@ -2087,9 +2053,9 @@ var App;
                 });
                 this.View.Add(devices);
                 var slider = new Fw.Views.SlidableBoxView(Fw.Views.Direction.Horizontal);
-                slider.SetSize(100, 50);
+                slider.SetSize(400, 200);
+                devices.SetLeftTop(10, 120);
                 slider.InnerPanelCount = 2.5;
-                slider.SetAnchor(60, 20, null, null);
                 this.View.Add(slider);
             };
             return Sub1Controller;
@@ -2110,6 +2076,8 @@ var App;
         var Dump = Fw.Util.Dump;
         var Xhr = Fw.Util.Xhr;
         var Events = Fw.Events;
+        var Views = Fw.Views;
+        var Property = Fw.Views.Property;
         var Manager = Fw.Controllers.Manager;
         var Sub2Controller = /** @class */ (function (_super) {
             __extends(Sub2Controller, _super);
@@ -2119,19 +2087,30 @@ var App;
                 return _this;
             }
             Sub2Controller.prototype.Init = function () {
-                var btnGoMain = new Fw.Views.ControlView();
-                btnGoMain.Label = 'Back Main';
-                btnGoMain.SetSize(80, 30);
-                btnGoMain.SetAnchor(30, 10, null, null);
-                btnGoMain.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
-                    // イベント通知でなく、参照保持でよいか？
+                var header = new Views.BoxView();
+                header.Size.Height = 50;
+                header.SetAnchor(0, 0, 0, null);
+                header.BackgroundColor = '#555555';
+                header.Color = '#FFFFFF';
+                header.HasBorder = false;
+                this.View.Add(header);
+                var headerLabel = new Views.LabelView();
+                headerLabel.Text = 'A1 Sensor';
+                headerLabel.FontSize = Property.FontSize.Large;
+                headerLabel.Color = '#FFFFFF';
+                header.Add(headerLabel);
+                var back = new Fw.Views.ButtonView();
+                back.SetSize(40, 40);
+                back.Label = '<<';
+                back.SetAnchor(null, 5, null, null);
+                back.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
                     Manager.Instance.Show("Main");
                 });
-                this.View.Add(btnGoMain);
-                var btnA1Value = new Fw.Views.ControlView();
+                header.Add(back);
+                var btnA1Value = new Fw.Views.ButtonView();
                 btnA1Value.Label = 'A1 Value';
                 btnA1Value.SetSize(80, 30);
-                btnA1Value.SetAnchor(80, 10, null, null);
+                btnA1Value.SetLeftTop(10, 70);
                 btnA1Value.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
                     Dump.Log('btnA1Value.click');
                     var params = new Xhr.Params('BrDevices/GetA1SensorValues', Xhr.MethodType.Get);
@@ -2146,17 +2125,15 @@ var App;
                 btnMove.SetSize(60, 60);
                 btnMove.Color = '#1188FF';
                 btnMove.BackgroundColor = '#FF9900';
-                ///btnMove.SetXY(0, -200);
-                btnMove.SetLeftTop(10, 20);
-                //btnMove.SetDisplayParams(60, 60, 0, -200, '#1188FF');
+                btnMove.SetLeftTop(10, 120);
                 btnMove.Label = '動く？';
                 btnMove.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
                     Dump.Log('btnMove.SingleClick');
                 });
                 this.View.Add(btnMove);
-                var btnReset = new Fw.Views.ControlView();
+                var btnReset = new Fw.Views.ButtonView();
                 btnReset.SetDisplayParams(60, 60, 0, 0, '#1188FF');
-                btnReset.SetAnchor(5, null, 5, null);
+                btnReset.SetAnchor(70, null, 5, null);
                 btnReset.Label = 'リセット';
                 btnReset.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
                     Dump.Log('btnReset.SingleClick');
@@ -2913,9 +2890,7 @@ var Fw;
         var ButtonView = /** @class */ (function (_super) {
             __extends(ButtonView, _super);
             function ButtonView() {
-                var _this = _super !== null && _super.apply(this, arguments) || this;
-                _this.HoverColor = '';
-                return _this;
+                return _super !== null && _super.apply(this, arguments) || this;
             }
             Object.defineProperty(ButtonView.prototype, "ImageSrc", {
                 get: function () {
@@ -2938,6 +2913,7 @@ var Fw;
                 this._imageView.Src = null;
                 this.Add(this._imageView);
                 this.Elem.hover(function () {
+                    //Dump.Log(`${this.ClassName}.hover: color = ${this.HoverColor}`);
                     _this.Dom.style.backgroundColor = _this.HoverColor;
                 }, function () {
                     _this.Dom.style.backgroundColor = _this.BackgroundColor;
@@ -3120,6 +3096,7 @@ var Fw;
                 this.SetClassName('LabelView');
                 this.Elem.addClass(this.ClassName);
                 this.BackgroundColor = 'transparent';
+                this.SetTransAnimation(false);
                 this.Dom.style.borderWidth = '0';
                 this.Dom.style.borderRadius = '0';
                 this._text = '';
@@ -3143,7 +3120,7 @@ var Fw;
                 try {
                     this.SuppressLayout();
                     if (this._autoSize) {
-                        this.Size.Width = this._hiddenSpan.offsetWidth;
+                        this.Size.Width = this._hiddenSpan.offsetWidth + 10;
                         this.Size.Height = this._hiddenSpan.offsetHeight;
                     }
                     _super.prototype.InnerRefresh.call(this);
@@ -3187,7 +3164,7 @@ var Fw;
                 _this._isMouseMoveEventListened = false;
                 _this._isDragging = false;
                 _this._gridSize = 60;
-                _this._delayedResumeMouseEventsTimer = null;
+                _this._delayedResumeTimer = null;
                 return _this;
             }
             Object.defineProperty(RelocatableButtonView.prototype, "IsRelocatable", {
@@ -3290,21 +3267,23 @@ var Fw;
                         this.SuppressEvent(Events.LongClick);
                     if (!this.IsSuppressedEvent(Events.SingleClick))
                         this.SuppressEvent(Events.SingleClick);
-                    this.DelayedResumeMouseEvents();
+                    Fw.Root.Instance.SetTextSelection(false);
+                    this.DelayedResume();
                 }
             };
-            RelocatableButtonView.prototype.DelayedResumeMouseEvents = function () {
+            RelocatableButtonView.prototype.DelayedResume = function () {
                 var _this = this;
-                if (this._delayedResumeMouseEventsTimer !== null) {
-                    clearTimeout(this._delayedResumeMouseEventsTimer);
-                    this._delayedResumeMouseEventsTimer = null;
+                if (this._delayedResumeTimer !== null) {
+                    clearTimeout(this._delayedResumeTimer);
+                    this._delayedResumeTimer = null;
                 }
-                this._delayedResumeMouseEventsTimer = setTimeout(function () {
+                this._delayedResumeTimer = setTimeout(function () {
                     //Dump.Log('ResumeMouseEvents');
                     if (_this.IsSuppressedEvent(Events.LongClick))
                         _this.ResumeEvent(Events.LongClick);
                     if (_this.IsSuppressedEvent(Events.SingleClick))
                         _this.ResumeEvent(Events.SingleClick);
+                    Fw.Root.Instance.SetTextSelection(true);
                 }, 100);
             };
             RelocatableButtonView.prototype.SetRelocatable = function (relocatable) {
@@ -3474,9 +3453,10 @@ var Fw;
                     _this._dragStartMousePosition.Y = e.clientY;
                     _this._dragStartViewPosition.X = _this._innerBox.Position.X;
                     _this._dragStartViewPosition.Y = _this._innerBox.Position.Y;
+                    //Fw.Root.Instance.SetTextSelection(false);
                 });
                 this._innerBox.Elem.on('touchmove mousemove', function (e) {
-                    if (!_this._isDragging && !_this._spcvMouseSuppressor)
+                    if (!_this._isDragging || _this._spcvMouseSuppressor)
                         return;
                     if (e.eventPhase !== 2)
                         return;
@@ -3494,6 +3474,7 @@ var Fw;
                 });
                 this._innerBox.Elem.on('touchend mouseup mouseout', function () {
                     _this._isDragging = false;
+                    //Fw.Root.Instance.SetTextSelection(true);
                     _.delay(function () {
                         _this.AdjustSlidePosition();
                     }, 200);
@@ -3808,6 +3789,12 @@ var Fw;
                 this._mask.Elem.removeClass('Masked');
             this.Refresh();
         };
+        Root.prototype.SetTextSelection = function (enable) {
+            if (enable && this.Elem.hasClass('TextUnselect'))
+                this.Elem.removeClass('TextUnselect');
+            else if (!enable && !this.Elem.hasClass('TextUnselect'))
+                this.Elem.addClass('TextUnselect');
+        };
         Root.prototype.Refresh = function () {
             // this.Sizeのセッターが無いので、フィールドに直接書き込む。
             this._size.Width = this.Elem.width();
@@ -3855,4 +3842,162 @@ var Fw;
     }());
     Fw.Startup = Startup;
 })(Fw || (Fw = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Views/PageView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Events/PageViewEvents.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+var App;
+(function (App) {
+    var Views;
+    (function (Views_2) {
+        var Pages;
+        (function (Pages) {
+            var Property = Fw.Views.Property;
+            var LayoutCheckPageView = /** @class */ (function (_super) {
+                __extends(LayoutCheckPageView, _super);
+                function LayoutCheckPageView() {
+                    var _this = this;
+                    var jqueryElem = $("");
+                    _this = _super.call(this, jqueryElem) || this;
+                    _this.Initialize();
+                    return _this;
+                }
+                LayoutCheckPageView.prototype.Initialize = function () {
+                    this.SetClassName('MainPageView');
+                    this.BtnGoSub1 = new Fw.Views.ButtonView();
+                    this.BtnGoSub1.Label = 'Go Sub1';
+                    this.BtnGoSub1.SetSize(80, 30);
+                    this.BtnGoSub1.SetAnchor(null, 10, null, null);
+                    this.Add(this.BtnGoSub1);
+                    this.BtnGoSub2 = new Fw.Views.ButtonView();
+                    this.BtnGoSub2.Label = 'Go Sub2';
+                    this.BtnGoSub2.SetSize(80, 30);
+                    this.BtnGoSub2.Position.Y = 40;
+                    this.BtnGoSub2.SetAnchor(null, 10, null, null);
+                    this.Add(this.BtnGoSub2);
+                    this.CenterControl = new Fw.Views.ControlView();
+                    this.CenterControl.SetXY(0, 0);
+                    this.CenterControl.SetSize(100, 50);
+                    this.CenterControl.Color = '#1155FF';
+                    this.CenterControl.Label = 'はろー<br/>どうよ？';
+                    this.Add(this.CenterControl);
+                    this.TmpCtl = new Fw.Views.ControlView();
+                    this.TmpCtl.SetXY(-100, -100);
+                    this.TmpCtl.SetSize(200, 200);
+                    this.TmpCtl.Color = '#666666';
+                    this.TmpCtl.Label = 'くりっく';
+                    this.Add(this.TmpCtl);
+                    this.AncCtl1 = new Fw.Views.ButtonView();
+                    this.AncCtl1.Label = '右下';
+                    this.AncCtl1.SetSize(200, 50);
+                    this.AncCtl1.SetAnchor(null, null, 40, 5);
+                    this.Add(this.AncCtl1);
+                    this.AncCtl2 = new Fw.Views.ButtonView();
+                    this.AncCtl2.Label = '右上';
+                    this.AncCtl2.SetSize(200, 50);
+                    this.AncCtl2.SetAnchor(3, null, 3, null);
+                    this.Add(this.AncCtl2);
+                    var label = new Fw.Views.LabelView();
+                    label.FontSize = Property.FontSize.XxLarge;
+                    label.Text = 'らべるやで';
+                    this.AncCtl2.Add(label);
+                    this.AncCtl3 = new Fw.Views.ButtonView();
+                    this.AncCtl3.Label = '左下';
+                    this.AncCtl3.SetSize(300, 100);
+                    this.AncCtl3.SetAnchor(null, 3, null, 3);
+                    this.Add(this.AncCtl3);
+                    var img = new Fw.Views.ImageView();
+                    img.SetSize(100, 70);
+                    img.Src = 'images/icons/home.png';
+                    img.FitPolicy = Property.FitPolicy.Cover;
+                    this.AncCtl3.Add(img);
+                    this.Toggle = new Fw.Views.ToggleButtonView();
+                    this.Toggle.SetAnchor(150, 10, null, null);
+                    this.Add(this.Toggle);
+                    this.AncCtl4 = new Fw.Views.ButtonView();
+                    this.AncCtl4.Label = 'マスク';
+                    this.AncCtl4.SetSize(200, 50);
+                    this.AncCtl4.SetAnchor(60, 3, null, null);
+                    this.Add(this.AncCtl4);
+                    //this.AncCtl5 = new Fw.Views.ButtonView();
+                    //this.AncCtl5.Label = '左右';
+                    //this.AncCtl5.Size.Height = 50;
+                    //this.AncCtl5.SetAnchor(null, 150, 300, 100);
+                    //this.Add(this.AncCtl5);
+                    //this.AncCtl6 = new Fw.Views.ButtonView();
+                    //this.AncCtl6.Label = '上下';
+                    //this.AncCtl6.SetAnchor(200, null, null, 40);
+                    //this.AncCtl6.Size.Width = 30;
+                    //this.Add(this.AncCtl6);
+                };
+                return LayoutCheckPageView;
+            }(Fw.Views.PageView));
+            Pages.LayoutCheckPageView = LayoutCheckPageView;
+        })(Pages = Views_2.Pages || (Views_2.Pages = {}));
+    })(Views = App.Views || (App.Views = {}));
+})(App || (App = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Fw/Controllers/ControllerBase.ts" />
+/// <reference path="../../Fw/Controllers/Manager.ts" />
+/// <reference path="../../Fw/Util/Dump.ts" />
+/// <reference path="../../Fw/Events/ControlViewEvents.ts" />
+/// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
+/// <reference path="../Views/Pages/MainPageView.ts" />
+var App;
+(function (App) {
+    var Controllers;
+    (function (Controllers) {
+        var Dump = Fw.Util.Dump;
+        var Events = Fw.Events;
+        var Manager = Fw.Controllers.Manager;
+        var Pages = App.Views.Pages;
+        var LayoutCheckController = /** @class */ (function (_super) {
+            __extends(LayoutCheckController, _super);
+            function LayoutCheckController(id) {
+                var _this = _super.call(this, id) || this;
+                _this.Init();
+                return _this;
+            }
+            LayoutCheckController.prototype.Init = function () {
+                var _this = this;
+                this.SetClassName('LayoutCheckController');
+                this.View = new Pages.LayoutCheckPageView();
+                var page = this.View;
+                page.BtnGoSub1.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
+                    // イベント通知でなく、参照保持でよいか？
+                    Manager.Instance.Show("Sub1");
+                });
+                page.BtnGoSub2.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
+                    // イベント通知でなく、参照保持でよいか？
+                    Manager.Instance.Show("Sub2");
+                });
+                page.TmpCtl.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
+                    Dump.Log(_this.ClassName + ".SingleClick1");
+                    if (page.CenterControl.IsVisible()) {
+                        Dump.Log('みえてんで！');
+                        page.CenterControl.Hide();
+                    }
+                    else {
+                        Dump.Log('みえへんで...？');
+                        page.CenterControl.Show();
+                    }
+                });
+                this.View.AddEventListener(Events.PageViewEvents.Shown, function () {
+                    Dump.Log(_this.ClassName + ".Shown");
+                });
+                page.AncCtl4.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
+                    //Dump.Log(`${this.ClassName}.SingleClick2`);
+                    page.IsMasked
+                        ? page.UnMask()
+                        : page.Mask();
+                });
+            };
+            return LayoutCheckController;
+        }(Fw.Controllers.ControllerBase));
+        Controllers.LayoutCheckController = LayoutCheckController;
+    })(Controllers = App.Controllers || (App.Controllers = {}));
+})(App || (App = {}));
 //# sourceMappingURL=tsout.js.map

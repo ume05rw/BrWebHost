@@ -20,7 +20,10 @@ namespace Fw.Views {
             this._imageView.Src = value;
         }
 
-        public HoverColor: string = '';
+        /**
+         * @see publicプロパティの初期化タイミングに注意。コンストラクタ実行後に値がセットされる。
+         */
+        public HoverColor: string; // = '';
 
         protected Init(): void {
             super.Init();
@@ -36,6 +39,7 @@ namespace Fw.Views {
             this.Add(this._imageView);
 
             this.Elem.hover(() => {
+                //Dump.Log(`${this.ClassName}.hover: color = ${this.HoverColor}`);
                 this.Dom.style.backgroundColor = this.HoverColor;
             }, () => {
                 this.Dom.style.backgroundColor = this.BackgroundColor;
@@ -46,6 +50,7 @@ namespace Fw.Views {
 
             this._imageView.Size.Width = this.Size.Width;
             this._imageView.Size.Height = this.Size.Height;
+            
 
             super.InnerRefresh()
         }

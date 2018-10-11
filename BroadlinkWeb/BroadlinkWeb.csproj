@@ -7,9 +7,11 @@
 
   <ItemGroup>
     <Content Remove="wwwroot\js\Page.ts" />
+    <Content Remove="wwwroot\ts\App\Controllers\LayoutCheckController.ts" />
     <Content Remove="wwwroot\ts\App\Main.ts" />
     <Content Remove="wwwroot\ts\App\Models\Entities\BrDevice.ts" />
     <Content Remove="wwwroot\ts\App\Models\Stores\BrDeviceStore.ts" />
+    <Content Remove="wwwroot\ts\App\Views\Pages\LayoutCheckPageView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Pages\MainPageView.ts" />
     <Content Remove="wwwroot\ts\Fw\Config.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\BoxViewEvents.ts" />
@@ -80,6 +82,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Include="wwwroot\ts\App\Controllers\LayoutCheckController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Main.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\MainController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\Sub1Controller.ts" />
@@ -87,6 +90,7 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\BrDevice.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\BrDeviceStore.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\MainPageView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\LayoutCheckPageView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Config.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\Factory.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\IController.ts" />

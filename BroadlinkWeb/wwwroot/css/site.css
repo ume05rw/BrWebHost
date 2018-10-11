@@ -22,6 +22,14 @@ body,
     opacity: 0.4;
 }
 
+/* マウスドラッグ中、テキスト選択を無効化する。*/
+.TextUnselect {
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
 /* Controllerは基本、全て同じ位置に重ねる。*/
 div.IController {
     display: none;

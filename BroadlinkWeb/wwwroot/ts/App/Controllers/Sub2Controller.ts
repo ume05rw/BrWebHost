@@ -9,6 +9,8 @@ namespace App.Controllers {
     import Dump = Fw.Util.Dump;
     import Xhr = Fw.Util.Xhr;
     import Events = Fw.Events;
+    import Views = Fw.Views;
+    import Property = Fw.Views.Property;
     import Manager = Fw.Controllers.Manager;
 
     export class Sub2Controller extends Fw.Controllers.ControllerBase {
@@ -20,20 +22,32 @@ namespace App.Controllers {
 
         private Init(): void {
 
-            const btnGoMain = new Fw.Views.ControlView();
-            btnGoMain.Label = 'Back Main';
-            btnGoMain.SetSize(80, 30);
-            btnGoMain.SetAnchor(30, 10, null, null);
-            btnGoMain.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
-                // イベント通知でなく、参照保持でよいか？
+            const header = new Views.BoxView();
+            header.Size.Height = 50;
+            header.SetAnchor(0, 0, 0, null);
+            header.BackgroundColor = '#555555';
+            header.Color = '#FFFFFF';
+            header.HasBorder = false;
+            this.View.Add(header);
+            const headerLabel = new Views.LabelView();
+            headerLabel.Text = 'A1 Sensor';
+            headerLabel.FontSize = Property.FontSize.Large;
+            headerLabel.Color = '#FFFFFF';
+            header.Add(headerLabel);
+
+            const back = new Fw.Views.ButtonView();
+            back.SetSize(40, 40);
+            back.Label = '<<';
+            back.SetAnchor(null, 5, null, null);
+            back.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
                 Manager.Instance.Show("Main");
             });
-            this.View.Add(btnGoMain);
+            header.Add(back);
 
-            const btnA1Value = new Fw.Views.ControlView();
+            const btnA1Value = new Fw.Views.ButtonView();
             btnA1Value.Label = 'A1 Value';
             btnA1Value.SetSize(80, 30);
-            btnA1Value.SetAnchor(80, 10, null, null);
+            btnA1Value.SetLeftTop(10, 70);
             btnA1Value.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
                 Dump.Log('btnA1Value.click');
 
@@ -51,19 +65,17 @@ namespace App.Controllers {
             btnMove.SetSize(60, 60);
             btnMove.Color = '#1188FF';
             btnMove.BackgroundColor = '#FF9900';
-            ///btnMove.SetXY(0, -200);
-            btnMove.SetLeftTop(10, 20);
-            //btnMove.SetDisplayParams(60, 60, 0, -200, '#1188FF');
-            
+            btnMove.SetLeftTop(10, 120);
+
             btnMove.Label = '動く？';
             btnMove.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
                 Dump.Log('btnMove.SingleClick');
             });
             this.View.Add(btnMove);
 
-            const btnReset = new Fw.Views.ControlView();
+            const btnReset = new Fw.Views.ButtonView();
             btnReset.SetDisplayParams(60, 60, 0, 0, '#1188FF');
-            btnReset.SetAnchor(5, null, 5, null);
+            btnReset.SetAnchor(70, null, 5, null);
             btnReset.Label = 'リセット';
             btnReset.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
                 Dump.Log('btnReset.SingleClick');

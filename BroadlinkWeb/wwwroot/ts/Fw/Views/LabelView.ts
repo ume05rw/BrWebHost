@@ -77,6 +77,7 @@ namespace Fw.Views {
             this.Elem.addClass(this.ClassName);
 
             this.BackgroundColor = 'transparent';
+            this.SetTransAnimation(false);
 
             this.Dom.style.borderWidth = '0';
             this.Dom.style.borderRadius = '0';
@@ -107,7 +108,7 @@ namespace Fw.Views {
                 this.SuppressLayout();
 
                 if (this._autoSize) {
-                    this.Size.Width = this._hiddenSpan.offsetWidth;
+                    this.Size.Width = this._hiddenSpan.offsetWidth + 10;
                     this.Size.Height = this._hiddenSpan.offsetHeight;
                 }
 
