@@ -3,14 +3,14 @@
 /// <reference path="../Events/ControlViewEvents.ts" />
 /// <reference path="../Util/Dump.ts" />
 /// <reference path="../Util/Number.ts" />
-/// <reference path="./ViewBase.ts" />
+/// <reference path="./BoxView.ts" />
 
 namespace Fw.Views {
     import Dump = Fw.Util.Dump;
     import Events = Fw.Events.ControlViewEvents;
     import Number = Fw.Util.Number;
 
-    export class ControlView extends ViewBase {
+    export class ControlView extends BoxView {
         // properties
         private _label: JQuery;
         private _tapEventTimer: number = null;
@@ -25,36 +25,8 @@ namespace Fw.Views {
             this.Refresh();
         }
 
-        private _hasBorder: boolean;
-        public get HasBorder(): boolean {
-            return this._hasBorder;
-        }
-        public set HasBorder(value: boolean) {
-            this.Dom.style.borderWidth = (value)
-                ? '1px'
-                : '0';
-        }
-
-        private _borderRadius: number;
-        public get BorderRadius(): number {
-            return this._borderRadius;
-        }
-        public set BorderRadius(value: number) {
-            if (Number.IsNaN(value) || value === null || value === undefined)
-                value = 0;
-
-            if (value < 0)
-                value = 0;
-            if (value > 50)
-                value = 50;
-
-            this._borderRadius = value;
-
-            this.Dom.style.borderRadius = `${this._borderRadius}%`;
-        }
-
         constructor() {
-            super($('<a></a>'));
+            super();
         }
 
         protected Init(): void {
@@ -150,8 +122,6 @@ namespace Fw.Views {
             this._tapEventTimer = null;
             this._cvMouseSuppressor = null;
             this._cvDelayedResumeEventsTimer = null;
-            this._hasBorder = null;
-            this._borderRadius = null;
         }
     }
 }

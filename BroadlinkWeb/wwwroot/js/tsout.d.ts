@@ -25,27 +25,6 @@ declare namespace Fw {
         static DefaultPageAttribute: string;
     }
 }
-declare namespace Fw.Controllers {
-    class Factory {
-        static Create(id: string, elem: JQuery): IController;
-    }
-}
-declare namespace Fw.Controllers {
-    class Manager {
-        private static _instance;
-        static readonly Instance: Manager;
-        static Init(): void;
-        private _controllers;
-        private constructor();
-        Add(controller: IController): void;
-        Show(id: string): void;
-    }
-}
-declare namespace App {
-    class Main {
-        static StartUp(): void;
-    }
-}
 declare namespace Fw {
     interface IObject {
         readonly Elem: JQuery;
@@ -149,6 +128,22 @@ declare namespace Fw.Controllers {
     }
 }
 declare namespace Fw.Controllers {
+    class Factory {
+        static Create(id: string, elem: JQuery): IController;
+    }
+}
+declare namespace Fw.Controllers {
+    class Manager {
+        private static _instance;
+        static readonly Instance: Manager;
+        static Init(): void;
+        private _controllers;
+        private constructor();
+        Add(controller: IController): void;
+        Show(id: string): void;
+    }
+}
+declare namespace Fw.Controllers {
     /**
      * @see コントローラはイベント等の実装が無いので、IObjectを実装しない。
      * */
@@ -161,7 +156,12 @@ declare namespace Fw.Controllers {
     }
 }
 declare namespace Fw.Events {
-    class ControlViewEventsClass extends ViewEventsClass {
+    class BoxViewEventsClass extends ViewEventsClass {
+    }
+    const BoxViewEvents: BoxViewEventsClass;
+}
+declare namespace Fw.Events {
+    class ControlViewEventsClass extends BoxViewEventsClass {
         readonly SingleClick: string;
         readonly LongClick: string;
     }
@@ -409,46 +409,16 @@ declare namespace App.Controllers {
         private Init;
     }
 }
-declare namespace Fw.Events {
-    class ButtonViewEventsClass extends ControlViewEventsClass {
+declare namespace App {
+    class Main {
+        static StartUp(): void;
     }
-    const ButtonViewEvents: ButtonViewEventsClass;
-}
-declare namespace Fw.Events {
-    class ImageViewEventsClass extends ViewEventsClass {
-    }
-    const ImageViewEvents: ImageViewEventsClass;
-}
-declare namespace Fw.Events {
-    class LabelViewEventsClass extends ViewEventsClass {
-    }
-    const LabelViewEvents: LabelViewEventsClass;
-}
-declare namespace Fw.Events {
-    class PanelControlViewEventsClass extends ControlViewEventsClass {
-    }
-    const PanelControlViewEvents: PanelControlViewEventsClass;
-}
-declare namespace Fw.Events {
-    class RelocatableViewEventsClass extends ButtonViewEventsClass {
-    }
-    const RelocatableViewEvents: RelocatableViewEventsClass;
 }
 declare namespace Fw.Events {
     class RootEventsClass {
         readonly Resized: string;
     }
     const RootEvents: RootEventsClass;
-}
-declare namespace Fw.Events {
-    class SlidablePanelControlViewEventsClass extends PanelControlViewEventsClass {
-    }
-    const SlidablePanelControlViewEvents: SlidablePanelControlViewEventsClass;
-}
-declare namespace Fw {
-    class Startup {
-        static Init(): void;
-    }
 }
 declare namespace Fw.Util.Xhr {
     enum MethodType {
@@ -477,85 +447,6 @@ declare namespace Fw.Util.Xhr {
         constructor(succeeded: boolean, values: any, errors: any);
     }
 }
-declare namespace Fw.Views {
-    class ControlView extends ViewBase {
-        private _label;
-        private _tapEventTimer;
-        private _cvMouseSuppressor;
-        private _cvDelayedResumeEventsTimer;
-        Label: string;
-        private _hasBorder;
-        HasBorder: boolean;
-        private _borderRadius;
-        BorderRadius: number;
-        constructor();
-        protected Init(): void;
-        protected InitPage(): void;
-        private OnPageDragging;
-        protected InnerRefresh(): void;
-        Dispose(): void;
-    }
-}
-declare namespace Fw.Views {
-    class ButtonView extends ControlView {
-        private _imageView;
-        ImageSrc: string;
-        private _hoverColor;
-        HoverColor: string;
-        protected Init(): void;
-        protected InnerRefresh(): void;
-    }
-}
-declare namespace Fw.Views {
-    import FitPolicy = Fw.Views.Property.FitPolicy;
-    class ImageView extends ViewBase {
-        private _image;
-        private _src;
-        Src: string;
-        private _firPolicy;
-        FitPolicy: FitPolicy;
-        constructor();
-        protected Init(): void;
-        protected InnerRefresh(): void;
-        Dispose(): void;
-    }
-}
-declare namespace Fw.Views.Property {
-    /**
-     * @description font-weight
-     */
-    enum FontWeight {
-        Lighter = "lighter",
-        Normal = "normal",
-        Bold = "bold",
-        Bolder = "bolder"
-    }
-}
-declare namespace Fw.Views {
-    import Property = Fw.Views.Property;
-    class LabelView extends ViewBase {
-        private _text;
-        Text: string;
-        private _fontWeight;
-        FontWeight: Property.FontWeight;
-        private _fontSize;
-        FontSize: Property.FontSize;
-        private _fontFamily;
-        FontFamily: string;
-        private _autoSize;
-        AutoSize: boolean;
-        private _hiddenSpan;
-        constructor();
-        protected Init(): void;
-        protected InnerRefresh(): void;
-        Dispose(): void;
-    }
-}
-declare namespace Fw.Views {
-    class PanelControlView extends ControlView {
-        protected Init(): void;
-    }
-}
 declare namespace Fw.Views.Property {
     /**
      * @description font-size
@@ -568,6 +459,17 @@ declare namespace Fw.Views.Property {
         Large = "large",
         XLarge = "x-large",
         XxLarge = "xx-large"
+    }
+}
+declare namespace Fw.Views.Property {
+    /**
+     * @description font-weight
+     */
+    enum FontWeight {
+        Lighter = "lighter",
+        Normal = "normal",
+        Bold = "bold",
+        Bolder = "bolder"
     }
 }
 declare namespace Fw.Views.Property {
@@ -604,21 +506,61 @@ declare namespace Fw.Views.Property {
     }
 }
 declare namespace Fw.Views {
-    class RelocatableButtonView extends ButtonView {
-        private _isRelocatable;
-        readonly IsRelocatable: boolean;
-        private _shadow;
-        private _isMouseMoveEventListened;
-        private _isDragging;
-        private _dragStartMousePosition;
-        private _dragStartViewPosition;
-        private _gridSize;
-        GridSize: number;
+    class BoxView extends ViewBase {
+        private _hasBorder;
+        HasBorder: boolean;
+        private _borderRadius;
+        BorderRadius: number;
+        constructor();
         protected Init(): void;
-        private OnMouseMove;
-        private _delayedResumeMouseEventsTimer;
-        private DelayedResumeMouseEvents;
-        SetRelocatable(relocatable: boolean): void;
+        Dispose(): void;
+    }
+}
+declare namespace Fw.Views {
+    class ControlView extends BoxView {
+        private _label;
+        private _tapEventTimer;
+        private _cvMouseSuppressor;
+        private _cvDelayedResumeEventsTimer;
+        Label: string;
+        constructor();
+        protected Init(): void;
+        protected InitPage(): void;
+        private OnPageDragging;
+        protected InnerRefresh(): void;
+        Dispose(): void;
+    }
+}
+declare namespace Fw.Views {
+    import FitPolicy = Fw.Views.Property.FitPolicy;
+    class ImageView extends ViewBase {
+        private _image;
+        private _src;
+        Src: string;
+        private _firPolicy;
+        FitPolicy: FitPolicy;
+        constructor();
+        protected Init(): void;
+        protected InnerRefresh(): void;
+        Dispose(): void;
+    }
+}
+declare namespace Fw.Views {
+    import Property = Fw.Views.Property;
+    class LabelView extends ViewBase {
+        private _text;
+        Text: string;
+        private _fontWeight;
+        FontWeight: Property.FontWeight;
+        private _fontSize;
+        FontSize: Property.FontSize;
+        private _fontFamily;
+        FontFamily: string;
+        private _autoSize;
+        AutoSize: boolean;
+        private _hiddenSpan;
+        constructor();
+        protected Init(): void;
         protected InnerRefresh(): void;
         Dispose(): void;
     }
@@ -640,18 +582,84 @@ declare namespace Fw {
         Dispose(): void;
     }
 }
+declare namespace Fw {
+    class Startup {
+        static Init(): void;
+    }
+}
+declare namespace Fw.Views {
+    class ButtonView extends ControlView {
+        private _imageView;
+        ImageSrc: string;
+        private _hoverColor;
+        HoverColor: string;
+        protected Init(): void;
+        protected InnerRefresh(): void;
+    }
+}
+declare namespace Fw.Events {
+    class ButtonViewEventsClass extends ControlViewEventsClass {
+    }
+    const ButtonViewEvents: ButtonViewEventsClass;
+}
+declare namespace Fw.Views {
+    class RelocatableButtonView extends ButtonView {
+        private _isRelocatable;
+        readonly IsRelocatable: boolean;
+        private _shadow;
+        private _isMouseMoveEventListened;
+        private _isDragging;
+        private _dragStartMousePosition;
+        private _dragStartViewPosition;
+        private _gridSize;
+        GridSize: number;
+        protected Init(): void;
+        private OnMouseMove;
+        private _delayedResumeMouseEventsTimer;
+        private DelayedResumeMouseEvents;
+        SetRelocatable(relocatable: boolean): void;
+        protected InnerRefresh(): void;
+        Dispose(): void;
+    }
+}
+declare namespace Fw.Events {
+    class ImageViewEventsClass extends ViewEventsClass {
+    }
+    const ImageViewEvents: ImageViewEventsClass;
+}
+declare namespace Fw.Events {
+    class LabelViewEventsClass extends ViewEventsClass {
+    }
+    const LabelViewEvents: LabelViewEventsClass;
+}
+declare namespace Fw.Events {
+    class RelocatableViewEventsClass extends ButtonViewEventsClass {
+    }
+    const RelocatableViewEvents: RelocatableViewEventsClass;
+}
+declare namespace Fw.Events {
+    class ToggleButtonViewEventsClass extends ControlViewEventsClass {
+        readonly Switched: string;
+    }
+    const ToggleButtonViewEvents: ToggleButtonViewEventsClass;
+}
+declare namespace Fw.Events {
+    class SlidableBoxViewEventsClass extends BoxViewEventsClass {
+    }
+    const SlidableBoxViewEvents: SlidableBoxViewEventsClass;
+}
 declare namespace Fw.Views {
     enum Direction {
         Horizontal = 0,
         Vertical = 1
     }
-    class SlidablePanelControlView extends PanelControlView {
+    class SlidableBoxView extends BoxView {
         readonly Direction: Direction;
         private _innerBackgroundColor;
         InnerBackgroundColor: string;
-        private _innerPanelCount;
+        private _innerBoxCount;
         InnerPanelCount: number;
-        private _innerPanel;
+        private _innerBox;
         private _isDragging;
         private _spcvMouseSuppressor;
         private _spcvDelayedResumeEventsTimer;
@@ -659,7 +667,6 @@ declare namespace Fw.Views {
         private _dragStartViewPosition;
         constructor(direction: Direction);
         protected Init(): void;
-        private SpcvDelayedResumeMouseEvents;
         private InitView;
         private AdjustSlidePosition;
         protected InnerRefresh(): void;

@@ -12,16 +12,17 @@
     <Content Remove="wwwroot\ts\App\Models\Stores\BrDeviceStore.ts" />
     <Content Remove="wwwroot\ts\App\Views\Pages\MainPageView.ts" />
     <Content Remove="wwwroot\ts\Fw\Config.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\BoxViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\ButtonViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\ControlViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\EventReference.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\ImageViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\LabelViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\PageViewEvents.ts" />
-    <Content Remove="wwwroot\ts\Fw\Events\PanelControlViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\RelocatableButtonViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\RootEvents.ts" />
-    <Content Remove="wwwroot\ts\Fw\Events\SlidablePanelControlViewEvents.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\SlidableBoxViewEvents.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\ToggleButtonViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\ViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\IObject.ts" />
     <Content Remove="wwwroot\ts\Fw\Models\Entities\EntityBase.ts" />
@@ -40,13 +41,13 @@
     <Content Remove="wwwroot\ts\Fw\Views\Anchor.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\Animation\Animator.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\Animation\Params.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\BoxView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\ButtonView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\ControlView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\ImageView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\IView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\LabelView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\PageView.ts" />
-    <Content Remove="wwwroot\ts\Fw\Views\PanelControlView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\Position.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\Property\FitPolicy.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\Property\FontSize.ts" />
@@ -55,7 +56,8 @@
     <Content Remove="wwwroot\ts\Fw\Views\RelocatableButtonView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\Root.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\Size.ts" />
-    <Content Remove="wwwroot\ts\Fw\Views\SlidablePanelControlView.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\SlidableBoxView.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\ToggleButtonView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\ViewBase.ts" />
     <Content Remove="wwwroot\ts\PageManager.ts" />
   </ItemGroup>
@@ -90,16 +92,17 @@
     <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\IController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\ControllerBase.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\Manager.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\BoxViewEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\ButtonViewEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\ControlViewEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\EventReference.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\ImageViewEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\LabelViewEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\PageViewEvents.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\PanelControlViewEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\RelocatableButtonViewEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\RootEvents.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\SlidablePanelControlViewEvents.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\SlidableBoxViewEvents.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\ToggleButtonViewEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\ViewEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\IObject.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Models\Entities\EntityBase.ts" />
@@ -115,6 +118,7 @@
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Xhr\MethodType.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Xhr\Params.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Xhr\Result.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\BoxView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ButtonView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ImageView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\Anchor.ts" />
@@ -124,7 +128,6 @@
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\IView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\LabelView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\PageView.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\PanelControlView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\FitPolicy.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\FontSize.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\FontWeight.ts" />
@@ -133,7 +136,8 @@
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\RelocatableButtonView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\Size.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Root.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\SlidablePanelControlView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\SlidableBoxView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ToggleButtonView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ViewBase.ts" />
   </ItemGroup>
 

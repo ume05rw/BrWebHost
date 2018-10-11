@@ -65,7 +65,7 @@ namespace App.Controllers {
             });
             this.View.Add(devices);
 
-            const slider = new Fw.Views.SlidablePanelControlView(Fw.Views.Direction.Horizontal);
+            const slider = new Fw.Views.SlidableBoxView(Fw.Views.Direction.Horizontal);
             slider.SetSize(100, 50);
             slider.InnerPanelCount = 2.5;
             slider.SetAnchor(60, 20, null, null);
