@@ -18,6 +18,11 @@ namespace Fw.Controllers {
         public IsDefaultView: boolean;
         public View: Fw.Views.IView = null;
 
+        private _className: string;
+        public get ClassName(): string {
+            return this._className;
+        }
+
         constructor(id: string, jqueryElem?: JQuery) {
             if (!id)
                 throw new Error('need Id');
@@ -27,6 +32,12 @@ namespace Fw.Controllers {
             if (jqueryElem) {
                 this.SetPageViewByJQuery(jqueryElem);
             }
+
+            this._className = 'ControllerBase';
+        }
+
+        public SetClassName(name: string): void {
+            this._className = name;
         }
 
         public SetPageViewByJQuery(elem: JQuery): void {

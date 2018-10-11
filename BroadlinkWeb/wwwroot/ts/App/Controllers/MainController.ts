@@ -24,6 +24,8 @@ namespace App.Controllers {
         }
 
         private Init(): void {
+            this.SetClassName('MainController');
+
             this.View = new Pages.MainPageView();
             const page = this.View as Pages.MainPageView;
 
@@ -38,8 +40,7 @@ namespace App.Controllers {
             });
 
             page.TmpCtl.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
-                Dump.Log('LONG CLICK!!');
-
+                Dump.Log(`${this.ClassName}.SingleClick1`);
                 if (page.CenterControl.IsVisible()) {
                     Dump.Log('みえてんで！');
                     page.CenterControl.Hide();
@@ -50,7 +51,14 @@ namespace App.Controllers {
             });
 
             this.View.AddEventListener(Events.PageViewEvents.Shown, () => {
-                Dump.Log('MainView.Shown');
+                Dump.Log(`${this.ClassName}.Shown`);
+            });
+
+            page.AncCtl4.AddEventListener(Events.ButtonViewEvents.SingleClick, () => {
+                //Dump.Log(`${this.ClassName}.SingleClick2`);
+                page.IsMasked
+                    ? page.UnMask()
+                    : page.Mask();
             });
         }
     }

@@ -12,8 +12,9 @@ namespace Fw {
     export class Root extends ObjectBase {
         private static _instance: Root = null;
         public static get Instance(): Root {
-            if (!Root._instance)
+            if (!Root._instance) {
                 throw new Error('Root.Init() has not been executed.');
+            }
 
             return Root._instance;
         }
@@ -32,8 +33,9 @@ namespace Fw {
             return this._size;
         }
 
-        private _isDragging: boolean = false;
-        private _dragStartMousePosition: Property.Position;
+        private _masked: boolean;
+
+        private _mask: Fw.Views.BoxView;
 
         private constructor(jqueryElem: JQuery) {
             super();
@@ -42,14 +44,54 @@ namespace Fw {
             this.SetClassName('Root');
 
             this._size = new Property.Size();
+            this._size.Width = this.Elem.width();
+            this._size.Height = this.Elem.height();
             this._dom = jqueryElem.get(0) as HTMLElement;
-            this._dragStartMousePosition = new Property.Position();
+
+            this._masked = false;
 
             const $window = $(window);
             $window.on('resize', () => {
                 this.Refresh();
                 this.DispatchEvent(Events.Resized);
             });
+
+            // Root.Init()の終了後にViewBaseからFw.Root.Instanceを呼び出す。
+            _.defer(() => {
+                this._mask = new Fw.Views.BoxView();
+                this._mask.Elem.removeClass('TransAnimation');
+                this._mask.Elem.addClass('RootMask');
+                this._mask.HasBorder = false;
+                this._mask.BackgroundColor = '#000000';
+                this._mask.ZIndex = -1;
+
+                // IViewでないので、this.Addは出来ない。
+                this.Elem.append(this._mask.Elem);
+
+                this._mask.Elem.on('click touchend', () => {
+                    this.DispatchEvent(Events.MaskClicked);
+                });
+
+                this.Refresh();
+            });
+        }
+
+        public Mask(): void {
+            //Dump.Log(`${this.ClassName}.Mask`);
+            this._masked = true;
+
+            if (!this._mask.Elem.hasClass('Masked'))
+                this._mask.Elem.addClass('Masked');
+
+            this.Refresh();
+        }
+
+        public UnMask(): void {
+            //Dump.Log(`${this.ClassName}.UnMask`);
+            this._masked = false;
+
+            if (this._mask.Elem.hasClass('Masked'))
+                this._mask.Elem.removeClass('Masked');
 
             this.Refresh();
         }
@@ -58,6 +100,14 @@ namespace Fw {
             // this.Sizeのセッターが無いので、フィールドに直接書き込む。
             this._size.Width = this.Elem.width();
             this._size.Height = this.Elem.height();
+
+            if (this._mask) {
+                this._mask.SetSize(this._size.Width, this._size.Height);
+
+                this._masked
+                    ? this._mask.ZIndex = 0
+                    : this._mask.ZIndex = -1;
+            }
         }
 
         public Dispose(): void {

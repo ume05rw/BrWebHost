@@ -4,6 +4,7 @@
 namespace Fw.Events {
     export class RootEventsClass {
         public readonly Resized: string = 'Resized';
+        public readonly MaskClicked: string = 'MaskClicked';
     }
     export const RootEvents: RootEventsClass = new RootEventsClass();
 }

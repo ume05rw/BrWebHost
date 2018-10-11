@@ -28,6 +28,9 @@ namespace Fw.Views {
             this.SetClassName('ButtonView');
             this.Elem.addClass(this.ClassName);
 
+            this.BackgroundColor = '#add8e6';
+            this.HoverColor = '#6495ed';
+
             this._imageView = new ImageView();
             this._imageView.Src = null;
             this.Add(this._imageView);

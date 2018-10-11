@@ -19,12 +19,12 @@ namespace App.Views.Pages {
         public CenterControl: Views.ControlView;
         public TmpCtl: Views.ControlView;
         public Toggle: Views.ToggleButtonView;
-        public AncCtl1: Views.ControlView;
-        public AncCtl2: Views.ControlView;
-        public AncCtl3: Views.ControlView;
-        public AncCtl4: Views.ControlView;
-        public AncCtl5: Views.ControlView;
-        public AncCtl6: Views.ControlView;
+        public AncCtl1: Views.ButtonView;
+        public AncCtl2: Views.ButtonView;
+        public AncCtl3: Views.ButtonView;
+        public AncCtl4: Views.ButtonView;
+        public AncCtl5: Views.ButtonView;
+        public AncCtl6: Views.ButtonView;
 
 
         constructor() {
@@ -41,8 +41,6 @@ namespace App.Views.Pages {
             this.BtnGoSub1.Label = 'Go Sub1';
             this.BtnGoSub1.SetSize(80, 30);
             this.BtnGoSub1.SetAnchor(null, 10, null, null);
-            this.BtnGoSub1.BackgroundColor = '#add8e6';
-            this.BtnGoSub1.HoverColor = '#6495ed';
             this.Add(this.BtnGoSub1);
 
             this.BtnGoSub2 = new Fw.Views.ButtonView();
@@ -66,19 +64,23 @@ namespace App.Views.Pages {
             this.TmpCtl.Label = 'くりっく';
             this.Add(this.TmpCtl);
 
-            this.AncCtl1 = new Fw.Views.ControlView();
+            this.AncCtl1 = new Fw.Views.ButtonView();
             this.AncCtl1.Label = '右下';
             this.AncCtl1.SetSize(200, 50);
             this.AncCtl1.SetAnchor(null, null, 40, 5);
             this.Add(this.AncCtl1);
 
-            this.AncCtl2 = new Fw.Views.ControlView();
+            this.AncCtl2 = new Fw.Views.ButtonView();
             this.AncCtl2.Label = '右上';
             this.AncCtl2.SetSize(200, 50);
             this.AncCtl2.SetAnchor(3, null, 3, null);
             this.Add(this.AncCtl2);
+            const label = new Fw.Views.LabelView();
+            label.FontSize = Property.FontSize.XxLarge;
+            label.Text = 'らべるやで';
+            this.AncCtl2.Add(label);
 
-            this.AncCtl3 = new Fw.Views.ControlView();
+            this.AncCtl3 = new Fw.Views.ButtonView();
             this.AncCtl3.Label = '左下';
             this.AncCtl3.SetSize(300, 100);
             this.AncCtl3.SetAnchor(null, 3, null, 3);
@@ -93,23 +95,19 @@ namespace App.Views.Pages {
             this.Toggle.SetAnchor(150, 10, null, null);
             this.Add(this.Toggle);
 
-            this.AncCtl4 = new Fw.Views.ControlView();
-            this.AncCtl4.Label = '左上';
+            this.AncCtl4 = new Fw.Views.ButtonView();
+            this.AncCtl4.Label = 'マスク';
             this.AncCtl4.SetSize(200, 50);
             this.AncCtl4.SetAnchor(60, 3, null, null);
             this.Add(this.AncCtl4);
-            const label = new Fw.Views.LabelView();
-            label.FontSize = Property.FontSize.XxLarge;
-            label.Text = 'でかいもじ';
-            this.AncCtl4.Add(label);
 
-            //this.AncCtl5 = new Fw.Views.ControlView();
+            //this.AncCtl5 = new Fw.Views.ButtonView();
             //this.AncCtl5.Label = '左右';
             //this.AncCtl5.Size.Height = 50;
             //this.AncCtl5.SetAnchor(null, 150, 300, 100);
             //this.Add(this.AncCtl5);
 
-            //this.AncCtl6 = new Fw.Views.ControlView();
+            //this.AncCtl6 = new Fw.Views.ButtonView();
             //this.AncCtl6.Label = '上下';
             //this.AncCtl6.SetAnchor(200, null, null, 40);
             //this.AncCtl6.Size.Width = 30;

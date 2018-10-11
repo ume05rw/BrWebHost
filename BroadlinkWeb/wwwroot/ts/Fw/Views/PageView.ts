@@ -34,6 +34,11 @@ namespace Fw.Views {
             return this._draggedPosition;
         }
 
+        private _isMasked: boolean = false;
+        public get IsMasked(): boolean {
+            return this._isMasked;
+        }
+
         constructor(jqueryElem?: JQuery) {
             super(jqueryElem);
         }
@@ -41,10 +46,16 @@ namespace Fw.Views {
         protected Init(): void {
             super.Init();
 
+            this._isMasked = false;
+            this._isNeedDragX = false;
+            this._isNeedDragY = false;
+            this._isDragging = false;
+            this._isSuppressDrag = false;
+
             this.SetClassName('PageView');
 
             if (!this.Dom) {
-                const elem = $(`<div class="IController"></div>`);
+                const elem = $(`<div class="IController IView TransAnimation"></div>`);
                 Fw.Root.Instance.Elem.append(elem);
                 this.SetElem(elem);
             }
@@ -117,7 +128,7 @@ namespace Fw.Views {
                 ) {
                     this.DispatchEvent(Events.Dragging);
                 }
-                
+
                 this.Refresh();
             });
 
@@ -132,6 +143,12 @@ namespace Fw.Views {
                 this.Size.Width = Fw.Root.Instance.Size.Width;
                 this.Size.Height = Fw.Root.Instance.Size.Height;
                 this.Refresh();
+            });
+
+            // マスクをクリックしたとき、戻る。
+            Fw.Root.Instance.AddEventListener(Fw.Events.RootEvents.MaskClicked, () => {
+                if (this._isMasked)
+                    this.UnMask();
             });
         }
 
@@ -237,6 +254,20 @@ namespace Fw.Views {
             };
 
             animator.Invoke(duration);
+        }
+
+        public Mask(): void {
+            //Dump.Log(`${this.ClassName}.Mask`);
+            this._isMasked = true;
+            Fw.Root.Instance.Mask();
+            this.Dom.style.zIndex = '-1';
+        }
+
+        public UnMask(): void {
+            //Dump.Log(`${this.ClassName}.UnMask`);
+            this._isMasked = false;
+            Fw.Root.Instance.UnMask();
+            this.Dom.style.zIndex = '0';
         }
 
         protected InnerRefresh(): void {

@@ -151,7 +151,10 @@ declare namespace Fw.Controllers {
         Id: string;
         IsDefaultView: boolean;
         View: Fw.Views.IView;
+        private _className;
+        readonly ClassName: string;
         constructor(id: string, jqueryElem?: JQuery);
+        SetClassName(name: string): void;
         SetPageViewByJQuery(elem: JQuery): void;
     }
 }
@@ -322,6 +325,8 @@ declare namespace Fw.Views {
         private _dragStartViewPosition;
         private _draggedPosition;
         readonly DraggedPosition: Property.Position;
+        private _isMasked;
+        readonly IsMasked: boolean;
         constructor(jqueryElem?: JQuery);
         protected Init(): void;
         SuppressDragging(): void;
@@ -330,6 +335,8 @@ declare namespace Fw.Views {
         private DetectToNeedDrags;
         Show(duration?: number): void;
         Hide(duration?: number): void;
+        Mask(): void;
+        UnMask(): void;
         protected InnerRefresh(): void;
         Dispose(): void;
     }
@@ -342,12 +349,12 @@ declare namespace App.Views.Pages {
         CenterControl: Views.ControlView;
         TmpCtl: Views.ControlView;
         Toggle: Views.ToggleButtonView;
-        AncCtl1: Views.ControlView;
-        AncCtl2: Views.ControlView;
-        AncCtl3: Views.ControlView;
-        AncCtl4: Views.ControlView;
-        AncCtl5: Views.ControlView;
-        AncCtl6: Views.ControlView;
+        AncCtl1: Views.ButtonView;
+        AncCtl2: Views.ButtonView;
+        AncCtl3: Views.ButtonView;
+        AncCtl4: Views.ButtonView;
+        AncCtl5: Views.ButtonView;
+        AncCtl6: Views.ButtonView;
         constructor();
         private Initialize;
     }
@@ -438,6 +445,7 @@ declare namespace Fw.Events {
 declare namespace Fw.Events {
     class RootEventsClass {
         readonly Resized: string;
+        readonly MaskClicked: string;
     }
     const RootEvents: RootEventsClass;
 }
@@ -680,9 +688,11 @@ declare namespace Fw {
         readonly Dom: HTMLElement;
         private _size;
         readonly Size: Property.Size;
-        private _isDragging;
-        private _dragStartMousePosition;
+        private _masked;
+        private _mask;
         private constructor();
+        Mask(): void;
+        UnMask(): void;
         Refresh(): void;
         Dispose(): void;
     }

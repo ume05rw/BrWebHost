@@ -10,6 +10,18 @@ body,
     position: static;
 }
 
+/* Root.Maskの定義 */
+.IView.RootMask {
+    position: absolute;
+    display: block;
+    border-style: solid;
+    transition: all 0.5s ease-in-out;
+    opacity: 0.0;
+}
+.IView.RootMask.Masked {
+    opacity: 0.4;
+}
+
 /* Controllerは基本、全て同じ位置に重ねる。*/
 div.IController {
     display: none;
@@ -31,6 +43,10 @@ div.IController .IView {
 /* Viewのアニメーション */
 div.IController .IView.TransAnimation {
     transition: all 0.15s ease-in-out;
+}
+
+div.IController .IView.PageView {
+    z-index: 1;
 }
 
 /* ラベル／画像等のインライン要素は中央配置 */

@@ -435,7 +435,18 @@ var Fw;
                 if (jqueryElem) {
                     this.SetPageViewByJQuery(jqueryElem);
                 }
+                this._className = 'ControllerBase';
             }
+            Object.defineProperty(ControllerBase.prototype, "ClassName", {
+                get: function () {
+                    return this._className;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            ControllerBase.prototype.SetClassName = function (name) {
+                this._className = name;
+            };
             ControllerBase.prototype.SetPageViewByJQuery = function (elem) {
                 this.View = new Fw.Views.PageView(elem);
                 this.IsDefaultView = (this.View.Elem.attr(Config.DefaultPageAttribute) === "true");
@@ -1389,6 +1400,7 @@ var Fw;
                 _this._isNeedDragY = false;
                 _this._isDragging = false;
                 _this._isSuppressDrag = false;
+                _this._isMasked = false;
                 return _this;
             }
             Object.defineProperty(PageView.prototype, "DraggedPosition", {
@@ -1398,12 +1410,24 @@ var Fw;
                 enumerable: true,
                 configurable: true
             });
+            Object.defineProperty(PageView.prototype, "IsMasked", {
+                get: function () {
+                    return this._isMasked;
+                },
+                enumerable: true,
+                configurable: true
+            });
             PageView.prototype.Init = function () {
                 var _this = this;
                 _super.prototype.Init.call(this);
+                this._isMasked = false;
+                this._isNeedDragX = false;
+                this._isNeedDragY = false;
+                this._isDragging = false;
+                this._isSuppressDrag = false;
                 this.SetClassName('PageView');
                 if (!this.Dom) {
-                    var elem = $("<div class=\"IController\"></div>");
+                    var elem = $("<div class=\"IController IView TransAnimation\"></div>");
                     Fw.Root.Instance.Elem.append(elem);
                     this.SetElem(elem);
                 }
@@ -1473,6 +1497,11 @@ var Fw;
                     _this.Size.Width = Fw.Root.Instance.Size.Width;
                     _this.Size.Height = Fw.Root.Instance.Size.Height;
                     _this.Refresh();
+                });
+                // マスクをクリックしたとき、戻る。
+                Fw.Root.Instance.AddEventListener(Fw.Events.RootEvents.MaskClicked, function () {
+                    if (_this._isMasked)
+                        _this.UnMask();
                 });
             };
             PageView.prototype.SuppressDragging = function () {
@@ -1569,6 +1598,18 @@ var Fw;
                 };
                 animator.Invoke(duration);
             };
+            PageView.prototype.Mask = function () {
+                //Dump.Log(`${this.ClassName}.Mask`);
+                this._isMasked = true;
+                Fw.Root.Instance.Mask();
+                this.Dom.style.zIndex = '-1';
+            };
+            PageView.prototype.UnMask = function () {
+                //Dump.Log(`${this.ClassName}.UnMask`);
+                this._isMasked = false;
+                Fw.Root.Instance.UnMask();
+                this.Dom.style.zIndex = '0';
+            };
             PageView.prototype.InnerRefresh = function () {
                 // 親View(=Root)とPageは常に同サイズなので、X/YがそのままLeft/Topになる。
                 this.Dom.style.left = this.Position.X + "px";
@@ -1629,8 +1670,6 @@ var App;
                     this.BtnGoSub1.Label = 'Go Sub1';
                     this.BtnGoSub1.SetSize(80, 30);
                     this.BtnGoSub1.SetAnchor(null, 10, null, null);
-                    this.BtnGoSub1.BackgroundColor = '#add8e6';
-                    this.BtnGoSub1.HoverColor = '#6495ed';
                     this.Add(this.BtnGoSub1);
                     this.BtnGoSub2 = new Fw.Views.ButtonView();
                     this.BtnGoSub2.Label = 'Go Sub2';
@@ -1650,17 +1689,21 @@ var App;
                     this.TmpCtl.Color = '#666666';
                     this.TmpCtl.Label = 'くりっく';
                     this.Add(this.TmpCtl);
-                    this.AncCtl1 = new Fw.Views.ControlView();
+                    this.AncCtl1 = new Fw.Views.ButtonView();
                     this.AncCtl1.Label = '右下';
                     this.AncCtl1.SetSize(200, 50);
                     this.AncCtl1.SetAnchor(null, null, 40, 5);
                     this.Add(this.AncCtl1);
-                    this.AncCtl2 = new Fw.Views.ControlView();
+                    this.AncCtl2 = new Fw.Views.ButtonView();
                     this.AncCtl2.Label = '右上';
                     this.AncCtl2.SetSize(200, 50);
                     this.AncCtl2.SetAnchor(3, null, 3, null);
                     this.Add(this.AncCtl2);
-                    this.AncCtl3 = new Fw.Views.ControlView();
+                    var label = new Fw.Views.LabelView();
+                    label.FontSize = Property.FontSize.XxLarge;
+                    label.Text = 'らべるやで';
+                    this.AncCtl2.Add(label);
+                    this.AncCtl3 = new Fw.Views.ButtonView();
                     this.AncCtl3.Label = '左下';
                     this.AncCtl3.SetSize(300, 100);
                     this.AncCtl3.SetAnchor(null, 3, null, 3);
@@ -1673,21 +1716,17 @@ var App;
                     this.Toggle = new Fw.Views.ToggleButtonView();
                     this.Toggle.SetAnchor(150, 10, null, null);
                     this.Add(this.Toggle);
-                    this.AncCtl4 = new Fw.Views.ControlView();
-                    this.AncCtl4.Label = '左上';
+                    this.AncCtl4 = new Fw.Views.ButtonView();
+                    this.AncCtl4.Label = 'マスク';
                     this.AncCtl4.SetSize(200, 50);
                     this.AncCtl4.SetAnchor(60, 3, null, null);
                     this.Add(this.AncCtl4);
-                    var label = new Fw.Views.LabelView();
-                    label.FontSize = Property.FontSize.XxLarge;
-                    label.Text = 'でかいもじ';
-                    this.AncCtl4.Add(label);
-                    //this.AncCtl5 = new Fw.Views.ControlView();
+                    //this.AncCtl5 = new Fw.Views.ButtonView();
                     //this.AncCtl5.Label = '左右';
                     //this.AncCtl5.Size.Height = 50;
                     //this.AncCtl5.SetAnchor(null, 150, 300, 100);
                     //this.Add(this.AncCtl5);
-                    //this.AncCtl6 = new Fw.Views.ControlView();
+                    //this.AncCtl6 = new Fw.Views.ButtonView();
                     //this.AncCtl6.Label = '上下';
                     //this.AncCtl6.SetAnchor(200, null, null, 40);
                     //this.AncCtl6.Size.Width = 30;
@@ -1723,6 +1762,8 @@ var App;
                 return _this;
             }
             MainController.prototype.Init = function () {
+                var _this = this;
+                this.SetClassName('MainController');
                 this.View = new Pages.MainPageView();
                 var page = this.View;
                 page.BtnGoSub1.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
@@ -1734,7 +1775,7 @@ var App;
                     Manager.Instance.Show("Sub2");
                 });
                 page.TmpCtl.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
-                    Dump.Log('LONG CLICK!!');
+                    Dump.Log(_this.ClassName + ".SingleClick1");
                     if (page.CenterControl.IsVisible()) {
                         Dump.Log('みえてんで！');
                         page.CenterControl.Hide();
@@ -1745,7 +1786,13 @@ var App;
                     }
                 });
                 this.View.AddEventListener(Events.PageViewEvents.Shown, function () {
-                    Dump.Log('MainView.Shown');
+                    Dump.Log(_this.ClassName + ".Shown");
+                });
+                page.AncCtl4.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
+                    //Dump.Log(`${this.ClassName}.SingleClick2`);
+                    page.IsMasked
+                        ? page.UnMask()
+                        : page.Mask();
                 });
             };
             return MainController;
@@ -2236,6 +2283,7 @@ var Fw;
         var RootEventsClass = /** @class */ (function () {
             function RootEventsClass() {
                 this.Resized = 'Resized';
+                this.MaskClicked = 'MaskClicked';
             }
             return RootEventsClass;
         }());
@@ -2884,6 +2932,8 @@ var Fw;
                 _super.prototype.Init.call(this);
                 this.SetClassName('ButtonView');
                 this.Elem.addClass(this.ClassName);
+                this.BackgroundColor = '#add8e6';
+                this.HoverColor = '#6495ed';
                 this._imageView = new Views.ImageView();
                 this._imageView.Src = null;
                 this.Add(this._imageView);
@@ -3688,24 +3738,40 @@ var Fw;
         __extends(Root, _super);
         function Root(jqueryElem) {
             var _this = _super.call(this) || this;
-            _this._isDragging = false;
             _this.SetElem(jqueryElem);
             _this.SetClassName('Root');
             _this._size = new Property.Size();
+            _this._size.Width = _this.Elem.width();
+            _this._size.Height = _this.Elem.height();
             _this._dom = jqueryElem.get(0);
-            _this._dragStartMousePosition = new Property.Position();
+            _this._masked = false;
             var $window = $(window);
             $window.on('resize', function () {
                 _this.Refresh();
                 _this.DispatchEvent(Events.Resized);
             });
-            _this.Refresh();
+            // Root.Init()の終了後にViewBaseからFw.Root.Instanceを呼び出す。
+            _.defer(function () {
+                _this._mask = new Fw.Views.BoxView();
+                _this._mask.Elem.removeClass('TransAnimation');
+                _this._mask.Elem.addClass('RootMask');
+                _this._mask.HasBorder = false;
+                _this._mask.BackgroundColor = '#000000';
+                _this._mask.ZIndex = -1;
+                // IViewでないので、this.Addは出来ない。
+                _this.Elem.append(_this._mask.Elem);
+                _this._mask.Elem.on('click touchend', function () {
+                    _this.DispatchEvent(Events.MaskClicked);
+                });
+                _this.Refresh();
+            });
             return _this;
         }
         Object.defineProperty(Root, "Instance", {
             get: function () {
-                if (!Root._instance)
+                if (!Root._instance) {
                     throw new Error('Root.Init() has not been executed.');
+                }
                 return Root._instance;
             },
             enumerable: true,
@@ -3728,10 +3794,30 @@ var Fw;
             enumerable: true,
             configurable: true
         });
+        Root.prototype.Mask = function () {
+            //Dump.Log(`${this.ClassName}.Mask`);
+            this._masked = true;
+            if (!this._mask.Elem.hasClass('Masked'))
+                this._mask.Elem.addClass('Masked');
+            this.Refresh();
+        };
+        Root.prototype.UnMask = function () {
+            //Dump.Log(`${this.ClassName}.UnMask`);
+            this._masked = false;
+            if (this._mask.Elem.hasClass('Masked'))
+                this._mask.Elem.removeClass('Masked');
+            this.Refresh();
+        };
         Root.prototype.Refresh = function () {
             // this.Sizeのセッターが無いので、フィールドに直接書き込む。
             this._size.Width = this.Elem.width();
             this._size.Height = this.Elem.height();
+            if (this._mask) {
+                this._mask.SetSize(this._size.Width, this._size.Height);
+                this._masked
+                    ? this._mask.ZIndex = 0
+                    : this._mask.ZIndex = -1;
+            }
         };
         Root.prototype.Dispose = function () {
             _super.prototype.Dispose.call(this);
