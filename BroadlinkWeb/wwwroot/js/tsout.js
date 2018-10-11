@@ -1241,7 +1241,7 @@ var Fw;
             };
             ViewBase.prototype.InnerRefresh = function () {
                 try {
-                    Dump.Log(this.ClassName + ".InnerRefresh");
+                    //Dump.Log(`${this.ClassName}.InnerRefresh`);
                     var parent_1 = $(this.Elem.parent());
                     if (parent_1.length <= 0)
                         return;
@@ -1411,7 +1411,6 @@ var Fw;
 (function (Fw) {
     var Views;
     (function (Views) {
-        var Dump = Fw.Util.Dump;
         var Anim = Fw.Views.Animation;
         var Events = Fw.Events.PageViewEvents;
         var PageView = /** @class */ (function (_super) {
@@ -1515,7 +1514,7 @@ var Fw;
                 });
                 // ブラウザのリサイズ時、ページ全体を再描画
                 Fw.Root.Instance.AddEventListener(Fw.Events.RootEvents.Resized, function () {
-                    Dump.Log(_this.ClassName + ".Resized");
+                    //Dump.Log(`${this.ClassName}.Resized`);
                     _this.Size.Width = Fw.Root.Instance.Size.Width;
                     _this.Size.Height = Fw.Root.Instance.Size.Height;
                     _this.Refresh();
@@ -1722,6 +1721,68 @@ var App;
             Pages.MainPageView = MainPageView;
         })(Pages = Views_1.Pages || (Views_1.Pages = {}));
     })(Views = App.Views || (App.Views = {}));
+})(App || (App = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Fw/Controllers/ControllerBase.ts" />
+/// <reference path="../../Fw/Controllers/Manager.ts" />
+/// <reference path="../../Fw/Util/Dump.ts" />
+/// <reference path="../../Fw/Events/ControlViewEvents.ts" />
+/// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
+/// <reference path="../Views/Pages/MainPageView.ts" />
+var App;
+(function (App) {
+    var Controllers;
+    (function (Controllers) {
+        var Dump = Fw.Util.Dump;
+        var Events = Fw.Events;
+        var Manager = Fw.Controllers.Manager;
+        var Pages = App.Views.Pages;
+        var LayoutCheckController = /** @class */ (function (_super) {
+            __extends(LayoutCheckController, _super);
+            function LayoutCheckController(id) {
+                var _this = _super.call(this, id) || this;
+                _this.Init();
+                return _this;
+            }
+            LayoutCheckController.prototype.Init = function () {
+                var _this = this;
+                this.SetClassName('LayoutCheckController');
+                this.View = new Pages.LayoutCheckPageView();
+                var page = this.View;
+                page.BtnGoSub1.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
+                    // イベント通知でなく、参照保持でよいか？
+                    Manager.Instance.Show("Sub1");
+                });
+                page.BtnGoSub2.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
+                    // イベント通知でなく、参照保持でよいか？
+                    Manager.Instance.Show("Sub2");
+                });
+                page.TmpCtl.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
+                    Dump.Log(_this.ClassName + ".SingleClick1");
+                    if (page.CenterControl.IsVisible()) {
+                        Dump.Log('みえてんで！');
+                        page.CenterControl.Hide();
+                    }
+                    else {
+                        Dump.Log('みえへんで...？');
+                        page.CenterControl.Show();
+                    }
+                });
+                this.View.AddEventListener(Events.PageViewEvents.Shown, function () {
+                    Dump.Log(_this.ClassName + ".Shown");
+                });
+                page.AncCtl4.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
+                    //Dump.Log(`${this.ClassName}.SingleClick2`);
+                    page.IsMasked
+                        ? page.UnMask()
+                        : page.Mask();
+                });
+            };
+            return LayoutCheckController;
+        }(Fw.Controllers.ControllerBase));
+        Controllers.LayoutCheckController = LayoutCheckController;
+    })(Controllers = App.Controllers || (App.Controllers = {}));
 })(App || (App = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
@@ -2146,6 +2207,102 @@ var App;
         }(Fw.Controllers.ControllerBase));
         Controllers.Sub2Controller = Sub2Controller;
     })(Controllers = App.Controllers || (App.Controllers = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Views/PageView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Events/PageViewEvents.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+var App;
+(function (App) {
+    var Views;
+    (function (Views_2) {
+        var Pages;
+        (function (Pages) {
+            var Property = Fw.Views.Property;
+            var LayoutCheckPageView = /** @class */ (function (_super) {
+                __extends(LayoutCheckPageView, _super);
+                function LayoutCheckPageView() {
+                    var _this = this;
+                    var jqueryElem = $("");
+                    _this = _super.call(this, jqueryElem) || this;
+                    _this.Initialize();
+                    return _this;
+                }
+                LayoutCheckPageView.prototype.Initialize = function () {
+                    this.SetClassName('MainPageView');
+                    this.BtnGoSub1 = new Fw.Views.ButtonView();
+                    this.BtnGoSub1.Label = 'Go Sub1';
+                    this.BtnGoSub1.SetSize(80, 30);
+                    this.BtnGoSub1.SetAnchor(null, 10, null, null);
+                    this.Add(this.BtnGoSub1);
+                    this.BtnGoSub2 = new Fw.Views.ButtonView();
+                    this.BtnGoSub2.Label = 'Go Sub2';
+                    this.BtnGoSub2.SetSize(80, 30);
+                    this.BtnGoSub2.Position.Y = 40;
+                    this.BtnGoSub2.SetAnchor(null, 10, null, null);
+                    this.Add(this.BtnGoSub2);
+                    this.CenterControl = new Fw.Views.ControlView();
+                    this.CenterControl.SetXY(0, 0);
+                    this.CenterControl.SetSize(100, 50);
+                    this.CenterControl.Color = '#1155FF';
+                    this.CenterControl.Label = 'はろー<br/>どうよ？';
+                    this.Add(this.CenterControl);
+                    this.TmpCtl = new Fw.Views.ControlView();
+                    this.TmpCtl.SetXY(-100, -100);
+                    this.TmpCtl.SetSize(200, 200);
+                    this.TmpCtl.Color = '#666666';
+                    this.TmpCtl.Label = 'くりっく';
+                    this.Add(this.TmpCtl);
+                    this.AncCtl1 = new Fw.Views.ButtonView();
+                    this.AncCtl1.Label = '右下';
+                    this.AncCtl1.SetSize(200, 50);
+                    this.AncCtl1.SetAnchor(null, null, 40, 5);
+                    this.Add(this.AncCtl1);
+                    this.AncCtl2 = new Fw.Views.ButtonView();
+                    this.AncCtl2.Label = '右上';
+                    this.AncCtl2.SetSize(200, 50);
+                    this.AncCtl2.SetAnchor(3, null, 3, null);
+                    this.Add(this.AncCtl2);
+                    var label = new Fw.Views.LabelView();
+                    label.FontSize = Property.FontSize.XxLarge;
+                    label.Text = 'らべるやで';
+                    this.AncCtl2.Add(label);
+                    this.AncCtl3 = new Fw.Views.ButtonView();
+                    this.AncCtl3.Label = '左下';
+                    this.AncCtl3.SetSize(300, 100);
+                    this.AncCtl3.SetAnchor(null, 3, null, 3);
+                    this.Add(this.AncCtl3);
+                    var img = new Fw.Views.ImageView();
+                    img.SetSize(100, 70);
+                    img.Src = 'images/icons/home.png';
+                    img.FitPolicy = Property.FitPolicy.Cover;
+                    this.AncCtl3.Add(img);
+                    this.Toggle = new Fw.Views.ToggleButtonView();
+                    this.Toggle.SetAnchor(150, 10, null, null);
+                    this.Add(this.Toggle);
+                    this.AncCtl4 = new Fw.Views.ButtonView();
+                    this.AncCtl4.Label = 'マスク';
+                    this.AncCtl4.SetSize(200, 50);
+                    this.AncCtl4.SetAnchor(60, 3, null, null);
+                    this.Add(this.AncCtl4);
+                    //this.AncCtl5 = new Fw.Views.ButtonView();
+                    //this.AncCtl5.Label = '左右';
+                    //this.AncCtl5.Size.Height = 50;
+                    //this.AncCtl5.SetAnchor(null, 150, 300, 100);
+                    //this.Add(this.AncCtl5);
+                    //this.AncCtl6 = new Fw.Views.ButtonView();
+                    //this.AncCtl6.Label = '上下';
+                    //this.AncCtl6.SetAnchor(200, null, null, 40);
+                    //this.AncCtl6.Size.Width = 30;
+                    //this.Add(this.AncCtl6);
+                };
+                return LayoutCheckPageView;
+            }(Fw.Views.PageView));
+            Pages.LayoutCheckPageView = LayoutCheckPageView;
+        })(Pages = Views_2.Pages || (Views_2.Pages = {}));
+    })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../lib/jquery/index.d.ts" />
 /// <reference path="../../lib/underscore/index.d.ts" />
@@ -3842,162 +3999,4 @@ var Fw;
     }());
     Fw.Startup = Startup;
 })(Fw || (Fw = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Views/PageView.ts" />
-/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
-/// <reference path="../../../Fw/Events/PageViewEvents.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-var App;
-(function (App) {
-    var Views;
-    (function (Views_2) {
-        var Pages;
-        (function (Pages) {
-            var Property = Fw.Views.Property;
-            var LayoutCheckPageView = /** @class */ (function (_super) {
-                __extends(LayoutCheckPageView, _super);
-                function LayoutCheckPageView() {
-                    var _this = this;
-                    var jqueryElem = $("");
-                    _this = _super.call(this, jqueryElem) || this;
-                    _this.Initialize();
-                    return _this;
-                }
-                LayoutCheckPageView.prototype.Initialize = function () {
-                    this.SetClassName('MainPageView');
-                    this.BtnGoSub1 = new Fw.Views.ButtonView();
-                    this.BtnGoSub1.Label = 'Go Sub1';
-                    this.BtnGoSub1.SetSize(80, 30);
-                    this.BtnGoSub1.SetAnchor(null, 10, null, null);
-                    this.Add(this.BtnGoSub1);
-                    this.BtnGoSub2 = new Fw.Views.ButtonView();
-                    this.BtnGoSub2.Label = 'Go Sub2';
-                    this.BtnGoSub2.SetSize(80, 30);
-                    this.BtnGoSub2.Position.Y = 40;
-                    this.BtnGoSub2.SetAnchor(null, 10, null, null);
-                    this.Add(this.BtnGoSub2);
-                    this.CenterControl = new Fw.Views.ControlView();
-                    this.CenterControl.SetXY(0, 0);
-                    this.CenterControl.SetSize(100, 50);
-                    this.CenterControl.Color = '#1155FF';
-                    this.CenterControl.Label = 'はろー<br/>どうよ？';
-                    this.Add(this.CenterControl);
-                    this.TmpCtl = new Fw.Views.ControlView();
-                    this.TmpCtl.SetXY(-100, -100);
-                    this.TmpCtl.SetSize(200, 200);
-                    this.TmpCtl.Color = '#666666';
-                    this.TmpCtl.Label = 'くりっく';
-                    this.Add(this.TmpCtl);
-                    this.AncCtl1 = new Fw.Views.ButtonView();
-                    this.AncCtl1.Label = '右下';
-                    this.AncCtl1.SetSize(200, 50);
-                    this.AncCtl1.SetAnchor(null, null, 40, 5);
-                    this.Add(this.AncCtl1);
-                    this.AncCtl2 = new Fw.Views.ButtonView();
-                    this.AncCtl2.Label = '右上';
-                    this.AncCtl2.SetSize(200, 50);
-                    this.AncCtl2.SetAnchor(3, null, 3, null);
-                    this.Add(this.AncCtl2);
-                    var label = new Fw.Views.LabelView();
-                    label.FontSize = Property.FontSize.XxLarge;
-                    label.Text = 'らべるやで';
-                    this.AncCtl2.Add(label);
-                    this.AncCtl3 = new Fw.Views.ButtonView();
-                    this.AncCtl3.Label = '左下';
-                    this.AncCtl3.SetSize(300, 100);
-                    this.AncCtl3.SetAnchor(null, 3, null, 3);
-                    this.Add(this.AncCtl3);
-                    var img = new Fw.Views.ImageView();
-                    img.SetSize(100, 70);
-                    img.Src = 'images/icons/home.png';
-                    img.FitPolicy = Property.FitPolicy.Cover;
-                    this.AncCtl3.Add(img);
-                    this.Toggle = new Fw.Views.ToggleButtonView();
-                    this.Toggle.SetAnchor(150, 10, null, null);
-                    this.Add(this.Toggle);
-                    this.AncCtl4 = new Fw.Views.ButtonView();
-                    this.AncCtl4.Label = 'マスク';
-                    this.AncCtl4.SetSize(200, 50);
-                    this.AncCtl4.SetAnchor(60, 3, null, null);
-                    this.Add(this.AncCtl4);
-                    //this.AncCtl5 = new Fw.Views.ButtonView();
-                    //this.AncCtl5.Label = '左右';
-                    //this.AncCtl5.Size.Height = 50;
-                    //this.AncCtl5.SetAnchor(null, 150, 300, 100);
-                    //this.Add(this.AncCtl5);
-                    //this.AncCtl6 = new Fw.Views.ButtonView();
-                    //this.AncCtl6.Label = '上下';
-                    //this.AncCtl6.SetAnchor(200, null, null, 40);
-                    //this.AncCtl6.Size.Width = 30;
-                    //this.Add(this.AncCtl6);
-                };
-                return LayoutCheckPageView;
-            }(Fw.Views.PageView));
-            Pages.LayoutCheckPageView = LayoutCheckPageView;
-        })(Pages = Views_2.Pages || (Views_2.Pages = {}));
-    })(Views = App.Views || (App.Views = {}));
-})(App || (App = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../../Fw/Controllers/ControllerBase.ts" />
-/// <reference path="../../Fw/Controllers/Manager.ts" />
-/// <reference path="../../Fw/Util/Dump.ts" />
-/// <reference path="../../Fw/Events/ControlViewEvents.ts" />
-/// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
-/// <reference path="../Views/Pages/MainPageView.ts" />
-var App;
-(function (App) {
-    var Controllers;
-    (function (Controllers) {
-        var Dump = Fw.Util.Dump;
-        var Events = Fw.Events;
-        var Manager = Fw.Controllers.Manager;
-        var Pages = App.Views.Pages;
-        var LayoutCheckController = /** @class */ (function (_super) {
-            __extends(LayoutCheckController, _super);
-            function LayoutCheckController(id) {
-                var _this = _super.call(this, id) || this;
-                _this.Init();
-                return _this;
-            }
-            LayoutCheckController.prototype.Init = function () {
-                var _this = this;
-                this.SetClassName('LayoutCheckController');
-                this.View = new Pages.LayoutCheckPageView();
-                var page = this.View;
-                page.BtnGoSub1.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
-                    // イベント通知でなく、参照保持でよいか？
-                    Manager.Instance.Show("Sub1");
-                });
-                page.BtnGoSub2.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
-                    // イベント通知でなく、参照保持でよいか？
-                    Manager.Instance.Show("Sub2");
-                });
-                page.TmpCtl.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
-                    Dump.Log(_this.ClassName + ".SingleClick1");
-                    if (page.CenterControl.IsVisible()) {
-                        Dump.Log('みえてんで！');
-                        page.CenterControl.Hide();
-                    }
-                    else {
-                        Dump.Log('みえへんで...？');
-                        page.CenterControl.Show();
-                    }
-                });
-                this.View.AddEventListener(Events.PageViewEvents.Shown, function () {
-                    Dump.Log(_this.ClassName + ".Shown");
-                });
-                page.AncCtl4.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
-                    //Dump.Log(`${this.ClassName}.SingleClick2`);
-                    page.IsMasked
-                        ? page.UnMask()
-                        : page.Mask();
-                });
-            };
-            return LayoutCheckController;
-        }(Fw.Controllers.ControllerBase));
-        Controllers.LayoutCheckController = LayoutCheckController;
-    })(Controllers = App.Controllers || (App.Controllers = {}));
-})(App || (App = {}));
 //# sourceMappingURL=tsout.js.map

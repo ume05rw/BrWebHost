@@ -359,6 +359,12 @@ declare namespace App.Views.Pages {
     }
 }
 declare namespace App.Controllers {
+    class LayoutCheckController extends Fw.Controllers.ControllerBase {
+        constructor(id: string);
+        private Init;
+    }
+}
+declare namespace App.Controllers {
     class MainController extends Fw.Controllers.ControllerBase {
         constructor(id: string);
         private Init;
@@ -413,6 +419,24 @@ declare namespace App.Controllers {
     class Sub2Controller extends Fw.Controllers.ControllerBase {
         constructor(id: string, jqueryElem: JQuery);
         private Init;
+    }
+}
+declare namespace App.Views.Pages {
+    import Views = Fw.Views;
+    class LayoutCheckPageView extends Fw.Views.PageView {
+        BtnGoSub1: Views.ButtonView;
+        BtnGoSub2: Views.ButtonView;
+        CenterControl: Views.ControlView;
+        TmpCtl: Views.ControlView;
+        Toggle: Views.ToggleButtonView;
+        AncCtl1: Views.ButtonView;
+        AncCtl2: Views.ButtonView;
+        AncCtl3: Views.ButtonView;
+        AncCtl4: Views.ButtonView;
+        AncCtl5: Views.ButtonView;
+        AncCtl6: Views.ButtonView;
+        constructor();
+        private Initialize;
     }
 }
 declare namespace App {
@@ -702,29 +726,5 @@ declare namespace Fw {
 declare namespace Fw {
     class Startup {
         static Init(): void;
-    }
-}
-declare namespace App.Views.Pages {
-    import Views = Fw.Views;
-    class LayoutCheckPageView extends Fw.Views.PageView {
-        BtnGoSub1: Views.ButtonView;
-        BtnGoSub2: Views.ButtonView;
-        CenterControl: Views.ControlView;
-        TmpCtl: Views.ControlView;
-        Toggle: Views.ToggleButtonView;
-        AncCtl1: Views.ButtonView;
-        AncCtl2: Views.ButtonView;
-        AncCtl3: Views.ButtonView;
-        AncCtl4: Views.ButtonView;
-        AncCtl5: Views.ButtonView;
-        AncCtl6: Views.ButtonView;
-        constructor();
-        private Initialize;
-    }
-}
-declare namespace App.Controllers {
-    class LayoutCheckController extends Fw.Controllers.ControllerBase {
-        constructor(id: string);
-        private Init;
     }
 }

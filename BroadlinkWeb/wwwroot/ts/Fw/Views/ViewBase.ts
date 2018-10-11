@@ -329,7 +329,7 @@ namespace Fw.Views {
 
         protected InnerRefresh(): void {
             try {
-                Dump.Log(`${this.ClassName}.InnerRefresh`);
+                //Dump.Log(`${this.ClassName}.InnerRefresh`);
                 const parent = $(this.Elem.parent());
 
                 if (parent.length <= 0)

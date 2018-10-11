@@ -139,7 +139,7 @@ namespace Fw.Views {
 
             // ブラウザのリサイズ時、ページ全体を再描画
             Fw.Root.Instance.AddEventListener(Fw.Events.RootEvents.Resized, () => {
-                Dump.Log(`${this.ClassName}.Resized`);
+                //Dump.Log(`${this.ClassName}.Resized`);
                 this.Size.Width = Fw.Root.Instance.Size.Width;
                 this.Size.Height = Fw.Root.Instance.Size.Height;
                 this.Refresh();
