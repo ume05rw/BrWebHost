@@ -314,6 +314,7 @@ namespace Fw.Views {
         }
 
         public Refresh(): void {
+            //Dump.Log(`${this.ClassName}.Refresh`);
             if (this._isSuppressLayout)
                 return;
 

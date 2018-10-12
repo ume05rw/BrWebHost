@@ -111,6 +111,7 @@ namespace Fw.Views {
                 if (!this._isDragging || this._spcvMouseSuppressor)
                     return;
 
+                // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
                 if (e.eventPhase !== 2)
                     return;
 

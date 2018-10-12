@@ -75,12 +75,19 @@ namespace Fw.Views {
             this._dummyView.Position.Policy = Property.PositionPolicy.LeftTop;
 
             // 下に定義済みのメソッドをthisバインドしておく。
-            this.OnSingleClick = this.OnSingleClick.bind(this);
+            this.OnInnerMouseDown = this.OnInnerMouseDown.bind(this);
+            this.OnInnerMouseMove = this.OnInnerMouseMove.bind(this);
+            this.OnInnerMouseUp = this.OnInnerMouseUp.bind(this);
+
+            this.OnInnerSingleClick = this.OnInnerSingleClick.bind(this);
             this.OnChildMouseDown = this.OnChildMouseDown.bind(this);
             this.OnChildMouseMove = this.OnChildMouseMove.bind(this);
             this.OnChildMouseUp = this.OnChildMouseUp.bind(this);
 
-            this.Elem.on('click touchend', this.OnSingleClick);
+            this._innerBox.Elem.on('touchstart mousedown', this.OnInnerMouseDown);
+            this._innerBox.Elem.on('touchmove mousemove', this.OnInnerMouseMove);
+            this._innerBox.Elem.on('touchend mouseup mouseout', this.OnInnerMouseUp);
+            this._innerBox.Elem.on('click', this.OnInnerSingleClick);
         }
 
         public Add(view: IView): void {
@@ -105,23 +112,46 @@ namespace Fw.Views {
 // #region "上下スクロール"
 
         private OnInnerMouseDown(e: JQueryEventObject): void {
+            //Dump.Log(`${this.ClassName}.OnInnerMouseDown`);
             if (this._isChildRelocation)
                 return;
 
             this._isInnerDragging = true;
+            this._dragStartMousePosition.X = e.clientX;
+            this._dragStartMousePosition.Y = e.clientY;
+            this._dragStartViewPosition.X = this._innerBox.Position.Left;
+            this._dragStartViewPosition.Y = this._innerBox.Position.Top;
+            Fw.Root.Instance.SetTextSelection(false);
         }
 
         private OnInnerMouseMove(e: JQueryEventObject): void {
-            if (this._isChildRelocation)
+            if (this._isChildRelocation || !this._isInnerDragging || this._scrollMargin === 0)
                 return;
 
+            // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
+            if (e.eventPhase !== 2)
+                return;
+
+            const addY = e.clientY - this._dragStartMousePosition.Y;
+            let top = this._dragStartViewPosition.Y + addY;
+
+            const margin = this._scrollMargin * -1;
+            if (top < margin)
+                top = margin;
+            else if (0 < top)
+                top = 0;
+
+            this._innerBox.Position.Top = top;
         }
 
         private OnInnerMouseUp(e: JQueryEventObject): void {
+            //Dump.Log(`${this.ClassName}.OnInnerMouseUp`);
             if (this._isChildRelocation)
                 return;
 
+            // 内部Viewドラッグ中のとき、ドラッグ終了処理。
             this._isInnerDragging = false;
+            Fw.Root.Instance.SetTextSelection(true);
         }
 
 // #endregion "上下スクロール"
@@ -155,7 +185,7 @@ namespace Fw.Views {
          * スタッカーBox自身がクリックされたとき
          * @param e1
          */
-        private OnSingleClick(e: JQueryEventObject): void {
+        private OnInnerSingleClick(e: JQueryEventObject): void {
             if (e.eventPhase !== 2)
                 return;
 
@@ -217,7 +247,6 @@ namespace Fw.Views {
          * @param e1
          */
         private OnChildMouseMove(e: JQueryEventObject): void {
-            
             if (!this._isChildRelocation || !this._isChildDragging)
                 return;
 
@@ -343,6 +372,7 @@ namespace Fw.Views {
 
         protected InnerRefresh(): void {
             try {
+                //Dump.Log(`${this.ClassName}.InnerRefresh`);
                 this.SuppressLayout();
                 this._innerBox.SuppressLayout();
                 _.each(this._innerBox.Children, (view: IView) => {
@@ -401,7 +431,9 @@ namespace Fw.Views {
                 this._innerBox.Refresh();
                 _.each(this._innerBox.Children, (view: IView) => {
                     view.ResumeLayout();
+                    view.Refresh();
                 });
+                //Dump.Log(`${this.ClassName}.InnerRefresh-End`);
             }
         }
 
@@ -551,11 +583,10 @@ namespace Fw.Views {
                 }
             });
 
-            const minTop = currentBottom - rowMaxHeight - this._margin;
-
             if (calcScrollMargin) {
+                const minTop = currentBottom - rowMaxHeight - this._margin;
                 if (minTop < 0) {
-                    this._scrollMargin = minTop;
+                    this._scrollMargin = minTop * -1;
                 } else {
                     this._scrollMargin = 0;
                 }
@@ -608,7 +639,7 @@ namespace Fw.Views {
             if (calcScrollMargin) {
                 const minTop = currentBottom - rowMaxHeight - this._margin;
                 if (minTop < 0) {
-                    this._scrollMargin = minTop;
+                    this._scrollMargin = minTop * -1;
                 } else {
                     this._scrollMargin = 0;
                 }
@@ -616,7 +647,6 @@ namespace Fw.Views {
         }
 
         public Dispose(): void {
-            this.Elem.off('click touchend');
             this._innerBox.Elem.off('touchstart mousedown');
             this._innerBox.Elem.off('touchmove mousemove');
             this._innerBox.Elem.off('touchend mouseup mouseout');

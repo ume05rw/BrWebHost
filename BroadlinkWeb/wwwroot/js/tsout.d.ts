@@ -784,7 +784,7 @@ declare namespace Fw.Views {
          * スタッカーBox自身がクリックされたとき
          * @param e1
          */
-        private OnSingleClick;
+        private OnInnerSingleClick;
         CommitRelocation(): void;
         /**
          * 子要素上でマウスボタンが押されたとき
