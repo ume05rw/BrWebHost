@@ -247,7 +247,9 @@ namespace Fw.Views {
 
                     const maxLeft = this.InnerLength - this.Size.Width;
                     const currentLeft = this._innerBox.Position.Left;
-                    const posRate = currentLeft / maxLeft;
+                    const posRate = (maxLeft === 0)
+                        ? 1
+                        : currentLeft / maxLeft;
                     const leftLength
                         = this._positionBarMax.Length - this._positionBarCurrent.Length;
                     this._positionBarCurrent.Position.Left = this._barMargin - (leftLength * posRate);
@@ -283,7 +285,9 @@ namespace Fw.Views {
 
                     const maxTop = this.InnerLength - this.Size.Height;
                     const currentTop = this._innerBox.Position.Top;
-                    const posRate = currentTop / maxTop;
+                    const posRate = (maxTop === 0)
+                        ? 1
+                        : currentTop / maxTop;
                     const topLength
                         = this._positionBarMax.Length - this._positionBarCurrent.Length;
                     this._positionBarCurrent.Position.Top = this._barMargin - (topLength * posRate);

@@ -1245,6 +1245,7 @@ var Fw;
                 //Dump.Log(`${this.ClassName}.Refresh`);
                 if (this._isSuppressLayout)
                     return;
+                //Dump.Log(`${this.ClassName}.Refresh`);
                 // 子ViewもRefreshさせる。
                 _.each(this.Children, function (view) {
                     view.Refresh();
@@ -2429,7 +2430,9 @@ var App;
                     this.BtnBack.SetAnchor(null, 5, null, null);
                     this.Header.Add(this.BtnBack);
                     this.Stucker = new Views.StuckerBoxView();
-                    this.Stucker.SetSize(600, 400);
+                    //this.Stucker.SetSize(600, 400);
+                    this.Stucker.SetAnchor(70, 20, 20, null);
+                    this.Stucker.Size.Height = 400;
                     this.Stucker.SetLeftTop(10, 70);
                     this.Add(this.Stucker);
                     var btn1 = new Views.ButtonView();
@@ -4137,7 +4140,9 @@ var Fw;
                                 * (this.Size.Width / this.InnerLength);
                         var maxLeft = this.InnerLength - this.Size.Width;
                         var currentLeft = this._innerBox.Position.Left;
-                        var posRate = currentLeft / maxLeft;
+                        var posRate = (maxLeft === 0)
+                            ? 1
+                            : currentLeft / maxLeft;
                         var leftLength = this._positionBarMax.Length - this._positionBarCurrent.Length;
                         this._positionBarCurrent.Position.Left = this._barMargin - (leftLength * posRate);
                         //Dump.Log({
@@ -4166,7 +4171,9 @@ var Fw;
                                 * (this.Size.Height / this.InnerLength);
                         var maxTop = this.InnerLength - this.Size.Height;
                         var currentTop = this._innerBox.Position.Top;
-                        var posRate = currentTop / maxTop;
+                        var posRate = (maxTop === 0)
+                            ? 1
+                            : currentTop / maxTop;
                         var topLength = this._positionBarMax.Length - this._positionBarCurrent.Length;
                         this._positionBarCurrent.Position.Top = this._barMargin - (topLength * posRate);
                     }
@@ -4273,6 +4280,18 @@ var Fw;
                 this._innerBox.BackgroundColor = 'transparent';
                 this.Elem.append(this._innerBox.Elem);
                 //super.Add(this._innerBox); // Addメソッドでthis.Childrenを呼ぶため循環参照になる。
+                this._positionBarMax = new Views.LineView(Property.Direction.Vertical);
+                this._positionBarMax.Position.Policy = Property.PositionPolicy.LeftTop;
+                this._positionBarMax.SetTransAnimation(false);
+                this._positionBarMax.Color = '#888888';
+                this._positionBarMax.SetParent(this);
+                this.Elem.append(this._positionBarMax.Elem);
+                this._positionBarCurrent = new Views.LineView(Property.Direction.Vertical);
+                this._positionBarCurrent.Position.Policy = Property.PositionPolicy.LeftTop;
+                this._positionBarCurrent.SetTransAnimation(false);
+                this._positionBarCurrent.Color = '#EEEEEE';
+                this._positionBarCurrent.SetParent(this);
+                this.Elem.append(this._positionBarCurrent.Elem);
                 this._backupView = null;
                 this._dummyView = new Fw.Views.BoxView();
                 this._dummyView.Elem.addClass('Shadow');
@@ -4400,7 +4419,7 @@ var Fw;
                     return;
                 var rect = this.Dom.getBoundingClientRect();
                 var innerLeft = e.pageX - rect.left;
-                var innerTop = e.pageY - rect.top;
+                var innerTop = e.pageY - rect.top + (this._innerBox.Position.Top * -1);
                 var view = this.GetNearestByPosition(innerLeft, innerTop);
                 if (view) {
                     //Dump.Log('OnChildMouseDown - view found: ' + (view as ButtonView).Label);
@@ -4567,6 +4586,7 @@ var Fw;
                         default:
                             throw new Error("ReferencePoint not found: " + this._referencePoint);
                     }
+                    this.InnerRefreshPositionLine();
                     _super.prototype.InnerRefresh.call(this);
                 }
                 catch (e) {
@@ -4580,6 +4600,8 @@ var Fw;
                         view.ResumeLayout();
                         view.Refresh();
                     });
+                    this._positionBarMax.Refresh();
+                    this._positionBarCurrent.Refresh();
                     //Dump.Log(`${this.ClassName}.InnerRefresh-End`);
                 }
             };
@@ -4762,6 +4784,41 @@ var Fw;
                         this._scrollMargin = 0;
                     }
                 }
+            };
+            StuckerBoxView.prototype.InnerRefreshPositionLine = function () {
+                switch (this._referencePoint) {
+                    case Property.ReferencePoint.LeftTop:
+                    case Property.ReferencePoint.LeftBottom:
+                        this._positionBarMax.SetAnchor(this._margin, null, this._margin, this._margin);
+                        this._positionBarCurrent.SetAnchor(null, null, this._margin, null);
+                        break;
+                    case Property.ReferencePoint.RightTop:
+                    case Property.ReferencePoint.RightBottom:
+                        this._positionBarMax.SetAnchor(this._margin, this._margin, null, this._margin);
+                        this._positionBarCurrent.SetAnchor(null, this._margin, null, null);
+                        break;
+                    default:
+                        throw new Error("ReferencePoint not found: " + this._referencePoint);
+                }
+                this._positionBarMax.Length = this.Size.Height - (this._margin * 2);
+                this._positionBarCurrent.Length
+                    = this._positionBarMax.Length
+                        * (this.Size.Height / this._innerBox.Size.Height);
+                var maxTop = this._innerBox.Size.Height - this.Size.Height;
+                var currentTop = this._innerBox.Position.Top;
+                var posRate = (maxTop === 0)
+                    ? 1
+                    : currentTop / maxTop;
+                var topLength = this._positionBarMax.Length - this._positionBarCurrent.Length;
+                Dump.Log({
+                    _positionBarMaxLength: this._positionBarMax.Length,
+                    _positionBarCurrentLength: this._positionBarCurrent.Length,
+                    maxTop: maxTop,
+                    currentTop: currentTop,
+                    posRate: posRate,
+                    topLength: topLength,
+                });
+                this._positionBarCurrent.Position.Top = this._margin - (topLength * posRate);
             };
             StuckerBoxView.prototype.Dispose = function () {
                 this._innerBox.Elem.off('touchstart mousedown');

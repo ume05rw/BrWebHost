@@ -40,6 +40,8 @@ namespace Fw.Views {
         }
 
         private _innerBox: BoxView;
+        private _positionBarMax: LineView;
+        private _positionBarCurrent: LineView;
         private _scrollMargin: number = 0;
 
         private _backupView: IView;
@@ -68,6 +70,20 @@ namespace Fw.Views {
             this._innerBox.BackgroundColor = 'transparent';
             this.Elem.append(this._innerBox.Elem);
             //super.Add(this._innerBox); // Addメソッドでthis.Childrenを呼ぶため循環参照になる。
+
+            this._positionBarMax = new LineView(Property.Direction.Vertical);
+            this._positionBarMax.Position.Policy = Property.PositionPolicy.LeftTop;
+            this._positionBarMax.SetTransAnimation(false);
+            this._positionBarMax.Color = '#888888';
+            this._positionBarMax.SetParent(this);
+            this.Elem.append(this._positionBarMax.Elem);
+
+            this._positionBarCurrent = new LineView(Property.Direction.Vertical);
+            this._positionBarCurrent.Position.Policy = Property.PositionPolicy.LeftTop;
+            this._positionBarCurrent.SetTransAnimation(false);
+            this._positionBarCurrent.Color = '#EEEEEE';
+            this._positionBarCurrent.SetParent(this);
+            this.Elem.append(this._positionBarCurrent.Elem);
 
             this._backupView = null;
             this._dummyView = new Fw.Views.BoxView();
@@ -227,7 +243,7 @@ namespace Fw.Views {
 
             const rect = this.Dom.getBoundingClientRect();
             const innerLeft = e.pageX - rect.left;
-            const innerTop = e.pageY - rect.top;
+            const innerTop = e.pageY - rect.top + (this._innerBox.Position.Top * -1);
             const view = this.GetNearestByPosition(innerLeft, innerTop);
             if (view) {
                 //Dump.Log('OnChildMouseDown - view found: ' + (view as ButtonView).Label);
@@ -421,6 +437,8 @@ namespace Fw.Views {
                         throw new Error(`ReferencePoint not found: ${this._referencePoint}`);
                 }
 
+                this.InnerRefreshPositionLine();
+
                 super.InnerRefresh();
 
             } catch (e) {
@@ -433,6 +451,8 @@ namespace Fw.Views {
                     view.ResumeLayout();
                     view.Refresh();
                 });
+                this._positionBarMax.Refresh();
+                this._positionBarCurrent.Refresh();
                 //Dump.Log(`${this.ClassName}.InnerRefresh-End`);
             }
         }
@@ -644,6 +664,39 @@ namespace Fw.Views {
                     this._scrollMargin = 0;
                 }
             }
+        }
+
+        private InnerRefreshPositionLine(): void {
+            switch (this._referencePoint) {
+                case Property.ReferencePoint.LeftTop:
+                case Property.ReferencePoint.LeftBottom:
+                    this._positionBarMax.SetAnchor(this._margin, null, this._margin, this._margin);
+                    this._positionBarCurrent.SetAnchor(null, null, this._margin, null);
+                    break;
+                case Property.ReferencePoint.RightTop:
+                case Property.ReferencePoint.RightBottom:
+                    this._positionBarMax.SetAnchor(this._margin, this._margin, null, this._margin);
+                    this._positionBarCurrent.SetAnchor(null, this._margin, null, null);
+                    break;
+                default:
+                    throw new Error(`ReferencePoint not found: ${this._referencePoint}`);
+            }
+
+            this._positionBarMax.Length = this.Size.Height - (this._margin * 2);
+
+            this._positionBarCurrent.Length
+                = this._positionBarMax.Length
+                * (this.Size.Height / this._innerBox.Size.Height);
+
+            const maxTop = this._innerBox.Size.Height - this.Size.Height;
+            const currentTop = this._innerBox.Position.Top;
+            const posRate = (maxTop === 0)
+                ? 1
+                : currentTop / maxTop;
+            const topLength
+                = this._positionBarMax.Length - this._positionBarCurrent.Length;
+
+            this._positionBarCurrent.Position.Top = this._margin - (topLength * posRate);
         }
 
         public Dispose(): void {

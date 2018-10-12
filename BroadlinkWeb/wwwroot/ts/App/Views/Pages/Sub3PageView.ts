@@ -49,7 +49,9 @@ namespace App.Views.Pages {
             this.Header.Add(this.BtnBack);
 
             this.Stucker = new Views.StuckerBoxView();
-            this.Stucker.SetSize(600, 400);
+            //this.Stucker.SetSize(600, 400);
+            this.Stucker.SetAnchor(70, 20, 20, null);
+            this.Stucker.Size.Height = 400;
             this.Stucker.SetLeftTop(10, 70);
             this.Add(this.Stucker);
 

@@ -759,6 +759,8 @@ declare namespace Fw.Views {
         private _referencePoint;
         ReferencePoint: Property.ReferencePoint;
         private _innerBox;
+        private _positionBarMax;
+        private _positionBarCurrent;
         private _scrollMargin;
         private _backupView;
         private _dummyView;
@@ -811,6 +813,7 @@ declare namespace Fw.Views {
         private InnerRefreshRightTop;
         private InnerRefreshLeftBottom;
         private InnerRefreshRightBottom;
+        private InnerRefreshPositionLine;
         Dispose(): void;
     }
 }

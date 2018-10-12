@@ -318,6 +318,8 @@ namespace Fw.Views {
             if (this._isSuppressLayout)
                 return;
 
+            //Dump.Log(`${this.ClassName}.Refresh`);
+
             // 子ViewもRefreshさせる。
             _.each(this.Children, (view: IView) => {
                 view.Refresh();
