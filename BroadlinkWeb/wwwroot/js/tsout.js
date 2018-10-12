@@ -4569,6 +4569,10 @@ var Fw;
                     }
                     // this._scrollMargin の分だけ、内部Viewを広げる。
                     this._innerBox.Size.Height = this.Size.Height + Math.abs(this._scrollMargin);
+                    // リサイズ後、過剰にスクロールしていた場合は戻す。
+                    if ((this._scrollMargin * -1) > this._innerBox.Position.Top) {
+                        this._innerBox.Position.Top = (this._scrollMargin * -1);
+                    }
                     // 子Viewを配置する。
                     switch (this._referencePoint) {
                         case Property.ReferencePoint.LeftTop:
@@ -4810,14 +4814,6 @@ var Fw;
                     ? 1
                     : currentTop / maxTop;
                 var topLength = this._positionBarMax.Length - this._positionBarCurrent.Length;
-                Dump.Log({
-                    _positionBarMaxLength: this._positionBarMax.Length,
-                    _positionBarCurrentLength: this._positionBarCurrent.Length,
-                    maxTop: maxTop,
-                    currentTop: currentTop,
-                    posRate: posRate,
-                    topLength: topLength,
-                });
                 this._positionBarCurrent.Position.Top = this._margin - (topLength * posRate);
             };
             StuckerBoxView.prototype.Dispose = function () {
