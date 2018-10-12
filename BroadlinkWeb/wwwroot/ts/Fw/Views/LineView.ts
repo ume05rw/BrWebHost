@@ -34,7 +34,7 @@ namespace Fw.Views {
         }
 
         constructor(direction: Property.Direction) {
-            super($('<a></a>'));
+            super($('<div></div>'));
 
             // nullやundefinedを入れさせない。
             this._direction = (direction === Property.Direction.Horizontal)
@@ -47,6 +47,8 @@ namespace Fw.Views {
 
             this.SetClassName('LineView');
             this.Elem.addClass(this.ClassName);
+
+            this._length = 0;
         }
 
         protected InnerRefresh(): void {

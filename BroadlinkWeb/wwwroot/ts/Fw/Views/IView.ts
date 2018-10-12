@@ -20,6 +20,7 @@ namespace Fw.Views {
 
         Color: string;
         BackgroundColor: string;
+        Opacity: number;
 
         SetParent(parent: IView): void;
         SetSize(width: number, height: number): void;

@@ -35,12 +35,13 @@ var Fw;
                 console.log('########################################');
                 console.log('########################################');
                 console.log(Dump.GetTimestamp() + " :: ERROR!! " + (message ? '[ ' + message + ' ]' : ''));
-                try {
-                    console.log(Dump.GetDumpedString(value));
-                }
-                catch (e) {
-                    console.log(value);
-                }
+                console.log(value);
+                // なぜか、Firefoxで例外オブジェクトがシリアライズ出来ず、例外も出ない。
+                //try {
+                //    console.log(Dump.GetDumpedString(value));
+                //} catch (e) {
+                //    console.log(value);
+                //}
             };
             Dump.GetTimestamp = function () {
                 var now = new Date();
@@ -948,6 +949,7 @@ var Fw;
                 _this._zIndex = 0;
                 _this._color = '#000000';
                 _this._backgroundColor = '#FFFFFF';
+                _this._opacity = 1.0;
                 _this.SetElem(jqueryElem);
                 _this.Init();
                 return _this;
@@ -1033,6 +1035,17 @@ var Fw;
                 },
                 set: function (value) {
                     this._backgroundColor = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(ViewBase.prototype, "Opacity", {
+                get: function () {
+                    return this._opacity;
+                },
+                set: function (value) {
+                    this._opacity = value;
                     this.Refresh();
                 },
                 enumerable: true,
@@ -1321,6 +1334,7 @@ var Fw;
                     this.Dom.style.zIndex = "" + this.ZIndex;
                     this.Dom.style.color = "" + this._color;
                     this.Dom.style.backgroundColor = "" + this._backgroundColor;
+                    this.Dom.style.opacity = "" + this.Opacity;
                     this._lastRefreshedTime = new Date();
                 }
                 catch (e) {
@@ -2880,7 +2894,7 @@ var Fw;
         var BoxView = /** @class */ (function (_super) {
             __extends(BoxView, _super);
             function BoxView() {
-                return _super.call(this, $('<a></a>')) || this;
+                return _super.call(this, $('<div></div>')) || this;
             }
             Object.defineProperty(BoxView.prototype, "HasBorder", {
                 get: function () {
@@ -3135,7 +3149,7 @@ var Fw;
         var ImageView = /** @class */ (function (_super) {
             __extends(ImageView, _super);
             function ImageView() {
-                return _super.call(this, $('<a></a>')) || this;
+                return _super.call(this, $('<div></div>')) || this;
             }
             Object.defineProperty(ImageView.prototype, "Src", {
                 get: function () {
@@ -3385,7 +3399,7 @@ var Fw;
                 _super.prototype.Init.call(this);
                 this.SetClassName('RelocatableControlView');
                 this.Elem.addClass(this.ClassName);
-                this._shadow = $('<div class="IView ControlView Shadow"></div>');
+                this._shadow = $('<div class="IView BoxView Shadow"></div>');
                 this._dragStartMousePosition = new Views.Property.Position();
                 this._dragStartViewPosition = new Views.Property.Position();
                 this.AddEventListener(Events.LongClick, function () {
@@ -3510,14 +3524,15 @@ var Fw;
                             this.Position.Top = Math.round(this.Position.Top / this.GridSize) * this.GridSize;
                         }
                     }
-                    _super.prototype.InnerRefresh.call(this);
                     var shadowDom = this._shadow.get(0);
                     if (!this._isRelocatable) {
                         shadowDom.style.display = 'none';
-                        this.Dom.style.opacity = '1.0';
+                        this.Opacity = 1.0;
+                        _super.prototype.InnerRefresh.call(this);
                         return;
                     }
-                    this.Dom.style.opacity = '0.7';
+                    this.Opacity = 0.7;
+                    _super.prototype.InnerRefresh.call(this);
                     if (this._isDragging) {
                         var parentWidth = (this.Parent)
                             ? this.Parent.Size.Width
@@ -3545,11 +3560,8 @@ var Fw;
                         shadowDom.style.top = sTop + "px";
                         shadowDom.style.width = this.Size.Width + "px";
                         shadowDom.style.height = this.Size.Height + "px";
-                        shadowDom.style.opacity = '0.4';
                         shadowDom.style.color = "" + this.Color;
                         shadowDom.style.borderColor = "" + this.Color;
-                        shadowDom.style.borderStyle = 'dashed';
-                        shadowDom.style.borderWidth = '2px';
                         shadowDom.style.backgroundColor = "" + this.BackgroundColor;
                     }
                     else {
@@ -3651,6 +3663,7 @@ var Fw;
                 this._innerBox.Elem.removeClass('TransAnimation');
                 this.Add(this._innerBox);
                 // コンストラクタ完了後に実行。
+                // コンストラクタ引数で取得したDirectionがセットされていないため。
                 _.defer(function () {
                     _this._positionBarMax = new Views.LineView(_this._direction);
                     _this._positionBarMax.Position.Policy = Property.PositionPolicy.LeftTop;
@@ -4127,7 +4140,7 @@ var Fw;
         var LineView = /** @class */ (function (_super) {
             __extends(LineView, _super);
             function LineView(direction) {
-                var _this = _super.call(this, $('<a></a>')) || this;
+                var _this = _super.call(this, $('<div></div>')) || this;
                 // nullやundefinedを入れさせない。
                 _this._direction = (direction === Views.Property.Direction.Horizontal)
                     ? Views.Property.Direction.Horizontal
@@ -4166,6 +4179,7 @@ var Fw;
                 _super.prototype.Init.call(this);
                 this.SetClassName('LineView');
                 this.Elem.addClass(this.ClassName);
+                this._length = 0;
             };
             LineView.prototype.InnerRefresh = function () {
                 try {
@@ -4218,24 +4232,6 @@ var Fw;
         Events.LineViewEvents = new LineViewEventsClass();
     })(Events = Fw.Events || (Fw.Events = {}));
 })(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="BoxViewEvents.ts" />
-var Fw;
-(function (Fw) {
-    var Events;
-    (function (Events) {
-        var ContainerBoxViewEventsClass = /** @class */ (function (_super) {
-            __extends(ContainerBoxViewEventsClass, _super);
-            function ContainerBoxViewEventsClass() {
-                return _super !== null && _super.apply(this, arguments) || this;
-            }
-            return ContainerBoxViewEventsClass;
-        }(Events.BoxViewEventsClass));
-        Events.ContainerBoxViewEventsClass = ContainerBoxViewEventsClass;
-        Events.ContainerBoxViewEvents = new ContainerBoxViewEventsClass();
-    })(Events = Fw.Events || (Fw.Events = {}));
-})(Fw || (Fw = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Events/ViewEvents.ts" />
@@ -4252,6 +4248,456 @@ var Fw;
                 Direction[Direction["Horizontal"] = 0] = "Horizontal";
                 Direction[Direction["Vertical"] = 1] = "Vertical";
             })(Direction = Property.Direction || (Property.Direction = {}));
+        })(Property = Views.Property || (Views.Property = {}));
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="BoxViewEvents.ts" />
+var Fw;
+(function (Fw) {
+    var Events;
+    (function (Events) {
+        var StuckerBoxViewEventsClass = /** @class */ (function (_super) {
+            __extends(StuckerBoxViewEventsClass, _super);
+            function StuckerBoxViewEventsClass() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            return StuckerBoxViewEventsClass;
+        }(Events.BoxViewEventsClass));
+        Events.StuckerBoxViewEventsClass = StuckerBoxViewEventsClass;
+        Events.StuckerBoxViewEvents = new StuckerBoxViewEventsClass();
+    })(Events = Fw.Events || (Fw.Events = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Util/Dump.ts" />
+/// <reference path="../Events/StuckerBoxViewEvents.ts" />
+/// <reference path="../Events/ControlViewEvents.ts" />
+/// <reference path="Animation/Animator.ts" />
+/// <reference path="Animation/Params.ts" />
+/// <reference path="BoxView.ts" />
+/// <reference path="Property/Size.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Dump = Fw.Util.Dump;
+        var Property = Fw.Views.Property;
+        var ControlViewEvents = Fw.Events.ControlViewEvents;
+        var StuckerBoxView = /** @class */ (function (_super) {
+            __extends(StuckerBoxView, _super);
+            function StuckerBoxView() {
+                var _this = _super !== null && _super.apply(this, arguments) || this;
+                _this._isChildRelocation = false;
+                _this._isChildDragging = false;
+                _this._relocationTargetView = null;
+                _this._dragStartMousePosition = new Property.Position();
+                _this._dragStartViewPosition = new Property.Position();
+                return _this;
+            }
+            Object.defineProperty(StuckerBoxView.prototype, "Margin", {
+                get: function () {
+                    return this._margin;
+                },
+                set: function (value) {
+                    this._margin = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(StuckerBoxView.prototype, "ReferencePoint", {
+                get: function () {
+                    return this._referencePoint;
+                },
+                set: function (value) {
+                    this._referencePoint = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            StuckerBoxView.prototype.Init = function () {
+                _super.prototype.Init.call(this);
+                this.SetClassName('ContainerBoxView');
+                this.Elem.addClass(this.ClassName);
+                this._margin = 10;
+                this._referencePoint = Property.ReferencePoint.LeftTop;
+                this._backupView = null;
+                this._dummyView = new Fw.Views.BoxView();
+                this._dummyView.Elem.addClass('Shadow');
+                this._dummyView.Position.Policy = Property.PositionPolicy.LeftTop;
+            };
+            StuckerBoxView.prototype.Add = function (view) {
+                view.Position.Policy = Property.PositionPolicy.LeftTop;
+                _super.prototype.Add.call(this, view);
+                view.AddEventListener(ControlViewEvents.LongClick, this.OnChildLongClick);
+                view.Elem.on('touchstart mousedown', this.OnChildMouseDown);
+                view.Elem.on('touchmove mousemove', this.OnChildMouseMove);
+                view.Elem.on('touchend mouseup', this.OnChildMouseUp);
+            };
+            StuckerBoxView.prototype.Remove = function (view) {
+                _super.prototype.Remove.call(this, view);
+                view.RemoveEventListener(ControlViewEvents.LongClick, this.OnChildLongClick);
+                view.Elem.off('touchstart mousedown', this.OnChildMouseDown);
+                view.Elem.off('touchmove mousemove', this.OnChildMouseMove);
+                view.Elem.off('touchend mouseup', this.OnChildMouseUp);
+            };
+            /**
+             * 子要素がロングクリックされたとき
+             * @param e1
+             */
+            StuckerBoxView.prototype.OnChildLongClick = function (e1) {
+                this.StartRelocation();
+            };
+            StuckerBoxView.prototype.StartRelocation = function () {
+                this._isChildRelocation = true;
+                Fw.Root.Instance.SetTextSelection(false);
+                _.each(this.Children, function (v) {
+                    v.Opacity = 0.7;
+                });
+                this.Refresh();
+            };
+            /**
+             * スタッカーBox自身がクリックされたとき
+             * @param e1
+             */
+            StuckerBoxView.prototype.OnSingleClick = function (e1) {
+                var _this = this;
+                var logic = function (e2) {
+                    _this.CommitRelocation();
+                };
+                logic(e1);
+            };
+            StuckerBoxView.prototype.CommitRelocation = function () {
+                if (this._relocationTargetView)
+                    this.RestoreDummyView();
+                this._isChildRelocation = false;
+                Fw.Root.Instance.SetTextSelection(true);
+                _.each(this.Children, function (v) {
+                    v.Opacity = 1.0;
+                });
+                this.Refresh();
+            };
+            /**
+             * 子要素上でマウスボタンが押されたとき
+             * @param e
+             */
+            StuckerBoxView.prototype.OnChildMouseDown = function (e1) {
+                var _this = this;
+                var logic = function (e2) {
+                    if (!_this._isChildRelocation)
+                        return;
+                    var view = _this.GetNearestByPosition(e2.clientX, e2.clientY);
+                    if (view) {
+                        _this._isChildDragging = true;
+                        _this._relocationTargetView = view;
+                        _this._dragStartMousePosition.X = e2.clientX;
+                        _this._dragStartMousePosition.Y = e2.clientY;
+                        _this._dragStartViewPosition.X = view.Position.Left;
+                        _this._dragStartViewPosition.Y = view.Position.Top;
+                        _this.SetDummyView(view);
+                    }
+                };
+                logic(e1);
+            };
+            /**
+             * 子要素上でマウスが動いたとき
+             * @param e1
+             */
+            StuckerBoxView.prototype.OnChildMouseMove = function (e1) {
+                var _this = this;
+                var logic = function (e2) {
+                    if (!_this._isChildRelocation || !_this._isChildDragging)
+                        return;
+                    var view = _this._relocationTargetView;
+                    var addX = e2.clientX - _this._dragStartMousePosition.X;
+                    var addY = e2.clientY - _this._dragStartMousePosition.Y;
+                    view.Position.Left = _this._dragStartViewPosition.X + addX;
+                    view.Position.Top = _this._dragStartViewPosition.Y + addY;
+                    var replaceView = _this.GetNearestByView(view);
+                    if (replaceView !== null && replaceView !== _this._dummyView) {
+                        _this.MoveInFronOf(replaceView, _this._dummyView);
+                    }
+                };
+                logic(e1);
+            };
+            /**
+             * 子要素上でマウスボタンが離れたとき
+             * @param e1
+             */
+            StuckerBoxView.prototype.OnChildMouseUp = function (e1) {
+                var _this = this;
+                var logic = function (e2) {
+                    if (!_this._isChildRelocation) {
+                        _this._isChildDragging = false;
+                    }
+                    else {
+                        _this._isChildDragging = false;
+                        _this.RestoreDummyView();
+                        _this._relocationTargetView = null;
+                    }
+                };
+                logic(e1);
+            };
+            StuckerBoxView.prototype.MoveInFronOf = function (baseView, moveView) {
+                var baseIndex = this.Children.indexOf(baseView);
+                var moveIndex = this.Children.indexOf(moveView);
+                if (baseIndex < 0)
+                    throw new Error('Not contained baseView');
+                if (moveIndex < 0)
+                    throw new Error('Not contained moveView');
+                this.Children.splice(moveIndex, 1);
+                baseIndex = this.Children.indexOf(baseView);
+                this.Children.splice(baseIndex, 0, moveView);
+            };
+            StuckerBoxView.prototype.GetNearestByView = function (view) {
+                var diff = Number.MAX_VALUE;
+                var result = null;
+                _.each(this.Children, function (v) {
+                    // 渡されたViewは対象外
+                    if (v === view)
+                        return;
+                    var tmpDiff = Math.abs(v.Position.Left - view.Position.Left)
+                        + Math.abs(v.Position.Top - view.Position.Top);
+                    if (tmpDiff < diff) {
+                        diff = tmpDiff;
+                        result = v;
+                    }
+                });
+                return result;
+            };
+            StuckerBoxView.prototype.GetNearestByPosition = function (x, y) {
+                var _this = this;
+                var diff = Number.MAX_VALUE;
+                var result = null;
+                _.each(this.Children, function (v) {
+                    // ダミーViewは対象外
+                    if (v === _this._dummyView)
+                        return;
+                    var tmpDiff = Math.abs(v.Position.X - x)
+                        + Math.abs(v.Position.Y - y);
+                    if (tmpDiff < diff) {
+                        diff = tmpDiff;
+                        result = v;
+                    }
+                });
+                return result;
+            };
+            StuckerBoxView.prototype.SetDummyView = function (view) {
+                var _this = this;
+                if (this._backupView)
+                    this.RestoreDummyView();
+                _.each(this.Children, function (v, index) {
+                    if (v === view) {
+                        _this._backupView = v;
+                        _this.Children[index] = _this._dummyView;
+                        _this._dummyView.Color = v.Color;
+                        _this._dummyView.SetSize(v.Size.Width, v.Size.Height);
+                    }
+                });
+            };
+            StuckerBoxView.prototype.RestoreDummyView = function () {
+                var _this = this;
+                if (!this._backupView)
+                    return;
+                _.each(this.Children, function (v, index) {
+                    if (v === _this._dummyView)
+                        _this.Children[index] = _this._backupView;
+                });
+                this._backupView = null;
+            };
+            StuckerBoxView.prototype.InnerRefresh = function () {
+                try {
+                    this.SuppressLayout();
+                    switch (this._referencePoint) {
+                        case Property.ReferencePoint.LeftTop:
+                            this.InnerRefreshLeftTop();
+                            break;
+                        case Property.ReferencePoint.RightTop:
+                            this.InnerRefreshRightTop();
+                            break;
+                        case Property.ReferencePoint.LeftBottom:
+                            this.InnerRefreshLeftBottom();
+                            break;
+                        case Property.ReferencePoint.RightBottom:
+                            this.InnerRefreshRightBottom();
+                            break;
+                        default:
+                            throw new Error("ReferencePoint not found: " + this._referencePoint);
+                    }
+                    this.InnerRefreshLeftTop();
+                }
+                catch (e) {
+                    Dump.ErrorLog(e);
+                }
+                finally {
+                    this.ResumeLayout();
+                }
+            };
+            StuckerBoxView.prototype.InnerRefreshLeftTop = function () {
+                var _this = this;
+                var maxRight = this.Size.Width - this._margin;
+                var currentLeft = this._margin;
+                var currentTop = this._margin;
+                var rowMaxHeight = 0;
+                var rowElemCount = 0;
+                _.each(this.Children, function (view) {
+                    var isOverWidth = (maxRight < (currentLeft + view.Size.Width));
+                    if (isOverWidth && rowElemCount !== 0) {
+                        // 表示幅を超え、かつ既にその行に要素が出力されているとき
+                        // 改行後に要素を出力する。
+                        currentTop += rowMaxHeight + _this._margin;
+                        currentLeft = _this._margin;
+                        rowElemCount = 0;
+                        rowMaxHeight = 0;
+                    }
+                    rowElemCount++;
+                    view.Position.Left = currentLeft;
+                    view.Position.Top = currentTop;
+                    if (rowMaxHeight < view.Size.Height)
+                        rowMaxHeight = view.Size.Height;
+                    currentLeft += view.Size.Width + _this._margin;
+                    if (isOverWidth && rowElemCount === 0) {
+                        // 表示幅を超え、かつその行先頭要素のとき
+                        // 要素を出力したあとで改行する。
+                        currentLeft = _this._margin;
+                        currentTop += rowMaxHeight + _this._margin;
+                        rowElemCount = 0;
+                        rowMaxHeight = 0;
+                    }
+                });
+            };
+            StuckerBoxView.prototype.InnerRefreshRightTop = function () {
+                var _this = this;
+                var minLeft = this._margin;
+                var currentRight = this.Size.Width - this._margin;
+                var currentTop = this._margin;
+                var rowMaxHeight = 0;
+                var rowElemCount = 0;
+                _.each(this.Children, function (view) {
+                    var isOverWidth = ((currentRight - view.Size.Width) < minLeft);
+                    if (isOverWidth && rowElemCount !== 0) {
+                        // 表示幅を超え、かつ既にその行に要素が出力されているとき
+                        // 改行後に要素を出力する。
+                        currentTop += rowMaxHeight + _this._margin;
+                        currentRight = _this.Size.Width - _this._margin;
+                        rowElemCount = 0;
+                        rowMaxHeight = 0;
+                    }
+                    rowElemCount++;
+                    view.Position.Left = currentRight - view.Size.Width;
+                    view.Position.Top = currentTop;
+                    if (rowMaxHeight < view.Size.Height)
+                        rowMaxHeight = view.Size.Height;
+                    currentRight -= view.Size.Width + _this._margin;
+                    if (isOverWidth && rowElemCount === 0) {
+                        // 表示幅を超え、かつその行先頭要素のとき
+                        // 要素を出力したあとで改行する。
+                        currentTop += rowMaxHeight + _this._margin;
+                        currentRight = _this.Size.Width - _this._margin;
+                        rowElemCount = 0;
+                        rowMaxHeight = 0;
+                    }
+                });
+            };
+            StuckerBoxView.prototype.InnerRefreshLeftBottom = function () {
+                var _this = this;
+                var maxRight = this.Size.Width - this._margin;
+                var currentLeft = this._margin;
+                var currentBottom = this.Size.Height - this._margin;
+                var rowMaxHeight = 0;
+                var rowElemCount = 0;
+                _.each(this.Children, function (view) {
+                    var isOverWidth = (maxRight < (currentLeft + view.Size.Width));
+                    if (isOverWidth && rowElemCount !== 0) {
+                        // 表示幅を超え、かつ既にその行に要素が出力されているとき
+                        // 改行後に要素を出力する。
+                        currentBottom -= rowMaxHeight + _this._margin;
+                        currentLeft = _this._margin;
+                        rowElemCount = 0;
+                        rowMaxHeight = 0;
+                    }
+                    rowElemCount++;
+                    view.Position.Left = currentLeft;
+                    view.Position.Top = currentBottom - view.Size.Height;
+                    if (rowMaxHeight < view.Size.Height)
+                        rowMaxHeight = view.Size.Height;
+                    currentLeft += view.Size.Width + _this._margin;
+                    if (isOverWidth && rowElemCount === 0) {
+                        // 表示幅を超え、かつその行先頭要素のとき
+                        // 要素を出力したあとで改行する。
+                        currentBottom -= rowMaxHeight + _this._margin;
+                        currentLeft = _this._margin;
+                        rowElemCount = 0;
+                        rowMaxHeight = 0;
+                    }
+                });
+            };
+            StuckerBoxView.prototype.InnerRefreshRightBottom = function () {
+                var _this = this;
+                var minLeft = this._margin;
+                var currentRight = this.Size.Width - this._margin;
+                var currentBottom = this.Size.Height - this._margin;
+                var rowMaxHeight = 0;
+                var rowElemCount = 0;
+                _.each(this.Children, function (view) {
+                    var isOverWidth = ((currentRight - view.Size.Width) < minLeft);
+                    if (isOverWidth && rowElemCount !== 0) {
+                        // 表示幅を超え、かつ既にその行に要素が出力されているとき
+                        // 改行後に要素を出力する。
+                        currentBottom -= rowMaxHeight + _this._margin;
+                        currentRight = _this.Size.Width - _this._margin;
+                        rowElemCount = 0;
+                        rowMaxHeight = 0;
+                    }
+                    rowElemCount++;
+                    view.Position.Left = currentRight - view.Size.Width;
+                    view.Position.Top = currentBottom - view.Size.Height;
+                    if (rowMaxHeight < view.Size.Height)
+                        rowMaxHeight = view.Size.Height;
+                    currentRight -= view.Size.Width + _this._margin;
+                    if (isOverWidth && rowElemCount === 0) {
+                        // 表示幅を超え、かつその行先頭要素のとき
+                        // 要素を出力したあとで改行する。
+                        currentBottom -= rowMaxHeight + _this._margin;
+                        currentRight = _this.Size.Width - _this._margin;
+                        rowElemCount = 0;
+                        rowMaxHeight = 0;
+                    }
+                });
+            };
+            StuckerBoxView.prototype.Dispose = function () {
+                _super.prototype.Dispose.call(this);
+                this._margin = null;
+            };
+            return StuckerBoxView;
+        }(Views.BoxView));
+        Views.StuckerBoxView = StuckerBoxView;
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Events/ViewEvents.ts" />
+/// <reference path="../../Util/Dump.ts" />
+/// <reference path="../../Util/Number.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Property;
+        (function (Property) {
+            /**
+             * @description 基点、スタッキング時の基準点
+             */
+            var ReferencePoint;
+            (function (ReferencePoint) {
+                ReferencePoint[ReferencePoint["LeftTop"] = 1] = "LeftTop";
+                ReferencePoint[ReferencePoint["RightTop"] = 2] = "RightTop";
+                ReferencePoint[ReferencePoint["LeftBottom"] = 3] = "LeftBottom";
+                ReferencePoint[ReferencePoint["RightBottom"] = 4] = "RightBottom";
+            })(ReferencePoint = Property.ReferencePoint || (Property.ReferencePoint = {}));
         })(Property = Views.Property || (Views.Property = {}));
     })(Views = Fw.Views || (Fw.Views = {}));
 })(Fw || (Fw = {}));

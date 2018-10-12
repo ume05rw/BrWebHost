@@ -103,6 +103,7 @@ declare namespace Fw.Views {
         ZIndex: number;
         Color: string;
         BackgroundColor: string;
+        Opacity: number;
         SetParent(parent: IView): void;
         SetSize(width: number, height: number): void;
         SetXY(x: number, y: number, updatePolicy?: boolean): void;
@@ -293,6 +294,8 @@ declare namespace Fw.Views {
         Color: string;
         private _backgroundColor;
         BackgroundColor: string;
+        private _opacity;
+        Opacity: number;
         constructor(jqueryElem: JQuery);
         protected SetElem(jqueryElem: JQuery): void;
         protected Init(): void;
@@ -746,14 +749,82 @@ declare namespace Fw.Events {
     }
     const LineViewEvents: LineViewEventsClass;
 }
-declare namespace Fw.Events {
-    class ContainerBoxViewEventsClass extends BoxViewEventsClass {
-    }
-    const ContainerBoxViewEvents: ContainerBoxViewEventsClass;
-}
 declare namespace Fw.Views.Property {
     enum Direction {
         Horizontal = 0,
         Vertical = 1
+    }
+}
+declare namespace Fw.Events {
+    class StuckerBoxViewEventsClass extends BoxViewEventsClass {
+    }
+    const StuckerBoxViewEvents: StuckerBoxViewEventsClass;
+}
+declare namespace Fw.Views {
+    import Property = Fw.Views.Property;
+    class StuckerBoxView extends BoxView {
+        private _margin;
+        Margin: number;
+        private _referencePoint;
+        ReferencePoint: Property.ReferencePoint;
+        protected Init(): void;
+        Add(view: IView): void;
+        Remove(view: IView): void;
+        private _backupView;
+        private _dummyView;
+        private _isChildRelocation;
+        private _isChildDragging;
+        private _relocationTargetView;
+        private _dragStartMousePosition;
+        private _dragStartViewPosition;
+        /**
+         * 子要素がロングクリックされたとき
+         * @param e1
+         */
+        private OnChildLongClick;
+        StartRelocation(): void;
+        /**
+         * スタッカーBox自身がクリックされたとき
+         * @param e1
+         */
+        private OnSingleClick;
+        CommitRelocation(): void;
+        /**
+         * 子要素上でマウスボタンが押されたとき
+         * @param e
+         */
+        private OnChildMouseDown;
+        /**
+         * 子要素上でマウスが動いたとき
+         * @param e1
+         */
+        private OnChildMouseMove;
+        /**
+         * 子要素上でマウスボタンが離れたとき
+         * @param e1
+         */
+        private OnChildMouseUp;
+        private MoveInFronOf;
+        private GetNearestByView;
+        private GetNearestByPosition;
+        private SetDummyView;
+        private RestoreDummyView;
+        protected InnerRefresh(): void;
+        private InnerRefreshLeftTop;
+        private InnerRefreshRightTop;
+        private InnerRefreshLeftBottom;
+        private InnerRefreshRightBottom;
+        Dispose(): void;
+    }
+}
+declare namespace Fw.Views.Property {
+    /**
+     * @description 基点、スタッキング時の基準点
+     */
+    enum ReferencePoint {
+        LeftTop = 1,
+        RightTop = 2,
+        LeftBottom = 3,
+        RightBottom = 4
     }
 }

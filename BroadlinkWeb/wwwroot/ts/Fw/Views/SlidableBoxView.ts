@@ -74,6 +74,7 @@ namespace Fw.Views {
             this.Add(this._innerBox);
 
             // コンストラクタ完了後に実行。
+            // コンストラクタ引数で取得したDirectionがセットされていないため。
             _.defer(() => {
                 this._positionBarMax = new LineView(this._direction);
                 this._positionBarMax.Position.Policy = Property.PositionPolicy.LeftTop;

@@ -35,7 +35,7 @@ namespace Fw.Views {
         }
 
         constructor() {
-            super($('<a></a>'));
+            super($('<div></div>'));
         }
 
         protected Init(): void {

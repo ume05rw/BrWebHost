@@ -86,6 +86,14 @@ namespace Fw.Views {
             this.Refresh();
         }
 
+        private _opacity: number = 1.0;
+        public get Opacity(): number {
+            return this._opacity;
+        }
+        public set Opacity(value: number) {
+            this._opacity = value;
+            this.Refresh();
+        }
 
         constructor(jqueryElem: JQuery) {
             super();
@@ -420,6 +428,7 @@ namespace Fw.Views {
                 this.Dom.style.zIndex = `${this.ZIndex}`;
                 this.Dom.style.color = `${this._color}`;
                 this.Dom.style.backgroundColor = `${this._backgroundColor}`;
+                this.Dom.style.opacity = `${this.Opacity}`;
 
                 this._lastRefreshedTime = new Date();
             } catch (e) {

@@ -3,7 +3,7 @@
 /// <reference path="BoxViewEvents.ts" />
 
 namespace Fw.Events {
-    export class ContainerBoxViewEventsClass extends BoxViewEventsClass {
+    export class StuckerBoxViewEventsClass extends BoxViewEventsClass {
     }
-    export const ContainerBoxViewEvents: ContainerBoxViewEventsClass = new ContainerBoxViewEventsClass();
+    export const StuckerBoxViewEvents: StuckerBoxViewEventsClass = new StuckerBoxViewEventsClass();
 }

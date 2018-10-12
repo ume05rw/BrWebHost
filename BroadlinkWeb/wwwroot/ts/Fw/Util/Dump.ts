@@ -18,11 +18,14 @@ namespace Fw.Util {
             console.log('########################################');
             console.log('########################################');
             console.log(`${Dump.GetTimestamp()} :: ERROR!! ${(message ? '[ ' + message + ' ]' : '')}`);
-            try {
-                console.log(Dump.GetDumpedString(value));
-            } catch (e) {
-                console.log(value);
-            }
+            console.log(value);
+
+            // なぜか、Firefoxで例外オブジェクトがシリアライズ出来ず、例外も出ない。
+            //try {
+            //    console.log(Dump.GetDumpedString(value));
+            //} catch (e) {
+            //    console.log(value);
+            //}
         }
 
         private static GetTimestamp(): string {

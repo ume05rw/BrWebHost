@@ -37,7 +37,7 @@ namespace Fw.Views {
             this.SetClassName('RelocatableControlView');
             this.Elem.addClass(this.ClassName);
 
-            this._shadow = $('<div class="IView ControlView Shadow"></div>');
+            this._shadow = $('<div class="IView BoxView Shadow"></div>');
             this._dragStartMousePosition = new Property.Position();
             this._dragStartViewPosition = new Property.Position();
 
@@ -179,17 +179,18 @@ namespace Fw.Views {
                     }
                 }
 
-                super.InnerRefresh();
-
                 const shadowDom = this._shadow.get(0);
 
                 if (!this._isRelocatable) {
                     shadowDom.style.display = 'none';
-                    this.Dom.style.opacity = '1.0';
+                    this.Opacity = 1.0;
+
+                    super.InnerRefresh();
                     return;
                 }
 
-                this.Dom.style.opacity = '0.7';
+                this.Opacity = 0.7;
+                super.InnerRefresh();
 
                 if (this._isDragging) {
                     const parentWidth = (this.Parent)
@@ -220,11 +221,8 @@ namespace Fw.Views {
                     shadowDom.style.top = `${sTop}px`;
                     shadowDom.style.width = `${this.Size.Width}px`;
                     shadowDom.style.height = `${this.Size.Height}px`;
-                    shadowDom.style.opacity = '0.4';
                     shadowDom.style.color = `${this.Color}`;
                     shadowDom.style.borderColor = `${this.Color}`;
-                    shadowDom.style.borderStyle = 'dashed';
-                    shadowDom.style.borderWidth = '2px';
                     shadowDom.style.backgroundColor = `${this.BackgroundColor}`;
                 } else {
                     shadowDom.style.display = 'none';

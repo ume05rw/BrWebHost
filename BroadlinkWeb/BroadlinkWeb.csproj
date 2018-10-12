@@ -16,7 +16,6 @@
     <Content Remove="wwwroot\ts\Fw\Config.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\BoxViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\ButtonViewEvents.ts" />
-    <Content Remove="wwwroot\ts\Fw\Events\ContainerBoxViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\ControlViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\EventReference.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\ImageViewEvents.ts" />
@@ -26,6 +25,7 @@
     <Content Remove="wwwroot\ts\Fw\Events\RelocatableButtonViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\RootEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\SlidableBoxViewEvents.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\StuckerBoxViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\ToggleButtonViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\ViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\IObject.ts" />
@@ -47,7 +47,6 @@
     <Content Remove="wwwroot\ts\Fw\Views\Animation\Params.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\BoxView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\ButtonView.ts" />
-    <Content Remove="wwwroot\ts\Fw\Views\ContainerBoxView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\ControlView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\ImageView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\IView.ts" />
@@ -60,10 +59,12 @@
     <Content Remove="wwwroot\ts\Fw\Views\Property\FontSize.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\Property\FontWeight.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\Property\PositionPolicy.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\Property\ReferencePoint.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\RelocatableButtonView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\Root.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\Size.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\SlidableBoxView.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\StuckerBoxView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\ToggleButtonView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\ViewBase.ts" />
     <Content Remove="wwwroot\ts\PageManager.ts" />
@@ -103,7 +104,7 @@
     <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\Manager.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\BoxViewEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\ButtonViewEvents.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\ContainerBoxViewEvents.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\StuckerBoxViewEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\ControlViewEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\EventReference.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\ImageViewEvents.ts" />
@@ -131,7 +132,8 @@
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Xhr\Result.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\BoxView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ButtonView.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ContainerBoxView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\ReferencePoint.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\StuckerBoxView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ImageView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\LineView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\Anchor.ts" />
