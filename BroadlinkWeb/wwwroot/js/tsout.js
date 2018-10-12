@@ -867,11 +867,14 @@ var Fw;
                 this._elem.remove();
             this._elem = jqueryElem;
         };
-        ObjectBase.prototype.AddEventListener = function (name, handler) {
+        ObjectBase.prototype.AddEventListener = function (name, handler, bindObject) {
+            if (bindObject === void 0) { bindObject = null; }
+            if (!bindObject)
+                bindObject = this;
             var eRef = new EventReference();
             eRef.Name = name;
             eRef.Handler = handler;
-            eRef.BindedHandler = handler.bind(this);
+            eRef.BindedHandler = handler.bind(bindObject);
             this._eventHandlers.push(eRef);
             this.Elem.on(name, eRef.BindedHandler);
         };
@@ -1184,10 +1187,20 @@ var Fw;
                     this.BackgroundColor = backgroundColor;
             };
             ViewBase.prototype.SetTransAnimation = function (enable) {
-                if (enable && !this.Elem.hasClass('TransAnimation'))
-                    this.Elem.addClass('TransAnimation');
-                else if (!enable && this.Elem.hasClass('TransAnimation'))
-                    this.Elem.removeClass('TransAnimation');
+                if (enable) {
+                    // アニメーション有効化
+                    if (!this.Elem.hasClass('TransAnimation'))
+                        this.Elem.addClass('TransAnimation');
+                    if (this.Elem.hasClass('NoTransAnimation'))
+                        this.Elem.removeClass('NoTransAnimation');
+                }
+                else {
+                    // アニメーション無効化
+                    if (this.Elem.hasClass('TransAnimation'))
+                        this.Elem.removeClass('TransAnimation');
+                    if (!this.Elem.hasClass('NoTransAnimation'))
+                        this.Elem.addClass('NoTransAnimation');
+                }
             };
             ViewBase.prototype.HasTransAnimation = function () {
                 return this.Elem.hasClass('TransAnimation');
@@ -1735,10 +1748,15 @@ var App;
                     this.BtnGoSub2.SetSize(80, 30);
                     this.BtnGoSub2.SetLeftTop(10, 120);
                     this.Add(this.BtnGoSub2);
+                    this.BtnGoSub3 = new Fw.Views.ButtonView();
+                    this.BtnGoSub3.Label = 'Show Sub3';
+                    this.BtnGoSub3.SetSize(80, 30);
+                    this.BtnGoSub3.SetLeftTop(10, 170);
+                    this.Add(this.BtnGoSub3);
                     this.BtnGoDynamic = new Fw.Views.ButtonView();
                     this.BtnGoDynamic.Label = 'Show LayoutCheck';
                     this.BtnGoDynamic.SetSize(80, 30);
-                    this.BtnGoDynamic.SetLeftTop(10, 170);
+                    this.BtnGoDynamic.SetLeftTop(10, 220);
                     this.Add(this.BtnGoDynamic);
                 };
                 return MainPageView;
@@ -1815,6 +1833,69 @@ var App;
 /// <reference path="../../Fw/Controllers/Manager.ts" />
 /// <reference path="../../Fw/Util/Dump.ts" />
 /// <reference path="../../Fw/Events/ControlViewEvents.ts" />
+var App;
+(function (App) {
+    var Controllers;
+    (function (Controllers) {
+        var Events = Fw.Events;
+        var Manager = Fw.Controllers.Manager;
+        var Sub3Controller = /** @class */ (function (_super) {
+            __extends(Sub3Controller, _super);
+            function Sub3Controller(id) {
+                var _this = _super.call(this, id) || this;
+                _this.Init();
+                return _this;
+            }
+            Sub3Controller.prototype.Init = function () {
+                this.View = new App.Views.Pages.Sub3PageView();
+                var page = this.View;
+                page.BtnBack.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
+                    Manager.Instance.Show("Main");
+                });
+            };
+            return Sub3Controller;
+        }(Fw.Controllers.ControllerBase));
+        Controllers.Sub3Controller = Sub3Controller;
+    })(Controllers = App.Controllers || (App.Controllers = {}));
+})(App || (App = {}));
+/// <reference path="../../lib/jquery/index.d.ts" />
+/// <reference path="../../lib/underscore/index.d.ts" />
+/// <reference path="../Fw/Util/Dump.ts" />
+/// <reference path="../Fw/Controllers/Manager.ts" />
+var App;
+(function (App) {
+    var Manager = Fw.Controllers.Manager;
+    var Main = /** @class */ (function () {
+        function Main() {
+        }
+        Main.StartUp = function () {
+            // フレームワーク初期化
+            Fw.Startup.Init();
+            // API仕様に応じて、クエリ先URLの土台を作っておく。
+            var proto = location.protocol;
+            var host = location.hostname;
+            var port = location.port;
+            Fw.Config.XhrBaseUrl = proto + '//' + host + ':' + port + '/api/';
+            var main = new App.Controllers.MainController('Main');
+            main.IsDefaultView = true;
+            Manager.Instance.Add(main);
+            Manager.Instance.Show('Main');
+        };
+        return Main;
+    }());
+    App.Main = Main;
+})(App || (App = {}));
+// アプリケーションを起動する。
+// 以下にはこれ以上書かないこと。
+$(function () {
+    App.Main.StartUp();
+});
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Fw/Controllers/ControllerBase.ts" />
+/// <reference path="../../Fw/Controllers/Manager.ts" />
+/// <reference path="../../Fw/Util/Dump.ts" />
+/// <reference path="../../Fw/Events/ControlViewEvents.ts" />
 /// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
 /// <reference path="../Views/Pages/MainPageView.ts" />
 var App;
@@ -1833,6 +1914,8 @@ var App;
             }
             MainController.prototype.Init = function () {
                 this.SetClassName('MainController');
+                var sub3Ctr = new Controllers.Sub3Controller('Sub3');
+                Manager.Instance.Add(sub3Ctr);
                 this.View = new Pages.MainPageView();
                 var page = this.View;
                 page.BtnGoSub1.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
@@ -1842,6 +1925,10 @@ var App;
                 page.BtnGoSub2.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
                     // イベント通知でなく、参照保持でよいか？
                     Manager.Instance.Show("Sub2");
+                });
+                page.BtnGoSub3.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
+                    // イベント通知でなく、参照保持でよいか？
+                    Manager.Instance.Show("Sub3");
                 });
                 page.BtnGoDynamic.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
                     // イベント通知でなく、参照保持でよいか？
@@ -2245,6 +2332,100 @@ var App;
     (function (Views_2) {
         var Pages;
         (function (Pages) {
+            var Views = Fw.Views;
+            var Property = Fw.Views.Property;
+            var Sub3PageView = /** @class */ (function (_super) {
+                __extends(Sub3PageView, _super);
+                function Sub3PageView() {
+                    var _this = this;
+                    var jqueryElem = $("");
+                    _this = _super.call(this, jqueryElem) || this;
+                    _this.Initialize();
+                    return _this;
+                }
+                Sub3PageView.prototype.Initialize = function () {
+                    var _this = this;
+                    this.SetClassName('Sub3PageView');
+                    this.Header = new Views.BoxView();
+                    this.Header.Size.Height = 50;
+                    this.Header.SetAnchor(0, 0, 0, null);
+                    this.Header.BackgroundColor = '#555555';
+                    this.Header.Color = '#FFFFFF';
+                    this.Header.HasBorder = false;
+                    this.Add(this.Header);
+                    var headerLabel = new Views.LabelView();
+                    headerLabel.Text = 'Sub 3 Page';
+                    headerLabel.FontSize = Property.FontSize.Large;
+                    headerLabel.Color = '#FFFFFF';
+                    this.Header.Add(headerLabel);
+                    this.BtnBack = new Fw.Views.ButtonView();
+                    this.BtnBack.SetSize(40, 40);
+                    this.BtnBack.Label = '<<';
+                    this.BtnBack.SetAnchor(null, 5, null, null);
+                    this.Header.Add(this.BtnBack);
+                    this.Stucker = new Views.StuckerBoxView();
+                    this.Stucker.SetSize(600, 400);
+                    this.Stucker.SetLeftTop(10, 70);
+                    this.Add(this.Stucker);
+                    var btn1 = new Views.ButtonView();
+                    btn1.SetSize(100, 120);
+                    btn1.Label = 'btn1';
+                    this.Stucker.Add(btn1);
+                    btn1.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, function () {
+                        _this.Stucker.ReferencePoint = Property.ReferencePoint.LeftTop;
+                    });
+                    var btn2 = new Views.ButtonView();
+                    btn2.SetSize(100, 120);
+                    btn2.Label = 'btn2';
+                    this.Stucker.Add(btn2);
+                    btn2.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, function () {
+                        _this.Stucker.ReferencePoint = Property.ReferencePoint.RightTop;
+                    });
+                    var btn3 = new Views.ButtonView();
+                    btn3.SetSize(100, 120);
+                    btn3.Label = 'btn3';
+                    this.Stucker.Add(btn3);
+                    btn3.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, function () {
+                        _this.Stucker.ReferencePoint = Property.ReferencePoint.LeftBottom;
+                    });
+                    var btn4 = new Views.ButtonView();
+                    btn4.SetSize(100, 120);
+                    btn4.Label = 'btn4';
+                    this.Stucker.Add(btn4);
+                    btn4.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, function () {
+                        _this.Stucker.ReferencePoint = Property.ReferencePoint.RightBottom;
+                    });
+                    var btn5 = new Views.ButtonView();
+                    btn5.SetSize(100, 120);
+                    btn5.Label = 'btn5';
+                    this.Stucker.Add(btn5);
+                    var btn6 = new Views.ButtonView();
+                    btn6.SetSize(100, 120);
+                    btn6.Label = 'btn6';
+                    this.Stucker.Add(btn6);
+                    var btn7 = new Views.ButtonView();
+                    btn7.SetSize(100, 120);
+                    btn7.Label = 'btn7';
+                    this.Stucker.Add(btn7);
+                };
+                return Sub3PageView;
+            }(Fw.Views.PageView));
+            Pages.Sub3PageView = Sub3PageView;
+        })(Pages = Views_2.Pages || (Views_2.Pages = {}));
+    })(Views = App.Views || (App.Views = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Views/PageView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Events/PageViewEvents.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+var App;
+(function (App) {
+    var Views;
+    (function (Views_3) {
+        var Pages;
+        (function (Pages) {
             var Property = Fw.Views.Property;
             var LayoutCheckPageView = /** @class */ (function (_super) {
                 __extends(LayoutCheckPageView, _super);
@@ -2326,41 +2507,9 @@ var App;
                 return LayoutCheckPageView;
             }(Fw.Views.PageView));
             Pages.LayoutCheckPageView = LayoutCheckPageView;
-        })(Pages = Views_2.Pages || (Views_2.Pages = {}));
+        })(Pages = Views_3.Pages || (Views_3.Pages = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
-/// <reference path="../../lib/jquery/index.d.ts" />
-/// <reference path="../../lib/underscore/index.d.ts" />
-/// <reference path="../Fw/Util/Dump.ts" />
-/// <reference path="../Fw/Controllers/Manager.ts" />
-var App;
-(function (App) {
-    var Manager = Fw.Controllers.Manager;
-    var Main = /** @class */ (function () {
-        function Main() {
-        }
-        Main.StartUp = function () {
-            // フレームワーク初期化
-            Fw.Startup.Init();
-            // API仕様に応じて、クエリ先URLの土台を作っておく。
-            var proto = location.protocol;
-            var host = location.hostname;
-            var port = location.port;
-            Fw.Config.XhrBaseUrl = proto + '//' + host + ':' + port + '/api/';
-            var main = new App.Controllers.MainController('Main');
-            main.IsDefaultView = true;
-            Manager.Instance.Add(main);
-            Manager.Instance.Show('Main');
-        };
-        return Main;
-    }());
-    App.Main = Main;
-})(App || (App = {}));
-// アプリケーションを起動する。
-// 以下にはこれ以上書かないこと。
-$(function () {
-    App.Main.StartUp();
-});
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="ControlViewEvents.ts" />
@@ -2377,6 +2526,24 @@ var Fw;
         }(Events.ControlViewEventsClass));
         Events.ButtonViewEventsClass = ButtonViewEventsClass;
         Events.ButtonViewEvents = new ButtonViewEventsClass();
+    })(Events = Fw.Events || (Fw.Events = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="BoxViewEvents.ts" />
+var Fw;
+(function (Fw) {
+    var Events;
+    (function (Events) {
+        var StuckerBoxViewEventsClass = /** @class */ (function (_super) {
+            __extends(StuckerBoxViewEventsClass, _super);
+            function StuckerBoxViewEventsClass() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            return StuckerBoxViewEventsClass;
+        }(Events.BoxViewEventsClass));
+        Events.StuckerBoxViewEventsClass = StuckerBoxViewEventsClass;
+        Events.StuckerBoxViewEvents = new StuckerBoxViewEventsClass();
     })(Events = Fw.Events || (Fw.Events = {}));
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
@@ -2413,6 +2580,24 @@ var Fw;
         }(Events.ViewEventsClass));
         Events.LabelViewEventsClass = LabelViewEventsClass;
         Events.LabelViewEvents = new LabelViewEventsClass();
+    })(Events = Fw.Events || (Fw.Events = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="ViewEvents.ts" />
+var Fw;
+(function (Fw) {
+    var Events;
+    (function (Events) {
+        var LineViewEventsClass = /** @class */ (function (_super) {
+            __extends(LineViewEventsClass, _super);
+            function LineViewEventsClass() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            return LineViewEventsClass;
+        }(Events.ViewEventsClass));
+        Events.LineViewEventsClass = LineViewEventsClass;
+        Events.LineViewEvents = new LineViewEventsClass();
     })(Events = Fw.Events || (Fw.Events = {}));
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
@@ -2490,6 +2675,31 @@ var Fw;
         Events.ToggleButtonViewEvents = new ToggleButtonViewEventsClass();
     })(Events = Fw.Events || (Fw.Events = {}));
 })(Fw || (Fw = {}));
+/// <reference path="../../lib/jquery/index.d.ts" />
+/// <reference path="../../lib/underscore/index.d.ts" />
+/// <reference path="Util/Dump.ts" />
+/* /// <reference path="Views/Root.ts" /> */
+var Fw;
+(function (Fw) {
+    var Startup = /** @class */ (function () {
+        function Startup() {
+        }
+        Startup.Init = function () {
+            // ↓API仕様に応じて、App.Mainで書き換える。
+            Fw.Config.XhrBaseUrl
+                = location.protocol
+                    + '//' + location.hostname
+                    + ':' + location.port
+                    + '/';
+            // 画面全体のコンテナを初期化
+            Fw.Root.Init('div.body-content');
+            // Controllers.Managerの初期化
+            Fw.Controllers.Manager.Init();
+        };
+        return Startup;
+    }());
+    Fw.Startup = Startup;
+})(Fw || (Fw = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 var Fw;
@@ -2563,6 +2773,1059 @@ var Fw;
         })(Xhr = Util.Xhr || (Util.Xhr = {}));
     })(Util = Fw.Util || (Fw.Util = {}));
 })(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Events/ControlViewEvents.ts" />
+/// <reference path="../Util/Dump.ts" />
+/// <reference path="../Util/Number.ts" />
+/// <reference path="./ViewBase.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Dump = Fw.Util.Dump;
+        var Number = Fw.Util.Number;
+        var BoxView = /** @class */ (function (_super) {
+            __extends(BoxView, _super);
+            function BoxView() {
+                return _super.call(this, $('<div></div>')) || this;
+            }
+            Object.defineProperty(BoxView.prototype, "HasBorder", {
+                get: function () {
+                    return this._hasBorder;
+                },
+                set: function (value) {
+                    this.Dom.style.borderWidth = (value)
+                        ? '1px'
+                        : '0';
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(BoxView.prototype, "BorderRadius", {
+                get: function () {
+                    return this._borderRadius;
+                },
+                set: function (value) {
+                    if (Number.IsNaN(value) || value === null || value === undefined)
+                        value = 0;
+                    if (value < 0)
+                        value = 0;
+                    if (value > 50)
+                        value = 50;
+                    this._borderRadius = value;
+                    this.Dom.style.borderRadius = this._borderRadius + "%";
+                },
+                enumerable: true,
+                configurable: true
+            });
+            BoxView.prototype.Init = function () {
+                _super.prototype.Init.call(this);
+                this.SetClassName('BoxView');
+                this.Elem.addClass(this.ClassName);
+                this.HasBorder = true;
+                this.BorderRadius = 0;
+            };
+            BoxView.prototype.InnerRefresh = function () {
+                try {
+                    this.SuppressLayout();
+                    _super.prototype.InnerRefresh.call(this);
+                    this.Dom.style.borderColor = "" + this.Color;
+                }
+                catch (e) {
+                    Dump.ErrorLog(e);
+                }
+                finally {
+                    this.ResumeLayout();
+                }
+            };
+            BoxView.prototype.Dispose = function () {
+                _super.prototype.Dispose.call(this);
+                this._hasBorder = null;
+                this._borderRadius = null;
+            };
+            return BoxView;
+        }(Views.ViewBase));
+        Views.BoxView = BoxView;
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Events/ControlViewEvents.ts" />
+/// <reference path="../Util/Dump.ts" />
+/// <reference path="../Util/Number.ts" />
+/// <reference path="./BoxView.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Events = Fw.Events.ControlViewEvents;
+        var ControlView = /** @class */ (function (_super) {
+            __extends(ControlView, _super);
+            function ControlView() {
+                var _this = _super.call(this) || this;
+                _this._tapEventTimer = null;
+                _this._cvMouseSuppressor = false;
+                _this._cvDelayedResumeEventsTimer = null;
+                return _this;
+            }
+            Object.defineProperty(ControlView.prototype, "Label", {
+                get: function () {
+                    return this._label.html();
+                },
+                set: function (value) {
+                    this._label.html(value);
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            ControlView.prototype.Init = function () {
+                var _this = this;
+                _super.prototype.Init.call(this);
+                this.SetClassName('ControlView');
+                this.Elem.addClass(this.ClassName);
+                // プロパティsetterを一度通しておく。
+                this.HasBorder = true;
+                this.BorderRadius = 5;
+                this._label = $('<span class="ControlViewProperty"></span>');
+                this.Elem.append(this._label);
+                this.Elem.on('touchstart mousedown', function (e) {
+                    if (_this._tapEventTimer != null)
+                        clearTimeout(_this._tapEventTimer);
+                    _this._tapEventTimer = setTimeout(function () {
+                        // ロングタップイベント
+                        _this._tapEventTimer = null;
+                        // Pageのドラッグ処理中のとき、クリックイベントを抑制する。
+                        if (_this._cvMouseSuppressor)
+                            return;
+                        //Dump.Log('longtapped');
+                        _this.DispatchEvent(Events.LongClick);
+                    }, 1000);
+                });
+                this.Elem.on('touchend mouseup', function (e) {
+                    if (_this._tapEventTimer != null) {
+                        // ロングタップ検出中のとき
+                        clearTimeout(_this._tapEventTimer);
+                        _this._tapEventTimer = null;
+                        // Pageのドラッグ処理中のとき、クリックイベントを抑制する。
+                        if (_this._cvMouseSuppressor)
+                            return;
+                        // 以降、シングルタップイベント処理
+                        //Dump.Log('singletapped');
+                        _this.DispatchEvent(Events.SingleClick);
+                    }
+                    else {
+                    }
+                });
+                this.Elem.on('mouseout', function (e) {
+                    if (_this._tapEventTimer != null) {
+                        // ロングタップ検出中のとき
+                        clearTimeout(_this._tapEventTimer);
+                        _this._tapEventTimer = null;
+                        //Dump.Log('tap canceled');
+                    }
+                });
+            };
+            ControlView.prototype.InitPage = function () {
+                if (this.Page) {
+                    this.RemoveEventListener(Fw.Events.PageViewEvents.Dragging, this.OnPageDragging);
+                }
+                _super.prototype.InitPage.call(this);
+                if (this.Page) {
+                    this.AddEventListener(Fw.Events.PageViewEvents.Dragging, this.OnPageDragging);
+                }
+            };
+            ControlView.prototype.OnPageDragging = function () {
+                var _this = this;
+                this._cvMouseSuppressor = true;
+                if (this._cvDelayedResumeEventsTimer !== null) {
+                    clearTimeout(this._cvDelayedResumeEventsTimer);
+                    this._cvDelayedResumeEventsTimer = null;
+                }
+                this._cvDelayedResumeEventsTimer = setTimeout(function () {
+                    //Dump.Log('ResumeMouseEvents');
+                    _this._cvMouseSuppressor = false;
+                }, 100);
+            };
+            ControlView.prototype.Dispose = function () {
+                _super.prototype.Dispose.call(this);
+                this._label = null;
+                this._tapEventTimer = null;
+                this._cvMouseSuppressor = null;
+                this._cvDelayedResumeEventsTimer = null;
+            };
+            return ControlView;
+        }(Views.BoxView));
+        Views.ControlView = ControlView;
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Events/ControlViewEvents.ts" />
+/// <reference path="../Util/Dump.ts" />
+/// <reference path="../Util/Number.ts" />
+/// <reference path="ControlView.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Dump = Fw.Util.Dump;
+        var ButtonView = /** @class */ (function (_super) {
+            __extends(ButtonView, _super);
+            function ButtonView() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            Object.defineProperty(ButtonView.prototype, "ImageSrc", {
+                get: function () {
+                    return this._imageView.Src;
+                },
+                set: function (value) {
+                    this._imageView.Src = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            ButtonView.prototype.Init = function () {
+                var _this = this;
+                _super.prototype.Init.call(this);
+                this.SetClassName('ButtonView');
+                this.Elem.addClass(this.ClassName);
+                this.BackgroundColor = '#add8e6';
+                this.HoverColor = '#6495ed';
+                this._imageView = new Views.ImageView();
+                this._imageView.Src = null;
+                this.Add(this._imageView);
+                this.Elem.hover(function () {
+                    //Dump.Log(`${this.ClassName}.hover: color = ${this.HoverColor}`);
+                    _this.Dom.style.backgroundColor = _this.HoverColor;
+                }, function () {
+                    _this.Dom.style.backgroundColor = _this.BackgroundColor;
+                });
+            };
+            ButtonView.prototype.InnerRefresh = function () {
+                try {
+                    this.SuppressLayout();
+                    this._imageView.Size.Width = this.Size.Width;
+                    this._imageView.Size.Height = this.Size.Height;
+                    _super.prototype.InnerRefresh.call(this);
+                }
+                catch (e) {
+                    Dump.ErrorLog(e);
+                }
+                finally {
+                    this.ResumeLayout();
+                }
+            };
+            ButtonView.prototype.Dispose = function () {
+                _super.prototype.Dispose.call(this);
+                this._imageView = null;
+                this.HoverColor = null;
+            };
+            return ButtonView;
+        }(Views.ControlView));
+        Views.ButtonView = ButtonView;
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Events/ViewEvents.ts" />
+/// <reference path="../../Util/Dump.ts" />
+/// <reference path="../../Util/Number.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Property;
+        (function (Property) {
+            /**
+             * @description 基点、スタッキング時の基準点
+             */
+            var ReferencePoint;
+            (function (ReferencePoint) {
+                ReferencePoint[ReferencePoint["LeftTop"] = 1] = "LeftTop";
+                ReferencePoint[ReferencePoint["RightTop"] = 2] = "RightTop";
+                ReferencePoint[ReferencePoint["LeftBottom"] = 3] = "LeftBottom";
+                ReferencePoint[ReferencePoint["RightBottom"] = 4] = "RightBottom";
+            })(ReferencePoint = Property.ReferencePoint || (Property.ReferencePoint = {}));
+        })(Property = Views.Property || (Views.Property = {}));
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Util/Dump.ts" />
+/// <reference path="../Events/StuckerBoxViewEvents.ts" />
+/// <reference path="../Events/ControlViewEvents.ts" />
+/// <reference path="Animation/Animator.ts" />
+/// <reference path="Animation/Params.ts" />
+/// <reference path="BoxView.ts" />
+/// <reference path="Property/Size.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Dump = Fw.Util.Dump;
+        var Property = Fw.Views.Property;
+        var ControlViewEvents = Fw.Events.ControlViewEvents;
+        var StuckerBoxView = /** @class */ (function (_super) {
+            __extends(StuckerBoxView, _super);
+            function StuckerBoxView() {
+                var _this = _super !== null && _super.apply(this, arguments) || this;
+                _this._isChildRelocation = false;
+                _this._isChildDragging = false;
+                _this._relocationTargetView = null;
+                _this._dragStartMousePosition = new Property.Position();
+                _this._dragStartViewPosition = new Property.Position();
+                return _this;
+            }
+            Object.defineProperty(StuckerBoxView.prototype, "Margin", {
+                get: function () {
+                    return this._margin;
+                },
+                set: function (value) {
+                    this._margin = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(StuckerBoxView.prototype, "ReferencePoint", {
+                get: function () {
+                    return this._referencePoint;
+                },
+                set: function (value) {
+                    this._referencePoint = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            StuckerBoxView.prototype.Init = function () {
+                _super.prototype.Init.call(this);
+                this.SetClassName('StuckerBoxView');
+                this.Elem.addClass(this.ClassName);
+                this._margin = 10;
+                this._referencePoint = Property.ReferencePoint.LeftTop;
+                this._backupView = null;
+                this._dummyView = new Fw.Views.BoxView();
+                this._dummyView.Elem.addClass('Shadow');
+                this._dummyView.Position.Policy = Property.PositionPolicy.LeftTop;
+                // 下に定義済みのメソッドをthisバインドしておく。
+                this.OnSingleClick = this.OnSingleClick.bind(this);
+                this.OnChildMouseDown = this.OnChildMouseDown.bind(this);
+                this.OnChildMouseMove = this.OnChildMouseMove.bind(this);
+                this.OnChildMouseUp = this.OnChildMouseUp.bind(this);
+                this.Elem.on('click touchend', this.OnSingleClick);
+            };
+            StuckerBoxView.prototype.Add = function (view) {
+                view.Position.Policy = Property.PositionPolicy.LeftTop;
+                _super.prototype.Add.call(this, view);
+                view.AddEventListener(ControlViewEvents.LongClick, this.OnChildLongClick, this);
+                view.Elem.on('touchstart mousedown', this.OnChildMouseDown);
+                view.Elem.on('touchmove mousemove', this.OnChildMouseMove);
+                view.Elem.on('touchend mouseup', this.OnChildMouseUp);
+            };
+            StuckerBoxView.prototype.Remove = function (view) {
+                _super.prototype.Remove.call(this, view);
+                view.RemoveEventListener(ControlViewEvents.LongClick, this.OnChildLongClick);
+                view.Elem.off('touchstart mousedown', this.OnChildMouseDown);
+                view.Elem.off('touchmove mousemove', this.OnChildMouseMove);
+                view.Elem.off('touchend mouseup', this.OnChildMouseUp);
+            };
+            /**
+             * 子要素がロングクリックされたとき
+             * @param e1
+             */
+            StuckerBoxView.prototype.OnChildLongClick = function (e) {
+                //Dump.Log(`${this.ClassName}.OnChildLongClick`);
+                this.StartRelocation();
+            };
+            StuckerBoxView.prototype.StartRelocation = function () {
+                //Dump.Log(`${this.ClassName}.StartRelocation`);
+                this._isChildRelocation = true;
+                Fw.Root.Instance.SetTextSelection(false);
+                _.each(this.Children, function (v) {
+                    v.Opacity = 0.7;
+                    v.SuppressEvent(ControlViewEvents.SingleClick);
+                    v.SuppressEvent(ControlViewEvents.LongClick);
+                });
+                this.Refresh();
+            };
+            /**
+             * スタッカーBox自身がクリックされたとき
+             * @param e1
+             */
+            StuckerBoxView.prototype.OnSingleClick = function (e) {
+                if (e.eventPhase !== 2)
+                    return;
+                //Dump.Log(`${this.ClassName}.OnSingleClick`);
+                this.CommitRelocation();
+            };
+            StuckerBoxView.prototype.CommitRelocation = function () {
+                //Dump.Log(`${this.ClassName}.CommitRelocation`);
+                if (this._relocationTargetView) {
+                    this.RestoreDummyView();
+                    this._relocationTargetView.SetTransAnimation(true);
+                    this._relocationTargetView = null;
+                }
+                this._isChildRelocation = false;
+                Fw.Root.Instance.SetTextSelection(true);
+                _.each(this.Children, function (v) {
+                    v.Opacity = 1.0;
+                    v.ResumeEvent(ControlViewEvents.SingleClick);
+                    v.ResumeEvent(ControlViewEvents.LongClick);
+                });
+                this.Refresh();
+            };
+            /**
+             * 子要素上でマウスボタンが押されたとき
+             * @param e
+             */
+            StuckerBoxView.prototype.OnChildMouseDown = function (e) {
+                //Dump.Log(`${this.ClassName}.OnChildMouseDown`);
+                if (!this._isChildRelocation)
+                    return;
+                var rect = this.Dom.getBoundingClientRect();
+                var innerLeft = e.pageX - rect.left;
+                var innerTop = e.pageY - rect.top;
+                var view = this.GetNearestByPosition(innerLeft, innerTop);
+                if (view) {
+                    //Dump.Log('OnChildMouseDown - view found: ' + (view as ButtonView).Label);
+                    this._isChildDragging = true;
+                    this._relocationTargetView = view;
+                    this._dragStartMousePosition.X = e.pageX;
+                    this._dragStartMousePosition.Y = e.pageY;
+                    this._dragStartViewPosition.X = view.Position.Left;
+                    this._dragStartViewPosition.Y = view.Position.Top;
+                    this.SetDummyView(view);
+                    view.SetTransAnimation(false);
+                }
+            };
+            /**
+             * 子要素上でマウスが動いたとき
+             * @param e1
+             */
+            StuckerBoxView.prototype.OnChildMouseMove = function (e) {
+                if (!this._isChildRelocation || !this._isChildDragging)
+                    return;
+                //Dump.Log(`${this.ClassName}.OnChildMouseMove`);
+                var view = this._relocationTargetView;
+                var addX = e.pageX - this._dragStartMousePosition.X;
+                var addY = e.pageY - this._dragStartMousePosition.Y;
+                view.Position.Left = this._dragStartViewPosition.X + addX;
+                view.Position.Top = this._dragStartViewPosition.Y + addY;
+                var replaceView = this.GetNearestByView(view);
+                if (replaceView !== null && replaceView !== this._dummyView) {
+                    this.Swap(replaceView, this._dummyView);
+                }
+            };
+            /**
+             * 子要素上でマウスボタンが離れたとき
+             * @param e
+             */
+            StuckerBoxView.prototype.OnChildMouseUp = function (e) {
+                //Dump.Log(`${this.ClassName}.OnChildMouseUp`);
+                if (!this._isChildRelocation) {
+                    this._isChildDragging = false;
+                }
+                else {
+                    this._isChildDragging = false;
+                    if (this._relocationTargetView) {
+                        this._relocationTargetView.SetTransAnimation(true);
+                        this._relocationTargetView = null;
+                    }
+                    this.RestoreDummyView();
+                    this.Refresh();
+                }
+            };
+            StuckerBoxView.prototype.Swap = function (view1, view2) {
+                var view1Index = this.Children.indexOf(view1);
+                var view2Index = this.Children.indexOf(view2);
+                if (view1Index < 0)
+                    throw new Error('Not contained view1');
+                if (view2Index < 0)
+                    throw new Error('Not contained view2');
+                this.Children[view1Index] = view2;
+                this.Children[view2Index] = view1;
+            };
+            StuckerBoxView.prototype.GetNearestByView = function (view) {
+                var diff = Number.MAX_VALUE;
+                var result = null;
+                _.each(this.Children, function (v) {
+                    // 渡されたViewは対象外
+                    if (v === view)
+                        return;
+                    var tmpDiff = Math.abs(v.Position.Left - view.Position.Left)
+                        + Math.abs(v.Position.Top - view.Position.Top);
+                    if (tmpDiff < diff) {
+                        diff = tmpDiff;
+                        result = v;
+                    }
+                });
+                return result;
+            };
+            StuckerBoxView.prototype.GetNearestByPosition = function (x, y) {
+                var _this = this;
+                var diff = Number.MAX_VALUE;
+                var result = null;
+                _.each(this.Children, function (v) {
+                    // ダミーViewは対象外
+                    if (v === _this._dummyView)
+                        return;
+                    var left = v.Position.Left + (v.Size.Width / 2);
+                    var top = v.Position.Top + (v.Size.Height / 2);
+                    var tmpDiff = Math.abs(left - x) + Math.abs(top - y);
+                    if (tmpDiff < diff) {
+                        diff = tmpDiff;
+                        result = v;
+                    }
+                });
+                return result;
+            };
+            StuckerBoxView.prototype.SetDummyView = function (view) {
+                var _this = this;
+                if (this._backupView)
+                    this.RestoreDummyView();
+                _.each(this.Children, function (v, index) {
+                    if (v === view) {
+                        _this._backupView = v;
+                        _this.Children[index] = _this._dummyView;
+                        _this._dummyView.Color = v.Color;
+                        _this._dummyView.SetSize(v.Size.Width, v.Size.Height);
+                    }
+                });
+                this.Elem.append(this._dummyView.Elem);
+            };
+            StuckerBoxView.prototype.RestoreDummyView = function () {
+                var _this = this;
+                if (!this._backupView)
+                    return;
+                _.each(this.Children, function (v, index) {
+                    if (v === _this._dummyView)
+                        _this.Children[index] = _this._backupView;
+                });
+                this._backupView = null;
+                this._dummyView.Elem.detach();
+            };
+            StuckerBoxView.prototype.InnerRefresh = function () {
+                try {
+                    this.SuppressLayout();
+                    switch (this._referencePoint) {
+                        case Property.ReferencePoint.LeftTop:
+                            this.InnerRefreshLeftTop();
+                            break;
+                        case Property.ReferencePoint.RightTop:
+                            this.InnerRefreshRightTop();
+                            break;
+                        case Property.ReferencePoint.LeftBottom:
+                            this.InnerRefreshLeftBottom();
+                            break;
+                        case Property.ReferencePoint.RightBottom:
+                            this.InnerRefreshRightBottom();
+                            break;
+                        default:
+                            throw new Error("ReferencePoint not found: " + this._referencePoint);
+                    }
+                    _super.prototype.InnerRefresh.call(this);
+                }
+                catch (e) {
+                    Dump.ErrorLog(e);
+                }
+                finally {
+                    this.ResumeLayout();
+                }
+            };
+            StuckerBoxView.prototype.InnerRefreshLeftTop = function () {
+                var _this = this;
+                var maxRight = this.Size.Width - this._margin;
+                var currentLeft = this._margin;
+                var currentTop = this._margin;
+                var rowMaxHeight = 0;
+                var rowElemCount = 0;
+                _.each(this.Children, function (view) {
+                    var isOverWidth = (maxRight < (currentLeft + view.Size.Width));
+                    if (isOverWidth && rowElemCount !== 0) {
+                        // 表示幅を超え、かつ既にその行に要素が出力されているとき
+                        // 改行後に要素を出力する。
+                        currentTop += rowMaxHeight + _this._margin;
+                        currentLeft = _this._margin;
+                        rowElemCount = 0;
+                        rowMaxHeight = 0;
+                    }
+                    rowElemCount++;
+                    view.Position.Left = currentLeft;
+                    view.Position.Top = currentTop;
+                    if (rowMaxHeight < view.Size.Height)
+                        rowMaxHeight = view.Size.Height;
+                    currentLeft += view.Size.Width + _this._margin;
+                    if (isOverWidth && rowElemCount === 0) {
+                        // 表示幅を超え、かつその行先頭要素のとき
+                        // 要素を出力したあとで改行する。
+                        currentLeft = _this._margin;
+                        currentTop += rowMaxHeight + _this._margin;
+                        rowElemCount = 0;
+                        rowMaxHeight = 0;
+                    }
+                });
+            };
+            StuckerBoxView.prototype.InnerRefreshRightTop = function () {
+                var _this = this;
+                var minLeft = this._margin;
+                var currentRight = this.Size.Width - this._margin;
+                var currentTop = this._margin;
+                var rowMaxHeight = 0;
+                var rowElemCount = 0;
+                _.each(this.Children, function (view) {
+                    var isOverWidth = ((currentRight - view.Size.Width) < minLeft);
+                    if (isOverWidth && rowElemCount !== 0) {
+                        // 表示幅を超え、かつ既にその行に要素が出力されているとき
+                        // 改行後に要素を出力する。
+                        currentTop += rowMaxHeight + _this._margin;
+                        currentRight = _this.Size.Width - _this._margin;
+                        rowElemCount = 0;
+                        rowMaxHeight = 0;
+                    }
+                    rowElemCount++;
+                    view.Position.Left = currentRight - view.Size.Width;
+                    view.Position.Top = currentTop;
+                    if (rowMaxHeight < view.Size.Height)
+                        rowMaxHeight = view.Size.Height;
+                    currentRight -= view.Size.Width + _this._margin;
+                    if (isOverWidth && rowElemCount === 0) {
+                        // 表示幅を超え、かつその行先頭要素のとき
+                        // 要素を出力したあとで改行する。
+                        currentTop += rowMaxHeight + _this._margin;
+                        currentRight = _this.Size.Width - _this._margin;
+                        rowElemCount = 0;
+                        rowMaxHeight = 0;
+                    }
+                });
+            };
+            StuckerBoxView.prototype.InnerRefreshLeftBottom = function () {
+                var _this = this;
+                var maxRight = this.Size.Width - this._margin;
+                var currentLeft = this._margin;
+                var currentBottom = this.Size.Height - this._margin;
+                var rowMaxHeight = 0;
+                var rowElemCount = 0;
+                _.each(this.Children, function (view) {
+                    var isOverWidth = (maxRight < (currentLeft + view.Size.Width));
+                    if (isOverWidth && rowElemCount !== 0) {
+                        // 表示幅を超え、かつ既にその行に要素が出力されているとき
+                        // 改行後に要素を出力する。
+                        currentBottom -= rowMaxHeight + _this._margin;
+                        currentLeft = _this._margin;
+                        rowElemCount = 0;
+                        rowMaxHeight = 0;
+                    }
+                    rowElemCount++;
+                    view.Position.Left = currentLeft;
+                    view.Position.Top = currentBottom - view.Size.Height;
+                    if (rowMaxHeight < view.Size.Height)
+                        rowMaxHeight = view.Size.Height;
+                    currentLeft += view.Size.Width + _this._margin;
+                    if (isOverWidth && rowElemCount === 0) {
+                        // 表示幅を超え、かつその行先頭要素のとき
+                        // 要素を出力したあとで改行する。
+                        currentBottom -= rowMaxHeight + _this._margin;
+                        currentLeft = _this._margin;
+                        rowElemCount = 0;
+                        rowMaxHeight = 0;
+                    }
+                });
+            };
+            StuckerBoxView.prototype.InnerRefreshRightBottom = function () {
+                var _this = this;
+                var minLeft = this._margin;
+                var currentRight = this.Size.Width - this._margin;
+                var currentBottom = this.Size.Height - this._margin;
+                var rowMaxHeight = 0;
+                var rowElemCount = 0;
+                _.each(this.Children, function (view) {
+                    var isOverWidth = ((currentRight - view.Size.Width) < minLeft);
+                    if (isOverWidth && rowElemCount !== 0) {
+                        // 表示幅を超え、かつ既にその行に要素が出力されているとき
+                        // 改行後に要素を出力する。
+                        currentBottom -= rowMaxHeight + _this._margin;
+                        currentRight = _this.Size.Width - _this._margin;
+                        rowElemCount = 0;
+                        rowMaxHeight = 0;
+                    }
+                    rowElemCount++;
+                    view.Position.Left = currentRight - view.Size.Width;
+                    view.Position.Top = currentBottom - view.Size.Height;
+                    if (rowMaxHeight < view.Size.Height)
+                        rowMaxHeight = view.Size.Height;
+                    currentRight -= view.Size.Width + _this._margin;
+                    if (isOverWidth && rowElemCount === 0) {
+                        // 表示幅を超え、かつその行先頭要素のとき
+                        // 要素を出力したあとで改行する。
+                        currentBottom -= rowMaxHeight + _this._margin;
+                        currentRight = _this.Size.Width - _this._margin;
+                        rowElemCount = 0;
+                        rowMaxHeight = 0;
+                    }
+                });
+            };
+            StuckerBoxView.prototype.Dispose = function () {
+                this.Elem.off('click touchend', this.OnSingleClick);
+                _super.prototype.Dispose.call(this);
+                this._margin = null;
+            };
+            return StuckerBoxView;
+        }(Views.BoxView));
+        Views.StuckerBoxView = StuckerBoxView;
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Events/ControlViewEvents.ts" />
+/// <reference path="../Util/Dump.ts" />
+/// <reference path="../Util/Number.ts" />
+/// <reference path="ViewBase.ts" />
+/// <reference path="Property/FitPolicy.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Dump = Fw.Util.Dump;
+        var FitPolicy = Fw.Views.Property.FitPolicy;
+        var ImageView = /** @class */ (function (_super) {
+            __extends(ImageView, _super);
+            function ImageView() {
+                return _super.call(this, $('<div></div>')) || this;
+            }
+            Object.defineProperty(ImageView.prototype, "Src", {
+                get: function () {
+                    return this._src;
+                },
+                set: function (value) {
+                    this._src = value;
+                    this._image.src = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(ImageView.prototype, "FitPolicy", {
+                get: function () {
+                    return this._firPolicy;
+                },
+                set: function (value) {
+                    this._firPolicy = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            ImageView.prototype.Init = function () {
+                var _this = this;
+                _super.prototype.Init.call(this);
+                this.SetClassName('ImageView');
+                this.Elem.addClass(this.ClassName);
+                this.BackgroundColor = 'transparent';
+                this.Dom.style.borderWidth = '0';
+                this.Dom.style.borderRadius = '0';
+                // 注) ImageオブジェクトはDomツリーに入れない。
+                this._image = new Image();
+                this._image.onload = function () {
+                    Dump.Log('Image Loaded!!');
+                    _this.Refresh();
+                };
+                this._firPolicy = FitPolicy.Auto;
+            };
+            ImageView.prototype.InnerRefresh = function () {
+                try {
+                    this.SuppressLayout();
+                    _super.prototype.InnerRefresh.call(this);
+                    this.Dom.style.backgroundPosition = 'center center';
+                    this.Dom.style.backgroundRepeat = 'no-repeat';
+                    this.Dom.style.backgroundSize = this.FitPolicy;
+                    this.Dom.style.backgroundImage = (this._src)
+                        ? "url(" + this._src + ")"
+                        : null;
+                }
+                catch (e) {
+                    Dump.ErrorLog(e);
+                }
+                finally {
+                    this.ResumeLayout();
+                }
+            };
+            ImageView.prototype.Dispose = function () {
+                _super.prototype.Dispose.call(this);
+                this._image = null;
+                this._src = null;
+                this._firPolicy = null;
+            };
+            return ImageView;
+        }(Views.ViewBase));
+        Views.ImageView = ImageView;
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Events/ControlViewEvents.ts" />
+/// <reference path="../Util/Dump.ts" />
+/// <reference path="../Util/Number.ts" />
+/// <reference path="./BoxView.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Dump = Fw.Util.Dump;
+        var LineView = /** @class */ (function (_super) {
+            __extends(LineView, _super);
+            function LineView(direction) {
+                var _this = _super.call(this, $('<div></div>')) || this;
+                // nullやundefinedを入れさせない。
+                _this._direction = (direction === Views.Property.Direction.Horizontal)
+                    ? Views.Property.Direction.Horizontal
+                    : Views.Property.Direction.Vertical;
+                return _this;
+            }
+            Object.defineProperty(LineView.prototype, "Direction", {
+                get: function () {
+                    return this._direction;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(LineView.prototype, "Length", {
+                get: function () {
+                    return this._length;
+                },
+                set: function (value) {
+                    this._length = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(LineView.prototype, "BackgroundColor", {
+                get: function () {
+                    throw new Error('Not supported');
+                },
+                set: function (value) {
+                    throw new Error('Not supported');
+                },
+                enumerable: true,
+                configurable: true
+            });
+            LineView.prototype.Init = function () {
+                _super.prototype.Init.call(this);
+                this.SetClassName('LineView');
+                this.Elem.addClass(this.ClassName);
+                this._length = 0;
+            };
+            LineView.prototype.InnerRefresh = function () {
+                try {
+                    //Dump.Log(`${this.ClassName}.InnerRefresh`);
+                    this.SuppressLayout();
+                    if (this.Direction === Views.Property.Direction.Horizontal) {
+                        //Dump.Log(`${this.ClassName}.Direction = ${this.Direction}`);
+                        this.Size.Height = 2;
+                        this.Size.Width = this.Length;
+                    }
+                    else {
+                        //Dump.Log(`${this.ClassName}.Direction = ${this.Direction}`);
+                        this.Size.Width = 2;
+                        this.Size.Height = this.Length;
+                    }
+                    _super.prototype.InnerRefresh.call(this);
+                    this.Dom.style.borderWidth = '0';
+                    this.Dom.style.backgroundColor = "" + this.Color;
+                }
+                catch (e) {
+                    Dump.ErrorLog(e);
+                }
+                finally {
+                    this.ResumeLayout();
+                }
+            };
+            LineView.prototype.Dispose = function () {
+                _super.prototype.Dispose.call(this);
+            };
+            return LineView;
+        }(Views.ViewBase));
+        Views.LineView = LineView;
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Property;
+        (function (Property) {
+            /**
+             * @description font-weight
+             */
+            var FontWeight;
+            (function (FontWeight) {
+                FontWeight["Lighter"] = "lighter";
+                FontWeight["Normal"] = "normal";
+                FontWeight["Bold"] = "bold";
+                FontWeight["Bolder"] = "bolder";
+            })(FontWeight = Property.FontWeight || (Property.FontWeight = {}));
+        })(Property = Views.Property || (Views.Property = {}));
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Events/ControlViewEvents.ts" />
+/// <reference path="../Util/Dump.ts" />
+/// <reference path="../Util/Number.ts" />
+/// <reference path="ViewBase.ts" />
+/// <reference path="Property/FontWeight.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Dump = Fw.Util.Dump;
+        var Events = Fw.Events.ControlViewEvents;
+        var Property = Fw.Views.Property;
+        var LabelView = /** @class */ (function (_super) {
+            __extends(LabelView, _super);
+            function LabelView() {
+                return _super.call(this, $('<label></label>')) || this;
+            }
+            Object.defineProperty(LabelView.prototype, "Text", {
+                get: function () {
+                    return this._text;
+                },
+                set: function (value) {
+                    this._text = value;
+                    this.Elem.text(''); // 一旦消す。
+                    this._hiddenSpan.innerText = this._text;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(LabelView.prototype, "FontWeight", {
+                get: function () {
+                    return this._fontWeight;
+                },
+                set: function (value) {
+                    this._fontWeight = value;
+                    this._hiddenSpan.style.fontWeight = this._fontWeight;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(LabelView.prototype, "FontSize", {
+                get: function () {
+                    return this._fontSize;
+                },
+                set: function (value) {
+                    this._fontSize = value;
+                    this._hiddenSpan.style.fontSize = this._fontSize;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(LabelView.prototype, "FontFamily", {
+                get: function () {
+                    return this._fontFamily;
+                },
+                set: function (value) {
+                    this._fontFamily = value;
+                    this._hiddenSpan.style.fontFamily = this._fontFamily;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(LabelView.prototype, "AutoSize", {
+                get: function () {
+                    return this._autoSize;
+                },
+                set: function (value) {
+                    this._autoSize = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            LabelView.prototype.Init = function () {
+                var _this = this;
+                _super.prototype.Init.call(this);
+                this.SetClassName('LabelView');
+                this.Elem.addClass(this.ClassName);
+                this.BackgroundColor = 'transparent';
+                this.SetTransAnimation(false);
+                this.Dom.style.borderWidth = '0';
+                this.Dom.style.borderRadius = '0';
+                this._text = '';
+                this._fontWeight = Property.FontWeight.Normal;
+                this._fontSize = Property.FontSize.Medium;
+                this._fontFamily = 'Quicksand, 游ゴシック体, "Yu Gothic", YuGothic, "ヒラギノ角ゴシック Pro", "Hiragino Kaku Gothic Pro", メイリオ, Meiryo, Osaka, "ＭＳ Ｐゴシック", "MS PGothic", sans-serif';
+                this._hiddenSpan = document.createElement('span');
+                this._hiddenSpan.style.visibility = 'hidden';
+                this._hiddenSpan.style.fontWeight = this._fontWeight;
+                this._hiddenSpan.style.fontSize = this._fontSize;
+                this._hiddenSpan.style.fontFamily = this._fontFamily;
+                this.AddEventListener(Events.Attached, function () {
+                    _this.Parent.Elem.append(_this._hiddenSpan);
+                });
+                this.AddEventListener(Events.Detached, function () {
+                    $(_this._hiddenSpan).remove();
+                });
+                this._autoSize = true;
+            };
+            LabelView.prototype.InnerRefresh = function () {
+                try {
+                    this.SuppressLayout();
+                    if (this._autoSize) {
+                        this.Size.Width = this._hiddenSpan.offsetWidth + 10;
+                        this.Size.Height = this._hiddenSpan.offsetHeight;
+                    }
+                    _super.prototype.InnerRefresh.call(this);
+                    this.Dom.style.fontWeight = this._fontWeight;
+                    this.Dom.style.fontSize = this._fontSize;
+                    this.Dom.style.fontFamily = this._fontFamily;
+                    this.Elem.text(this._text);
+                }
+                catch (e) {
+                    Dump.ErrorLog(e);
+                }
+                finally {
+                    this.ResumeLayout();
+                }
+            };
+            LabelView.prototype.Dispose = function () {
+                _super.prototype.Dispose.call(this);
+                this._text = null;
+                $(this._hiddenSpan).remove();
+            };
+            return LabelView;
+        }(Views.ViewBase));
+        Views.LabelView = LabelView;
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Events/ViewEvents.ts" />
+/// <reference path="../../Util/Dump.ts" />
+/// <reference path="../../Util/Number.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Property;
+        (function (Property) {
+            var Direction;
+            (function (Direction) {
+                Direction[Direction["Horizontal"] = 0] = "Horizontal";
+                Direction[Direction["Vertical"] = 1] = "Vertical";
+            })(Direction = Property.Direction || (Property.Direction = {}));
+        })(Property = Views.Property || (Views.Property = {}));
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 var Fw;
@@ -2584,27 +3847,6 @@ var Fw;
                 FontSize["XLarge"] = "x-large";
                 FontSize["XxLarge"] = "xx-large";
             })(FontSize = Property.FontSize || (Property.FontSize = {}));
-        })(Property = Views.Property || (Views.Property = {}));
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var Property;
-        (function (Property) {
-            /**
-             * @description font-weight
-             */
-            var FontWeight;
-            (function (FontWeight) {
-                FontWeight["Lighter"] = "lighter";
-                FontWeight["Normal"] = "normal";
-                FontWeight["Bold"] = "bold";
-                FontWeight["Bolder"] = "bolder";
-            })(FontWeight = Property.FontWeight || (Property.FontWeight = {}));
         })(Property = Views.Property || (Views.Property = {}));
     })(Views = Fw.Views || (Fw.Views = {}));
 })(Fw || (Fw = {}));
@@ -2881,481 +4123,6 @@ var Fw;
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../Events/ControlViewEvents.ts" />
-/// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
-/// <reference path="./ViewBase.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var Dump = Fw.Util.Dump;
-        var Number = Fw.Util.Number;
-        var BoxView = /** @class */ (function (_super) {
-            __extends(BoxView, _super);
-            function BoxView() {
-                return _super.call(this, $('<div></div>')) || this;
-            }
-            Object.defineProperty(BoxView.prototype, "HasBorder", {
-                get: function () {
-                    return this._hasBorder;
-                },
-                set: function (value) {
-                    this.Dom.style.borderWidth = (value)
-                        ? '1px'
-                        : '0';
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(BoxView.prototype, "BorderRadius", {
-                get: function () {
-                    return this._borderRadius;
-                },
-                set: function (value) {
-                    if (Number.IsNaN(value) || value === null || value === undefined)
-                        value = 0;
-                    if (value < 0)
-                        value = 0;
-                    if (value > 50)
-                        value = 50;
-                    this._borderRadius = value;
-                    this.Dom.style.borderRadius = this._borderRadius + "%";
-                },
-                enumerable: true,
-                configurable: true
-            });
-            BoxView.prototype.Init = function () {
-                _super.prototype.Init.call(this);
-                this.SetClassName('BoxView');
-                this.Elem.addClass(this.ClassName);
-                this.HasBorder = true;
-                this.BorderRadius = 0;
-            };
-            BoxView.prototype.InnerRefresh = function () {
-                try {
-                    this.SuppressLayout();
-                    _super.prototype.InnerRefresh.call(this);
-                    this.Dom.style.borderColor = "" + this.Color;
-                }
-                catch (e) {
-                    Dump.ErrorLog(e);
-                }
-                finally {
-                    this.ResumeLayout();
-                }
-            };
-            BoxView.prototype.Dispose = function () {
-                _super.prototype.Dispose.call(this);
-                this._hasBorder = null;
-                this._borderRadius = null;
-            };
-            return BoxView;
-        }(Views.ViewBase));
-        Views.BoxView = BoxView;
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../Events/ControlViewEvents.ts" />
-/// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
-/// <reference path="./BoxView.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var Events = Fw.Events.ControlViewEvents;
-        var ControlView = /** @class */ (function (_super) {
-            __extends(ControlView, _super);
-            function ControlView() {
-                var _this = _super.call(this) || this;
-                _this._tapEventTimer = null;
-                _this._cvMouseSuppressor = false;
-                _this._cvDelayedResumeEventsTimer = null;
-                return _this;
-            }
-            Object.defineProperty(ControlView.prototype, "Label", {
-                get: function () {
-                    return this._label.html();
-                },
-                set: function (value) {
-                    this._label.html(value);
-                    this.Refresh();
-                },
-                enumerable: true,
-                configurable: true
-            });
-            ControlView.prototype.Init = function () {
-                var _this = this;
-                _super.prototype.Init.call(this);
-                this.SetClassName('ControlView');
-                this.Elem.addClass(this.ClassName);
-                // プロパティsetterを一度通しておく。
-                this.HasBorder = true;
-                this.BorderRadius = 5;
-                this._label = $('<span class="ControlViewProperty"></span>');
-                this.Elem.append(this._label);
-                this.Elem.on('touchstart mousedown', function (e) {
-                    if (_this._tapEventTimer != null)
-                        clearTimeout(_this._tapEventTimer);
-                    _this._tapEventTimer = setTimeout(function () {
-                        // ロングタップイベント
-                        _this._tapEventTimer = null;
-                        // Pageのドラッグ処理中のとき、クリックイベントを抑制する。
-                        if (_this._cvMouseSuppressor)
-                            return;
-                        //Dump.Log('longtapped');
-                        _this.DispatchEvent(Events.LongClick);
-                    }, 1000);
-                });
-                this.Elem.on('touchend mouseup', function (e) {
-                    if (_this._tapEventTimer != null) {
-                        // ロングタップ検出中のとき
-                        clearTimeout(_this._tapEventTimer);
-                        _this._tapEventTimer = null;
-                        // Pageのドラッグ処理中のとき、クリックイベントを抑制する。
-                        if (_this._cvMouseSuppressor)
-                            return;
-                        // 以降、シングルタップイベント処理
-                        //Dump.Log('singletapped');
-                        _this.DispatchEvent(Events.SingleClick);
-                    }
-                    else {
-                    }
-                });
-                this.Elem.on('mouseout', function (e) {
-                    if (_this._tapEventTimer != null) {
-                        // ロングタップ検出中のとき
-                        clearTimeout(_this._tapEventTimer);
-                        _this._tapEventTimer = null;
-                        //Dump.Log('tap canceled');
-                    }
-                });
-            };
-            ControlView.prototype.InitPage = function () {
-                if (this.Page) {
-                    this.RemoveEventListener(Fw.Events.PageViewEvents.Dragging, this.OnPageDragging);
-                }
-                _super.prototype.InitPage.call(this);
-                if (this.Page) {
-                    this.AddEventListener(Fw.Events.PageViewEvents.Dragging, this.OnPageDragging);
-                }
-            };
-            ControlView.prototype.OnPageDragging = function () {
-                var _this = this;
-                this._cvMouseSuppressor = true;
-                if (this._cvDelayedResumeEventsTimer !== null) {
-                    clearTimeout(this._cvDelayedResumeEventsTimer);
-                    this._cvDelayedResumeEventsTimer = null;
-                }
-                this._cvDelayedResumeEventsTimer = setTimeout(function () {
-                    //Dump.Log('ResumeMouseEvents');
-                    _this._cvMouseSuppressor = false;
-                }, 100);
-            };
-            ControlView.prototype.Dispose = function () {
-                _super.prototype.Dispose.call(this);
-                this._label = null;
-                this._tapEventTimer = null;
-                this._cvMouseSuppressor = null;
-                this._cvDelayedResumeEventsTimer = null;
-            };
-            return ControlView;
-        }(Views.BoxView));
-        Views.ControlView = ControlView;
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../Events/ControlViewEvents.ts" />
-/// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
-/// <reference path="ControlView.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var Dump = Fw.Util.Dump;
-        var ButtonView = /** @class */ (function (_super) {
-            __extends(ButtonView, _super);
-            function ButtonView() {
-                return _super !== null && _super.apply(this, arguments) || this;
-            }
-            Object.defineProperty(ButtonView.prototype, "ImageSrc", {
-                get: function () {
-                    return this._imageView.Src;
-                },
-                set: function (value) {
-                    this._imageView.Src = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            ButtonView.prototype.Init = function () {
-                var _this = this;
-                _super.prototype.Init.call(this);
-                this.SetClassName('ButtonView');
-                this.Elem.addClass(this.ClassName);
-                this.BackgroundColor = '#add8e6';
-                this.HoverColor = '#6495ed';
-                this._imageView = new Views.ImageView();
-                this._imageView.Src = null;
-                this.Add(this._imageView);
-                this.Elem.hover(function () {
-                    //Dump.Log(`${this.ClassName}.hover: color = ${this.HoverColor}`);
-                    _this.Dom.style.backgroundColor = _this.HoverColor;
-                }, function () {
-                    _this.Dom.style.backgroundColor = _this.BackgroundColor;
-                });
-            };
-            ButtonView.prototype.InnerRefresh = function () {
-                try {
-                    this.SuppressLayout();
-                    this._imageView.Size.Width = this.Size.Width;
-                    this._imageView.Size.Height = this.Size.Height;
-                    _super.prototype.InnerRefresh.call(this);
-                }
-                catch (e) {
-                    Dump.ErrorLog(e);
-                }
-                finally {
-                    this.ResumeLayout();
-                }
-            };
-            ButtonView.prototype.Dispose = function () {
-                _super.prototype.Dispose.call(this);
-                this._imageView = null;
-                this.HoverColor = null;
-            };
-            return ButtonView;
-        }(Views.ControlView));
-        Views.ButtonView = ButtonView;
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../Events/ControlViewEvents.ts" />
-/// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
-/// <reference path="ViewBase.ts" />
-/// <reference path="Property/FitPolicy.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var Dump = Fw.Util.Dump;
-        var FitPolicy = Fw.Views.Property.FitPolicy;
-        var ImageView = /** @class */ (function (_super) {
-            __extends(ImageView, _super);
-            function ImageView() {
-                return _super.call(this, $('<div></div>')) || this;
-            }
-            Object.defineProperty(ImageView.prototype, "Src", {
-                get: function () {
-                    return this._src;
-                },
-                set: function (value) {
-                    this._src = value;
-                    this._image.src = value;
-                    this.Refresh();
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(ImageView.prototype, "FitPolicy", {
-                get: function () {
-                    return this._firPolicy;
-                },
-                set: function (value) {
-                    this._firPolicy = value;
-                    this.Refresh();
-                },
-                enumerable: true,
-                configurable: true
-            });
-            ImageView.prototype.Init = function () {
-                var _this = this;
-                _super.prototype.Init.call(this);
-                this.SetClassName('ImageView');
-                this.Elem.addClass(this.ClassName);
-                this.BackgroundColor = 'transparent';
-                this.Dom.style.borderWidth = '0';
-                this.Dom.style.borderRadius = '0';
-                // 注) ImageオブジェクトはDomツリーに入れない。
-                this._image = new Image();
-                this._image.onload = function () {
-                    Dump.Log('Image Loaded!!');
-                    _this.Refresh();
-                };
-                this._firPolicy = FitPolicy.Auto;
-            };
-            ImageView.prototype.InnerRefresh = function () {
-                try {
-                    this.SuppressLayout();
-                    _super.prototype.InnerRefresh.call(this);
-                    this.Dom.style.backgroundPosition = 'center center';
-                    this.Dom.style.backgroundRepeat = 'no-repeat';
-                    this.Dom.style.backgroundSize = this.FitPolicy;
-                    this.Dom.style.backgroundImage = (this._src)
-                        ? "url(" + this._src + ")"
-                        : null;
-                }
-                catch (e) {
-                    Dump.ErrorLog(e);
-                }
-                finally {
-                    this.ResumeLayout();
-                }
-            };
-            ImageView.prototype.Dispose = function () {
-                _super.prototype.Dispose.call(this);
-                this._image = null;
-                this._src = null;
-                this._firPolicy = null;
-            };
-            return ImageView;
-        }(Views.ViewBase));
-        Views.ImageView = ImageView;
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../Events/ControlViewEvents.ts" />
-/// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
-/// <reference path="ViewBase.ts" />
-/// <reference path="Property/FontWeight.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var Dump = Fw.Util.Dump;
-        var Events = Fw.Events.ControlViewEvents;
-        var Property = Fw.Views.Property;
-        var LabelView = /** @class */ (function (_super) {
-            __extends(LabelView, _super);
-            function LabelView() {
-                return _super.call(this, $('<label></label>')) || this;
-            }
-            Object.defineProperty(LabelView.prototype, "Text", {
-                get: function () {
-                    return this._text;
-                },
-                set: function (value) {
-                    this._text = value;
-                    this.Elem.text(''); // 一旦消す。
-                    this._hiddenSpan.innerText = this._text;
-                    this.Refresh();
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(LabelView.prototype, "FontWeight", {
-                get: function () {
-                    return this._fontWeight;
-                },
-                set: function (value) {
-                    this._fontWeight = value;
-                    this._hiddenSpan.style.fontWeight = this._fontWeight;
-                    this.Refresh();
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(LabelView.prototype, "FontSize", {
-                get: function () {
-                    return this._fontSize;
-                },
-                set: function (value) {
-                    this._fontSize = value;
-                    this._hiddenSpan.style.fontSize = this._fontSize;
-                    this.Refresh();
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(LabelView.prototype, "FontFamily", {
-                get: function () {
-                    return this._fontFamily;
-                },
-                set: function (value) {
-                    this._fontFamily = value;
-                    this._hiddenSpan.style.fontFamily = this._fontFamily;
-                    this.Refresh();
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(LabelView.prototype, "AutoSize", {
-                get: function () {
-                    return this._autoSize;
-                },
-                set: function (value) {
-                    this._autoSize = value;
-                    this.Refresh();
-                },
-                enumerable: true,
-                configurable: true
-            });
-            LabelView.prototype.Init = function () {
-                var _this = this;
-                _super.prototype.Init.call(this);
-                this.SetClassName('LabelView');
-                this.Elem.addClass(this.ClassName);
-                this.BackgroundColor = 'transparent';
-                this.SetTransAnimation(false);
-                this.Dom.style.borderWidth = '0';
-                this.Dom.style.borderRadius = '0';
-                this._text = '';
-                this._fontWeight = Property.FontWeight.Normal;
-                this._fontSize = Property.FontSize.Medium;
-                this._fontFamily = 'Quicksand, 游ゴシック体, "Yu Gothic", YuGothic, "ヒラギノ角ゴシック Pro", "Hiragino Kaku Gothic Pro", メイリオ, Meiryo, Osaka, "ＭＳ Ｐゴシック", "MS PGothic", sans-serif';
-                this._hiddenSpan = document.createElement('span');
-                this._hiddenSpan.style.visibility = 'hidden';
-                this._hiddenSpan.style.fontWeight = this._fontWeight;
-                this._hiddenSpan.style.fontSize = this._fontSize;
-                this._hiddenSpan.style.fontFamily = this._fontFamily;
-                this.AddEventListener(Events.Attached, function () {
-                    _this.Parent.Elem.append(_this._hiddenSpan);
-                });
-                this.AddEventListener(Events.Detached, function () {
-                    $(_this._hiddenSpan).remove();
-                });
-                this._autoSize = true;
-            };
-            LabelView.prototype.InnerRefresh = function () {
-                try {
-                    this.SuppressLayout();
-                    if (this._autoSize) {
-                        this.Size.Width = this._hiddenSpan.offsetWidth + 10;
-                        this.Size.Height = this._hiddenSpan.offsetHeight;
-                    }
-                    _super.prototype.InnerRefresh.call(this);
-                    this.Dom.style.fontWeight = this._fontWeight;
-                    this.Dom.style.fontSize = this._fontSize;
-                    this.Dom.style.fontFamily = this._fontFamily;
-                    this.Elem.text(this._text);
-                }
-                catch (e) {
-                    Dump.ErrorLog(e);
-                }
-                finally {
-                    this.ResumeLayout();
-                }
-            };
-            LabelView.prototype.Dispose = function () {
-                _super.prototype.Dispose.call(this);
-                this._text = null;
-                $(this._hiddenSpan).remove();
-            };
-            return LabelView;
-        }(Views.ViewBase));
-        Views.LabelView = LabelView;
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Util/Dump.ts" />
 /// <reference path="../Events/ControlViewEvents.ts" />
 /// <reference path="ButtonView.ts" />
@@ -3588,6 +4355,117 @@ var Fw;
         }(Views.ButtonView));
         Views.RelocatableButtonView = RelocatableButtonView;
     })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../lib/jquery/index.d.ts" />
+/// <reference path="../../lib/underscore/index.d.ts" />
+/// <reference path="Events/RootEvents.ts" />
+/// <reference path="Util/Dump.ts" />
+/// <reference path="Views/Property/Size.ts" />
+var Fw;
+(function (Fw) {
+    var Events = Fw.Events.RootEvents;
+    var Property = Fw.Views.Property;
+    var Root = /** @class */ (function (_super) {
+        __extends(Root, _super);
+        function Root(jqueryElem) {
+            var _this = _super.call(this) || this;
+            _this.SetElem(jqueryElem);
+            _this.SetClassName('Root');
+            _this._size = new Property.Size();
+            _this._size.Width = _this.Elem.width();
+            _this._size.Height = _this.Elem.height();
+            _this._dom = jqueryElem.get(0);
+            _this._masked = false;
+            var $window = $(window);
+            $window.on('resize', function () {
+                _this.Refresh();
+                _this.DispatchEvent(Events.Resized);
+            });
+            // Root.Init()の終了後にViewBaseからFw.Root.Instanceを呼び出す。
+            _.defer(function () {
+                _this._mask = new Fw.Views.BoxView();
+                _this._mask.Elem.removeClass('TransAnimation');
+                _this._mask.Elem.addClass('RootMask');
+                _this._mask.HasBorder = false;
+                _this._mask.BackgroundColor = '#000000';
+                _this._mask.ZIndex = -1;
+                // IViewでないので、this.Addは出来ない。
+                _this.Elem.append(_this._mask.Elem);
+                _this._mask.Elem.on('click touchend', function () {
+                    _this.DispatchEvent(Events.MaskClicked);
+                });
+                _this.Refresh();
+            });
+            return _this;
+        }
+        Object.defineProperty(Root, "Instance", {
+            get: function () {
+                if (!Root._instance) {
+                    throw new Error('Root.Init() has not been executed.');
+                }
+                return Root._instance;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Root.Init = function (selectorString) {
+            Root._instance = new Root($(selectorString));
+        };
+        Object.defineProperty(Root.prototype, "Dom", {
+            get: function () {
+                return this._dom;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Root.prototype, "Size", {
+            get: function () {
+                return this._size;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Root.prototype.Mask = function () {
+            //Dump.Log(`${this.ClassName}.Mask`);
+            this._masked = true;
+            if (!this._mask.Elem.hasClass('Masked'))
+                this._mask.Elem.addClass('Masked');
+            this.Refresh();
+        };
+        Root.prototype.UnMask = function () {
+            //Dump.Log(`${this.ClassName}.UnMask`);
+            this._masked = false;
+            if (this._mask.Elem.hasClass('Masked'))
+                this._mask.Elem.removeClass('Masked');
+            this.Refresh();
+        };
+        Root.prototype.SetTextSelection = function (enable) {
+            if (enable && this.Elem.hasClass('TextUnselect'))
+                this.Elem.removeClass('TextUnselect');
+            else if (!enable && !this.Elem.hasClass('TextUnselect'))
+                this.Elem.addClass('TextUnselect');
+        };
+        Root.prototype.Refresh = function () {
+            // this.Sizeのセッターが無いので、フィールドに直接書き込む。
+            this._size.Width = this.Elem.width();
+            this._size.Height = this.Elem.height();
+            if (this._mask) {
+                this._mask.SetSize(this._size.Width, this._size.Height);
+                this._masked
+                    ? this._mask.ZIndex = 0
+                    : this._mask.ZIndex = -1;
+            }
+        };
+        Root.prototype.Dispose = function () {
+            _super.prototype.Dispose.call(this);
+            this._dom = null;
+            this._size.Dispose();
+            this._size = null;
+        };
+        Root._instance = null;
+        return Root;
+    }(Fw.ObjectBase));
+    Fw.Root = Root;
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
@@ -3988,717 +4866,6 @@ var Fw;
             return ToggleButtonView;
         }(Views.ControlView));
         Views.ToggleButtonView = ToggleButtonView;
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../lib/jquery/index.d.ts" />
-/// <reference path="../../lib/underscore/index.d.ts" />
-/// <reference path="Events/RootEvents.ts" />
-/// <reference path="Util/Dump.ts" />
-/// <reference path="Views/Property/Size.ts" />
-var Fw;
-(function (Fw) {
-    var Events = Fw.Events.RootEvents;
-    var Property = Fw.Views.Property;
-    var Root = /** @class */ (function (_super) {
-        __extends(Root, _super);
-        function Root(jqueryElem) {
-            var _this = _super.call(this) || this;
-            _this.SetElem(jqueryElem);
-            _this.SetClassName('Root');
-            _this._size = new Property.Size();
-            _this._size.Width = _this.Elem.width();
-            _this._size.Height = _this.Elem.height();
-            _this._dom = jqueryElem.get(0);
-            _this._masked = false;
-            var $window = $(window);
-            $window.on('resize', function () {
-                _this.Refresh();
-                _this.DispatchEvent(Events.Resized);
-            });
-            // Root.Init()の終了後にViewBaseからFw.Root.Instanceを呼び出す。
-            _.defer(function () {
-                _this._mask = new Fw.Views.BoxView();
-                _this._mask.Elem.removeClass('TransAnimation');
-                _this._mask.Elem.addClass('RootMask');
-                _this._mask.HasBorder = false;
-                _this._mask.BackgroundColor = '#000000';
-                _this._mask.ZIndex = -1;
-                // IViewでないので、this.Addは出来ない。
-                _this.Elem.append(_this._mask.Elem);
-                _this._mask.Elem.on('click touchend', function () {
-                    _this.DispatchEvent(Events.MaskClicked);
-                });
-                _this.Refresh();
-            });
-            return _this;
-        }
-        Object.defineProperty(Root, "Instance", {
-            get: function () {
-                if (!Root._instance) {
-                    throw new Error('Root.Init() has not been executed.');
-                }
-                return Root._instance;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Root.Init = function (selectorString) {
-            Root._instance = new Root($(selectorString));
-        };
-        Object.defineProperty(Root.prototype, "Dom", {
-            get: function () {
-                return this._dom;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(Root.prototype, "Size", {
-            get: function () {
-                return this._size;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Root.prototype.Mask = function () {
-            //Dump.Log(`${this.ClassName}.Mask`);
-            this._masked = true;
-            if (!this._mask.Elem.hasClass('Masked'))
-                this._mask.Elem.addClass('Masked');
-            this.Refresh();
-        };
-        Root.prototype.UnMask = function () {
-            //Dump.Log(`${this.ClassName}.UnMask`);
-            this._masked = false;
-            if (this._mask.Elem.hasClass('Masked'))
-                this._mask.Elem.removeClass('Masked');
-            this.Refresh();
-        };
-        Root.prototype.SetTextSelection = function (enable) {
-            if (enable && this.Elem.hasClass('TextUnselect'))
-                this.Elem.removeClass('TextUnselect');
-            else if (!enable && !this.Elem.hasClass('TextUnselect'))
-                this.Elem.addClass('TextUnselect');
-        };
-        Root.prototype.Refresh = function () {
-            // this.Sizeのセッターが無いので、フィールドに直接書き込む。
-            this._size.Width = this.Elem.width();
-            this._size.Height = this.Elem.height();
-            if (this._mask) {
-                this._mask.SetSize(this._size.Width, this._size.Height);
-                this._masked
-                    ? this._mask.ZIndex = 0
-                    : this._mask.ZIndex = -1;
-            }
-        };
-        Root.prototype.Dispose = function () {
-            _super.prototype.Dispose.call(this);
-            this._dom = null;
-            this._size.Dispose();
-            this._size = null;
-        };
-        Root._instance = null;
-        return Root;
-    }(Fw.ObjectBase));
-    Fw.Root = Root;
-})(Fw || (Fw = {}));
-/// <reference path="../../lib/jquery/index.d.ts" />
-/// <reference path="../../lib/underscore/index.d.ts" />
-/// <reference path="Util/Dump.ts" />
-/* /// <reference path="Views/Root.ts" /> */
-var Fw;
-(function (Fw) {
-    var Startup = /** @class */ (function () {
-        function Startup() {
-        }
-        Startup.Init = function () {
-            // ↓API仕様に応じて、App.Mainで書き換える。
-            Fw.Config.XhrBaseUrl
-                = location.protocol
-                    + '//' + location.hostname
-                    + ':' + location.port
-                    + '/';
-            // 画面全体のコンテナを初期化
-            Fw.Root.Init('div.body-content');
-            // Controllers.Managerの初期化
-            Fw.Controllers.Manager.Init();
-        };
-        return Startup;
-    }());
-    Fw.Startup = Startup;
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../Events/ControlViewEvents.ts" />
-/// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
-/// <reference path="./BoxView.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var Dump = Fw.Util.Dump;
-        var LineView = /** @class */ (function (_super) {
-            __extends(LineView, _super);
-            function LineView(direction) {
-                var _this = _super.call(this, $('<div></div>')) || this;
-                // nullやundefinedを入れさせない。
-                _this._direction = (direction === Views.Property.Direction.Horizontal)
-                    ? Views.Property.Direction.Horizontal
-                    : Views.Property.Direction.Vertical;
-                return _this;
-            }
-            Object.defineProperty(LineView.prototype, "Direction", {
-                get: function () {
-                    return this._direction;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(LineView.prototype, "Length", {
-                get: function () {
-                    return this._length;
-                },
-                set: function (value) {
-                    this._length = value;
-                    this.Refresh();
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(LineView.prototype, "BackgroundColor", {
-                get: function () {
-                    throw new Error('Not supported');
-                },
-                set: function (value) {
-                    throw new Error('Not supported');
-                },
-                enumerable: true,
-                configurable: true
-            });
-            LineView.prototype.Init = function () {
-                _super.prototype.Init.call(this);
-                this.SetClassName('LineView');
-                this.Elem.addClass(this.ClassName);
-                this._length = 0;
-            };
-            LineView.prototype.InnerRefresh = function () {
-                try {
-                    //Dump.Log(`${this.ClassName}.InnerRefresh`);
-                    this.SuppressLayout();
-                    if (this.Direction === Views.Property.Direction.Horizontal) {
-                        //Dump.Log(`${this.ClassName}.Direction = ${this.Direction}`);
-                        this.Size.Height = 2;
-                        this.Size.Width = this.Length;
-                    }
-                    else {
-                        //Dump.Log(`${this.ClassName}.Direction = ${this.Direction}`);
-                        this.Size.Width = 2;
-                        this.Size.Height = this.Length;
-                    }
-                    _super.prototype.InnerRefresh.call(this);
-                    this.Dom.style.borderWidth = '0';
-                    this.Dom.style.backgroundColor = "" + this.Color;
-                }
-                catch (e) {
-                    Dump.ErrorLog(e);
-                }
-                finally {
-                    this.ResumeLayout();
-                }
-            };
-            LineView.prototype.Dispose = function () {
-                _super.prototype.Dispose.call(this);
-            };
-            return LineView;
-        }(Views.ViewBase));
-        Views.LineView = LineView;
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="ViewEvents.ts" />
-var Fw;
-(function (Fw) {
-    var Events;
-    (function (Events) {
-        var LineViewEventsClass = /** @class */ (function (_super) {
-            __extends(LineViewEventsClass, _super);
-            function LineViewEventsClass() {
-                return _super !== null && _super.apply(this, arguments) || this;
-            }
-            return LineViewEventsClass;
-        }(Events.ViewEventsClass));
-        Events.LineViewEventsClass = LineViewEventsClass;
-        Events.LineViewEvents = new LineViewEventsClass();
-    })(Events = Fw.Events || (Fw.Events = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../Events/ViewEvents.ts" />
-/// <reference path="../../Util/Dump.ts" />
-/// <reference path="../../Util/Number.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var Property;
-        (function (Property) {
-            var Direction;
-            (function (Direction) {
-                Direction[Direction["Horizontal"] = 0] = "Horizontal";
-                Direction[Direction["Vertical"] = 1] = "Vertical";
-            })(Direction = Property.Direction || (Property.Direction = {}));
-        })(Property = Views.Property || (Views.Property = {}));
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="BoxViewEvents.ts" />
-var Fw;
-(function (Fw) {
-    var Events;
-    (function (Events) {
-        var StuckerBoxViewEventsClass = /** @class */ (function (_super) {
-            __extends(StuckerBoxViewEventsClass, _super);
-            function StuckerBoxViewEventsClass() {
-                return _super !== null && _super.apply(this, arguments) || this;
-            }
-            return StuckerBoxViewEventsClass;
-        }(Events.BoxViewEventsClass));
-        Events.StuckerBoxViewEventsClass = StuckerBoxViewEventsClass;
-        Events.StuckerBoxViewEvents = new StuckerBoxViewEventsClass();
-    })(Events = Fw.Events || (Fw.Events = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../Util/Dump.ts" />
-/// <reference path="../Events/StuckerBoxViewEvents.ts" />
-/// <reference path="../Events/ControlViewEvents.ts" />
-/// <reference path="Animation/Animator.ts" />
-/// <reference path="Animation/Params.ts" />
-/// <reference path="BoxView.ts" />
-/// <reference path="Property/Size.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var Dump = Fw.Util.Dump;
-        var Property = Fw.Views.Property;
-        var ControlViewEvents = Fw.Events.ControlViewEvents;
-        var StuckerBoxView = /** @class */ (function (_super) {
-            __extends(StuckerBoxView, _super);
-            function StuckerBoxView() {
-                var _this = _super !== null && _super.apply(this, arguments) || this;
-                _this._isChildRelocation = false;
-                _this._isChildDragging = false;
-                _this._relocationTargetView = null;
-                _this._dragStartMousePosition = new Property.Position();
-                _this._dragStartViewPosition = new Property.Position();
-                return _this;
-            }
-            Object.defineProperty(StuckerBoxView.prototype, "Margin", {
-                get: function () {
-                    return this._margin;
-                },
-                set: function (value) {
-                    this._margin = value;
-                    this.Refresh();
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(StuckerBoxView.prototype, "ReferencePoint", {
-                get: function () {
-                    return this._referencePoint;
-                },
-                set: function (value) {
-                    this._referencePoint = value;
-                    this.Refresh();
-                },
-                enumerable: true,
-                configurable: true
-            });
-            StuckerBoxView.prototype.Init = function () {
-                _super.prototype.Init.call(this);
-                this.SetClassName('ContainerBoxView');
-                this.Elem.addClass(this.ClassName);
-                this._margin = 10;
-                this._referencePoint = Property.ReferencePoint.LeftTop;
-                this._backupView = null;
-                this._dummyView = new Fw.Views.BoxView();
-                this._dummyView.Elem.addClass('Shadow');
-                this._dummyView.Position.Policy = Property.PositionPolicy.LeftTop;
-            };
-            StuckerBoxView.prototype.Add = function (view) {
-                view.Position.Policy = Property.PositionPolicy.LeftTop;
-                _super.prototype.Add.call(this, view);
-                view.AddEventListener(ControlViewEvents.LongClick, this.OnChildLongClick);
-                view.Elem.on('touchstart mousedown', this.OnChildMouseDown);
-                view.Elem.on('touchmove mousemove', this.OnChildMouseMove);
-                view.Elem.on('touchend mouseup', this.OnChildMouseUp);
-            };
-            StuckerBoxView.prototype.Remove = function (view) {
-                _super.prototype.Remove.call(this, view);
-                view.RemoveEventListener(ControlViewEvents.LongClick, this.OnChildLongClick);
-                view.Elem.off('touchstart mousedown', this.OnChildMouseDown);
-                view.Elem.off('touchmove mousemove', this.OnChildMouseMove);
-                view.Elem.off('touchend mouseup', this.OnChildMouseUp);
-            };
-            /**
-             * 子要素がロングクリックされたとき
-             * @param e1
-             */
-            StuckerBoxView.prototype.OnChildLongClick = function (e1) {
-                this.StartRelocation();
-            };
-            StuckerBoxView.prototype.StartRelocation = function () {
-                this._isChildRelocation = true;
-                Fw.Root.Instance.SetTextSelection(false);
-                _.each(this.Children, function (v) {
-                    v.Opacity = 0.7;
-                });
-                this.Refresh();
-            };
-            /**
-             * スタッカーBox自身がクリックされたとき
-             * @param e1
-             */
-            StuckerBoxView.prototype.OnSingleClick = function (e1) {
-                var _this = this;
-                var logic = function (e2) {
-                    _this.CommitRelocation();
-                };
-                logic(e1);
-            };
-            StuckerBoxView.prototype.CommitRelocation = function () {
-                if (this._relocationTargetView)
-                    this.RestoreDummyView();
-                this._isChildRelocation = false;
-                Fw.Root.Instance.SetTextSelection(true);
-                _.each(this.Children, function (v) {
-                    v.Opacity = 1.0;
-                });
-                this.Refresh();
-            };
-            /**
-             * 子要素上でマウスボタンが押されたとき
-             * @param e
-             */
-            StuckerBoxView.prototype.OnChildMouseDown = function (e1) {
-                var _this = this;
-                var logic = function (e2) {
-                    if (!_this._isChildRelocation)
-                        return;
-                    var view = _this.GetNearestByPosition(e2.clientX, e2.clientY);
-                    if (view) {
-                        _this._isChildDragging = true;
-                        _this._relocationTargetView = view;
-                        _this._dragStartMousePosition.X = e2.clientX;
-                        _this._dragStartMousePosition.Y = e2.clientY;
-                        _this._dragStartViewPosition.X = view.Position.Left;
-                        _this._dragStartViewPosition.Y = view.Position.Top;
-                        _this.SetDummyView(view);
-                    }
-                };
-                logic(e1);
-            };
-            /**
-             * 子要素上でマウスが動いたとき
-             * @param e1
-             */
-            StuckerBoxView.prototype.OnChildMouseMove = function (e1) {
-                var _this = this;
-                var logic = function (e2) {
-                    if (!_this._isChildRelocation || !_this._isChildDragging)
-                        return;
-                    var view = _this._relocationTargetView;
-                    var addX = e2.clientX - _this._dragStartMousePosition.X;
-                    var addY = e2.clientY - _this._dragStartMousePosition.Y;
-                    view.Position.Left = _this._dragStartViewPosition.X + addX;
-                    view.Position.Top = _this._dragStartViewPosition.Y + addY;
-                    var replaceView = _this.GetNearestByView(view);
-                    if (replaceView !== null && replaceView !== _this._dummyView) {
-                        _this.MoveInFronOf(replaceView, _this._dummyView);
-                    }
-                };
-                logic(e1);
-            };
-            /**
-             * 子要素上でマウスボタンが離れたとき
-             * @param e1
-             */
-            StuckerBoxView.prototype.OnChildMouseUp = function (e1) {
-                var _this = this;
-                var logic = function (e2) {
-                    if (!_this._isChildRelocation) {
-                        _this._isChildDragging = false;
-                    }
-                    else {
-                        _this._isChildDragging = false;
-                        _this.RestoreDummyView();
-                        _this._relocationTargetView = null;
-                    }
-                };
-                logic(e1);
-            };
-            StuckerBoxView.prototype.MoveInFronOf = function (baseView, moveView) {
-                var baseIndex = this.Children.indexOf(baseView);
-                var moveIndex = this.Children.indexOf(moveView);
-                if (baseIndex < 0)
-                    throw new Error('Not contained baseView');
-                if (moveIndex < 0)
-                    throw new Error('Not contained moveView');
-                this.Children.splice(moveIndex, 1);
-                baseIndex = this.Children.indexOf(baseView);
-                this.Children.splice(baseIndex, 0, moveView);
-            };
-            StuckerBoxView.prototype.GetNearestByView = function (view) {
-                var diff = Number.MAX_VALUE;
-                var result = null;
-                _.each(this.Children, function (v) {
-                    // 渡されたViewは対象外
-                    if (v === view)
-                        return;
-                    var tmpDiff = Math.abs(v.Position.Left - view.Position.Left)
-                        + Math.abs(v.Position.Top - view.Position.Top);
-                    if (tmpDiff < diff) {
-                        diff = tmpDiff;
-                        result = v;
-                    }
-                });
-                return result;
-            };
-            StuckerBoxView.prototype.GetNearestByPosition = function (x, y) {
-                var _this = this;
-                var diff = Number.MAX_VALUE;
-                var result = null;
-                _.each(this.Children, function (v) {
-                    // ダミーViewは対象外
-                    if (v === _this._dummyView)
-                        return;
-                    var tmpDiff = Math.abs(v.Position.X - x)
-                        + Math.abs(v.Position.Y - y);
-                    if (tmpDiff < diff) {
-                        diff = tmpDiff;
-                        result = v;
-                    }
-                });
-                return result;
-            };
-            StuckerBoxView.prototype.SetDummyView = function (view) {
-                var _this = this;
-                if (this._backupView)
-                    this.RestoreDummyView();
-                _.each(this.Children, function (v, index) {
-                    if (v === view) {
-                        _this._backupView = v;
-                        _this.Children[index] = _this._dummyView;
-                        _this._dummyView.Color = v.Color;
-                        _this._dummyView.SetSize(v.Size.Width, v.Size.Height);
-                    }
-                });
-            };
-            StuckerBoxView.prototype.RestoreDummyView = function () {
-                var _this = this;
-                if (!this._backupView)
-                    return;
-                _.each(this.Children, function (v, index) {
-                    if (v === _this._dummyView)
-                        _this.Children[index] = _this._backupView;
-                });
-                this._backupView = null;
-            };
-            StuckerBoxView.prototype.InnerRefresh = function () {
-                try {
-                    this.SuppressLayout();
-                    switch (this._referencePoint) {
-                        case Property.ReferencePoint.LeftTop:
-                            this.InnerRefreshLeftTop();
-                            break;
-                        case Property.ReferencePoint.RightTop:
-                            this.InnerRefreshRightTop();
-                            break;
-                        case Property.ReferencePoint.LeftBottom:
-                            this.InnerRefreshLeftBottom();
-                            break;
-                        case Property.ReferencePoint.RightBottom:
-                            this.InnerRefreshRightBottom();
-                            break;
-                        default:
-                            throw new Error("ReferencePoint not found: " + this._referencePoint);
-                    }
-                    this.InnerRefreshLeftTop();
-                }
-                catch (e) {
-                    Dump.ErrorLog(e);
-                }
-                finally {
-                    this.ResumeLayout();
-                }
-            };
-            StuckerBoxView.prototype.InnerRefreshLeftTop = function () {
-                var _this = this;
-                var maxRight = this.Size.Width - this._margin;
-                var currentLeft = this._margin;
-                var currentTop = this._margin;
-                var rowMaxHeight = 0;
-                var rowElemCount = 0;
-                _.each(this.Children, function (view) {
-                    var isOverWidth = (maxRight < (currentLeft + view.Size.Width));
-                    if (isOverWidth && rowElemCount !== 0) {
-                        // 表示幅を超え、かつ既にその行に要素が出力されているとき
-                        // 改行後に要素を出力する。
-                        currentTop += rowMaxHeight + _this._margin;
-                        currentLeft = _this._margin;
-                        rowElemCount = 0;
-                        rowMaxHeight = 0;
-                    }
-                    rowElemCount++;
-                    view.Position.Left = currentLeft;
-                    view.Position.Top = currentTop;
-                    if (rowMaxHeight < view.Size.Height)
-                        rowMaxHeight = view.Size.Height;
-                    currentLeft += view.Size.Width + _this._margin;
-                    if (isOverWidth && rowElemCount === 0) {
-                        // 表示幅を超え、かつその行先頭要素のとき
-                        // 要素を出力したあとで改行する。
-                        currentLeft = _this._margin;
-                        currentTop += rowMaxHeight + _this._margin;
-                        rowElemCount = 0;
-                        rowMaxHeight = 0;
-                    }
-                });
-            };
-            StuckerBoxView.prototype.InnerRefreshRightTop = function () {
-                var _this = this;
-                var minLeft = this._margin;
-                var currentRight = this.Size.Width - this._margin;
-                var currentTop = this._margin;
-                var rowMaxHeight = 0;
-                var rowElemCount = 0;
-                _.each(this.Children, function (view) {
-                    var isOverWidth = ((currentRight - view.Size.Width) < minLeft);
-                    if (isOverWidth && rowElemCount !== 0) {
-                        // 表示幅を超え、かつ既にその行に要素が出力されているとき
-                        // 改行後に要素を出力する。
-                        currentTop += rowMaxHeight + _this._margin;
-                        currentRight = _this.Size.Width - _this._margin;
-                        rowElemCount = 0;
-                        rowMaxHeight = 0;
-                    }
-                    rowElemCount++;
-                    view.Position.Left = currentRight - view.Size.Width;
-                    view.Position.Top = currentTop;
-                    if (rowMaxHeight < view.Size.Height)
-                        rowMaxHeight = view.Size.Height;
-                    currentRight -= view.Size.Width + _this._margin;
-                    if (isOverWidth && rowElemCount === 0) {
-                        // 表示幅を超え、かつその行先頭要素のとき
-                        // 要素を出力したあとで改行する。
-                        currentTop += rowMaxHeight + _this._margin;
-                        currentRight = _this.Size.Width - _this._margin;
-                        rowElemCount = 0;
-                        rowMaxHeight = 0;
-                    }
-                });
-            };
-            StuckerBoxView.prototype.InnerRefreshLeftBottom = function () {
-                var _this = this;
-                var maxRight = this.Size.Width - this._margin;
-                var currentLeft = this._margin;
-                var currentBottom = this.Size.Height - this._margin;
-                var rowMaxHeight = 0;
-                var rowElemCount = 0;
-                _.each(this.Children, function (view) {
-                    var isOverWidth = (maxRight < (currentLeft + view.Size.Width));
-                    if (isOverWidth && rowElemCount !== 0) {
-                        // 表示幅を超え、かつ既にその行に要素が出力されているとき
-                        // 改行後に要素を出力する。
-                        currentBottom -= rowMaxHeight + _this._margin;
-                        currentLeft = _this._margin;
-                        rowElemCount = 0;
-                        rowMaxHeight = 0;
-                    }
-                    rowElemCount++;
-                    view.Position.Left = currentLeft;
-                    view.Position.Top = currentBottom - view.Size.Height;
-                    if (rowMaxHeight < view.Size.Height)
-                        rowMaxHeight = view.Size.Height;
-                    currentLeft += view.Size.Width + _this._margin;
-                    if (isOverWidth && rowElemCount === 0) {
-                        // 表示幅を超え、かつその行先頭要素のとき
-                        // 要素を出力したあとで改行する。
-                        currentBottom -= rowMaxHeight + _this._margin;
-                        currentLeft = _this._margin;
-                        rowElemCount = 0;
-                        rowMaxHeight = 0;
-                    }
-                });
-            };
-            StuckerBoxView.prototype.InnerRefreshRightBottom = function () {
-                var _this = this;
-                var minLeft = this._margin;
-                var currentRight = this.Size.Width - this._margin;
-                var currentBottom = this.Size.Height - this._margin;
-                var rowMaxHeight = 0;
-                var rowElemCount = 0;
-                _.each(this.Children, function (view) {
-                    var isOverWidth = ((currentRight - view.Size.Width) < minLeft);
-                    if (isOverWidth && rowElemCount !== 0) {
-                        // 表示幅を超え、かつ既にその行に要素が出力されているとき
-                        // 改行後に要素を出力する。
-                        currentBottom -= rowMaxHeight + _this._margin;
-                        currentRight = _this.Size.Width - _this._margin;
-                        rowElemCount = 0;
-                        rowMaxHeight = 0;
-                    }
-                    rowElemCount++;
-                    view.Position.Left = currentRight - view.Size.Width;
-                    view.Position.Top = currentBottom - view.Size.Height;
-                    if (rowMaxHeight < view.Size.Height)
-                        rowMaxHeight = view.Size.Height;
-                    currentRight -= view.Size.Width + _this._margin;
-                    if (isOverWidth && rowElemCount === 0) {
-                        // 表示幅を超え、かつその行先頭要素のとき
-                        // 要素を出力したあとで改行する。
-                        currentBottom -= rowMaxHeight + _this._margin;
-                        currentRight = _this.Size.Width - _this._margin;
-                        rowElemCount = 0;
-                        rowMaxHeight = 0;
-                    }
-                });
-            };
-            StuckerBoxView.prototype.Dispose = function () {
-                _super.prototype.Dispose.call(this);
-                this._margin = null;
-            };
-            return StuckerBoxView;
-        }(Views.BoxView));
-        Views.StuckerBoxView = StuckerBoxView;
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../Events/ViewEvents.ts" />
-/// <reference path="../../Util/Dump.ts" />
-/// <reference path="../../Util/Number.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var Property;
-        (function (Property) {
-            /**
-             * @description 基点、スタッキング時の基準点
-             */
-            var ReferencePoint;
-            (function (ReferencePoint) {
-                ReferencePoint[ReferencePoint["LeftTop"] = 1] = "LeftTop";
-                ReferencePoint[ReferencePoint["RightTop"] = 2] = "RightTop";
-                ReferencePoint[ReferencePoint["LeftBottom"] = 3] = "LeftBottom";
-                ReferencePoint[ReferencePoint["RightBottom"] = 4] = "RightBottom";
-            })(ReferencePoint = Property.ReferencePoint || (Property.ReferencePoint = {}));
-        })(Property = Views.Property || (Views.Property = {}));
     })(Views = Fw.Views || (Fw.Views = {}));
 })(Fw || (Fw = {}));
 //# sourceMappingURL=tsout.js.map

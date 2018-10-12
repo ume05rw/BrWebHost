@@ -252,10 +252,19 @@ namespace Fw.Views {
         }
 
         public SetTransAnimation(enable: boolean): void {
-            if (enable && !this.Elem.hasClass('TransAnimation'))
-                this.Elem.addClass('TransAnimation');
-            else if (!enable && this.Elem.hasClass('TransAnimation'))
-                this.Elem.removeClass('TransAnimation');
+            if (enable) {
+                // アニメーション有効化
+                if (!this.Elem.hasClass('TransAnimation'))
+                    this.Elem.addClass('TransAnimation');
+                if (this.Elem.hasClass('NoTransAnimation'))
+                    this.Elem.removeClass('NoTransAnimation');
+            } else {
+                // アニメーション無効化
+                if (this.Elem.hasClass('TransAnimation'))
+                    this.Elem.removeClass('TransAnimation');
+                if (!this.Elem.hasClass('NoTransAnimation'))
+                    this.Elem.addClass('NoTransAnimation');
+            }
         }
 
         public HasTransAnimation(): boolean {

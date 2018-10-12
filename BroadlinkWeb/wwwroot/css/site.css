@@ -52,6 +52,10 @@ div.IController .IView {
 div.IController .IView.TransAnimation {
     transition: all 0.15s ease-in-out;
 }
+/* Viewアニメーションを停止する */
+div.IController .IView.NoTransAnimation {
+    transition: none !important;
+}
 
 div.IController .IView.PageView {
     z-index: 1;

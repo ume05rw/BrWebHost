@@ -25,8 +25,12 @@ namespace App.Controllers {
         private Init(): void {
             this.SetClassName('MainController');
 
+            const sub3Ctr = new Sub3Controller('Sub3');
+            Manager.Instance.Add(sub3Ctr);
+
             this.View = new Pages.MainPageView();
             const page = this.View as Pages.MainPageView;
+
 
             page.BtnGoSub1.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
                 // イベント通知でなく、参照保持でよいか？
@@ -36,6 +40,11 @@ namespace App.Controllers {
             page.BtnGoSub2.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
                 // イベント通知でなく、参照保持でよいか？
                 Manager.Instance.Show("Sub2");
+            });
+
+            page.BtnGoSub3.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
+                // イベント通知でなく、参照保持でよいか？
+                Manager.Instance.Show("Sub3");
             });
 
             page.BtnGoDynamic.AddEventListener(Events.ControlViewEvents.SingleClick, () => {

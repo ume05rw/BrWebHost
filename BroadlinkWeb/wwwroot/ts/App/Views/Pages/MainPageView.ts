@@ -17,6 +17,7 @@ namespace App.Views.Pages {
         public Header: Views.BoxView;
         public BtnGoSub1: Views.ButtonView;
         public BtnGoSub2: Views.ButtonView;
+        public BtnGoSub3: Views.ButtonView;
         public BtnGoDynamic: Views.ButtonView;
 
 
@@ -55,11 +56,17 @@ namespace App.Views.Pages {
             this.BtnGoSub2.SetLeftTop(10, 120);
             this.Add(this.BtnGoSub2);
 
+            this.BtnGoSub3 = new Fw.Views.ButtonView();
+            this.BtnGoSub3.Label = 'Show Sub3';
+            this.BtnGoSub3.SetSize(80, 30);
+            this.BtnGoSub3.SetLeftTop(10, 170);
+            this.Add(this.BtnGoSub3);
+
             
             this.BtnGoDynamic = new Fw.Views.ButtonView();
             this.BtnGoDynamic.Label = 'Show LayoutCheck';
             this.BtnGoDynamic.SetSize(80, 30);
-            this.BtnGoDynamic.SetLeftTop(10, 170);
+            this.BtnGoDynamic.SetLeftTop(10, 220);
             this.Add(this.BtnGoDynamic);
         }
     }

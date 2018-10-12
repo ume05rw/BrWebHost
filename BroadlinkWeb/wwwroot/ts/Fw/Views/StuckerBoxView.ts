@@ -35,11 +35,18 @@ namespace Fw.Views {
             this.Refresh();
         }
 
+        private _backupView: IView;
+        private _dummyView: IView;
+        private _isChildRelocation: boolean = false;
+        private _isChildDragging: boolean = false;
+        private _relocationTargetView: IView = null;
+        private _dragStartMousePosition: Property.Position = new Property.Position();
+        private _dragStartViewPosition: Property.Position = new Property.Position();
 
         protected Init(): void {
             super.Init();
 
-            this.SetClassName('ContainerBoxView');
+            this.SetClassName('StuckerBoxView');
             this.Elem.addClass(this.ClassName);
 
             this._margin = 10;
@@ -49,13 +56,21 @@ namespace Fw.Views {
             this._dummyView = new Fw.Views.BoxView();
             this._dummyView.Elem.addClass('Shadow');
             this._dummyView.Position.Policy = Property.PositionPolicy.LeftTop;
+
+            // 下に定義済みのメソッドをthisバインドしておく。
+            this.OnSingleClick = this.OnSingleClick.bind(this);
+            this.OnChildMouseDown = this.OnChildMouseDown.bind(this);
+            this.OnChildMouseMove = this.OnChildMouseMove.bind(this);
+            this.OnChildMouseUp = this.OnChildMouseUp.bind(this);
+
+            this.Elem.on('click touchend', this.OnSingleClick);
         }
 
         public Add(view: IView): void {
             view.Position.Policy = Property.PositionPolicy.LeftTop;
             super.Add(view);
 
-            view.AddEventListener(ControlViewEvents.LongClick, this.OnChildLongClick);
+            view.AddEventListener(ControlViewEvents.LongClick, this.OnChildLongClick, this);
             view.Elem.on('touchstart mousedown', this.OnChildMouseDown);
             view.Elem.on('touchmove mousemove', this.OnChildMouseMove);
             view.Elem.on('touchend mouseup', this.OnChildMouseUp);
@@ -70,28 +85,24 @@ namespace Fw.Views {
             view.Elem.off('touchend mouseup', this.OnChildMouseUp);
         }
 
-        private _backupView: IView;
-        private _dummyView: IView;
-        private _isChildRelocation: boolean = false;
-        private _isChildDragging: boolean = false;
-        private _relocationTargetView: IView = null;
-        private _dragStartMousePosition: Property.Position = new Property.Position();
-        private _dragStartViewPosition: Property.Position = new Property.Position();
-
         /**
          * 子要素がロングクリックされたとき
          * @param e1
          */
-        private OnChildLongClick(e1: JQueryEventObject): void {
+        private OnChildLongClick(e: JQueryEventObject): void {
+            //Dump.Log(`${this.ClassName}.OnChildLongClick`);
             this.StartRelocation();
         }
 
         public StartRelocation(): void {
+            //Dump.Log(`${this.ClassName}.StartRelocation`);
             this._isChildRelocation = true;
             Fw.Root.Instance.SetTextSelection(false);
 
             _.each(this.Children, (v: IView) => {
                 v.Opacity = 0.7;
+                v.SuppressEvent(ControlViewEvents.SingleClick);
+                v.SuppressEvent(ControlViewEvents.LongClick);
             });
 
             this.Refresh();
@@ -101,22 +112,29 @@ namespace Fw.Views {
          * スタッカーBox自身がクリックされたとき
          * @param e1
          */
-        private OnSingleClick(e1: JQueryEventObject): void {
-            const logic = (e2: JQueryEventObject) => {
-                this.CommitRelocation();
-            };
-            logic(e1);
+        private OnSingleClick(e: JQueryEventObject): void {
+            if (e.eventPhase !== 2)
+                return;
+
+            //Dump.Log(`${this.ClassName}.OnSingleClick`);
+            this.CommitRelocation();
         }
 
         public CommitRelocation(): void {
-            if (this._relocationTargetView)
+            //Dump.Log(`${this.ClassName}.CommitRelocation`);
+            if (this._relocationTargetView) {
                 this.RestoreDummyView();
+                this._relocationTargetView.SetTransAnimation(true);
+                this._relocationTargetView = null;
+            }
 
             this._isChildRelocation = false;
             Fw.Root.Instance.SetTextSelection(true);
 
             _.each(this.Children, (v: IView) => {
                 v.Opacity = 1.0;
+                v.ResumeEvent(ControlViewEvents.SingleClick);
+                v.ResumeEvent(ControlViewEvents.LongClick);
             });
 
             this.Refresh();
@@ -126,81 +144,85 @@ namespace Fw.Views {
          * 子要素上でマウスボタンが押されたとき
          * @param e
          */
-        private OnChildMouseDown(e1: JQueryEventObject): void {
-            const logic = (e2: JQueryEventObject) => {
-                if (!this._isChildRelocation)
-                    return;
+        private OnChildMouseDown(e: JQueryEventObject): void {
+            //Dump.Log(`${this.ClassName}.OnChildMouseDown`);
+            if (!this._isChildRelocation)
+                return;
 
-                const view = this.GetNearestByPosition(e2.clientX, e2.clientY);
-                if (view) {
-                    this._isChildDragging = true;
-                    this._relocationTargetView = view;
-                    this._dragStartMousePosition.X = e2.clientX;
-                    this._dragStartMousePosition.Y = e2.clientY;
-                    this._dragStartViewPosition.X = view.Position.Left;
-                    this._dragStartViewPosition.Y = view.Position.Top;
-                    this.SetDummyView(view);
-                }
-            };
-            logic(e1);
+            const rect = this.Dom.getBoundingClientRect();
+            const innerLeft = e.pageX - rect.left;
+            const innerTop = e.pageY - rect.top;
+            const view = this.GetNearestByPosition(innerLeft, innerTop);
+            if (view) {
+                //Dump.Log('OnChildMouseDown - view found: ' + (view as ButtonView).Label);
+                this._isChildDragging = true;
+                this._relocationTargetView = view;
+                this._dragStartMousePosition.X = e.pageX;
+                this._dragStartMousePosition.Y = e.pageY;
+                this._dragStartViewPosition.X = view.Position.Left;
+                this._dragStartViewPosition.Y = view.Position.Top;
+                this.SetDummyView(view);
+                view.SetTransAnimation(false);
+            }
         }
 
         /**
          * 子要素上でマウスが動いたとき
          * @param e1
          */
-        private OnChildMouseMove(e1: JQueryEventObject): void {
-            const logic = (e2: JQueryEventObject) => {
-                if (!this._isChildRelocation || !this._isChildDragging)
-                    return;
+        private OnChildMouseMove(e: JQueryEventObject): void {
+            
+            if (!this._isChildRelocation || !this._isChildDragging)
+                return;
 
-                const view = this._relocationTargetView;
-                const addX = e2.clientX - this._dragStartMousePosition.X;
-                const addY = e2.clientY - this._dragStartMousePosition.Y;
+            //Dump.Log(`${this.ClassName}.OnChildMouseMove`);
 
-                view.Position.Left = this._dragStartViewPosition.X + addX;
-                view.Position.Top = this._dragStartViewPosition.Y + addY;
+            const view = this._relocationTargetView;
+            const addX = e.pageX - this._dragStartMousePosition.X;
+            const addY = e.pageY - this._dragStartMousePosition.Y;
 
-                const replaceView = this.GetNearestByView(view);
-                if (replaceView !== null && replaceView !== this._dummyView) {
-                    this.MoveInFronOf(replaceView, this._dummyView);
-                }
-            };
-            logic(e1);
+            view.Position.Left = this._dragStartViewPosition.X + addX;
+            view.Position.Top = this._dragStartViewPosition.Y + addY;
+
+            const replaceView = this.GetNearestByView(view);
+            if (replaceView !== null && replaceView !== this._dummyView) {
+                this.Swap(replaceView, this._dummyView);
+            }
         }
 
         /**
          * 子要素上でマウスボタンが離れたとき
-         * @param e1
+         * @param e
          */
-        private OnChildMouseUp(e1: JQueryEventObject): void {
-            const logic = (e2: JQueryEventObject) => {
-                if (!this._isChildRelocation) {
-                    this._isChildDragging = false;
-                } else {
-                    this._isChildDragging = false;
-                    this.RestoreDummyView();
+        private OnChildMouseUp(e: JQueryEventObject): void {
+            //Dump.Log(`${this.ClassName}.OnChildMouseUp`);
+            if (!this._isChildRelocation) {
+                this._isChildDragging = false;
+            } else {
+                this._isChildDragging = false;
+
+                if (this._relocationTargetView) {
+                    this._relocationTargetView.SetTransAnimation(true);
                     this._relocationTargetView = null;
                 }
-            };
-            logic(e1);
+                
+                this.RestoreDummyView();
+                this.Refresh();
+            }
         }
 
+        private Swap(view1: IView, view2: IView): void {
+            const view1Index = this.Children.indexOf(view1);
+            const view2Index = this.Children.indexOf(view2);
 
-        private MoveInFronOf(baseView: IView, moveView: IView): void {
-            let baseIndex = this.Children.indexOf(baseView);
-            const moveIndex = this.Children.indexOf(moveView);
+            if (view1Index < 0)
+                throw new Error('Not contained view1');
 
-            if (baseIndex < 0)
-                throw new Error('Not contained baseView');
+            if (view2Index < 0)
+                throw new Error('Not contained view2');
 
-            if (moveIndex < 0)
-                throw new Error('Not contained moveView');
-
-            this.Children.splice(moveIndex, 1);
-
-            baseIndex = this.Children.indexOf(baseView);
-            this.Children.splice(baseIndex, 0, moveView);
+            this.Children[view1Index] = view2;
+            this.Children[view2Index] = view1;
         }
 
         private GetNearestByView(view: IView): IView {
@@ -231,8 +253,9 @@ namespace Fw.Views {
                 if (v === this._dummyView)
                     return;
 
-                const tmpDiff = Math.abs(v.Position.X - x)
-                    + Math.abs(v.Position.Y - y);
+                const left = v.Position.Left + (v.Size.Width / 2);
+                const top = v.Position.Top + (v.Size.Height / 2);
+                const tmpDiff = Math.abs(left - x) + Math.abs(top - y);
 
                 if (tmpDiff < diff) {
                     diff = tmpDiff;
@@ -255,6 +278,7 @@ namespace Fw.Views {
                     this._dummyView.SetSize(v.Size.Width, v.Size.Height);
                 }
             });
+            this.Elem.append(this._dummyView.Elem);
         }
 
         private RestoreDummyView(): void {
@@ -266,6 +290,7 @@ namespace Fw.Views {
                     this.Children[index] = this._backupView;
             });
             this._backupView = null;
+            this._dummyView.Elem.detach();
         }
 
         protected InnerRefresh(): void {
@@ -289,7 +314,7 @@ namespace Fw.Views {
                         throw new Error(`ReferencePoint not found: ${this._referencePoint}`);
                 }
 
-                this.InnerRefreshLeftTop();
+                super.InnerRefresh();
 
             } catch (e) {
                 Dump.ErrorLog(e);
@@ -459,6 +484,8 @@ namespace Fw.Views {
         }
 
         public Dispose(): void {
+            this.Elem.off('click touchend', this.OnSingleClick);
+
             super.Dispose();
 
             this._margin = null;

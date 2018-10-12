@@ -43,11 +43,18 @@ namespace Fw {
             this._elem = jqueryElem;
         }
 
-        public AddEventListener(name: string, handler: (e: JQueryEventObject) => void): void {
+        public AddEventListener(
+            name: string,
+            handler: (e: JQueryEventObject) => void,
+            bindObject: IObject = null
+        ): void {
+            if (!bindObject)
+                bindObject = this;
+
             const eRef = new EventReference();
             eRef.Name = name;
             eRef.Handler = handler;
-            eRef.BindedHandler = handler.bind(this);
+            eRef.BindedHandler = handler.bind(bindObject);
 
             this._eventHandlers.push(eRef);
             this.Elem.on(name, eRef.BindedHandler);
