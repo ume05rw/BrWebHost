@@ -725,6 +725,7 @@ declare namespace Fw.Views {
 declare namespace Fw.Views {
     import Property = Fw.Views.Property;
     class SlidableBoxView extends BoxView {
+        readonly Children: Array<IView>;
         private _direction;
         readonly Direction: Property.Direction;
         private _innerBackgroundColor;
@@ -743,6 +744,8 @@ declare namespace Fw.Views {
         protected Init(): void;
         private InitView;
         private AdjustSlidePosition;
+        Add(view: IView): void;
+        Remove(view: IView): void;
         protected InnerRefresh(): void;
         Dispose(): void;
     }
@@ -750,20 +753,27 @@ declare namespace Fw.Views {
 declare namespace Fw.Views {
     import Property = Fw.Views.Property;
     class StuckerBoxView extends BoxView {
+        readonly Children: Array<IView>;
         private _margin;
         Margin: number;
         private _referencePoint;
         ReferencePoint: Property.ReferencePoint;
+        private _innerBox;
+        private _scrollMargin;
         private _backupView;
         private _dummyView;
         private _isChildRelocation;
         private _isChildDragging;
+        private _isInnerDragging;
         private _relocationTargetView;
         private _dragStartMousePosition;
         private _dragStartViewPosition;
         protected Init(): void;
         Add(view: IView): void;
         Remove(view: IView): void;
+        private OnInnerMouseDown;
+        private OnInnerMouseMove;
+        private OnInnerMouseUp;
         /**
          * 子要素がロングクリックされたとき
          * @param e1

@@ -2433,44 +2433,39 @@ var App;
                     this.Add(this.Stucker);
                     var btn1 = new Views.ButtonView();
                     btn1.SetSize(100, 120);
-                    btn1.Label = 'btn1';
+                    btn1.Label = 'btn1: LeftTop';
                     this.Stucker.Add(btn1);
                     btn1.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, function () {
                         _this.Stucker.ReferencePoint = Property.ReferencePoint.LeftTop;
                     });
                     var btn2 = new Views.ButtonView();
                     btn2.SetSize(100, 120);
-                    btn2.Label = 'btn2';
+                    btn2.Label = 'btn2: RightTop';
                     this.Stucker.Add(btn2);
                     btn2.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, function () {
                         _this.Stucker.ReferencePoint = Property.ReferencePoint.RightTop;
                     });
                     var btn3 = new Views.ButtonView();
                     btn3.SetSize(100, 120);
-                    btn3.Label = 'btn3';
+                    btn3.Label = 'btn3: LeftBottom';
                     this.Stucker.Add(btn3);
                     btn3.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, function () {
                         _this.Stucker.ReferencePoint = Property.ReferencePoint.LeftBottom;
                     });
                     var btn4 = new Views.ButtonView();
                     btn4.SetSize(100, 120);
-                    btn4.Label = 'btn4';
+                    btn4.Label = 'btn4: RightBottom';
                     this.Stucker.Add(btn4);
                     btn4.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, function () {
                         _this.Stucker.ReferencePoint = Property.ReferencePoint.RightBottom;
                     });
-                    var btn5 = new Views.ButtonView();
-                    btn5.SetSize(100, 120);
-                    btn5.Label = 'btn5';
-                    this.Stucker.Add(btn5);
-                    var btn6 = new Views.ButtonView();
-                    btn6.SetSize(100, 120);
-                    btn6.Label = 'btn6';
-                    this.Stucker.Add(btn6);
-                    var btn7 = new Views.ButtonView();
-                    btn7.SetSize(100, 120);
-                    btn7.Label = 'btn7';
-                    this.Stucker.Add(btn7);
+                    var idx = 5;
+                    for (var i = 0; i < 20; i++) {
+                        var btn = new Views.ButtonView();
+                        btn.SetSize(100, 120);
+                        btn.Label = "btn" + (idx + i);
+                        this.Stucker.Add(btn);
+                    }
                 };
                 return Sub3PageView;
             }(Fw.Views.PageView));
@@ -3936,6 +3931,13 @@ var Fw;
                     : Property.Direction.Vertical;
                 return _this;
             }
+            Object.defineProperty(SlidableBoxView.prototype, "Children", {
+                get: function () {
+                    return this._innerBox.Children;
+                },
+                enumerable: true,
+                configurable: true
+            });
             Object.defineProperty(SlidableBoxView.prototype, "Direction", {
                 get: function () {
                     return this._direction;
@@ -3977,7 +3979,8 @@ var Fw;
                 this._innerBox = new Views.BoxView();
                 this._innerBox.HasBorder = false;
                 this._innerBox.SetTransAnimation(false);
-                this.Add(this._innerBox);
+                this.Elem.append(this._innerBox.Elem);
+                //super.Add(this._innerBox); // Addメソッドでthis.Childrenを呼ぶため循環参照になる。
                 // コンストラクタ完了後に実行。
                 // コンストラクタ引数で取得したDirectionがセットされていないため。
                 _.defer(function () {
@@ -3985,12 +3988,12 @@ var Fw;
                     _this._positionBarMax.Position.Policy = Property.PositionPolicy.LeftTop;
                     _this._positionBarMax.SetTransAnimation(false);
                     _this._positionBarMax.Color = '#888888';
-                    _this.Add(_this._positionBarMax);
+                    _super.prototype.Add.call(_this, _this._positionBarMax);
                     _this._positionBarCurrent = new Views.LineView(_this._direction);
                     _this._positionBarCurrent.Position.Policy = Property.PositionPolicy.LeftTop;
                     _this._positionBarCurrent.SetTransAnimation(false);
                     _this._positionBarCurrent.Color = '#EEEEEE';
-                    _this.Add(_this._positionBarCurrent);
+                    _super.prototype.Add.call(_this, _this._positionBarCurrent);
                 });
                 this.AddEventListener(Events.Initialized, function () {
                     _this.InitView();
@@ -4107,6 +4110,12 @@ var Fw;
                 this._spcvMouseSuppressor = true;
                 animator.Invoke(500);
             };
+            SlidableBoxView.prototype.Add = function (view) {
+                this._innerBox.Add(view);
+            };
+            SlidableBoxView.prototype.Remove = function (view) {
+                this._innerBox.Remove(view);
+            };
             SlidableBoxView.prototype.InnerRefresh = function () {
                 try {
                     this.SuppressLayout();
@@ -4170,6 +4179,9 @@ var Fw;
                 }
             };
             SlidableBoxView.prototype.Dispose = function () {
+                this._innerBox.Elem.off('touchstart mousedown');
+                this._innerBox.Elem.off('touchmove mousemove');
+                this._innerBox.Elem.off('touchend mouseup mouseout');
                 _super.prototype.Dispose.call(this);
                 this._innerBackgroundColor = null;
                 this._innerLength = null;
@@ -4207,13 +4219,22 @@ var Fw;
             __extends(StuckerBoxView, _super);
             function StuckerBoxView() {
                 var _this = _super !== null && _super.apply(this, arguments) || this;
+                _this._scrollMargin = 0;
                 _this._isChildRelocation = false;
                 _this._isChildDragging = false;
+                _this._isInnerDragging = false;
                 _this._relocationTargetView = null;
                 _this._dragStartMousePosition = new Property.Position();
                 _this._dragStartViewPosition = new Property.Position();
                 return _this;
             }
+            Object.defineProperty(StuckerBoxView.prototype, "Children", {
+                get: function () {
+                    return this._innerBox.Children;
+                },
+                enumerable: true,
+                configurable: true
+            });
             Object.defineProperty(StuckerBoxView.prototype, "Margin", {
                 get: function () {
                     return this._margin;
@@ -4242,6 +4263,14 @@ var Fw;
                 this.Elem.addClass(this.ClassName);
                 this._margin = 10;
                 this._referencePoint = Property.ReferencePoint.LeftTop;
+                this._scrollMargin = 0;
+                this._innerBox = new Views.BoxView();
+                this._innerBox.HasBorder = false;
+                this._innerBox.SetTransAnimation(false);
+                this._innerBox.SetLeftTop(0, 0);
+                this._innerBox.BackgroundColor = 'transparent';
+                this.Elem.append(this._innerBox.Elem);
+                //super.Add(this._innerBox); // Addメソッドでthis.Childrenを呼ぶため循環参照になる。
                 this._backupView = null;
                 this._dummyView = new Fw.Views.BoxView();
                 this._dummyView.Elem.addClass('Shadow');
@@ -4255,19 +4284,36 @@ var Fw;
             };
             StuckerBoxView.prototype.Add = function (view) {
                 view.Position.Policy = Property.PositionPolicy.LeftTop;
-                _super.prototype.Add.call(this, view);
+                this._innerBox.Add(view);
                 view.AddEventListener(ControlViewEvents.LongClick, this.OnChildLongClick, this);
                 view.Elem.on('touchstart mousedown', this.OnChildMouseDown);
                 view.Elem.on('touchmove mousemove', this.OnChildMouseMove);
                 view.Elem.on('touchend mouseup', this.OnChildMouseUp);
             };
             StuckerBoxView.prototype.Remove = function (view) {
-                _super.prototype.Remove.call(this, view);
+                this._innerBox.Remove(view);
                 view.RemoveEventListener(ControlViewEvents.LongClick, this.OnChildLongClick);
                 view.Elem.off('touchstart mousedown', this.OnChildMouseDown);
                 view.Elem.off('touchmove mousemove', this.OnChildMouseMove);
                 view.Elem.off('touchend mouseup', this.OnChildMouseUp);
             };
+            // #region "上下スクロール"
+            StuckerBoxView.prototype.OnInnerMouseDown = function (e) {
+                if (this._isChildRelocation)
+                    return;
+                this._isInnerDragging = true;
+            };
+            StuckerBoxView.prototype.OnInnerMouseMove = function (e) {
+                if (this._isChildRelocation)
+                    return;
+            };
+            StuckerBoxView.prototype.OnInnerMouseUp = function (e) {
+                if (this._isChildRelocation)
+                    return;
+                this._isInnerDragging = false;
+            };
+            // #endregion "上下スクロール"
+            // #region "子View再配置"
             /**
              * 子要素がロングクリックされたとき
              * @param e1
@@ -4280,7 +4326,7 @@ var Fw;
                 //Dump.Log(`${this.ClassName}.StartRelocation`);
                 this._isChildRelocation = true;
                 Fw.Root.Instance.SetTextSelection(false);
-                _.each(this.Children, function (v) {
+                _.each(this._innerBox.Children, function (v) {
                     v.Opacity = 0.7;
                     v.SuppressEvent(ControlViewEvents.SingleClick);
                     v.SuppressEvent(ControlViewEvents.LongClick);
@@ -4295,7 +4341,10 @@ var Fw;
                 if (e.eventPhase !== 2)
                     return;
                 //Dump.Log(`${this.ClassName}.OnSingleClick`);
-                this.CommitRelocation();
+                if (this._isChildRelocation) {
+                    // 子要素再配置モードのとき、配置を確定させる。
+                    this.CommitRelocation();
+                }
             };
             StuckerBoxView.prototype.CommitRelocation = function () {
                 //Dump.Log(`${this.ClassName}.CommitRelocation`);
@@ -4306,7 +4355,7 @@ var Fw;
                 }
                 this._isChildRelocation = false;
                 Fw.Root.Instance.SetTextSelection(true);
-                _.each(this.Children, function (v) {
+                _.each(this._innerBox.Children, function (v) {
                     v.Opacity = 1.0;
                     v.ResumeEvent(ControlViewEvents.SingleClick);
                     v.ResumeEvent(ControlViewEvents.LongClick);
@@ -4375,19 +4424,19 @@ var Fw;
                 }
             };
             StuckerBoxView.prototype.Swap = function (view1, view2) {
-                var view1Index = this.Children.indexOf(view1);
-                var view2Index = this.Children.indexOf(view2);
+                var view1Index = this._innerBox.Children.indexOf(view1);
+                var view2Index = this._innerBox.Children.indexOf(view2);
                 if (view1Index < 0)
                     throw new Error('Not contained view1');
                 if (view2Index < 0)
                     throw new Error('Not contained view2');
-                this.Children[view1Index] = view2;
-                this.Children[view2Index] = view1;
+                this._innerBox.Children[view1Index] = view2;
+                this._innerBox.Children[view2Index] = view1;
             };
             StuckerBoxView.prototype.GetNearestByView = function (view) {
                 var diff = Number.MAX_VALUE;
                 var result = null;
-                _.each(this.Children, function (v) {
+                _.each(this._innerBox.Children, function (v) {
                     // 渡されたViewは対象外
                     if (v === view)
                         return;
@@ -4404,7 +4453,7 @@ var Fw;
                 var _this = this;
                 var diff = Number.MAX_VALUE;
                 var result = null;
-                _.each(this.Children, function (v) {
+                _.each(this._innerBox.Children, function (v) {
                     // ダミーViewは対象外
                     if (v === _this._dummyView)
                         return;
@@ -4422,42 +4471,69 @@ var Fw;
                 var _this = this;
                 if (this._backupView)
                     this.RestoreDummyView();
-                _.each(this.Children, function (v, index) {
+                _.each(this._innerBox.Children, function (v, index) {
                     if (v === view) {
                         _this._backupView = v;
-                        _this.Children[index] = _this._dummyView;
+                        _this._innerBox.Children[index] = _this._dummyView;
                         _this._dummyView.Color = v.Color;
                         _this._dummyView.SetSize(v.Size.Width, v.Size.Height);
                     }
                 });
-                this.Elem.append(this._dummyView.Elem);
+                this._innerBox.Elem.append(this._dummyView.Elem);
             };
             StuckerBoxView.prototype.RestoreDummyView = function () {
                 var _this = this;
                 if (!this._backupView)
                     return;
-                _.each(this.Children, function (v, index) {
+                _.each(this._innerBox.Children, function (v, index) {
                     if (v === _this._dummyView)
-                        _this.Children[index] = _this._backupView;
+                        _this._innerBox.Children[index] = _this._backupView;
                 });
                 this._backupView = null;
                 this._dummyView.Elem.detach();
             };
+            // #endregion "子View再配置"
             StuckerBoxView.prototype.InnerRefresh = function () {
                 try {
                     this.SuppressLayout();
+                    this._innerBox.SuppressLayout();
+                    _.each(this._innerBox.Children, function (view) {
+                        view.SuppressLayout();
+                    });
+                    this._innerBox.Size.Width = this.Size.Width;
+                    this._innerBox.Size.Height = this.Size.Height;
+                    // 先に描画領域を計算し、this._scrollMargin を得る。
                     switch (this._referencePoint) {
                         case Property.ReferencePoint.LeftTop:
-                            this.InnerRefreshLeftTop();
+                            this.InnerRefreshLeftTop(true);
                             break;
                         case Property.ReferencePoint.RightTop:
-                            this.InnerRefreshRightTop();
+                            this.InnerRefreshRightTop(true);
                             break;
                         case Property.ReferencePoint.LeftBottom:
-                            this.InnerRefreshLeftBottom();
+                            this.InnerRefreshLeftBottom(true);
                             break;
                         case Property.ReferencePoint.RightBottom:
-                            this.InnerRefreshRightBottom();
+                            this.InnerRefreshRightBottom(true);
+                            break;
+                        default:
+                            throw new Error("ReferencePoint not found: " + this._referencePoint);
+                    }
+                    // this._scrollMargin の分だけ、内部Viewを広げる。
+                    this._innerBox.Size.Height = this.Size.Height + Math.abs(this._scrollMargin);
+                    // 子Viewを配置する。
+                    switch (this._referencePoint) {
+                        case Property.ReferencePoint.LeftTop:
+                            this.InnerRefreshLeftTop(false);
+                            break;
+                        case Property.ReferencePoint.RightTop:
+                            this.InnerRefreshRightTop(false);
+                            break;
+                        case Property.ReferencePoint.LeftBottom:
+                            this.InnerRefreshLeftBottom(false);
+                            break;
+                        case Property.ReferencePoint.RightBottom:
+                            this.InnerRefreshRightBottom(false);
                             break;
                         default:
                             throw new Error("ReferencePoint not found: " + this._referencePoint);
@@ -4469,16 +4545,21 @@ var Fw;
                 }
                 finally {
                     this.ResumeLayout();
+                    this._innerBox.ResumeLayout();
+                    this._innerBox.Refresh();
+                    _.each(this._innerBox.Children, function (view) {
+                        view.ResumeLayout();
+                    });
                 }
             };
-            StuckerBoxView.prototype.InnerRefreshLeftTop = function () {
+            StuckerBoxView.prototype.InnerRefreshLeftTop = function (calcScrollMargin) {
                 var _this = this;
                 var maxRight = this.Size.Width - this._margin;
                 var currentLeft = this._margin;
                 var currentTop = this._margin;
                 var rowMaxHeight = 0;
                 var rowElemCount = 0;
-                _.each(this.Children, function (view) {
+                _.each(this._innerBox.Children, function (view) {
                     var isOverWidth = (maxRight < (currentLeft + view.Size.Width));
                     if (isOverWidth && rowElemCount !== 0) {
                         // 表示幅を超え、かつ既にその行に要素が出力されているとき
@@ -4489,8 +4570,10 @@ var Fw;
                         rowMaxHeight = 0;
                     }
                     rowElemCount++;
-                    view.Position.Left = currentLeft;
-                    view.Position.Top = currentTop;
+                    if (!calcScrollMargin) {
+                        view.Position.Left = currentLeft;
+                        view.Position.Top = currentTop;
+                    }
                     if (rowMaxHeight < view.Size.Height)
                         rowMaxHeight = view.Size.Height;
                     currentLeft += view.Size.Width + _this._margin;
@@ -4503,15 +4586,24 @@ var Fw;
                         rowMaxHeight = 0;
                     }
                 });
+                if (calcScrollMargin) {
+                    var maxBotton = currentTop + rowMaxHeight + this._margin;
+                    if (this.Size.Height < maxBotton) {
+                        this._scrollMargin = maxBotton - this.Size.Height;
+                    }
+                    else {
+                        this._scrollMargin = 0;
+                    }
+                }
             };
-            StuckerBoxView.prototype.InnerRefreshRightTop = function () {
+            StuckerBoxView.prototype.InnerRefreshRightTop = function (calcScrollMargin) {
                 var _this = this;
                 var minLeft = this._margin;
                 var currentRight = this.Size.Width - this._margin;
                 var currentTop = this._margin;
                 var rowMaxHeight = 0;
                 var rowElemCount = 0;
-                _.each(this.Children, function (view) {
+                _.each(this._innerBox.Children, function (view) {
                     var isOverWidth = ((currentRight - view.Size.Width) < minLeft);
                     if (isOverWidth && rowElemCount !== 0) {
                         // 表示幅を超え、かつ既にその行に要素が出力されているとき
@@ -4522,8 +4614,10 @@ var Fw;
                         rowMaxHeight = 0;
                     }
                     rowElemCount++;
-                    view.Position.Left = currentRight - view.Size.Width;
-                    view.Position.Top = currentTop;
+                    if (!calcScrollMargin) {
+                        view.Position.Left = currentRight - view.Size.Width;
+                        view.Position.Top = currentTop;
+                    }
                     if (rowMaxHeight < view.Size.Height)
                         rowMaxHeight = view.Size.Height;
                     currentRight -= view.Size.Width + _this._margin;
@@ -4536,15 +4630,26 @@ var Fw;
                         rowMaxHeight = 0;
                     }
                 });
+                if (calcScrollMargin) {
+                    var maxBotton = currentTop + rowMaxHeight + this._margin;
+                    if (this.Size.Height < maxBotton) {
+                        this._scrollMargin = maxBotton - this.Size.Height;
+                    }
+                    else {
+                        this._scrollMargin = 0;
+                    }
+                }
             };
-            StuckerBoxView.prototype.InnerRefreshLeftBottom = function () {
+            StuckerBoxView.prototype.InnerRefreshLeftBottom = function (calcScrollMargin) {
                 var _this = this;
                 var maxRight = this.Size.Width - this._margin;
                 var currentLeft = this._margin;
-                var currentBottom = this.Size.Height - this._margin;
+                var currentBottom = (calcScrollMargin)
+                    ? this.Size.Height - this._margin
+                    : this._innerBox.Size.Height - this._margin;
                 var rowMaxHeight = 0;
                 var rowElemCount = 0;
-                _.each(this.Children, function (view) {
+                _.each(this._innerBox.Children, function (view) {
                     var isOverWidth = (maxRight < (currentLeft + view.Size.Width));
                     if (isOverWidth && rowElemCount !== 0) {
                         // 表示幅を超え、かつ既にその行に要素が出力されているとき
@@ -4555,8 +4660,10 @@ var Fw;
                         rowMaxHeight = 0;
                     }
                     rowElemCount++;
-                    view.Position.Left = currentLeft;
-                    view.Position.Top = currentBottom - view.Size.Height;
+                    if (!calcScrollMargin) {
+                        view.Position.Left = currentLeft;
+                        view.Position.Top = currentBottom - view.Size.Height;
+                    }
                     if (rowMaxHeight < view.Size.Height)
                         rowMaxHeight = view.Size.Height;
                     currentLeft += view.Size.Width + _this._margin;
@@ -4569,15 +4676,26 @@ var Fw;
                         rowMaxHeight = 0;
                     }
                 });
+                var minTop = currentBottom - rowMaxHeight - this._margin;
+                if (calcScrollMargin) {
+                    if (minTop < 0) {
+                        this._scrollMargin = minTop;
+                    }
+                    else {
+                        this._scrollMargin = 0;
+                    }
+                }
             };
-            StuckerBoxView.prototype.InnerRefreshRightBottom = function () {
+            StuckerBoxView.prototype.InnerRefreshRightBottom = function (calcScrollMargin) {
                 var _this = this;
                 var minLeft = this._margin;
                 var currentRight = this.Size.Width - this._margin;
-                var currentBottom = this.Size.Height - this._margin;
+                var currentBottom = (calcScrollMargin)
+                    ? this.Size.Height - this._margin
+                    : this._innerBox.Size.Height - this._margin;
                 var rowMaxHeight = 0;
                 var rowElemCount = 0;
-                _.each(this.Children, function (view) {
+                _.each(this._innerBox.Children, function (view) {
                     var isOverWidth = ((currentRight - view.Size.Width) < minLeft);
                     if (isOverWidth && rowElemCount !== 0) {
                         // 表示幅を超え、かつ既にその行に要素が出力されているとき
@@ -4588,8 +4706,10 @@ var Fw;
                         rowMaxHeight = 0;
                     }
                     rowElemCount++;
-                    view.Position.Left = currentRight - view.Size.Width;
-                    view.Position.Top = currentBottom - view.Size.Height;
+                    if (!calcScrollMargin) {
+                        view.Position.Left = currentRight - view.Size.Width;
+                        view.Position.Top = currentBottom - view.Size.Height;
+                    }
                     if (rowMaxHeight < view.Size.Height)
                         rowMaxHeight = view.Size.Height;
                     currentRight -= view.Size.Width + _this._margin;
@@ -4602,9 +4722,21 @@ var Fw;
                         rowMaxHeight = 0;
                     }
                 });
+                if (calcScrollMargin) {
+                    var minTop = currentBottom - rowMaxHeight - this._margin;
+                    if (minTop < 0) {
+                        this._scrollMargin = minTop;
+                    }
+                    else {
+                        this._scrollMargin = 0;
+                    }
+                }
             };
             StuckerBoxView.prototype.Dispose = function () {
-                this.Elem.off('click touchend', this.OnSingleClick);
+                this.Elem.off('click touchend');
+                this._innerBox.Elem.off('touchstart mousedown');
+                this._innerBox.Elem.off('touchmove mousemove');
+                this._innerBox.Elem.off('touchend mouseup mouseout');
                 _super.prototype.Dispose.call(this);
                 this._margin = null;
             };

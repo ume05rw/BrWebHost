@@ -17,6 +17,10 @@ namespace Fw.Views {
 
     export class StuckerBoxView extends BoxView {
 
+        public get Children(): Array<IView> {
+            return this._innerBox.Children;
+        }
+
         private _margin: number;
         public get Margin(): number {
             return this._margin;
@@ -35,10 +39,14 @@ namespace Fw.Views {
             this.Refresh();
         }
 
+        private _innerBox: BoxView;
+        private _scrollMargin: number = 0;
+
         private _backupView: IView;
         private _dummyView: IView;
         private _isChildRelocation: boolean = false;
         private _isChildDragging: boolean = false;
+        private _isInnerDragging: boolean = false;
         private _relocationTargetView: IView = null;
         private _dragStartMousePosition: Property.Position = new Property.Position();
         private _dragStartViewPosition: Property.Position = new Property.Position();
@@ -51,6 +59,15 @@ namespace Fw.Views {
 
             this._margin = 10;
             this._referencePoint = Property.ReferencePoint.LeftTop;
+            this._scrollMargin = 0;
+
+            this._innerBox = new BoxView();
+            this._innerBox.HasBorder = false;
+            this._innerBox.SetTransAnimation(false);
+            this._innerBox.SetLeftTop(0, 0);
+            this._innerBox.BackgroundColor = 'transparent';
+            this.Elem.append(this._innerBox.Elem);
+            //super.Add(this._innerBox); // Addメソッドでthis.Childrenを呼ぶため循環参照になる。
 
             this._backupView = null;
             this._dummyView = new Fw.Views.BoxView();
@@ -68,7 +85,7 @@ namespace Fw.Views {
 
         public Add(view: IView): void {
             view.Position.Policy = Property.PositionPolicy.LeftTop;
-            super.Add(view);
+            this._innerBox.Add(view);
 
             view.AddEventListener(ControlViewEvents.LongClick, this.OnChildLongClick, this);
             view.Elem.on('touchstart mousedown', this.OnChildMouseDown);
@@ -77,13 +94,39 @@ namespace Fw.Views {
         }
 
         public Remove(view: IView): void {
-            super.Remove(view);
+            this._innerBox.Remove(view);
 
             view.RemoveEventListener(ControlViewEvents.LongClick, this.OnChildLongClick);
             view.Elem.off('touchstart mousedown', this.OnChildMouseDown);
             view.Elem.off('touchmove mousemove', this.OnChildMouseMove);
             view.Elem.off('touchend mouseup', this.OnChildMouseUp);
         }
+
+// #region "上下スクロール"
+
+        private OnInnerMouseDown(e: JQueryEventObject): void {
+            if (this._isChildRelocation)
+                return;
+
+            this._isInnerDragging = true;
+        }
+
+        private OnInnerMouseMove(e: JQueryEventObject): void {
+            if (this._isChildRelocation)
+                return;
+
+        }
+
+        private OnInnerMouseUp(e: JQueryEventObject): void {
+            if (this._isChildRelocation)
+                return;
+
+            this._isInnerDragging = false;
+        }
+
+// #endregion "上下スクロール"
+
+// #region "子View再配置"
 
         /**
          * 子要素がロングクリックされたとき
@@ -99,7 +142,7 @@ namespace Fw.Views {
             this._isChildRelocation = true;
             Fw.Root.Instance.SetTextSelection(false);
 
-            _.each(this.Children, (v: IView) => {
+            _.each(this._innerBox.Children, (v: IView) => {
                 v.Opacity = 0.7;
                 v.SuppressEvent(ControlViewEvents.SingleClick);
                 v.SuppressEvent(ControlViewEvents.LongClick);
@@ -117,7 +160,10 @@ namespace Fw.Views {
                 return;
 
             //Dump.Log(`${this.ClassName}.OnSingleClick`);
-            this.CommitRelocation();
+            if (this._isChildRelocation) {
+                // 子要素再配置モードのとき、配置を確定させる。
+                this.CommitRelocation();
+            }
         }
 
         public CommitRelocation(): void {
@@ -131,7 +177,7 @@ namespace Fw.Views {
             this._isChildRelocation = false;
             Fw.Root.Instance.SetTextSelection(true);
 
-            _.each(this.Children, (v: IView) => {
+            _.each(this._innerBox.Children, (v: IView) => {
                 v.Opacity = 1.0;
                 v.ResumeEvent(ControlViewEvents.SingleClick);
                 v.ResumeEvent(ControlViewEvents.LongClick);
@@ -212,8 +258,8 @@ namespace Fw.Views {
         }
 
         private Swap(view1: IView, view2: IView): void {
-            const view1Index = this.Children.indexOf(view1);
-            const view2Index = this.Children.indexOf(view2);
+            const view1Index = this._innerBox.Children.indexOf(view1);
+            const view2Index = this._innerBox.Children.indexOf(view2);
 
             if (view1Index < 0)
                 throw new Error('Not contained view1');
@@ -221,14 +267,14 @@ namespace Fw.Views {
             if (view2Index < 0)
                 throw new Error('Not contained view2');
 
-            this.Children[view1Index] = view2;
-            this.Children[view2Index] = view1;
+            this._innerBox.Children[view1Index] = view2;
+            this._innerBox.Children[view2Index] = view1;
         }
 
         private GetNearestByView(view: IView): IView {
             let diff = Number.MAX_VALUE;
             let result: IView = null;
-            _.each(this.Children, (v: IView) => {
+            _.each(this._innerBox.Children, (v: IView) => {
                 // 渡されたViewは対象外
                 if (v === view)
                     return;
@@ -248,7 +294,7 @@ namespace Fw.Views {
         private GetNearestByPosition(x: number, y: number): IView {
             let diff = Number.MAX_VALUE;
             let result: IView = null;
-            _.each(this.Children, (v: IView) => {
+            _.each(this._innerBox.Children, (v: IView) => {
                 // ダミーViewは対象外
                 if (v === this._dummyView)
                     return;
@@ -270,45 +316,76 @@ namespace Fw.Views {
             if (this._backupView)
                 this.RestoreDummyView();
 
-            _.each(this.Children, (v: IView, index: number) => {
+            _.each(this._innerBox.Children, (v: IView, index: number) => {
                 if (v === view) {
                     this._backupView = v;
-                    this.Children[index] = this._dummyView;
+                    this._innerBox.Children[index] = this._dummyView;
                     this._dummyView.Color = v.Color;
                     this._dummyView.SetSize(v.Size.Width, v.Size.Height);
                 }
             });
-            this.Elem.append(this._dummyView.Elem);
+            this._innerBox.Elem.append(this._dummyView.Elem);
         }
 
         private RestoreDummyView(): void {
             if (!this._backupView)
                 return;
 
-            _.each(this.Children, (v: IView, index: number) => {
+            _.each(this._innerBox.Children, (v: IView, index: number) => {
                 if (v === this._dummyView)
-                    this.Children[index] = this._backupView;
+                    this._innerBox.Children[index] = this._backupView;
             });
             this._backupView = null;
             this._dummyView.Elem.detach();
         }
 
+// #endregion "子View再配置"
+
         protected InnerRefresh(): void {
             try {
                 this.SuppressLayout();
+                this._innerBox.SuppressLayout();
+                _.each(this._innerBox.Children, (view: IView) => {
+                    view.SuppressLayout();
+                });
 
+                this._innerBox.Size.Width = this.Size.Width;
+                this._innerBox.Size.Height = this.Size.Height;
+
+                // 先に描画領域を計算し、this._scrollMargin を得る。
                 switch (this._referencePoint) {
                     case Property.ReferencePoint.LeftTop:
-                        this.InnerRefreshLeftTop();
+                        this.InnerRefreshLeftTop(true);
                         break;
                     case Property.ReferencePoint.RightTop:
-                        this.InnerRefreshRightTop();
+                        this.InnerRefreshRightTop(true);
                         break;
                     case Property.ReferencePoint.LeftBottom:
-                        this.InnerRefreshLeftBottom();
+                        this.InnerRefreshLeftBottom(true);
                         break;
                     case Property.ReferencePoint.RightBottom:
-                        this.InnerRefreshRightBottom();
+                        this.InnerRefreshRightBottom(true);
+                        break;
+                    default:
+                        throw new Error(`ReferencePoint not found: ${this._referencePoint}`);
+                }
+
+                // this._scrollMargin の分だけ、内部Viewを広げる。
+                this._innerBox.Size.Height = this.Size.Height + Math.abs(this._scrollMargin);
+
+                // 子Viewを配置する。
+                switch (this._referencePoint) {
+                    case Property.ReferencePoint.LeftTop:
+                        this.InnerRefreshLeftTop(false);
+                        break;
+                    case Property.ReferencePoint.RightTop:
+                        this.InnerRefreshRightTop(false);
+                        break;
+                    case Property.ReferencePoint.LeftBottom:
+                        this.InnerRefreshLeftBottom(false);
+                        break;
+                    case Property.ReferencePoint.RightBottom:
+                        this.InnerRefreshRightBottom(false);
                         break;
                     default:
                         throw new Error(`ReferencePoint not found: ${this._referencePoint}`);
@@ -320,10 +397,15 @@ namespace Fw.Views {
                 Dump.ErrorLog(e);
             } finally {
                 this.ResumeLayout();
+                this._innerBox.ResumeLayout();
+                this._innerBox.Refresh();
+                _.each(this._innerBox.Children, (view: IView) => {
+                    view.ResumeLayout();
+                });
             }
         }
 
-        private InnerRefreshLeftTop(): void {
+        private InnerRefreshLeftTop(calcScrollMargin: boolean): void {
             const maxRight = this.Size.Width - this._margin;
 
             let currentLeft = this._margin;
@@ -331,7 +413,7 @@ namespace Fw.Views {
             let rowMaxHeight = 0;
             let rowElemCount = 0;
 
-            _.each(this.Children, (view: IView) => {
+            _.each(this._innerBox.Children, (view: IView) => {
 
                 const isOverWidth = (maxRight < (currentLeft + view.Size.Width));
                 if (isOverWidth && rowElemCount !== 0) {
@@ -344,8 +426,11 @@ namespace Fw.Views {
                 }
 
                 rowElemCount++;
-                view.Position.Left = currentLeft;
-                view.Position.Top = currentTop;
+
+                if (!calcScrollMargin) {
+                    view.Position.Left = currentLeft;
+                    view.Position.Top = currentTop;
+                }
 
                 if (rowMaxHeight < view.Size.Height)
                     rowMaxHeight = view.Size.Height;
@@ -361,9 +446,18 @@ namespace Fw.Views {
                     rowMaxHeight = 0;
                 }
             });
+
+            if (calcScrollMargin) {
+                const maxBotton = currentTop + rowMaxHeight + this._margin;
+                if (this.Size.Height < maxBotton) {
+                    this._scrollMargin = maxBotton - this.Size.Height;
+                } else {
+                    this._scrollMargin = 0;
+                }
+            }
         }
 
-        private InnerRefreshRightTop(): void {
+        private InnerRefreshRightTop(calcScrollMargin: boolean): void {
             const minLeft = this._margin;
 
             let currentRight = this.Size.Width - this._margin;
@@ -371,7 +465,7 @@ namespace Fw.Views {
             let rowMaxHeight = 0;
             let rowElemCount = 0;
 
-            _.each(this.Children, (view: IView) => {
+            _.each(this._innerBox.Children, (view: IView) => {
 
                 const isOverWidth = ((currentRight - view.Size.Width) < minLeft);
                 if (isOverWidth && rowElemCount !== 0) {
@@ -384,8 +478,10 @@ namespace Fw.Views {
                 }
 
                 rowElemCount++;
-                view.Position.Left = currentRight - view.Size.Width;
-                view.Position.Top = currentTop;
+                if (!calcScrollMargin) {
+                    view.Position.Left = currentRight - view.Size.Width;
+                    view.Position.Top = currentTop;
+                }
 
                 if (rowMaxHeight < view.Size.Height)
                     rowMaxHeight = view.Size.Height;
@@ -401,17 +497,28 @@ namespace Fw.Views {
                     rowMaxHeight = 0;
                 }
             });
+
+            if (calcScrollMargin) {
+                const maxBotton = currentTop + rowMaxHeight + this._margin;
+                if (this.Size.Height < maxBotton) {
+                    this._scrollMargin = maxBotton - this.Size.Height;
+                } else {
+                    this._scrollMargin = 0;
+                }
+            }
         }
 
-        private InnerRefreshLeftBottom(): void {
+        private InnerRefreshLeftBottom(calcScrollMargin: boolean): void {
             const maxRight = this.Size.Width - this._margin;
 
             let currentLeft = this._margin;
-            let currentBottom = this.Size.Height - this._margin;
+            let currentBottom = (calcScrollMargin)
+                ? this.Size.Height - this._margin
+                : this._innerBox.Size.Height - this._margin;
             let rowMaxHeight = 0;
             let rowElemCount = 0;
 
-            _.each(this.Children, (view: IView) => {
+            _.each(this._innerBox.Children, (view: IView) => {
 
                 const isOverWidth = (maxRight < (currentLeft + view.Size.Width));
                 if (isOverWidth && rowElemCount !== 0) {
@@ -424,8 +531,10 @@ namespace Fw.Views {
                 }
 
                 rowElemCount++;
-                view.Position.Left = currentLeft;
-                view.Position.Top = currentBottom - view.Size.Height;
+                if (!calcScrollMargin) {
+                    view.Position.Left = currentLeft;
+                    view.Position.Top = currentBottom - view.Size.Height;
+                }
 
                 if (rowMaxHeight < view.Size.Height)
                     rowMaxHeight = view.Size.Height;
@@ -441,17 +550,29 @@ namespace Fw.Views {
                     rowMaxHeight = 0;
                 }
             });
+
+            const minTop = currentBottom - rowMaxHeight - this._margin;
+
+            if (calcScrollMargin) {
+                if (minTop < 0) {
+                    this._scrollMargin = minTop;
+                } else {
+                    this._scrollMargin = 0;
+                }
+            }
         }
 
-        private InnerRefreshRightBottom(): void {
+        private InnerRefreshRightBottom(calcScrollMargin: boolean): void {
             const minLeft = this._margin;
 
             let currentRight = this.Size.Width - this._margin;
-            let currentBottom = this.Size.Height - this._margin;
+            let currentBottom = (calcScrollMargin)
+                ? this.Size.Height - this._margin
+                : this._innerBox.Size.Height - this._margin;
             let rowMaxHeight = 0;
             let rowElemCount = 0;
 
-            _.each(this.Children, (view: IView) => {
+            _.each(this._innerBox.Children, (view: IView) => {
 
                 const isOverWidth = ((currentRight - view.Size.Width) < minLeft);
                 if (isOverWidth && rowElemCount !== 0) {
@@ -464,8 +585,10 @@ namespace Fw.Views {
                 }
 
                 rowElemCount++;
-                view.Position.Left = currentRight - view.Size.Width;
-                view.Position.Top = currentBottom - view.Size.Height;
+                if (!calcScrollMargin) {
+                    view.Position.Left = currentRight - view.Size.Width;
+                    view.Position.Top = currentBottom - view.Size.Height;
+                }
 
                 if (rowMaxHeight < view.Size.Height)
                     rowMaxHeight = view.Size.Height;
@@ -481,10 +604,22 @@ namespace Fw.Views {
                     rowMaxHeight = 0;
                 }
             });
+
+            if (calcScrollMargin) {
+                const minTop = currentBottom - rowMaxHeight - this._margin;
+                if (minTop < 0) {
+                    this._scrollMargin = minTop;
+                } else {
+                    this._scrollMargin = 0;
+                }
+            }
         }
 
         public Dispose(): void {
-            this.Elem.off('click touchend', this.OnSingleClick);
+            this.Elem.off('click touchend');
+            this._innerBox.Elem.off('touchstart mousedown');
+            this._innerBox.Elem.off('touchmove mousemove');
+            this._innerBox.Elem.off('touchend mouseup mouseout');
 
             super.Dispose();
 

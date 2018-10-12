@@ -15,6 +15,10 @@ namespace Fw.Views {
 
     export class SlidableBoxView extends BoxView {
 
+        public get Children(): Array<IView> {
+            return this._innerBox.Children;
+        }
+
         private _direction: Property.Direction;
         public get Direction(): Property.Direction {
             return this._direction;
@@ -71,7 +75,8 @@ namespace Fw.Views {
             this._innerBox = new BoxView();
             this._innerBox.HasBorder = false;
             this._innerBox.SetTransAnimation(false);
-            this.Add(this._innerBox);
+            this.Elem.append(this._innerBox.Elem);
+            //super.Add(this._innerBox); // Addメソッドでthis.Childrenを呼ぶため循環参照になる。
 
             // コンストラクタ完了後に実行。
             // コンストラクタ引数で取得したDirectionがセットされていないため。
@@ -80,12 +85,12 @@ namespace Fw.Views {
                 this._positionBarMax.Position.Policy = Property.PositionPolicy.LeftTop;
                 this._positionBarMax.SetTransAnimation(false);
                 this._positionBarMax.Color = '#888888';
-                this.Add(this._positionBarMax);
+                super.Add(this._positionBarMax);
                 this._positionBarCurrent = new LineView(this._direction);
                 this._positionBarCurrent.Position.Policy = Property.PositionPolicy.LeftTop;
                 this._positionBarCurrent.SetTransAnimation(false);
                 this._positionBarCurrent.Color = '#EEEEEE';
-                this.Add(this._positionBarCurrent);
+                super.Add(this._positionBarCurrent);
             });
 
             this.AddEventListener(Events.Initialized, () => {
@@ -209,6 +214,14 @@ namespace Fw.Views {
             animator.Invoke(500);
         }
 
+        public Add(view: IView): void {
+            this._innerBox.Add(view);
+        }
+
+        public Remove(view: IView): void {
+            this._innerBox.Remove(view);
+        }
+
         protected InnerRefresh(): void {
             try {
                 this.SuppressLayout();
@@ -286,6 +299,10 @@ namespace Fw.Views {
         }
 
         public Dispose(): void {
+            this._innerBox.Elem.off('touchstart mousedown');
+            this._innerBox.Elem.off('touchmove mousemove');
+            this._innerBox.Elem.off('touchend mouseup mouseout');
+
             super.Dispose();
 
             this._innerBackgroundColor = null;

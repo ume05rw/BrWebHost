@@ -47,6 +47,7 @@ div.IController .IView {
     position: absolute;
     display: block;
     border-style: solid;
+    overflow: hidden;
 }
 /* Viewのアニメーション */
 div.IController .IView.TransAnimation {
