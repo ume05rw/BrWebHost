@@ -60,14 +60,22 @@ namespace Fw.Views {
         }
 
         protected InnerRefresh(): void {
-            super.InnerRefresh();
+            try {
+                this.SuppressLayout();
 
-            this.Dom.style.backgroundPosition = 'center center';
-            this.Dom.style.backgroundRepeat = 'no-repeat';
-            this.Dom.style.backgroundSize = this.FitPolicy;
-            this.Dom.style.backgroundImage = (this._src)
-                ? `url(${this._src})`
-                : null;
+                super.InnerRefresh();
+
+                this.Dom.style.backgroundPosition = 'center center';
+                this.Dom.style.backgroundRepeat = 'no-repeat';
+                this.Dom.style.backgroundSize = this.FitPolicy;
+                this.Dom.style.backgroundImage = (this._src)
+                    ? `url(${this._src})`
+                    : null;
+            } catch (e) {
+                Dump.ErrorLog(e);
+            } finally {
+                this.ResumeLayout();
+            }
         }
 
         public Dispose(): void {

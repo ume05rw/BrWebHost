@@ -271,15 +271,26 @@ namespace Fw.Views {
         }
 
         protected InnerRefresh(): void {
-            // 親View(=Root)とPageは常に同サイズなので、X/YがそのままLeft/Topになる。
-            this.Dom.style.left = `${this.Position.X}px`;
-            this.Dom.style.top = `${this.Position.Y}px`;
+            try {
+                this.SuppressLayout();
 
-            this.Dom.style.width = `100%`;
-            this.Dom.style.height = `100%`;
-            this.Dom.style.zIndex = `${this.ZIndex}`;
-            this.Dom.style.color = `${this.Color}`;
-            this.Dom.style.backgroundColor = `${this.BackgroundColor}`;
+                // TODO: Anchor実装する。
+                // 親View(=Root)とPageは常に同サイズなので、X/YがそのままLeft/Topになる。
+                this.Dom.style.left = `${this.Position.X}px`;
+                this.Dom.style.top = `${this.Position.Y}px`;
+
+
+                this.Dom.style.width = `100%`;
+                this.Dom.style.height = `100%`;
+                this.Dom.style.zIndex = `${this.ZIndex}`;
+                this.Dom.style.color = `${this.Color}`;
+                this.Dom.style.backgroundColor = `${this.BackgroundColor}`;
+
+            } catch (e) {
+                Dump.ErrorLog(e);
+            } finally {
+                this.ResumeLayout();
+            }
         }
 
         public Dispose(): void {

@@ -592,7 +592,6 @@ declare namespace Fw.Views {
         protected Init(): void;
         protected InitPage(): void;
         private OnPageDragging;
-        protected InnerRefresh(): void;
         Dispose(): void;
     }
 }
@@ -664,22 +663,23 @@ declare namespace Fw.Views {
     }
 }
 declare namespace Fw.Views {
-    enum Direction {
-        Horizontal = 0,
-        Vertical = 1
-    }
+    import Property = Fw.Views.Property;
     class SlidableBoxView extends BoxView {
-        readonly Direction: Direction;
+        private _direction;
+        readonly Direction: Property.Direction;
         private _innerBackgroundColor;
         InnerBackgroundColor: string;
-        private _innerBoxCount;
-        InnerPanelCount: number;
+        private _innerLength;
+        InnerLength: number;
         private _innerBox;
+        private _positionBarMax;
+        private _positionBarCurrent;
+        private _barMargin;
         private _isDragging;
         private _spcvMouseSuppressor;
         private _dragStartMousePosition;
         private _dragStartViewPosition;
-        constructor(direction: Direction);
+        constructor(direction: Property.Direction);
         protected Init(): void;
         private InitView;
         private AdjustSlidePosition;
@@ -726,5 +726,34 @@ declare namespace Fw {
 declare namespace Fw {
     class Startup {
         static Init(): void;
+    }
+}
+declare namespace Fw.Views {
+    class LineView extends ViewBase {
+        private _direction;
+        readonly Direction: Property.Direction;
+        private _length;
+        Length: number;
+        BackgroundColor: string;
+        constructor(direction: Property.Direction);
+        protected Init(): void;
+        protected InnerRefresh(): void;
+        Dispose(): void;
+    }
+}
+declare namespace Fw.Events {
+    class LineViewEventsClass extends ViewEventsClass {
+    }
+    const LineViewEvents: LineViewEventsClass;
+}
+declare namespace Fw.Events {
+    class ContainerBoxViewEventsClass extends BoxViewEventsClass {
+    }
+    const ContainerBoxViewEvents: ContainerBoxViewEventsClass;
+}
+declare namespace Fw.Views.Property {
+    enum Direction {
+        Horizontal = 0,
+        Vertical = 1
     }
 }

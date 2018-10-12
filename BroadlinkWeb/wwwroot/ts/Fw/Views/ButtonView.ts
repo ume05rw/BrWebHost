@@ -47,12 +47,18 @@ namespace Fw.Views {
         }
 
         protected InnerRefresh(): void {
+            try {
+                this.SuppressLayout();
 
-            this._imageView.Size.Width = this.Size.Width;
-            this._imageView.Size.Height = this.Size.Height;
-            
+                this._imageView.Size.Width = this.Size.Width;
+                this._imageView.Size.Height = this.Size.Height;
+                super.InnerRefresh()
 
-            super.InnerRefresh()
+            } catch (e) {
+                Dump.ErrorLog(e);
+            } finally {
+                this.ResumeLayout();
+            }
         }
 
         public Dispose(): void {

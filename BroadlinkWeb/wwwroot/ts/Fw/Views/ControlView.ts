@@ -110,10 +110,6 @@ namespace Fw.Views {
             }, 100);
         }
 
-        protected InnerRefresh(): void {
-            super.InnerRefresh();
-        }
-
         public Dispose(): void {
             super.Dispose();
 

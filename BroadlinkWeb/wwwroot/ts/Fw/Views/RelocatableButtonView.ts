@@ -162,69 +162,78 @@ namespace Fw.Views {
         }
 
         protected InnerRefresh(): void {
-            const parent = $(this.Elem.parent());
-            if (parent.length <= 0)
-                return;
+            try {
+                this.SuppressLayout();
 
-            if (!this._isRelocatable) {
-                if (this.Position.Policy === Property.PositionPolicy.Centering) {
-                    this.Position.X = Math.round(this.Position.X / this.GridSize) * this.GridSize;
-                    this.Position.Y = Math.round(this.Position.Y / this.GridSize) * this.GridSize;
-                } else {
-                    this.Position.Left = Math.round(this.Position.Left / this.GridSize) * this.GridSize;
-                    this.Position.Top = Math.round(this.Position.Top / this.GridSize) * this.GridSize;
-                }
-            }
+                const parent = $(this.Elem.parent());
+                if (parent.length <= 0)
+                    return;
 
-            super.InnerRefresh();
-
-            const shadowDom = this._shadow.get(0);
-
-            if (!this._isRelocatable) {
-                shadowDom.style.display = 'none';
-                this.Dom.style.opacity = '1.0';
-                return;
-            }
-
-            this.Dom.style.opacity = '0.7';
-
-            if (this._isDragging) {
-                const parentWidth = (this.Parent)
-                    ? this.Parent.Size.Width
-                    : parent.width();
-                const parentHeight = (this.Parent)
-                    ? this.Parent.Size.Height
-                    : parent.height();
-
-                const centerLeft = (parentWidth / 2);
-                const centerTop = (parentHeight / 2);
-
-                let sX: number, sY: number, sLeft: number, sTop: number;
-                if (this.Position.Policy === Property.PositionPolicy.Centering) {
-                    sX = Math.round(this.Position.X / this.GridSize) * this.GridSize;
-                    sY = Math.round(this.Position.Y / this.GridSize) * this.GridSize;
-                    sLeft = centerLeft + sX - (this.Size.Width / 2);
-                    sTop = centerTop + sY - (this.Size.Height / 2);
-                } else {
-                    sX = Math.round(this.Position.Left / this.GridSize) * this.GridSize;
-                    sY = Math.round(this.Position.Top / this.GridSize) * this.GridSize;
-                    sLeft = sX;
-                    sTop = sY;
+                if (!this._isRelocatable) {
+                    if (this.Position.Policy === Property.PositionPolicy.Centering) {
+                        this.Position.X = Math.round(this.Position.X / this.GridSize) * this.GridSize;
+                        this.Position.Y = Math.round(this.Position.Y / this.GridSize) * this.GridSize;
+                    } else {
+                        this.Position.Left = Math.round(this.Position.Left / this.GridSize) * this.GridSize;
+                        this.Position.Top = Math.round(this.Position.Top / this.GridSize) * this.GridSize;
+                    }
                 }
 
-                shadowDom.style.display = 'block';
-                shadowDom.style.left = `${sLeft}px`;
-                shadowDom.style.top = `${sTop}px`;
-                shadowDom.style.width = `${this.Size.Width}px`;
-                shadowDom.style.height = `${this.Size.Height}px`;
-                shadowDom.style.opacity = '0.4';
-                shadowDom.style.color = `${this.Color}`;
-                shadowDom.style.borderColor = `${this.Color}`;
-                shadowDom.style.borderStyle = 'dashed';
-                shadowDom.style.borderWidth = '2px';
-                shadowDom.style.backgroundColor = `${this.BackgroundColor}`;
-            } else {
-                shadowDom.style.display = 'none';
+                super.InnerRefresh();
+
+                const shadowDom = this._shadow.get(0);
+
+                if (!this._isRelocatable) {
+                    shadowDom.style.display = 'none';
+                    this.Dom.style.opacity = '1.0';
+                    return;
+                }
+
+                this.Dom.style.opacity = '0.7';
+
+                if (this._isDragging) {
+                    const parentWidth = (this.Parent)
+                        ? this.Parent.Size.Width
+                        : parent.width();
+                    const parentHeight = (this.Parent)
+                        ? this.Parent.Size.Height
+                        : parent.height();
+
+                    const centerLeft = (parentWidth / 2);
+                    const centerTop = (parentHeight / 2);
+
+                    let sX: number, sY: number, sLeft: number, sTop: number;
+                    if (this.Position.Policy === Property.PositionPolicy.Centering) {
+                        sX = Math.round(this.Position.X / this.GridSize) * this.GridSize;
+                        sY = Math.round(this.Position.Y / this.GridSize) * this.GridSize;
+                        sLeft = centerLeft + sX - (this.Size.Width / 2);
+                        sTop = centerTop + sY - (this.Size.Height / 2);
+                    } else {
+                        sX = Math.round(this.Position.Left / this.GridSize) * this.GridSize;
+                        sY = Math.round(this.Position.Top / this.GridSize) * this.GridSize;
+                        sLeft = sX;
+                        sTop = sY;
+                    }
+
+                    shadowDom.style.display = 'block';
+                    shadowDom.style.left = `${sLeft}px`;
+                    shadowDom.style.top = `${sTop}px`;
+                    shadowDom.style.width = `${this.Size.Width}px`;
+                    shadowDom.style.height = `${this.Size.Height}px`;
+                    shadowDom.style.opacity = '0.4';
+                    shadowDom.style.color = `${this.Color}`;
+                    shadowDom.style.borderColor = `${this.Color}`;
+                    shadowDom.style.borderStyle = 'dashed';
+                    shadowDom.style.borderWidth = '2px';
+                    shadowDom.style.backgroundColor = `${this.BackgroundColor}`;
+                } else {
+                    shadowDom.style.display = 'none';
+                }
+
+            } catch (e) {
+                Dump.ErrorLog(e);
+            } finally {
+                this.ResumeLayout();
             }
         }
 

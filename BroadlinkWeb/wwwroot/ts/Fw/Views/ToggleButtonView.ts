@@ -97,25 +97,30 @@ namespace Fw.Views {
         }
 
         protected InnerRefresh(): void {
+            try {
+                this.SuppressLayout();
 
-            this._sliderBox.Size.Width = this.Size.Width - this._overMargin;
-            this._sliderBox.Size.Height = this.Size.Height - this._overMargin;
-            this._maskOn.Size.Width = this.Size.Width - this._overMargin;
-            this._maskOn.Size.Height = this.Size.Height - this._overMargin;
-            this._notch.SetSize(this.Size.Height, this.Size.Height);
+                this._sliderBox.Size.Width = this.Size.Width - this._overMargin;
+                this._sliderBox.Size.Height = this.Size.Height - this._overMargin;
+                this._maskOn.Size.Width = this.Size.Width - this._overMargin;
+                this._maskOn.Size.Height = this.Size.Height - this._overMargin;
+                this._notch.SetSize(this.Size.Height, this.Size.Height);
 
-            this._notch.Position.X = (this.Value)
-                ? (this.Size.Width / 2) - (this.Size.Height / 2)
-                : - (this.Size.Width / 2) + (this.Size.Height / 2);
+                this._notch.Position.X = (this.Value)
+                    ? (this.Size.Width / 2) - (this.Size.Height / 2)
+                    : - (this.Size.Width / 2) + (this.Size.Height / 2);
 
-            this._maskOn.Position.X = (this.Value)
-                ? 0
-                : - (this.Size.Width - this._overMargin);
+                this._maskOn.Position.X = (this.Value)
+                    ? 0
+                    : - (this.Size.Width - this._overMargin);
 
-            super.InnerRefresh();
+                super.InnerRefresh();
 
-
-
+            } catch (e) {
+                Dump.ErrorLog(e);
+            } finally {
+                this.ResumeLayout();
+            }
         }
 
         public Dispose(): void {

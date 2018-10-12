@@ -63,10 +63,10 @@ namespace App.Controllers {
             });
             this.View.Add(devices);
 
-            const slider = new Fw.Views.SlidableBoxView(Fw.Views.Direction.Horizontal);
+            const slider = new Fw.Views.SlidableBoxView(Fw.Views.Property.Direction.Horizontal);
             slider.SetSize(400, 200);
             devices.SetLeftTop(10, 120);
-            slider.InnerPanelCount = 2.5;
+            slider.InnerLength = 1000;
             this.View.Add(slider);
         }
     }

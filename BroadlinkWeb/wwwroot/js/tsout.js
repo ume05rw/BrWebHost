@@ -1411,6 +1411,7 @@ var Fw;
 (function (Fw) {
     var Views;
     (function (Views) {
+        var Dump = Fw.Util.Dump;
         var Anim = Fw.Views.Animation;
         var Events = Fw.Events.PageViewEvents;
         var PageView = /** @class */ (function (_super) {
@@ -1632,14 +1633,24 @@ var Fw;
                 this.Dom.style.zIndex = '0';
             };
             PageView.prototype.InnerRefresh = function () {
-                // 親View(=Root)とPageは常に同サイズなので、X/YがそのままLeft/Topになる。
-                this.Dom.style.left = this.Position.X + "px";
-                this.Dom.style.top = this.Position.Y + "px";
-                this.Dom.style.width = "100%";
-                this.Dom.style.height = "100%";
-                this.Dom.style.zIndex = "" + this.ZIndex;
-                this.Dom.style.color = "" + this.Color;
-                this.Dom.style.backgroundColor = "" + this.BackgroundColor;
+                try {
+                    this.SuppressLayout();
+                    // TODO: Anchor実装する。
+                    // 親View(=Root)とPageは常に同サイズなので、X/YがそのままLeft/Topになる。
+                    this.Dom.style.left = this.Position.X + "px";
+                    this.Dom.style.top = this.Position.Y + "px";
+                    this.Dom.style.width = "100%";
+                    this.Dom.style.height = "100%";
+                    this.Dom.style.zIndex = "" + this.ZIndex;
+                    this.Dom.style.color = "" + this.Color;
+                    this.Dom.style.backgroundColor = "" + this.BackgroundColor;
+                }
+                catch (e) {
+                    Dump.ErrorLog(e);
+                }
+                finally {
+                    this.ResumeLayout();
+                }
             };
             PageView.prototype.Dispose = function () {
                 _super.prototype.Dispose.call(this);
@@ -2113,10 +2124,10 @@ var App;
                     });
                 });
                 this.View.Add(devices);
-                var slider = new Fw.Views.SlidableBoxView(Fw.Views.Direction.Horizontal);
+                var slider = new Fw.Views.SlidableBoxView(Fw.Views.Property.Direction.Horizontal);
                 slider.SetSize(400, 200);
                 devices.SetLeftTop(10, 120);
-                slider.InnerPanelCount = 2.5;
+                slider.InnerLength = 1000;
                 this.View.Add(slider);
             };
             return Sub1Controller;
@@ -2864,6 +2875,7 @@ var Fw;
 (function (Fw) {
     var Views;
     (function (Views) {
+        var Dump = Fw.Util.Dump;
         var Number = Fw.Util.Number;
         var BoxView = /** @class */ (function (_super) {
             __extends(BoxView, _super);
@@ -2907,8 +2919,17 @@ var Fw;
                 this.BorderRadius = 0;
             };
             BoxView.prototype.InnerRefresh = function () {
-                _super.prototype.InnerRefresh.call(this);
-                this.Dom.style.borderColor = "" + this.Color;
+                try {
+                    this.SuppressLayout();
+                    _super.prototype.InnerRefresh.call(this);
+                    this.Dom.style.borderColor = "" + this.Color;
+                }
+                catch (e) {
+                    Dump.ErrorLog(e);
+                }
+                finally {
+                    this.ResumeLayout();
+                }
             };
             BoxView.prototype.Dispose = function () {
                 _super.prototype.Dispose.call(this);
@@ -3019,9 +3040,6 @@ var Fw;
                     _this._cvMouseSuppressor = false;
                 }, 100);
             };
-            ControlView.prototype.InnerRefresh = function () {
-                _super.prototype.InnerRefresh.call(this);
-            };
             ControlView.prototype.Dispose = function () {
                 _super.prototype.Dispose.call(this);
                 this._label = null;
@@ -3044,6 +3062,7 @@ var Fw;
 (function (Fw) {
     var Views;
     (function (Views) {
+        var Dump = Fw.Util.Dump;
         var ButtonView = /** @class */ (function (_super) {
             __extends(ButtonView, _super);
             function ButtonView() {
@@ -3077,9 +3096,18 @@ var Fw;
                 });
             };
             ButtonView.prototype.InnerRefresh = function () {
-                this._imageView.Size.Width = this.Size.Width;
-                this._imageView.Size.Height = this.Size.Height;
-                _super.prototype.InnerRefresh.call(this);
+                try {
+                    this.SuppressLayout();
+                    this._imageView.Size.Width = this.Size.Width;
+                    this._imageView.Size.Height = this.Size.Height;
+                    _super.prototype.InnerRefresh.call(this);
+                }
+                catch (e) {
+                    Dump.ErrorLog(e);
+                }
+                finally {
+                    this.ResumeLayout();
+                }
             };
             ButtonView.prototype.Dispose = function () {
                 _super.prototype.Dispose.call(this);
@@ -3149,13 +3177,22 @@ var Fw;
                 this._firPolicy = FitPolicy.Auto;
             };
             ImageView.prototype.InnerRefresh = function () {
-                _super.prototype.InnerRefresh.call(this);
-                this.Dom.style.backgroundPosition = 'center center';
-                this.Dom.style.backgroundRepeat = 'no-repeat';
-                this.Dom.style.backgroundSize = this.FitPolicy;
-                this.Dom.style.backgroundImage = (this._src)
-                    ? "url(" + this._src + ")"
-                    : null;
+                try {
+                    this.SuppressLayout();
+                    _super.prototype.InnerRefresh.call(this);
+                    this.Dom.style.backgroundPosition = 'center center';
+                    this.Dom.style.backgroundRepeat = 'no-repeat';
+                    this.Dom.style.backgroundSize = this.FitPolicy;
+                    this.Dom.style.backgroundImage = (this._src)
+                        ? "url(" + this._src + ")"
+                        : null;
+                }
+                catch (e) {
+                    Dump.ErrorLog(e);
+                }
+                finally {
+                    this.ResumeLayout();
+                }
             };
             ImageView.prototype.Dispose = function () {
                 _super.prototype.Dispose.call(this);
@@ -3312,6 +3349,7 @@ var Fw;
 (function (Fw) {
     var Views;
     (function (Views) {
+        var Dump = Fw.Util.Dump;
         var Events = Fw.Events.ControlViewEvents;
         var RelocatableButtonView = /** @class */ (function (_super) {
             __extends(RelocatableButtonView, _super);
@@ -3457,63 +3495,72 @@ var Fw;
                 this.Refresh();
             };
             RelocatableButtonView.prototype.InnerRefresh = function () {
-                var parent = $(this.Elem.parent());
-                if (parent.length <= 0)
-                    return;
-                if (!this._isRelocatable) {
-                    if (this.Position.Policy === Views.Property.PositionPolicy.Centering) {
-                        this.Position.X = Math.round(this.Position.X / this.GridSize) * this.GridSize;
-                        this.Position.Y = Math.round(this.Position.Y / this.GridSize) * this.GridSize;
+                try {
+                    this.SuppressLayout();
+                    var parent_3 = $(this.Elem.parent());
+                    if (parent_3.length <= 0)
+                        return;
+                    if (!this._isRelocatable) {
+                        if (this.Position.Policy === Views.Property.PositionPolicy.Centering) {
+                            this.Position.X = Math.round(this.Position.X / this.GridSize) * this.GridSize;
+                            this.Position.Y = Math.round(this.Position.Y / this.GridSize) * this.GridSize;
+                        }
+                        else {
+                            this.Position.Left = Math.round(this.Position.Left / this.GridSize) * this.GridSize;
+                            this.Position.Top = Math.round(this.Position.Top / this.GridSize) * this.GridSize;
+                        }
+                    }
+                    _super.prototype.InnerRefresh.call(this);
+                    var shadowDom = this._shadow.get(0);
+                    if (!this._isRelocatable) {
+                        shadowDom.style.display = 'none';
+                        this.Dom.style.opacity = '1.0';
+                        return;
+                    }
+                    this.Dom.style.opacity = '0.7';
+                    if (this._isDragging) {
+                        var parentWidth = (this.Parent)
+                            ? this.Parent.Size.Width
+                            : parent_3.width();
+                        var parentHeight = (this.Parent)
+                            ? this.Parent.Size.Height
+                            : parent_3.height();
+                        var centerLeft = (parentWidth / 2);
+                        var centerTop = (parentHeight / 2);
+                        var sX = void 0, sY = void 0, sLeft = void 0, sTop = void 0;
+                        if (this.Position.Policy === Views.Property.PositionPolicy.Centering) {
+                            sX = Math.round(this.Position.X / this.GridSize) * this.GridSize;
+                            sY = Math.round(this.Position.Y / this.GridSize) * this.GridSize;
+                            sLeft = centerLeft + sX - (this.Size.Width / 2);
+                            sTop = centerTop + sY - (this.Size.Height / 2);
+                        }
+                        else {
+                            sX = Math.round(this.Position.Left / this.GridSize) * this.GridSize;
+                            sY = Math.round(this.Position.Top / this.GridSize) * this.GridSize;
+                            sLeft = sX;
+                            sTop = sY;
+                        }
+                        shadowDom.style.display = 'block';
+                        shadowDom.style.left = sLeft + "px";
+                        shadowDom.style.top = sTop + "px";
+                        shadowDom.style.width = this.Size.Width + "px";
+                        shadowDom.style.height = this.Size.Height + "px";
+                        shadowDom.style.opacity = '0.4';
+                        shadowDom.style.color = "" + this.Color;
+                        shadowDom.style.borderColor = "" + this.Color;
+                        shadowDom.style.borderStyle = 'dashed';
+                        shadowDom.style.borderWidth = '2px';
+                        shadowDom.style.backgroundColor = "" + this.BackgroundColor;
                     }
                     else {
-                        this.Position.Left = Math.round(this.Position.Left / this.GridSize) * this.GridSize;
-                        this.Position.Top = Math.round(this.Position.Top / this.GridSize) * this.GridSize;
+                        shadowDom.style.display = 'none';
                     }
                 }
-                _super.prototype.InnerRefresh.call(this);
-                var shadowDom = this._shadow.get(0);
-                if (!this._isRelocatable) {
-                    shadowDom.style.display = 'none';
-                    this.Dom.style.opacity = '1.0';
-                    return;
+                catch (e) {
+                    Dump.ErrorLog(e);
                 }
-                this.Dom.style.opacity = '0.7';
-                if (this._isDragging) {
-                    var parentWidth = (this.Parent)
-                        ? this.Parent.Size.Width
-                        : parent.width();
-                    var parentHeight = (this.Parent)
-                        ? this.Parent.Size.Height
-                        : parent.height();
-                    var centerLeft = (parentWidth / 2);
-                    var centerTop = (parentHeight / 2);
-                    var sX = void 0, sY = void 0, sLeft = void 0, sTop = void 0;
-                    if (this.Position.Policy === Views.Property.PositionPolicy.Centering) {
-                        sX = Math.round(this.Position.X / this.GridSize) * this.GridSize;
-                        sY = Math.round(this.Position.Y / this.GridSize) * this.GridSize;
-                        sLeft = centerLeft + sX - (this.Size.Width / 2);
-                        sTop = centerTop + sY - (this.Size.Height / 2);
-                    }
-                    else {
-                        sX = Math.round(this.Position.Left / this.GridSize) * this.GridSize;
-                        sY = Math.round(this.Position.Top / this.GridSize) * this.GridSize;
-                        sLeft = sX;
-                        sTop = sY;
-                    }
-                    shadowDom.style.display = 'block';
-                    shadowDom.style.left = sLeft + "px";
-                    shadowDom.style.top = sTop + "px";
-                    shadowDom.style.width = this.Size.Width + "px";
-                    shadowDom.style.height = this.Size.Height + "px";
-                    shadowDom.style.opacity = '0.4';
-                    shadowDom.style.color = "" + this.Color;
-                    shadowDom.style.borderColor = "" + this.Color;
-                    shadowDom.style.borderStyle = 'dashed';
-                    shadowDom.style.borderWidth = '2px';
-                    shadowDom.style.backgroundColor = "" + this.BackgroundColor;
-                }
-                else {
-                    shadowDom.style.display = 'none';
+                finally {
+                    this.ResumeLayout();
                 }
             };
             RelocatableButtonView.prototype.Dispose = function () {
@@ -3546,25 +3593,28 @@ var Fw;
         var Property = Fw.Views.Property;
         var Anim = Fw.Views.Animation;
         var Events = Fw.Events.SlidableBoxViewEvents;
-        var Direction;
-        (function (Direction) {
-            Direction[Direction["Horizontal"] = 0] = "Horizontal";
-            Direction[Direction["Vertical"] = 1] = "Vertical";
-        })(Direction = Views.Direction || (Views.Direction = {}));
         var SlidableBoxView = /** @class */ (function (_super) {
             __extends(SlidableBoxView, _super);
             function SlidableBoxView(direction) {
                 var _this = _super.call(this) || this;
                 _this._innerBackgroundColor = '#F5F5F5';
-                _this._innerBoxCount = 2;
+                _this._innerLength = 2;
+                _this._barMargin = 10;
                 _this._isDragging = false;
                 _this._spcvMouseSuppressor = false;
                 // nullやundefinedを入れさせない。
-                _this.Direction = (direction === Direction.Horizontal)
-                    ? Direction.Horizontal
-                    : Direction.Vertical;
+                _this._direction = (direction === Property.Direction.Horizontal)
+                    ? Property.Direction.Horizontal
+                    : Property.Direction.Vertical;
                 return _this;
             }
+            Object.defineProperty(SlidableBoxView.prototype, "Direction", {
+                get: function () {
+                    return this._direction;
+                },
+                enumerable: true,
+                configurable: true
+            });
             Object.defineProperty(SlidableBoxView.prototype, "InnerBackgroundColor", {
                 get: function () {
                     return this._innerBackgroundColor;
@@ -3576,12 +3626,12 @@ var Fw;
                 enumerable: true,
                 configurable: true
             });
-            Object.defineProperty(SlidableBoxView.prototype, "InnerPanelCount", {
+            Object.defineProperty(SlidableBoxView.prototype, "InnerLength", {
                 get: function () {
-                    return this._innerBoxCount;
+                    return this._innerLength;
                 },
                 set: function (value) {
-                    this._innerBoxCount = value;
+                    this._innerLength = value;
                     this.Refresh();
                 },
                 enumerable: true,
@@ -3600,6 +3650,19 @@ var Fw;
                 this._innerBox.HasBorder = false;
                 this._innerBox.Elem.removeClass('TransAnimation');
                 this.Add(this._innerBox);
+                // コンストラクタ完了後に実行。
+                _.defer(function () {
+                    _this._positionBarMax = new Views.LineView(_this._direction);
+                    _this._positionBarMax.Position.Policy = Property.PositionPolicy.LeftTop;
+                    _this._positionBarMax.SetTransAnimation(false);
+                    _this._positionBarMax.Color = '#888888';
+                    _this.Add(_this._positionBarMax);
+                    _this._positionBarCurrent = new Views.LineView(_this._direction);
+                    _this._positionBarCurrent.Position.Policy = Property.PositionPolicy.LeftTop;
+                    _this._positionBarCurrent.SetTransAnimation(false);
+                    _this._positionBarCurrent.Color = '#EEEEEE';
+                    _this.Add(_this._positionBarCurrent);
+                });
                 this.AddEventListener(Events.Initialized, function () {
                     _this.InitView();
                 });
@@ -3619,7 +3682,7 @@ var Fw;
                         return;
                     var addX = e.clientX - _this._dragStartMousePosition.X;
                     var addY = e.clientY - _this._dragStartMousePosition.Y;
-                    if (_this.Direction === Direction.Horizontal) {
+                    if (_this._direction === Property.Direction.Horizontal) {
                         // 横方向
                         _this._innerBox.Position.X = _this._dragStartViewPosition.X + addX;
                     }
@@ -3638,20 +3701,24 @@ var Fw;
                 });
             };
             SlidableBoxView.prototype.InitView = function () {
-                if (this.Direction === Direction.Horizontal) {
+                if (this.Direction === Property.Direction.Horizontal) {
                     // 横方向
+                    if (this.InnerLength < this.Size.Width)
+                        this.InnerLength = this.Size.Width;
                     this.Dom.style.overflowX = 'hidden'; //'scroll';
                     this.Dom.style.overflowY = 'hidden';
-                    this._innerBox.Size.Width = this.Size.Width * this.InnerPanelCount;
+                    this._innerBox.Size.Width = this.InnerLength;
                     this._innerBox.Size.Height = this.Size.Height;
                     this._innerBox.Position.X = (this._innerBox.Size.Width - this.Size.Width) / 2;
                     this._innerBox.Position.Y = 0;
                 }
                 else {
                     // 縦方向
+                    if (this.InnerLength < this.Size.Height)
+                        this.InnerLength = this.Size.Height;
                     this.Dom.style.overflowY = 'hidden'; //'scroll';
                     this.Dom.style.overflowX = 'hidden';
-                    this._innerBox.Size.Height = this.Size.Height * this.InnerPanelCount;
+                    this._innerBox.Size.Height = this.InnerLength;
                     this._innerBox.Size.Width = this.Size.Width;
                     this._innerBox.Position.Y = (this._innerBox.Size.Height - this.Size.Height) / 2;
                     this._innerBox.Position.X = 0;
@@ -3693,14 +3760,14 @@ var Fw;
                         toTop -= unitHeight;
                 }
                 var animator = new Anim.Animator(this._innerBox);
-                if (this.Direction === Direction.Horizontal) {
+                if (this.Direction === Property.Direction.Horizontal) {
                     animator.ToParams.X = (toLeft - left);
                 }
                 else {
                     animator.ToParams.Y = (toTop - top);
                 }
                 animator.OnComplete = function () {
-                    if (_this.Direction === Direction.Horizontal) {
+                    if (_this.Direction === Property.Direction.Horizontal) {
                         _this._innerBox.SetLeftTop(toLeft, null, false);
                     }
                     else {
@@ -3713,19 +3780,55 @@ var Fw;
             };
             SlidableBoxView.prototype.InnerRefresh = function () {
                 try {
-                    if (this.Direction === Direction.Horizontal) {
+                    this.SuppressLayout();
+                    if (this.Direction === Property.Direction.Horizontal) {
                         // 横方向
+                        if (this.InnerLength < this.Size.Width)
+                            this.InnerLength = this.Size.Width;
                         this.Dom.style.overflowX = 'hidden'; //'scroll';
                         this.Dom.style.overflowY = 'hidden';
-                        this._innerBox.Size.Width = this.Size.Width * this.InnerPanelCount;
+                        this._innerBox.Size.Width = this.InnerLength;
                         this._innerBox.Size.Height = this.Size.Height;
+                        this._positionBarMax.SetAnchor(null, this._barMargin, this._barMargin, this._barMargin);
+                        this._positionBarMax.Length = this.Size.Width - (this._barMargin * 2);
+                        this._positionBarCurrent.SetAnchor(null, null, null, this._barMargin);
+                        this._positionBarCurrent.Length
+                            = this._positionBarMax.Length
+                                * (this.Size.Width / this.InnerLength);
+                        var maxLeft = this.InnerLength - this.Size.Width;
+                        var currentLeft = this._innerBox.Position.Left;
+                        var posRate = currentLeft / maxLeft;
+                        var leftLength = this._positionBarMax.Length - this._positionBarCurrent.Length;
+                        this._positionBarCurrent.Position.Left = this._barMargin - (leftLength * posRate);
+                        //Dump.Log({
+                        //    max_Length: this._positionBarMax.Length,
+                        //    current_Length: this._positionBarCurrent.Length,
+                        //    maxLeft: maxLeft,
+                        //    currentLeft: currentLeft,
+                        //    posRate: posRate,
+                        //    leftLength: leftLength,
+                        //    current_Left: this._positionBarCurrent.Position.Left
+                        //});
                     }
                     else {
                         // 縦方向
+                        if (this.InnerLength < this.Size.Height)
+                            this.InnerLength = this.Size.Height;
                         this.Dom.style.overflowY = 'hidden'; //'scroll';
                         this.Dom.style.overflowX = 'hidden';
-                        this._innerBox.Size.Height = this.Size.Height * this.InnerPanelCount;
+                        this._innerBox.Size.Height = this.InnerLength;
                         this._innerBox.Size.Width = this.Size.Width;
+                        this._positionBarMax.SetAnchor(this._barMargin, null, this._barMargin, this._barMargin);
+                        this._positionBarMax.Length = this.Size.Height - (this._barMargin * 2);
+                        this._positionBarCurrent.SetAnchor(null, null, this._barMargin, null);
+                        this._positionBarCurrent.Length
+                            = this._positionBarMax.Length
+                                * (this.Size.Height / this.InnerLength);
+                        var maxTop = this.InnerLength - this.Size.Height;
+                        var currentTop = this._innerBox.Position.Top;
+                        var posRate = currentTop / maxTop;
+                        var topLength = this._positionBarMax.Length - this._positionBarCurrent.Length;
+                        this._positionBarCurrent.Position.Top = this._barMargin - (topLength * posRate);
                     }
                     this._innerBox.BackgroundColor = this._innerBackgroundColor;
                     _super.prototype.InnerRefresh.call(this);
@@ -3734,12 +3837,13 @@ var Fw;
                     Dump.ErrorLog(e);
                 }
                 finally {
+                    this.ResumeLayout();
                 }
             };
             SlidableBoxView.prototype.Dispose = function () {
                 _super.prototype.Dispose.call(this);
                 this._innerBackgroundColor = null;
-                this._innerBoxCount = null;
+                this._innerLength = null;
                 this._innerBox.Dispose();
                 this._innerBox = null;
                 this._isDragging = null;
@@ -3764,6 +3868,7 @@ var Fw;
 (function (Fw) {
     var Views;
     (function (Views) {
+        var Dump = Fw.Util.Dump;
         var Events = Fw.Events.ControlViewEvents;
         var ToggleButtonView = /** @class */ (function (_super) {
             __extends(ToggleButtonView, _super);
@@ -3841,18 +3946,27 @@ var Fw;
             ToggleButtonView.prototype.SwitchToOff = function () {
             };
             ToggleButtonView.prototype.InnerRefresh = function () {
-                this._sliderBox.Size.Width = this.Size.Width - this._overMargin;
-                this._sliderBox.Size.Height = this.Size.Height - this._overMargin;
-                this._maskOn.Size.Width = this.Size.Width - this._overMargin;
-                this._maskOn.Size.Height = this.Size.Height - this._overMargin;
-                this._notch.SetSize(this.Size.Height, this.Size.Height);
-                this._notch.Position.X = (this.Value)
-                    ? (this.Size.Width / 2) - (this.Size.Height / 2)
-                    : -(this.Size.Width / 2) + (this.Size.Height / 2);
-                this._maskOn.Position.X = (this.Value)
-                    ? 0
-                    : -(this.Size.Width - this._overMargin);
-                _super.prototype.InnerRefresh.call(this);
+                try {
+                    this.SuppressLayout();
+                    this._sliderBox.Size.Width = this.Size.Width - this._overMargin;
+                    this._sliderBox.Size.Height = this.Size.Height - this._overMargin;
+                    this._maskOn.Size.Width = this.Size.Width - this._overMargin;
+                    this._maskOn.Size.Height = this.Size.Height - this._overMargin;
+                    this._notch.SetSize(this.Size.Height, this.Size.Height);
+                    this._notch.Position.X = (this.Value)
+                        ? (this.Size.Width / 2) - (this.Size.Height / 2)
+                        : -(this.Size.Width / 2) + (this.Size.Height / 2);
+                    this._maskOn.Position.X = (this.Value)
+                        ? 0
+                        : -(this.Size.Width - this._overMargin);
+                    _super.prototype.InnerRefresh.call(this);
+                }
+                catch (e) {
+                    Dump.ErrorLog(e);
+                }
+                finally {
+                    this.ResumeLayout();
+                }
             };
             ToggleButtonView.prototype.Dispose = function () {
                 _super.prototype.Dispose.call(this);
@@ -3998,5 +4112,147 @@ var Fw;
         return Startup;
     }());
     Fw.Startup = Startup;
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Events/ControlViewEvents.ts" />
+/// <reference path="../Util/Dump.ts" />
+/// <reference path="../Util/Number.ts" />
+/// <reference path="./BoxView.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Dump = Fw.Util.Dump;
+        var LineView = /** @class */ (function (_super) {
+            __extends(LineView, _super);
+            function LineView(direction) {
+                var _this = _super.call(this, $('<a></a>')) || this;
+                // nullやundefinedを入れさせない。
+                _this._direction = (direction === Views.Property.Direction.Horizontal)
+                    ? Views.Property.Direction.Horizontal
+                    : Views.Property.Direction.Vertical;
+                return _this;
+            }
+            Object.defineProperty(LineView.prototype, "Direction", {
+                get: function () {
+                    return this._direction;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(LineView.prototype, "Length", {
+                get: function () {
+                    return this._length;
+                },
+                set: function (value) {
+                    this._length = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(LineView.prototype, "BackgroundColor", {
+                get: function () {
+                    throw new Error('Not supported');
+                },
+                set: function (value) {
+                    throw new Error('Not supported');
+                },
+                enumerable: true,
+                configurable: true
+            });
+            LineView.prototype.Init = function () {
+                _super.prototype.Init.call(this);
+                this.SetClassName('LineView');
+                this.Elem.addClass(this.ClassName);
+            };
+            LineView.prototype.InnerRefresh = function () {
+                try {
+                    //Dump.Log(`${this.ClassName}.InnerRefresh`);
+                    this.SuppressLayout();
+                    if (this.Direction === Views.Property.Direction.Horizontal) {
+                        //Dump.Log(`${this.ClassName}.Direction = ${this.Direction}`);
+                        this.Size.Height = 2;
+                        this.Size.Width = this.Length;
+                    }
+                    else {
+                        //Dump.Log(`${this.ClassName}.Direction = ${this.Direction}`);
+                        this.Size.Width = 2;
+                        this.Size.Height = this.Length;
+                    }
+                    _super.prototype.InnerRefresh.call(this);
+                    this.Dom.style.borderWidth = '0';
+                    this.Dom.style.backgroundColor = "" + this.Color;
+                }
+                catch (e) {
+                    Dump.ErrorLog(e);
+                }
+                finally {
+                    this.ResumeLayout();
+                }
+            };
+            LineView.prototype.Dispose = function () {
+                _super.prototype.Dispose.call(this);
+            };
+            return LineView;
+        }(Views.ViewBase));
+        Views.LineView = LineView;
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="ViewEvents.ts" />
+var Fw;
+(function (Fw) {
+    var Events;
+    (function (Events) {
+        var LineViewEventsClass = /** @class */ (function (_super) {
+            __extends(LineViewEventsClass, _super);
+            function LineViewEventsClass() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            return LineViewEventsClass;
+        }(Events.ViewEventsClass));
+        Events.LineViewEventsClass = LineViewEventsClass;
+        Events.LineViewEvents = new LineViewEventsClass();
+    })(Events = Fw.Events || (Fw.Events = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="BoxViewEvents.ts" />
+var Fw;
+(function (Fw) {
+    var Events;
+    (function (Events) {
+        var ContainerBoxViewEventsClass = /** @class */ (function (_super) {
+            __extends(ContainerBoxViewEventsClass, _super);
+            function ContainerBoxViewEventsClass() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            return ContainerBoxViewEventsClass;
+        }(Events.BoxViewEventsClass));
+        Events.ContainerBoxViewEventsClass = ContainerBoxViewEventsClass;
+        Events.ContainerBoxViewEvents = new ContainerBoxViewEventsClass();
+    })(Events = Fw.Events || (Fw.Events = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Events/ViewEvents.ts" />
+/// <reference path="../../Util/Dump.ts" />
+/// <reference path="../../Util/Number.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Property;
+        (function (Property) {
+            var Direction;
+            (function (Direction) {
+                Direction[Direction["Horizontal"] = 0] = "Horizontal";
+                Direction[Direction["Vertical"] = 1] = "Vertical";
+            })(Direction = Property.Direction || (Property.Direction = {}));
+        })(Property = Views.Property || (Views.Property = {}));
+    })(Views = Fw.Views || (Fw.Views = {}));
 })(Fw || (Fw = {}));
 //# sourceMappingURL=tsout.js.map

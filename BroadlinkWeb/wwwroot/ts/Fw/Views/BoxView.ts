@@ -55,8 +55,16 @@ namespace Fw.Views {
         }
 
         protected InnerRefresh(): void {
-            super.InnerRefresh();
-            this.Dom.style.borderColor = `${this.Color}`;
+            try {
+                this.SuppressLayout();
+
+                super.InnerRefresh();
+                this.Dom.style.borderColor = `${this.Color}`;
+            } catch (e) {
+                Dump.ErrorLog(e);
+            } finally {
+                this.ResumeLayout();
+            }
         }
 
         public Dispose(): void {

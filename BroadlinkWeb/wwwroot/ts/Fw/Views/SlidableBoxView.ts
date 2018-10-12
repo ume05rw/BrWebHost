@@ -13,14 +13,12 @@ namespace Fw.Views {
     import Anim = Fw.Views.Animation;
     import Events = Fw.Events.SlidableBoxViewEvents;
 
-    export enum Direction {
-        Horizontal,
-        Vertical
-    }
-
     export class SlidableBoxView extends BoxView {
 
-        public readonly Direction: Direction;
+        private _direction: Property.Direction;
+        public get Direction(): Property.Direction {
+            return this._direction;
+        }
 
         private _innerBackgroundColor: string = '#F5F5F5';
         public get InnerBackgroundColor(): string {
@@ -31,28 +29,31 @@ namespace Fw.Views {
             this.Refresh();
         }
 
-        private _innerBoxCount: number = 2;
-        public get InnerPanelCount(): number {
-            return this._innerBoxCount;
+        private _innerLength: number = 2;
+        public get InnerLength(): number {
+            return this._innerLength;
         }
-        public set InnerPanelCount(value: number) {
-            this._innerBoxCount = value;
+        public set InnerLength(value: number) {
+            this._innerLength = value;
             this.Refresh();
         }
 
         private _innerBox: BoxView;
+        private _positionBarMax: LineView;
+        private _positionBarCurrent: LineView;
+        private _barMargin: number = 10;
         private _isDragging: boolean = false;
         private _spcvMouseSuppressor = false;
         private _dragStartMousePosition: Property.Position;
         private _dragStartViewPosition: Property.Position;
 
-        constructor(direction: Direction) {
+        constructor(direction: Property.Direction) {
             super();
 
             // nullやundefinedを入れさせない。
-            this.Direction = (direction === Direction.Horizontal)
-                ? Direction.Horizontal
-                : Direction.Vertical;
+            this._direction = (direction === Property.Direction.Horizontal)
+                ? Property.Direction.Horizontal
+                : Property.Direction.Vertical;
         }
 
         protected Init(): void {
@@ -71,6 +72,20 @@ namespace Fw.Views {
             this._innerBox.HasBorder = false;
             this._innerBox.Elem.removeClass('TransAnimation');
             this.Add(this._innerBox);
+
+            // コンストラクタ完了後に実行。
+            _.defer(() => {
+                this._positionBarMax = new LineView(this._direction);
+                this._positionBarMax.Position.Policy = Property.PositionPolicy.LeftTop;
+                this._positionBarMax.SetTransAnimation(false);
+                this._positionBarMax.Color = '#888888';
+                this.Add(this._positionBarMax);
+                this._positionBarCurrent = new LineView(this._direction);
+                this._positionBarCurrent.Position.Policy = Property.PositionPolicy.LeftTop;
+                this._positionBarCurrent.SetTransAnimation(false);
+                this._positionBarCurrent.Color = '#EEEEEE';
+                this.Add(this._positionBarCurrent);
+            });
 
             this.AddEventListener(Events.Initialized, () => {
                 this.InitView();
@@ -96,7 +111,7 @@ namespace Fw.Views {
                 const addX = e.clientX - this._dragStartMousePosition.X;
                 const addY = e.clientY - this._dragStartMousePosition.Y;
 
-                if (this.Direction === Direction.Horizontal) {
+                if (this._direction === Property.Direction.Horizontal) {
                     // 横方向
                     this._innerBox.Position.X = this._dragStartViewPosition.X + addX;
                 } else {
@@ -115,19 +130,25 @@ namespace Fw.Views {
         }
 
         private InitView(): void {
-            if (this.Direction === Direction.Horizontal) {
+            if (this.Direction === Property.Direction.Horizontal) {
                 // 横方向
+                if (this.InnerLength < this.Size.Width)
+                    this.InnerLength = this.Size.Width;
+
                 this.Dom.style.overflowX = 'hidden';//'scroll';
                 this.Dom.style.overflowY = 'hidden';
-                this._innerBox.Size.Width = this.Size.Width * this.InnerPanelCount;
+                this._innerBox.Size.Width = this.InnerLength;
                 this._innerBox.Size.Height = this.Size.Height;
                 this._innerBox.Position.X = (this._innerBox.Size.Width - this.Size.Width) / 2;
                 this._innerBox.Position.Y = 0;
             } else {
                 // 縦方向
+                if (this.InnerLength < this.Size.Height)
+                    this.InnerLength = this.Size.Height;
+
                 this.Dom.style.overflowY = 'hidden';//'scroll';
                 this.Dom.style.overflowX = 'hidden';
-                this._innerBox.Size.Height = this.Size.Height * this.InnerPanelCount;
+                this._innerBox.Size.Height = this.InnerLength;
                 this._innerBox.Size.Width = this.Size.Width;
                 this._innerBox.Position.Y = (this._innerBox.Size.Height - this.Size.Height) / 2;
                 this._innerBox.Position.X = 0;
@@ -169,13 +190,13 @@ namespace Fw.Views {
             }
 
             const animator = new Anim.Animator(this._innerBox);
-            if (this.Direction === Direction.Horizontal) {
+            if (this.Direction === Property.Direction.Horizontal) {
                 animator.ToParams.X = (toLeft - left);
             } else {
                 animator.ToParams.Y = (toTop - top);
             }
             animator.OnComplete = () => {
-                if (this.Direction === Direction.Horizontal) {
+                if (this.Direction === Property.Direction.Horizontal) {
                     this._innerBox.SetLeftTop(toLeft, null, false);
                 } else {
                     this._innerBox.SetLeftTop(null, toTop, false);
@@ -189,25 +210,77 @@ namespace Fw.Views {
 
         protected InnerRefresh(): void {
             try {
-                if (this.Direction === Direction.Horizontal) {
+                this.SuppressLayout();
+
+                if (this.Direction === Property.Direction.Horizontal) {
                     // 横方向
+                    if (this.InnerLength < this.Size.Width)
+                        this.InnerLength = this.Size.Width;
+
                     this.Dom.style.overflowX = 'hidden';//'scroll';
                     this.Dom.style.overflowY = 'hidden';
-                    this._innerBox.Size.Width = this.Size.Width * this.InnerPanelCount;
+                    this._innerBox.Size.Width = this.InnerLength;
                     this._innerBox.Size.Height = this.Size.Height;
+
+                    this._positionBarMax.SetAnchor(null, this._barMargin, this._barMargin, this._barMargin);
+                    this._positionBarMax.Length = this.Size.Width - (this._barMargin * 2);
+
+                    this._positionBarCurrent.SetAnchor(null, null, null, this._barMargin);
+                    this._positionBarCurrent.Length
+                        = this._positionBarMax.Length
+                        * (this.Size.Width / this.InnerLength);
+
+                    const maxLeft = this.InnerLength - this.Size.Width;
+                    const currentLeft = this._innerBox.Position.Left;
+                    const posRate = currentLeft / maxLeft;
+                    const leftLength
+                        = this._positionBarMax.Length - this._positionBarCurrent.Length;
+                    this._positionBarCurrent.Position.Left = this._barMargin - (leftLength * posRate);
+
+                    //Dump.Log({
+                    //    max_Length: this._positionBarMax.Length,
+                    //    current_Length: this._positionBarCurrent.Length,
+                    //    maxLeft: maxLeft,
+                    //    currentLeft: currentLeft,
+                    //    posRate: posRate,
+                    //    leftLength: leftLength,
+                    //    current_Left: this._positionBarCurrent.Position.Left
+                    //});
+
                 } else {
                     // 縦方向
+                    if (this.InnerLength < this.Size.Height)
+                        this.InnerLength = this.Size.Height;
+
                     this.Dom.style.overflowY = 'hidden';//'scroll';
                     this.Dom.style.overflowX = 'hidden';
-                    this._innerBox.Size.Height = this.Size.Height * this.InnerPanelCount;
+                    this._innerBox.Size.Height = this.InnerLength;
                     this._innerBox.Size.Width = this.Size.Width;
+
+
+                    this._positionBarMax.SetAnchor(this._barMargin, null, this._barMargin, this._barMargin);
+                    this._positionBarMax.Length = this.Size.Height - (this._barMargin * 2);
+
+                    this._positionBarCurrent.SetAnchor(null, null, this._barMargin, null);
+                    this._positionBarCurrent.Length
+                        = this._positionBarMax.Length
+                        * (this.Size.Height / this.InnerLength);
+
+                    const maxTop = this.InnerLength - this.Size.Height;
+                    const currentTop = this._innerBox.Position.Top;
+                    const posRate = currentTop / maxTop;
+                    const topLength
+                        = this._positionBarMax.Length - this._positionBarCurrent.Length;
+                    this._positionBarCurrent.Position.Top = this._barMargin - (topLength * posRate);
                 }
                 this._innerBox.BackgroundColor = this._innerBackgroundColor;
                 
                 super.InnerRefresh();
+
             } catch (e) {
                 Dump.ErrorLog(e);
             } finally {
+                this.ResumeLayout();
             }
         }
 
@@ -215,7 +288,7 @@ namespace Fw.Views {
             super.Dispose();
 
             this._innerBackgroundColor = null;
-            this._innerBoxCount = null;
+            this._innerLength = null;
             this._innerBox.Dispose();
             this._innerBox = null;
             this._isDragging = null;
