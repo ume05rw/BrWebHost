@@ -79,20 +79,13 @@ namespace Fw {
         public Mask(): void {
             //Dump.Log(`${this.ClassName}.Mask`);
             this._masked = true;
-
-            if (!this._mask.Elem.hasClass('Masked'))
-                this._mask.Elem.addClass('Masked');
-
             this.Refresh();
         }
 
         public UnMask(): void {
             //Dump.Log(`${this.ClassName}.UnMask`);
             this._masked = false;
-
-            if (this._mask.Elem.hasClass('Masked'))
-                this._mask.Elem.removeClass('Masked');
-
+            
             this.Refresh();
         }
 
@@ -111,9 +104,13 @@ namespace Fw {
             if (this._mask) {
                 this._mask.SetSize(this._size.Width, this._size.Height);
 
-                this._masked
-                    ? this._mask.ZIndex = 0
-                    : this._mask.ZIndex = -1;
+                if (this._masked) {
+                    this._mask.ZIndex = 0;
+                    this._mask.Opacity = 0.4;
+                } else {
+                    this._mask.ZIndex = -1;
+                    this._mask.Opacity = 0.0;
+                }
             }
         }
 

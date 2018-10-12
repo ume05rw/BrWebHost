@@ -70,7 +70,7 @@ namespace Fw.Views {
 
             this._innerBox = new BoxView();
             this._innerBox.HasBorder = false;
-            this._innerBox.Elem.removeClass('TransAnimation');
+            this._innerBox.SetTransAnimation(false);
             this.Add(this._innerBox);
 
             // コンストラクタ完了後に実行。
