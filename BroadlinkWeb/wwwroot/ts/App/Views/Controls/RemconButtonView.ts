@@ -11,11 +11,13 @@ namespace App.Views.Controls {
     import Property = Fw.Views.Property;
     import Color = App.Color;
 
-    export class ButtonView extends Fw.Views.ButtonView {
+    export class RemconButtonView extends Fw.Views.ButtonView {
         constructor() {
             super();
 
             this.HasBorder = false;
+            this.BorderRadius = 50;
+            this.SetSize(150, 150);
             this.BackgroundColor = Color.MainBackground;
             this.HoverColor = Color.MainHover;
             this.Color = Color.Main;

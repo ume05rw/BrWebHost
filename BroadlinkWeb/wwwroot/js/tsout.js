@@ -1852,11 +1852,30 @@ var App;
     var Color = /** @class */ (function () {
         function Color() {
         }
-        Color.Main = '#FFFFFF';
-        Color.MainBackground = '#D4B16A';
-        Color.MainHover = '#D9BA7C';
-        Color.HeaderButtonBackground = '#C79B41';
-        Color.HeaderButtonHover = '#CDA555';
+        // ライトブラウン - 女っぽいからターゲット外
+        //public static Main: string = '#FFFFFF';
+        //public static MainBackground: string = '#D4B16A';
+        //public static MainHover: string = '#D9BA7C';
+        //public static HeaderButtonBackground = '#C79B41';
+        //public static HeaderButtonHover = '#CDA555';
+        Color.Transparent = 'transparent';
+        Color.Main = '#000000';
+        Color.MainBackground = '#f5f5f5';
+        Color.MainHover = '#e0e0e0';
+        Color.HeaderButtonBackground = '#ececec';
+        Color.HeaderButtonHover = '#e0e0e0';
+        Color.ReverseMain = '#FFFFFF';
+        Color.ButtonColors = [
+            '#fff796',
+            '#9d9e9e',
+            '#84bde8',
+            '#81c03b',
+            '#ccdc4b',
+            '#fcc91f',
+            '#F92068',
+            '#6545C6',
+            '#B5743B',
+        ];
         return Color;
     }());
     App.Color = Color;
@@ -1923,7 +1942,7 @@ var App;
                     this._btnLeft.BackgroundColor = Color.HeaderButtonBackground;
                     this._btnLeft.HoverColor = Color.HeaderButtonHover;
                     this._btnLeft.Color = Color.Main;
-                    this._btnLeft.Label = '<<';
+                    this._btnLeft.Text = '<<';
                     this._btnLeft.SetAnchor(null, 5, null, null);
                     this.Add(this._btnLeft);
                     this._btnRight = new App.Views.Controls.ButtonView();
@@ -1931,7 +1950,7 @@ var App;
                     this._btnRight.BackgroundColor = Color.HeaderButtonBackground;
                     this._btnRight.HoverColor = Color.HeaderButtonHover;
                     this._btnRight.Color = Color.Main;
-                    this._btnRight.Label = '+';
+                    this._btnRight.Text = '+';
                     this._btnRight.SetAnchor(null, null, 5, null);
                     this.Add(this._btnRight);
                     this.AddEventListener(Fw.Events.BoxViewEvents.Attached, function () {
@@ -1985,29 +2004,60 @@ var App;
                     this.HeaderBar.LeftButton.Hide(0);
                     this.HeaderBar.RightButton.Hide(0);
                     this.Add(this.HeaderBar);
+                    var scenePanel = new Views.StuckerBoxView();
+                    scenePanel.HasBorder = true;
+                    scenePanel.BorderRadius = 0;
+                    scenePanel.BackgroundColor = '#f2f2f2';
+                    scenePanel.Color = App.Color.MainBackground;
+                    scenePanel.SetAnchor(70, 10, 10, null);
+                    scenePanel.Size.Height = 200;
+                    scenePanel.ReferencePoint = Property.ReferencePoint.LeftTop;
+                    this.Add(scenePanel);
+                    for (var i = 0; i < 5; i++) {
+                        var btn = new Controls.SceneButtonView();
+                        btn.Text = "Button " + i;
+                        scenePanel.Add(btn);
+                    }
+                    var remConPanel = new Views.StuckerBoxView();
+                    remConPanel.HasBorder = true;
+                    remConPanel.BorderRadius = 0;
+                    remConPanel.BackgroundColor = App.Color.Transparent;
+                    remConPanel.Color = App.Color.MainBackground;
+                    remConPanel.SetAnchor(280, 10, 10, 70);
+                    //remConPanel.SetAnchor(280, 10, 10, 10);
+                    remConPanel.ReferencePoint = Property.ReferencePoint.LeftTop;
+                    this.Add(remConPanel);
+                    for (var i = 0; i < 20; i++) {
+                        var btn = new Controls.RemconButtonView();
+                        btn.Text = "Button " + i;
+                        var idx = i % App.Color.ButtonColors.length;
+                        btn.BackgroundColor = App.Color.ButtonColors[idx];
+                        btn.Color = App.Color.ReverseMain;
+                        remConPanel.Add(btn);
+                    }
                     var bottom = new Views.StuckerBoxView();
                     bottom.HasBorder = true;
-                    bottom.BorderRadius = 5;
+                    bottom.BorderRadius = 0;
                     bottom.BackgroundColor = 'transparent';
-                    bottom.Color = '#D4B16A';
+                    bottom.Color = '#f5f5f5';
                     bottom.SetAnchor(null, 10, 10, 10);
                     bottom.ReferencePoint = Property.ReferencePoint.RightBottom;
                     bottom.Size.Height = 50;
                     this.Add(bottom);
                     this.BtnGoSub1 = new Controls.ButtonView();
-                    this.BtnGoSub1.Label = 'Show Sub1';
+                    this.BtnGoSub1.Text = 'Show Sub1';
                     this.BtnGoSub1.SetSize(80, 30);
                     bottom.Add(this.BtnGoSub1);
                     this.BtnGoSub2 = new Controls.ButtonView();
-                    this.BtnGoSub2.Label = 'Show Sub2';
+                    this.BtnGoSub2.Text = 'Show Sub2';
                     this.BtnGoSub2.SetSize(80, 30);
                     bottom.Add(this.BtnGoSub2);
                     this.BtnGoSub3 = new Controls.ButtonView();
-                    this.BtnGoSub3.Label = 'Show Sub3';
+                    this.BtnGoSub3.Text = 'Show Sub3';
                     this.BtnGoSub3.SetSize(80, 30);
                     bottom.Add(this.BtnGoSub3);
                     this.BtnGoDynamic = new Controls.ButtonView();
-                    this.BtnGoDynamic.Label = 'Layout';
+                    this.BtnGoDynamic.Text = 'Layout';
                     this.BtnGoDynamic.SetSize(80, 30);
                     bottom.Add(this.BtnGoDynamic);
                 };
@@ -2386,7 +2436,7 @@ var App;
                 var devices = new Fw.Views.ButtonView();
                 devices.SetSize(80, 30);
                 devices.SetLeftTop(10, 70);
-                devices.Label = 'デバイス走査';
+                devices.Text = 'デバイス走査';
                 devices.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
                     var store = new BrDeviceStore();
                     store.Discover(function (devices) {
@@ -2445,7 +2495,7 @@ var App;
                 });
                 this.View.Add(header);
                 var btnA1Value = new Fw.Views.ButtonView();
-                btnA1Value.Label = 'A1 Value';
+                btnA1Value.Text = 'A1 Value';
                 btnA1Value.SetSize(80, 30);
                 btnA1Value.SetLeftTop(10, 70);
                 btnA1Value.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
@@ -2463,7 +2513,7 @@ var App;
                 btnMove.Color = '#1188FF';
                 btnMove.BackgroundColor = '#FF9900';
                 btnMove.SetLeftTop(10, 120);
-                btnMove.Label = '動く？';
+                btnMove.Text = '動く？';
                 btnMove.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
                     Dump.Log('btnMove.SingleClick');
                 });
@@ -2471,7 +2521,7 @@ var App;
                 var btnReset = new Fw.Views.ButtonView();
                 btnReset.SetDisplayParams(60, 60, 0, 0, '#1188FF');
                 btnReset.SetAnchor(70, null, 5, null);
-                btnReset.Label = 'リセット';
+                btnReset.Text = 'リセット';
                 btnReset.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
                     Dump.Log('btnReset.SingleClick');
                     if (btnMove.IsRelocatable)
@@ -2515,6 +2565,213 @@ var App;
         Controllers.Sub3Controller = Sub3Controller;
     })(Controllers = App.Controllers || (App.Controllers = {}));
 })(App || (App = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Events/ControlViewEvents.ts" />
+/// <reference path="../Util/Dump.ts" />
+/// <reference path="../Util/Number.ts" />
+/// <reference path="./BoxView.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Events = Fw.Events.ControlViewEvents;
+        var ControlView = /** @class */ (function (_super) {
+            __extends(ControlView, _super);
+            function ControlView() {
+                var _this = _super.call(this) || this;
+                _this._tapEventTimer = null;
+                _this._cvMouseSuppressor = false;
+                _this._cvDelayedResumeEventsTimer = null;
+                return _this;
+            }
+            Object.defineProperty(ControlView.prototype, "Text", {
+                get: function () {
+                    return this._label.html();
+                },
+                set: function (value) {
+                    this._label.html(value);
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            ControlView.prototype.Init = function () {
+                var _this = this;
+                _super.prototype.Init.call(this);
+                this.SetClassName('ControlView');
+                this.Elem.addClass(this.ClassName);
+                // プロパティsetterを一度通しておく。
+                this.HasBorder = true;
+                this.BorderRadius = 5;
+                this._label = $('<span class="ControlViewProperty"></span>');
+                this.Elem.append(this._label);
+                this.Elem.on('touchstart mousedown', function (e) {
+                    if (_this._tapEventTimer != null)
+                        clearTimeout(_this._tapEventTimer);
+                    _this._tapEventTimer = setTimeout(function () {
+                        // ロングタップイベント
+                        _this._tapEventTimer = null;
+                        // Pageのドラッグ処理中のとき、クリックイベントを抑制する。
+                        if (_this._cvMouseSuppressor)
+                            return;
+                        //Dump.Log('longtapped');
+                        _this.DispatchEvent(Events.LongClick);
+                    }, 1000);
+                });
+                this.Elem.on('touchend mouseup', function (e) {
+                    if (_this._tapEventTimer != null) {
+                        // ロングタップ検出中のとき
+                        clearTimeout(_this._tapEventTimer);
+                        _this._tapEventTimer = null;
+                        // Pageのドラッグ処理中のとき、クリックイベントを抑制する。
+                        if (_this._cvMouseSuppressor)
+                            return;
+                        // 以降、シングルタップイベント処理
+                        //Dump.Log('singletapped');
+                        _this.DispatchEvent(Events.SingleClick);
+                    }
+                    else {
+                    }
+                });
+                this.Elem.on('mouseout', function (e) {
+                    if (_this._tapEventTimer != null) {
+                        // ロングタップ検出中のとき
+                        clearTimeout(_this._tapEventTimer);
+                        _this._tapEventTimer = null;
+                        //Dump.Log('tap canceled');
+                    }
+                });
+            };
+            ControlView.prototype.InitPage = function () {
+                if (this.Page) {
+                    this.RemoveEventListener(Fw.Events.PageViewEvents.Dragging, this.OnPageDragging);
+                }
+                _super.prototype.InitPage.call(this);
+                if (this.Page) {
+                    this.AddEventListener(Fw.Events.PageViewEvents.Dragging, this.OnPageDragging);
+                }
+            };
+            ControlView.prototype.OnPageDragging = function () {
+                var _this = this;
+                this._cvMouseSuppressor = true;
+                if (this._cvDelayedResumeEventsTimer !== null) {
+                    clearTimeout(this._cvDelayedResumeEventsTimer);
+                    this._cvDelayedResumeEventsTimer = null;
+                }
+                this._cvDelayedResumeEventsTimer = setTimeout(function () {
+                    //Dump.Log('ResumeMouseEvents');
+                    _this._cvMouseSuppressor = false;
+                }, 100);
+            };
+            ControlView.prototype.Dispose = function () {
+                _super.prototype.Dispose.call(this);
+                this._label = null;
+                this._tapEventTimer = null;
+                this._cvMouseSuppressor = null;
+                this._cvDelayedResumeEventsTimer = null;
+            };
+            return ControlView;
+        }(Views.BoxView));
+        Views.ControlView = ControlView;
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Events/ControlViewEvents.ts" />
+/// <reference path="../Util/Dump.ts" />
+/// <reference path="../Util/Number.ts" />
+/// <reference path="ControlView.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Dump = Fw.Util.Dump;
+        var ButtonView = /** @class */ (function (_super) {
+            __extends(ButtonView, _super);
+            function ButtonView() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            Object.defineProperty(ButtonView.prototype, "ImageSrc", {
+                get: function () {
+                    return this._imageView.Src;
+                },
+                set: function (value) {
+                    this._imageView.Src = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            ButtonView.prototype.Init = function () {
+                var _this = this;
+                _super.prototype.Init.call(this);
+                this.SetClassName('ButtonView');
+                this.Elem.addClass(this.ClassName);
+                this.BackgroundColor = '#add8e6';
+                this.HoverColor = '#6495ed';
+                this._imageView = new Views.ImageView();
+                this._imageView.Src = null;
+                this.Add(this._imageView);
+                this.Elem.hover(function () {
+                    //Dump.Log(`${this.ClassName}.hover: color = ${this.HoverColor}`);
+                    _this.Dom.style.backgroundColor = _this.HoverColor;
+                }, function () {
+                    _this.Dom.style.backgroundColor = _this.BackgroundColor;
+                });
+            };
+            ButtonView.prototype.InnerRefresh = function () {
+                try {
+                    this.SuppressLayout();
+                    this._imageView.Size.Width = this.Size.Width;
+                    this._imageView.Size.Height = this.Size.Height;
+                    _super.prototype.InnerRefresh.call(this);
+                }
+                catch (e) {
+                    Dump.ErrorLog(e);
+                }
+                finally {
+                    this.ResumeLayout();
+                }
+            };
+            ButtonView.prototype.Dispose = function () {
+                _super.prototype.Dispose.call(this);
+                this._imageView = null;
+                this.HoverColor = null;
+            };
+            return ButtonView;
+        }(Views.ControlView));
+        Views.ButtonView = ButtonView;
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Views/ButtonView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../Color.ts" />
+var App;
+(function (App) {
+    var Views;
+    (function (Views_3) {
+        var Controls;
+        (function (Controls) {
+            var Color = App.Color;
+            var ButtonView = /** @class */ (function (_super) {
+                __extends(ButtonView, _super);
+                function ButtonView() {
+                    var _this = _super.call(this) || this;
+                    _this.HasBorder = false;
+                    _this.BackgroundColor = Color.MainBackground;
+                    _this.HoverColor = Color.MainHover;
+                    _this.Color = Color.Main;
+                    return _this;
+                }
+                return ButtonView;
+            }(Fw.Views.ButtonView));
+            Controls.ButtonView = ButtonView;
+        })(Controls = Views_3.Controls || (Views_3.Controls = {}));
+    })(Views = App.Views || (App.Views = {}));
+})(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../../Fw/Views/PageView.ts" />
@@ -2524,7 +2781,7 @@ var App;
 var App;
 (function (App) {
     var Views;
-    (function (Views_3) {
+    (function (Views_4) {
         var Pages;
         (function (Pages) {
             var Property = Fw.Views.Property;
@@ -2540,12 +2797,12 @@ var App;
                 LayoutCheckPageView.prototype.Initialize = function () {
                     this.SetClassName('MainPageView');
                     this.BtnGoSub1 = new Fw.Views.ButtonView();
-                    this.BtnGoSub1.Label = 'Go Sub1';
+                    this.BtnGoSub1.Text = 'Go Sub1';
                     this.BtnGoSub1.SetSize(80, 30);
                     this.BtnGoSub1.SetAnchor(null, 10, null, null);
                     this.Add(this.BtnGoSub1);
                     this.BtnGoSub2 = new Fw.Views.ButtonView();
-                    this.BtnGoSub2.Label = 'Go Sub2';
+                    this.BtnGoSub2.Text = 'Go Sub2';
                     this.BtnGoSub2.SetSize(80, 30);
                     this.BtnGoSub2.Position.Y = 40;
                     this.BtnGoSub2.SetAnchor(null, 10, null, null);
@@ -2554,21 +2811,21 @@ var App;
                     this.CenterControl.SetXY(0, 0);
                     this.CenterControl.SetSize(100, 50);
                     this.CenterControl.Color = '#1155FF';
-                    this.CenterControl.Label = 'はろー<br/>どうよ？';
+                    this.CenterControl.Text = 'はろー<br/>どうよ？';
                     this.Add(this.CenterControl);
                     this.TmpCtl = new Fw.Views.ControlView();
                     this.TmpCtl.SetXY(-100, -100);
                     this.TmpCtl.SetSize(200, 200);
                     this.TmpCtl.Color = '#666666';
-                    this.TmpCtl.Label = 'くりっく';
+                    this.TmpCtl.Text = 'くりっく';
                     this.Add(this.TmpCtl);
                     this.AncCtl1 = new Fw.Views.ButtonView();
-                    this.AncCtl1.Label = '右下';
+                    this.AncCtl1.Text = '右下';
                     this.AncCtl1.SetSize(200, 50);
                     this.AncCtl1.SetAnchor(null, null, 40, 5);
                     this.Add(this.AncCtl1);
                     this.AncCtl2 = new Fw.Views.ButtonView();
-                    this.AncCtl2.Label = '右上';
+                    this.AncCtl2.Text = '右上';
                     this.AncCtl2.SetSize(200, 50);
                     this.AncCtl2.SetAnchor(3, null, 3, null);
                     this.Add(this.AncCtl2);
@@ -2577,7 +2834,7 @@ var App;
                     label.Text = 'らべるやで';
                     this.AncCtl2.Add(label);
                     this.AncCtl3 = new Fw.Views.ButtonView();
-                    this.AncCtl3.Label = '左下';
+                    this.AncCtl3.Text = '左下';
                     this.AncCtl3.SetSize(300, 100);
                     this.AncCtl3.SetAnchor(null, 3, null, 3);
                     this.Add(this.AncCtl3);
@@ -2590,7 +2847,7 @@ var App;
                     this.Toggle.SetAnchor(150, 10, null, null);
                     this.Add(this.Toggle);
                     this.AncCtl4 = new Fw.Views.ButtonView();
-                    this.AncCtl4.Label = 'マスク';
+                    this.AncCtl4.Text = 'マスク';
                     this.AncCtl4.SetSize(200, 50);
                     this.AncCtl4.SetAnchor(60, 3, null, null);
                     this.Add(this.AncCtl4);
@@ -2608,7 +2865,7 @@ var App;
                 return LayoutCheckPageView;
             }(Fw.Views.PageView));
             Pages.LayoutCheckPageView = LayoutCheckPageView;
-        })(Pages = Views_3.Pages || (Views_3.Pages = {}));
+        })(Pages = Views_4.Pages || (Views_4.Pages = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
@@ -2620,7 +2877,7 @@ var App;
 var App;
 (function (App) {
     var Views;
-    (function (Views_4) {
+    (function (Views_5) {
         var Pages;
         (function (Pages) {
             var Views = Fw.Views;
@@ -2637,7 +2894,7 @@ var App;
                 Sub3PageView.prototype.Initialize = function () {
                     var _this = this;
                     this.SetClassName('Sub3PageView');
-                    this.HeaderBar = new Views_4.Controls.HeaderBarView();
+                    this.HeaderBar = new Views_5.Controls.HeaderBarView();
                     this.HeaderBar.Text = 'Sub 3 Page';
                     this.HeaderBar.RightButton.Hide(0);
                     this.Add(this.HeaderBar);
@@ -2649,28 +2906,28 @@ var App;
                     this.Add(this.Stucker);
                     var btn1 = new Views.ButtonView();
                     btn1.SetSize(100, 120);
-                    btn1.Label = 'btn1: LeftTop';
+                    btn1.Text = 'btn1: LeftTop';
                     this.Stucker.Add(btn1);
                     btn1.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, function () {
                         _this.Stucker.ReferencePoint = Property.ReferencePoint.LeftTop;
                     });
                     var btn2 = new Views.ButtonView();
                     btn2.SetSize(100, 120);
-                    btn2.Label = 'btn2: RightTop';
+                    btn2.Text = 'btn2: RightTop';
                     this.Stucker.Add(btn2);
                     btn2.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, function () {
                         _this.Stucker.ReferencePoint = Property.ReferencePoint.RightTop;
                     });
                     var btn3 = new Views.ButtonView();
                     btn3.SetSize(100, 120);
-                    btn3.Label = 'btn3: LeftBottom';
+                    btn3.Text = 'btn3: LeftBottom';
                     this.Stucker.Add(btn3);
                     btn3.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, function () {
                         _this.Stucker.ReferencePoint = Property.ReferencePoint.LeftBottom;
                     });
                     var btn4 = new Views.ButtonView();
                     btn4.SetSize(100, 120);
-                    btn4.Label = 'btn4: RightBottom';
+                    btn4.Text = 'btn4: RightBottom';
                     this.Stucker.Add(btn4);
                     btn4.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, function () {
                         _this.Stucker.ReferencePoint = Property.ReferencePoint.RightBottom;
@@ -2679,14 +2936,14 @@ var App;
                     for (var i = 0; i < 20; i++) {
                         var btn = new Views.ButtonView();
                         btn.SetSize(100, 120);
-                        btn.Label = "btn" + (idx + i);
+                        btn.Text = "btn" + (idx + i);
                         this.Stucker.Add(btn);
                     }
                 };
                 return Sub3PageView;
             }(Fw.Views.PageView));
             Pages.Sub3PageView = Sub3PageView;
-        })(Pages = Views_4.Pages || (Views_4.Pages = {}));
+        })(Pages = Views_5.Pages || (Views_5.Pages = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../lib/jquery/index.d.ts" />
@@ -3316,184 +3573,6 @@ var Fw;
                 ReferencePoint[ReferencePoint["RightBottom"] = 4] = "RightBottom";
             })(ReferencePoint = Property.ReferencePoint || (Property.ReferencePoint = {}));
         })(Property = Views.Property || (Views.Property = {}));
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../Events/ControlViewEvents.ts" />
-/// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
-/// <reference path="./BoxView.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var Events = Fw.Events.ControlViewEvents;
-        var ControlView = /** @class */ (function (_super) {
-            __extends(ControlView, _super);
-            function ControlView() {
-                var _this = _super.call(this) || this;
-                _this._tapEventTimer = null;
-                _this._cvMouseSuppressor = false;
-                _this._cvDelayedResumeEventsTimer = null;
-                return _this;
-            }
-            Object.defineProperty(ControlView.prototype, "Label", {
-                get: function () {
-                    return this._label.html();
-                },
-                set: function (value) {
-                    this._label.html(value);
-                    this.Refresh();
-                },
-                enumerable: true,
-                configurable: true
-            });
-            ControlView.prototype.Init = function () {
-                var _this = this;
-                _super.prototype.Init.call(this);
-                this.SetClassName('ControlView');
-                this.Elem.addClass(this.ClassName);
-                // プロパティsetterを一度通しておく。
-                this.HasBorder = true;
-                this.BorderRadius = 5;
-                this._label = $('<span class="ControlViewProperty"></span>');
-                this.Elem.append(this._label);
-                this.Elem.on('touchstart mousedown', function (e) {
-                    if (_this._tapEventTimer != null)
-                        clearTimeout(_this._tapEventTimer);
-                    _this._tapEventTimer = setTimeout(function () {
-                        // ロングタップイベント
-                        _this._tapEventTimer = null;
-                        // Pageのドラッグ処理中のとき、クリックイベントを抑制する。
-                        if (_this._cvMouseSuppressor)
-                            return;
-                        //Dump.Log('longtapped');
-                        _this.DispatchEvent(Events.LongClick);
-                    }, 1000);
-                });
-                this.Elem.on('touchend mouseup', function (e) {
-                    if (_this._tapEventTimer != null) {
-                        // ロングタップ検出中のとき
-                        clearTimeout(_this._tapEventTimer);
-                        _this._tapEventTimer = null;
-                        // Pageのドラッグ処理中のとき、クリックイベントを抑制する。
-                        if (_this._cvMouseSuppressor)
-                            return;
-                        // 以降、シングルタップイベント処理
-                        //Dump.Log('singletapped');
-                        _this.DispatchEvent(Events.SingleClick);
-                    }
-                    else {
-                    }
-                });
-                this.Elem.on('mouseout', function (e) {
-                    if (_this._tapEventTimer != null) {
-                        // ロングタップ検出中のとき
-                        clearTimeout(_this._tapEventTimer);
-                        _this._tapEventTimer = null;
-                        //Dump.Log('tap canceled');
-                    }
-                });
-            };
-            ControlView.prototype.InitPage = function () {
-                if (this.Page) {
-                    this.RemoveEventListener(Fw.Events.PageViewEvents.Dragging, this.OnPageDragging);
-                }
-                _super.prototype.InitPage.call(this);
-                if (this.Page) {
-                    this.AddEventListener(Fw.Events.PageViewEvents.Dragging, this.OnPageDragging);
-                }
-            };
-            ControlView.prototype.OnPageDragging = function () {
-                var _this = this;
-                this._cvMouseSuppressor = true;
-                if (this._cvDelayedResumeEventsTimer !== null) {
-                    clearTimeout(this._cvDelayedResumeEventsTimer);
-                    this._cvDelayedResumeEventsTimer = null;
-                }
-                this._cvDelayedResumeEventsTimer = setTimeout(function () {
-                    //Dump.Log('ResumeMouseEvents');
-                    _this._cvMouseSuppressor = false;
-                }, 100);
-            };
-            ControlView.prototype.Dispose = function () {
-                _super.prototype.Dispose.call(this);
-                this._label = null;
-                this._tapEventTimer = null;
-                this._cvMouseSuppressor = null;
-                this._cvDelayedResumeEventsTimer = null;
-            };
-            return ControlView;
-        }(Views.BoxView));
-        Views.ControlView = ControlView;
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../Events/ControlViewEvents.ts" />
-/// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
-/// <reference path="ControlView.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var Dump = Fw.Util.Dump;
-        var ButtonView = /** @class */ (function (_super) {
-            __extends(ButtonView, _super);
-            function ButtonView() {
-                return _super !== null && _super.apply(this, arguments) || this;
-            }
-            Object.defineProperty(ButtonView.prototype, "ImageSrc", {
-                get: function () {
-                    return this._imageView.Src;
-                },
-                set: function (value) {
-                    this._imageView.Src = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            ButtonView.prototype.Init = function () {
-                var _this = this;
-                _super.prototype.Init.call(this);
-                this.SetClassName('ButtonView');
-                this.Elem.addClass(this.ClassName);
-                this.BackgroundColor = '#add8e6';
-                this.HoverColor = '#6495ed';
-                this._imageView = new Views.ImageView();
-                this._imageView.Src = null;
-                this.Add(this._imageView);
-                this.Elem.hover(function () {
-                    //Dump.Log(`${this.ClassName}.hover: color = ${this.HoverColor}`);
-                    _this.Dom.style.backgroundColor = _this.HoverColor;
-                }, function () {
-                    _this.Dom.style.backgroundColor = _this.BackgroundColor;
-                });
-            };
-            ButtonView.prototype.InnerRefresh = function () {
-                try {
-                    this.SuppressLayout();
-                    this._imageView.Size.Width = this.Size.Width;
-                    this._imageView.Size.Height = this.Size.Height;
-                    _super.prototype.InnerRefresh.call(this);
-                }
-                catch (e) {
-                    Dump.ErrorLog(e);
-                }
-                finally {
-                    this.ResumeLayout();
-                }
-            };
-            ButtonView.prototype.Dispose = function () {
-                _super.prototype.Dispose.call(this);
-                this._imageView = null;
-                this.HoverColor = null;
-            };
-            return ButtonView;
-        }(Views.ControlView));
-        Views.ButtonView = ButtonView;
     })(Views = Fw.Views || (Fw.Views = {}));
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
@@ -5222,31 +5301,67 @@ var Fw;
 })(Fw || (Fw = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Views/BoxView.ts" />
+/// <reference path="../../../Fw/Views/ButtonView.ts" />
 /// <reference path="../../../Fw/Views/Property/Anchor.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../../Color.ts" />
 var App;
 (function (App) {
     var Views;
-    (function (Views_5) {
+    (function (Views_6) {
         var Controls;
         (function (Controls) {
             var Color = App.Color;
-            var ButtonView = /** @class */ (function (_super) {
-                __extends(ButtonView, _super);
-                function ButtonView() {
+            var SceneButtonView = /** @class */ (function (_super) {
+                __extends(SceneButtonView, _super);
+                function SceneButtonView() {
                     var _this = _super.call(this) || this;
-                    _this.HasBorder = false;
+                    _this.HasBorder = true;
+                    _this.SetSize(200, 150);
                     _this.BackgroundColor = Color.MainBackground;
                     _this.HoverColor = Color.MainHover;
                     _this.Color = Color.Main;
                     return _this;
                 }
-                return ButtonView;
+                SceneButtonView.prototype.InnerRefresh = function () {
+                    _super.prototype.InnerRefresh.call(this);
+                    this.Dom.style.borderColor = Color.MainHover;
+                };
+                return SceneButtonView;
             }(Fw.Views.ButtonView));
-            Controls.ButtonView = ButtonView;
-        })(Controls = Views_5.Controls || (Views_5.Controls = {}));
+            Controls.SceneButtonView = SceneButtonView;
+        })(Controls = Views_6.Controls || (Views_6.Controls = {}));
+    })(Views = App.Views || (App.Views = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Views/ButtonView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../Color.ts" />
+var App;
+(function (App) {
+    var Views;
+    (function (Views_7) {
+        var Controls;
+        (function (Controls) {
+            var Color = App.Color;
+            var RemconButtonView = /** @class */ (function (_super) {
+                __extends(RemconButtonView, _super);
+                function RemconButtonView() {
+                    var _this = _super.call(this) || this;
+                    _this.HasBorder = false;
+                    _this.BorderRadius = 50;
+                    _this.SetSize(150, 150);
+                    _this.BackgroundColor = Color.MainBackground;
+                    _this.HoverColor = Color.MainHover;
+                    _this.Color = Color.Main;
+                    return _this;
+                }
+                return RemconButtonView;
+            }(Fw.Views.ButtonView));
+            Controls.RemconButtonView = RemconButtonView;
+        })(Controls = Views_7.Controls || (Views_7.Controls = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 //# sourceMappingURL=tsout.js.map

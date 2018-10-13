@@ -11,14 +11,20 @@ namespace App.Views.Controls {
     import Property = Fw.Views.Property;
     import Color = App.Color;
 
-    export class ButtonView extends Fw.Views.ButtonView {
+    export class SceneButtonView extends Fw.Views.ButtonView {
         constructor() {
             super();
 
-            this.HasBorder = false;
+            this.HasBorder = true;
+            this.SetSize(200, 150);
             this.BackgroundColor = Color.MainBackground;
             this.HoverColor = Color.MainHover;
             this.Color = Color.Main;
+        }
+
+        protected InnerRefresh(): void {
+            super.InnerRefresh();
+            this.Dom.style.borderColor = Color.MainHover;
         }
     }
 }

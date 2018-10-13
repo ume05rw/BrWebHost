@@ -17,10 +17,10 @@ namespace Fw.Views {
         private _cvMouseSuppressor = false;
         private _cvDelayedResumeEventsTimer: number = null;
 
-        public get Label(): string {
+        public get Text(): string {
             return this._label.html();
         }
-        public set Label(value: string) {
+        public set Text(value: string) {
             this._label.html(value);
             this.Refresh();
         }

@@ -365,11 +365,14 @@ declare namespace Fw.Views {
 }
 declare namespace App {
     class Color {
+        static Transparent: string;
         static Main: string;
         static MainBackground: string;
         static MainHover: string;
         static HeaderButtonBackground: string;
         static HeaderButtonHover: string;
+        static ReverseMain: string;
+        static ButtonColors: Array<string>;
     }
 }
 declare namespace App.Views.Controls {
@@ -464,6 +467,38 @@ declare namespace App.Controllers {
     class Sub3Controller extends Fw.Controllers.ControllerBase {
         constructor(id: string);
         private Init;
+    }
+}
+declare namespace Fw.Views {
+    class ControlView extends BoxView {
+        private _label;
+        private _tapEventTimer;
+        private _cvMouseSuppressor;
+        private _cvDelayedResumeEventsTimer;
+        Text: string;
+        constructor();
+        protected Init(): void;
+        protected InitPage(): void;
+        private OnPageDragging;
+        Dispose(): void;
+    }
+}
+declare namespace Fw.Views {
+    class ButtonView extends ControlView {
+        private _imageView;
+        ImageSrc: string;
+        /**
+         * @see publicプロパティの初期化タイミングに注意。コンストラクタ実行後に値がセットされる。
+         */
+        HoverColor: string;
+        protected Init(): void;
+        protected InnerRefresh(): void;
+        Dispose(): void;
+    }
+}
+declare namespace App.Views.Controls {
+    class ButtonView extends Fw.Views.ButtonView {
+        constructor();
     }
 }
 declare namespace App.Views.Pages {
@@ -648,33 +683,6 @@ declare namespace Fw.Views.Property {
         RightTop = 2,
         LeftBottom = 3,
         RightBottom = 4
-    }
-}
-declare namespace Fw.Views {
-    class ControlView extends BoxView {
-        private _label;
-        private _tapEventTimer;
-        private _cvMouseSuppressor;
-        private _cvDelayedResumeEventsTimer;
-        Label: string;
-        constructor();
-        protected Init(): void;
-        protected InitPage(): void;
-        private OnPageDragging;
-        Dispose(): void;
-    }
-}
-declare namespace Fw.Views {
-    class ButtonView extends ControlView {
-        private _imageView;
-        ImageSrc: string;
-        /**
-         * @see publicプロパティの初期化タイミングに注意。コンストラクタ実行後に値がセットされる。
-         */
-        HoverColor: string;
-        protected Init(): void;
-        protected InnerRefresh(): void;
-        Dispose(): void;
     }
 }
 declare namespace Fw.Views {
@@ -881,7 +889,13 @@ declare namespace Fw {
     }
 }
 declare namespace App.Views.Controls {
-    class ButtonView extends Fw.Views.ButtonView {
+    class SceneButtonView extends Fw.Views.ButtonView {
+        constructor();
+        protected InnerRefresh(): void;
+    }
+}
+declare namespace App.Views.Controls {
+    class RemconButtonView extends Fw.Views.ButtonView {
         constructor();
     }
 }

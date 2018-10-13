@@ -42,7 +42,7 @@ namespace App.Views.Pages {
 
             const btn1 = new Views.ButtonView();
             btn1.SetSize(100, 120);
-            btn1.Label = 'btn1: LeftTop';
+            btn1.Text = 'btn1: LeftTop';
             this.Stucker.Add(btn1);
             btn1.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, () => {
                 this.Stucker.ReferencePoint = Property.ReferencePoint.LeftTop;
@@ -50,7 +50,7 @@ namespace App.Views.Pages {
 
             const btn2 = new Views.ButtonView();
             btn2.SetSize(100, 120);
-            btn2.Label = 'btn2: RightTop';
+            btn2.Text = 'btn2: RightTop';
             this.Stucker.Add(btn2);
             btn2.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, () => {
                 this.Stucker.ReferencePoint = Property.ReferencePoint.RightTop;
@@ -58,7 +58,7 @@ namespace App.Views.Pages {
 
             const btn3 = new Views.ButtonView();
             btn3.SetSize(100, 120);
-            btn3.Label = 'btn3: LeftBottom';
+            btn3.Text = 'btn3: LeftBottom';
             this.Stucker.Add(btn3);
             btn3.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, () => {
                 this.Stucker.ReferencePoint = Property.ReferencePoint.LeftBottom;
@@ -67,7 +67,7 @@ namespace App.Views.Pages {
 
             const btn4 = new Views.ButtonView();
             btn4.SetSize(100, 120);
-            btn4.Label = 'btn4: RightBottom';
+            btn4.Text = 'btn4: RightBottom';
             this.Stucker.Add(btn4);
             btn4.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, () => {
                 this.Stucker.ReferencePoint = Property.ReferencePoint.RightBottom;
@@ -77,7 +77,7 @@ namespace App.Views.Pages {
             for (let i = 0; i < 20; i++) {
                 const btn = new Views.ButtonView();
                 btn.SetSize(100, 120);
-                btn.Label = `btn${(idx + i)}`;
+                btn.Text = `btn${(idx + i)}`;
                 this.Stucker.Add(btn);
             }
         }

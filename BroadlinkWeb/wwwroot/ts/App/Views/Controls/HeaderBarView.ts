@@ -55,7 +55,7 @@ namespace App.Views.Controls {
             this._btnLeft.BackgroundColor = Color.HeaderButtonBackground;
             this._btnLeft.HoverColor = Color.HeaderButtonHover;
             this._btnLeft.Color = Color.Main;
-            this._btnLeft.Label = '<<';
+            this._btnLeft.Text = '<<';
             this._btnLeft.SetAnchor(null, 5, null, null);
             this.Add(this._btnLeft);
 
@@ -64,7 +64,7 @@ namespace App.Views.Controls {
             this._btnRight.BackgroundColor = Color.HeaderButtonBackground;
             this._btnRight.HoverColor = Color.HeaderButtonHover;
             this._btnRight.Color = Color.Main;
-            this._btnRight.Label = '+';
+            this._btnRight.Text = '+';
             this._btnRight.SetAnchor(null, null, 5, null);
             this.Add(this._btnRight);
 

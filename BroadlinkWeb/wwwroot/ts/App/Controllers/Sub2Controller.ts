@@ -31,7 +31,7 @@ namespace App.Controllers {
             this.View.Add(header);
 
             const btnA1Value = new Fw.Views.ButtonView();
-            btnA1Value.Label = 'A1 Value';
+            btnA1Value.Text = 'A1 Value';
             btnA1Value.SetSize(80, 30);
             btnA1Value.SetLeftTop(10, 70);
             btnA1Value.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
@@ -53,7 +53,7 @@ namespace App.Controllers {
             btnMove.BackgroundColor = '#FF9900';
             btnMove.SetLeftTop(10, 120);
 
-            btnMove.Label = '動く？';
+            btnMove.Text = '動く？';
             btnMove.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
                 Dump.Log('btnMove.SingleClick');
             });
@@ -62,7 +62,7 @@ namespace App.Controllers {
             const btnReset = new Fw.Views.ButtonView();
             btnReset.SetDisplayParams(60, 60, 0, 0, '#1188FF');
             btnReset.SetAnchor(70, null, 5, null);
-            btnReset.Label = 'リセット';
+            btnReset.Text = 'リセット';
             btnReset.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
                 Dump.Log('btnReset.SingleClick');
                 if (btnMove.IsRelocatable)

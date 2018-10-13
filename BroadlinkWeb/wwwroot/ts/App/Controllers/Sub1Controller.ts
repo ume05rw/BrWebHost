@@ -33,7 +33,7 @@ namespace App.Controllers {
             const devices = new Fw.Views.ButtonView();
             devices.SetSize(80, 30);
             devices.SetLeftTop(10, 70);
-            devices.Label = 'デバイス走査';
+            devices.Text = 'デバイス走査';
             devices.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
                 const store = new BrDeviceStore();
                 store.Discover((devices: BrDevice[]) => {
