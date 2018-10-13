@@ -4,6 +4,7 @@
 /// <reference path="../../../Fw/Views/Property/Anchor.ts" />
 /// <reference path="../../../Fw/Events/PageViewEvents.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../Controls/HeaderBarView.ts" />
 
 
 namespace App.Views.Pages {
@@ -11,10 +12,11 @@ namespace App.Views.Pages {
     import Events = Fw.Events;
     import Views = Fw.Views;
     import Property = Fw.Views.Property;
+    import Controls = App.Views.Controls;
 
     export class MainPageView extends Fw.Views.PageView {
 
-        public Header: Views.BoxView;
+        public HeaderBar: Controls.HeaderBarView;
         public BtnGoSub1: Views.ButtonView;
         public BtnGoSub2: Views.ButtonView;
         public BtnGoSub3: Views.ButtonView;
@@ -31,18 +33,11 @@ namespace App.Views.Pages {
         private Initialize(): void {
             this.SetClassName('MainPageView');
 
-            this.Header = new Views.BoxView();
-            this.Header.Size.Height = 50;
-            this.Header.SetAnchor(0, 0, 0, null);
-            this.Header.BackgroundColor = '#555555';
-            this.Header.Color = '#FFFFFF';
-            this.Header.HasBorder = false;
-            this.Add(this.Header);
-            const headerLabel = new Views.LabelView();
-            headerLabel.Text = 'Broadlink Web Host(仮題)';
-            headerLabel.FontSize = Property.FontSize.Large;
-            headerLabel.Color = '#FFFFFF';
-            this.Header.Add(headerLabel);
+            this.HeaderBar = new Controls.HeaderBarView();
+            this.HeaderBar.Text = 'Broadlink Web Host(仮題)';
+            this.HeaderBar.LeftButton.Hide(0);
+            this.HeaderBar.RightButton.Hide(0);
+            this.Add(this.HeaderBar);
 
             this.BtnGoSub1 = new Fw.Views.ButtonView();
             this.BtnGoSub1.Label = 'Show Sub1';

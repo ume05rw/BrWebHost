@@ -14,8 +14,7 @@ namespace App.Views.Pages {
 
     export class Sub3PageView extends Fw.Views.PageView {
 
-        public Header: Views.BoxView;
-        public BtnBack: Views.ButtonView;
+        public HeaderBar: Controls.HeaderBarView;
         public Stucker: Views.StuckerBoxView;
 
 
@@ -29,24 +28,10 @@ namespace App.Views.Pages {
         private Initialize(): void {
             this.SetClassName('Sub3PageView');
 
-            this.Header = new Views.BoxView();
-            this.Header.Size.Height = 50;
-            this.Header.SetAnchor(0, 0, 0, null);
-            this.Header.BackgroundColor = '#555555';
-            this.Header.Color = '#FFFFFF';
-            this.Header.HasBorder = false;
-            this.Add(this.Header);
-            const headerLabel = new Views.LabelView();
-            headerLabel.Text = 'Sub 3 Page';
-            headerLabel.FontSize = Property.FontSize.Large;
-            headerLabel.Color = '#FFFFFF';
-            this.Header.Add(headerLabel);
-
-            this.BtnBack = new Fw.Views.ButtonView();
-            this.BtnBack.SetSize(40, 40);
-            this.BtnBack.Label = '<<';
-            this.BtnBack.SetAnchor(null, 5, null, null);
-            this.Header.Add(this.BtnBack);
+            this.HeaderBar = new Controls.HeaderBarView();
+            this.HeaderBar.Text = 'Sub 3 Page';
+            this.HeaderBar.RightButton.Hide(0);
+            this.Add(this.HeaderBar);
 
             this.Stucker = new Views.StuckerBoxView();
             //this.Stucker.SetSize(600, 400);

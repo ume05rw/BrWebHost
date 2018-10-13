@@ -49,7 +49,7 @@ namespace Fw.Controllers {
                 throw new Error("id not found: " + id);
 
             _.each(this._controllers, function (c) {
-                if (c !== target && c.View.IsVisible())
+                if (c !== target && c.View.IsVisible)
                     c.View.Hide();
             });
 

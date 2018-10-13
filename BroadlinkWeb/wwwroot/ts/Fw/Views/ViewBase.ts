@@ -95,6 +95,15 @@ namespace Fw.Views {
             this.Refresh();
         }
 
+        private _isVisible: boolean = true;
+        public get IsVisible(): boolean {
+            return this._isVisible;
+        }
+        public set IsVisible(value: boolean) {
+            this._isVisible = value;
+            this.Refresh();
+        }
+
         constructor(jqueryElem: JQuery) {
             super();
 
@@ -148,9 +157,9 @@ namespace Fw.Views {
                 this.InitHasAnchor();
             });
 
-            this.IsVisible()
-                ? this.DispatchEvent(Events.Shown)
-                : this.DispatchEvent(Events.Hidden);
+            //this.IsVisible
+            //    ? this.DispatchEvent(Events.Shown)
+            //    : this.DispatchEvent(Events.Hidden);
 
             // 画面リサイズ時に再描画
             Fw.Root.Instance.AddEventListener(Fw.Events.RootEvents.Resized, () => {
@@ -441,6 +450,9 @@ namespace Fw.Views {
                 this.Dom.style.color = `${this._color}`;
                 this.Dom.style.backgroundColor = `${this._backgroundColor}`;
                 this.Dom.style.opacity = `${this.Opacity}`;
+                this.Dom.style.display = (this._isVisible)
+                    ? 'block'
+                    : 'none';
 
                 this._lastRefreshedTime = new Date();
             } catch (e) {
@@ -465,41 +477,49 @@ namespace Fw.Views {
         }
 
         public Show(duration: number = 200): void {
-            if (this.IsVisible())
-                return;
-
-            const animator = new Anim.Animator(this);
-            animator.FromParams = Anim.Params.GetResized(this, 0.8);
-            animator.FromParams.Opacity = 0;
-            animator.ToParams.Opacity = 1.0;
-            animator.OnComplete = () => {
-                this.Dom.style.display = `block`;
+            if (this.IsVisible) {
                 this.Refresh();
-                this.DispatchEvent(Events.Shown);
+                return;
             }
 
-            animator.Invoke(duration);
+            if (duration <= 0) {
+                this.IsVisible = true;
+                this.DispatchEvent(Events.Shown);
+            } else {
+                const animator = new Anim.Animator(this);
+                animator.FromParams = Anim.Params.GetResized(this, 0.8);
+                animator.FromParams.Opacity = 0;
+                animator.ToParams.Opacity = 1.0;
+                animator.OnComplete = () => {
+                    this.IsVisible = true;
+                    this.DispatchEvent(Events.Shown);
+                }
+
+                animator.Invoke(duration);
+            }
         }
 
         public Hide(duration: number = 200): void {
-            if (!this.IsVisible())
-                return;
-
-            const animator = new Anim.Animator(this);
-            animator.FromParams.Opacity = 1.0;
-            animator.ToParams = Anim.Params.GetResized(this, 0.8);
-            animator.ToParams.Opacity = 0.0;
-            animator.OnComplete = () => {
-                this.Dom.style.display = `none`;
+            if (!this.IsVisible) {
                 this.Refresh();
+                return;
+            }
+
+            if (duration <= 0) {
+                this.IsVisible = false;
                 this.DispatchEvent(Events.Hidden);
-            };
+            } else {
+                const animator = new Anim.Animator(this);
+                animator.FromParams.Opacity = 1.0;
+                animator.ToParams = Anim.Params.GetResized(this, 0.8);
+                animator.ToParams.Opacity = 0.0;
+                animator.OnComplete = () => {
+                    this.IsVisible = false;
+                    this.DispatchEvent(Events.Hidden);
+                };
 
-            animator.Invoke(duration);
-        }
-
-        public IsVisible(): boolean {
-            return this.Elem.is(':visible');
+                animator.Invoke(duration);
+            }
         }
 
         public Dispose(): void {

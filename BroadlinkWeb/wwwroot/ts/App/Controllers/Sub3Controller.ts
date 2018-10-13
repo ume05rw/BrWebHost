@@ -25,7 +25,7 @@ namespace App.Controllers {
             this.View = new App.Views.Pages.Sub3PageView();
             const page = this.View as App.Views.Pages.Sub3PageView;
 
-            page.BtnBack.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
+            page.HeaderBar.LeftButton.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
                 Manager.Instance.Show("Main");
             });
 

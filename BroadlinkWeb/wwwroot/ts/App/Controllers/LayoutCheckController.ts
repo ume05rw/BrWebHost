@@ -40,7 +40,7 @@ namespace App.Controllers {
 
             page.TmpCtl.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
                 Dump.Log(`${this.ClassName}.SingleClick1`);
-                if (page.CenterControl.IsVisible()) {
+                if (page.CenterControl.IsVisible) {
                     Dump.Log('みえてんで！');
                     page.CenterControl.Hide();
                 } else {

@@ -64,6 +64,7 @@ namespace Fw.Views {
 
             this.Size.Width = Fw.Root.Instance.Size.Width;
             this.Size.Height = Fw.Root.Instance.Size.Height;
+            this.IsVisible = false;
 
             this._minDragPosition = new Property.Position();
             this._maxDragPosition = new Property.Position();
@@ -221,39 +222,55 @@ namespace Fw.Views {
 
         public Show(duration: number = 200): void {
             //Dump.Log(`PageView.Show: ${this.Elem.data('controller')}`);
-            if (this.IsVisible())
-                return;
-
-            const animator = new Anim.Animator(this);
-            animator.FromParams = Anim.Params.GetSlided(this, -1, 0);
-            animator.FromParams.Opacity = 0.5;
-            animator.ToParams = Anim.Params.GetCurrent(this);
-            animator.ToParams.Opacity = 1.0;
-            animator.OnComplete = () => {
-                this.Dom.style.display = `block`;
+            if (this.IsVisible) {
                 this.Refresh();
+                return;
+            }
+
+            if (duration <= 0) {
+                this.IsVisible = true;
                 this.DispatchEvent(Events.Shown);
-            };
-            animator.Invoke(duration);
+            } else {
+                const animator = new Anim.Animator(this);
+                animator.FromParams = Anim.Params.GetSlided(this, -1, 0);
+                animator.FromParams.Opacity = 0.5;
+                animator.ToParams = Anim.Params.GetCurrent(this);
+                animator.ToParams.Opacity = 1.0;
+                animator.OnComplete = () => {
+                    this.IsVisible = true;
+                    _.delay(() => {
+                        this.Refresh();
+                    }, 50);
+                    this.DispatchEvent(Events.Shown);
+                };
+                animator.Invoke(duration);
+            }
         }
 
         public Hide(duration: number = 200): void {
             //Dump.Log(`PageView.Hide: ${this.Elem.data('controller')}`);
-            if (!this.IsVisible())
-                return;
-
-            const animator = new Anim.Animator(this);
-            animator.FromParams = Anim.Params.GetCurrent(this);
-            animator.FromParams.Opacity = 1.0;
-            animator.ToParams = Anim.Params.GetSlided(this, -1, 0);
-            animator.ToParams.Opacity = 0.5;
-            animator.OnComplete = () => {
-                this.Dom.style.display = `none`;
+            if (!this.IsVisible) {
                 this.Refresh();
-                this.DispatchEvent(Events.Hidden);
-            };
+                return;
+            }
 
-            animator.Invoke(duration);
+            if (duration <= 0) {
+                this.IsVisible = false;
+                this.DispatchEvent(Events.Hidden);
+            } else {
+                const animator = new Anim.Animator(this);
+                animator.FromParams = Anim.Params.GetCurrent(this);
+                animator.FromParams.Opacity = 1.0;
+                animator.ToParams = Anim.Params.GetSlided(this, -1, 0);
+                animator.ToParams.Opacity = 0.5;
+                animator.OnComplete = () => {
+                    this.IsVisible = false;
+                    this.Refresh();
+                    this.DispatchEvent(Events.Hidden);
+                };
+
+                animator.Invoke(duration);
+            }
         }
 
         public Mask(): void {
@@ -285,6 +302,9 @@ namespace Fw.Views {
                 this.Dom.style.zIndex = `${this.ZIndex}`;
                 this.Dom.style.color = `${this.Color}`;
                 this.Dom.style.backgroundColor = `${this.BackgroundColor}`;
+                this.Dom.style.display = (this.IsVisible)
+                    ? 'block'
+                    : 'none';
 
             } catch (e) {
                 Dump.ErrorLog(e);

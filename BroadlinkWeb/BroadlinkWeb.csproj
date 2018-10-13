@@ -12,6 +12,7 @@
     <Content Remove="wwwroot\ts\App\Main.ts" />
     <Content Remove="wwwroot\ts\App\Models\Entities\BrDevice.ts" />
     <Content Remove="wwwroot\ts\App\Models\Stores\BrDeviceStore.ts" />
+    <Content Remove="wwwroot\ts\App\Views\Controls\HeaderBarView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Pages\LayoutCheckPageView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Pages\MainPageView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Pages\Sub3PageView.ts" />
@@ -86,10 +87,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\ts\App\Views\Controls\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\LayoutCheckController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\Sub3Controller.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Main.ts" />
@@ -98,6 +95,7 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\Sub2Controller.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\BrDevice.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\BrDeviceStore.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\HeaderBarView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\Sub3PageView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\MainPageView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\LayoutCheckPageView.ts" />
@@ -159,6 +157,10 @@
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\SlidableBoxView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ToggleButtonView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ViewBase.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\ts\App\Events\Controls\" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">

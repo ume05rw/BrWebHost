@@ -30,7 +30,7 @@ declare namespace Fw {
         readonly Elem: JQuery;
         readonly ClassName: string;
         AddEventListener(name: string, handler: (e: JQueryEventObject) => void, bindObject?: IObject): void;
-        RemoveEventListener(name: string, handler: (e: JQueryEventObject) => void): void;
+        RemoveEventListener(name: string, handler?: (e: JQueryEventObject) => void): void;
         DispatchEvent(name: string): void;
         SuppressEvent(name: string): void;
         IsSuppressedEvent(name: string): boolean;
@@ -104,6 +104,7 @@ declare namespace Fw.Views {
         Color: string;
         BackgroundColor: string;
         Opacity: number;
+        IsVisible: boolean;
         SetParent(parent: IView): void;
         SetSize(width: number, height: number): void;
         SetXY(x: number, y: number, updatePolicy?: boolean): void;
@@ -120,7 +121,6 @@ declare namespace Fw.Views {
         ResumeLayout(): void;
         Show(duration?: number): void;
         Hide(duration?: number): void;
-        IsVisible(): boolean;
     }
 }
 declare namespace Fw.Controllers {
@@ -259,7 +259,7 @@ declare namespace Fw {
         protected SetClassName(name: string): void;
         protected SetElem(jqueryElem: JQuery): void;
         AddEventListener(name: string, handler: (e: JQueryEventObject) => void, bindObject?: IObject): void;
-        RemoveEventListener(name: string, handler: (e: JQueryEventObject) => void): void;
+        RemoveEventListener(name: string, handler?: (e: JQueryEventObject) => void): void;
         DispatchEvent(name: string): void;
         SuppressEvent(name: string): void;
         IsSuppressedEvent(name: string): boolean;
@@ -296,6 +296,8 @@ declare namespace Fw.Views {
         BackgroundColor: string;
         private _opacity;
         Opacity: number;
+        private _isVisible;
+        IsVisible: boolean;
         constructor(jqueryElem: JQuery);
         protected SetElem(jqueryElem: JQuery): void;
         protected Init(): void;
@@ -318,7 +320,6 @@ declare namespace Fw.Views {
         ResumeLayout(): void;
         Show(duration?: number): void;
         Hide(duration?: number): void;
-        IsVisible(): boolean;
         Dispose(): void;
     }
 }
@@ -350,10 +351,37 @@ declare namespace Fw.Views {
         Dispose(): void;
     }
 }
+declare namespace Fw.Views {
+    class BoxView extends ViewBase {
+        private _hasBorder;
+        HasBorder: boolean;
+        private _borderRadius;
+        BorderRadius: number;
+        constructor();
+        protected Init(): void;
+        protected InnerRefresh(): void;
+        Dispose(): void;
+    }
+}
+declare namespace App.Views.Controls {
+    import Views = Fw.Views;
+    class HeaderBarView extends Fw.Views.BoxView {
+        Text: string;
+        private _label;
+        private _btnLeft;
+        readonly LeftButton: Views.ButtonView;
+        private _btnRight;
+        readonly RightButton: Views.ButtonView;
+        constructor();
+        private Initialize;
+        Dispose(): void;
+    }
+}
 declare namespace App.Views.Pages {
     import Views = Fw.Views;
+    import Controls = App.Views.Controls;
     class MainPageView extends Fw.Views.PageView {
-        Header: Views.BoxView;
+        HeaderBar: Controls.HeaderBarView;
         BtnGoSub1: Views.ButtonView;
         BtnGoSub2: Views.ButtonView;
         BtnGoSub3: Views.ButtonView;
@@ -452,8 +480,7 @@ declare namespace App.Views.Pages {
 declare namespace App.Views.Pages {
     import Views = Fw.Views;
     class Sub3PageView extends Fw.Views.PageView {
-        Header: Views.BoxView;
-        BtnBack: Views.ButtonView;
+        HeaderBar: Controls.HeaderBarView;
         Stucker: Views.StuckerBoxView;
         constructor();
         private Initialize;
@@ -614,18 +641,6 @@ declare namespace Fw.Views.Property {
         RightTop = 2,
         LeftBottom = 3,
         RightBottom = 4
-    }
-}
-declare namespace Fw.Views {
-    class BoxView extends ViewBase {
-        private _hasBorder;
-        HasBorder: boolean;
-        private _borderRadius;
-        BorderRadius: number;
-        constructor();
-        protected Init(): void;
-        protected InnerRefresh(): void;
-        Dispose(): void;
     }
 }
 declare namespace Fw.Views {

@@ -22,24 +22,13 @@ namespace App.Controllers {
         }
 
         private Init(): void {
-            const header = new Fw.Views.ControlView();
-            header.Label = 'ヘッダ';
-            header.Size.Height = 50;
-            header.SetAnchor(0, 0, 0, null);
-            header.BackgroundColor = '#555555';
-            header.Color = '#FFFFFF';
-            header.HasBorder = false;
-            header.BorderRadius = 0;
-            this.View.Add(header);
-
-            const back = new Fw.Views.ButtonView();
-            back.SetSize(40, 40);
-            back.Label = '<<';
-            back.SetAnchor(null, 5, null, null);
-            back.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
+            const header = new App.Views.Controls.HeaderBarView();
+            header.Text = 'ヘッダ';
+            header.RightButton.Hide(0);
+            header.LeftButton.AddEventListener(Events.ButtonViewEvents.SingleClick, () => {
                 Manager.Instance.Show("Main");
             });
-            header.Add(back);
+            this.View.Add(header);
 
             const devices = new Fw.Views.ButtonView();
             devices.SetSize(80, 30);

@@ -22,27 +22,13 @@ namespace App.Controllers {
 
         private Init(): void {
 
-            const header = new Views.BoxView();
-            header.Size.Height = 50;
-            header.SetAnchor(0, 0, 0, null);
-            header.BackgroundColor = '#555555';
-            header.Color = '#FFFFFF';
-            header.HasBorder = false;
-            this.View.Add(header);
-            const headerLabel = new Views.LabelView();
-            headerLabel.Text = 'A1 Sensor';
-            headerLabel.FontSize = Property.FontSize.Large;
-            headerLabel.Color = '#FFFFFF';
-            header.Add(headerLabel);
-
-            const back = new Fw.Views.ButtonView();
-            back.SetSize(40, 40);
-            back.Label = '<<';
-            back.SetAnchor(null, 5, null, null);
-            back.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
+            const header = new App.Views.Controls.HeaderBarView();
+            header.Text = 'A1 Sensor';
+            header.RightButton.Hide(0);
+            header.LeftButton.AddEventListener(Events.ButtonViewEvents.SingleClick, () => {
                 Manager.Instance.Show("Main");
             });
-            header.Add(back);
+            this.View.Add(header);
 
             const btnA1Value = new Fw.Views.ButtonView();
             btnA1Value.Label = 'A1 Value';

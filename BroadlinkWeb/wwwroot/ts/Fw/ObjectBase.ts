@@ -60,20 +60,34 @@ namespace Fw {
             this.Elem.on(name, eRef.BindedHandler);
         }
 
-        public RemoveEventListener(name: string, handler: (e: JQueryEventObject) => void): void {
-            let key: number;
-            const eRef = _.find(this._eventHandlers, (er, idx) => {
-                key = idx;
-                return (er.Name === name && er.Handler === handler);
-            });
+        public RemoveEventListener(name: string, handler?: (e: JQueryEventObject) => void): void {
+            if (handler) {
+                let key: number;
+                const eRef = _.find(this._eventHandlers, (er, idx) => {
+                    key = idx;
+                    return (er.Name === name && er.Handler === handler);
+                });
 
-            if (!eRef) {
-                //throw new Error(`${this.ClassName}.${name} event not found.`);
-                return;
+                if (!eRef) {
+                    //throw new Error(`${this.ClassName}.${name} event not found.`);
+                    return;
+                }
+
+                this.Elem.off(eRef.Name, eRef.BindedHandler);
+                this._eventHandlers.splice(key, 1);
+            } else {
+                const eRefs = new Array<EventReference>();
+                _.each(this._eventHandlers, (er) => {
+                    if (er.Name !== name)
+                        return;
+                    eRefs.push(er);
+                });
+                _.each(eRefs, (er) => {
+                    this.Elem.off(er.Name, er.BindedHandler);
+                    const idx = this._eventHandlers.indexOf(er);
+                    this._eventHandlers.splice(idx, 1);
+                });
             }
-
-            this.Elem.off(eRef.Name, eRef.BindedHandler);
-            this._eventHandlers.splice(key, 1);
         }
 
         public DispatchEvent(name: string): void {

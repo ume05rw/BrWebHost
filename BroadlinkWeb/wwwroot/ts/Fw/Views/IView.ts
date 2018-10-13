@@ -21,6 +21,7 @@ namespace Fw.Views {
         Color: string;
         BackgroundColor: string;
         Opacity: number;
+        IsVisible: boolean;
 
         SetParent(parent: IView): void;
         SetSize(width: number, height: number): void;
@@ -42,6 +43,5 @@ namespace Fw.Views {
 
         Show(duration?: number): void;
         Hide(duration?: number): void;
-        IsVisible(): boolean;
     }
 }
