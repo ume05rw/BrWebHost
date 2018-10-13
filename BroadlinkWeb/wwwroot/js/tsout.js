@@ -1843,11 +1843,30 @@ var Fw;
         Views.BoxView = BoxView;
     })(Views = Fw.Views || (Fw.Views = {}));
 })(Fw || (Fw = {}));
+/// <reference path="../../lib/jquery/index.d.ts" />
+/// <reference path="../../lib/underscore/index.d.ts" />
+/// <reference path="../Fw/Util/Dump.ts" />
+/// <reference path="../Fw/Controllers/Manager.ts" />
+var App;
+(function (App) {
+    var Color = /** @class */ (function () {
+        function Color() {
+        }
+        Color.Main = '#FFFFFF';
+        Color.MainBackground = '#D4B16A';
+        Color.MainHover = '#D9BA7C';
+        Color.HeaderButtonBackground = '#C79B41';
+        Color.HeaderButtonHover = '#CDA555';
+        return Color;
+    }());
+    App.Color = Color;
+})(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../../Fw/Views/BoxView.ts" />
 /// <reference path="../../../Fw/Views/Property/Anchor.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../Color.ts" />
 var App;
 (function (App) {
     var Views;
@@ -1856,6 +1875,7 @@ var App;
         (function (Controls) {
             var Views = Fw.Views;
             var Property = Fw.Views.Property;
+            var Color = App.Color;
             var HeaderBarView = /** @class */ (function (_super) {
                 __extends(HeaderBarView, _super);
                 function HeaderBarView() {
@@ -1892,19 +1912,25 @@ var App;
                     var _this = this;
                     this.Size.Height = 50;
                     this.SetAnchor(0, 0, 0, null);
-                    this.BackgroundColor = '#555555';
+                    this.BackgroundColor = Color.MainBackground;
                     this.HasBorder = false;
                     this._label = new Views.LabelView();
                     this._label.FontSize = Property.FontSize.Large;
-                    this._label.Color = '#FFFFFF';
+                    this._label.Color = Color.Main;
                     this.Add(this._label);
-                    this._btnLeft = new Fw.Views.ButtonView();
+                    this._btnLeft = new App.Views.Controls.ButtonView();
                     this._btnLeft.SetSize(40, 40);
+                    this._btnLeft.BackgroundColor = Color.HeaderButtonBackground;
+                    this._btnLeft.HoverColor = Color.HeaderButtonHover;
+                    this._btnLeft.Color = Color.Main;
                     this._btnLeft.Label = '<<';
                     this._btnLeft.SetAnchor(null, 5, null, null);
                     this.Add(this._btnLeft);
-                    this._btnRight = new Fw.Views.ButtonView();
+                    this._btnRight = new App.Views.Controls.ButtonView();
                     this._btnRight.SetSize(40, 40);
+                    this._btnRight.BackgroundColor = Color.HeaderButtonBackground;
+                    this._btnRight.HoverColor = Color.HeaderButtonHover;
+                    this._btnRight.Color = Color.Main;
                     this._btnRight.Label = '+';
                     this._btnRight.SetAnchor(null, null, 5, null);
                     this.Add(this._btnRight);
@@ -1935,6 +1961,8 @@ var App;
     (function (Views_2) {
         var Pages;
         (function (Pages) {
+            var Views = Fw.Views;
+            var Property = Fw.Views.Property;
             var Controls = App.Views.Controls;
             var MainPageView = /** @class */ (function (_super) {
                 __extends(MainPageView, _super);
@@ -1947,31 +1975,41 @@ var App;
                 }
                 MainPageView.prototype.Initialize = function () {
                     this.SetClassName('MainPageView');
+                    var background = new Views.ImageView();
+                    background.SetAnchor(0, 0, 0, 0);
+                    background.FitPolicy = Property.FitPolicy.Cover;
+                    background.Src = 'images/Main/app_background.jpg';
+                    this.Add(background);
                     this.HeaderBar = new Controls.HeaderBarView();
                     this.HeaderBar.Text = 'Broadlink Web Host(仮題)';
                     this.HeaderBar.LeftButton.Hide(0);
                     this.HeaderBar.RightButton.Hide(0);
                     this.Add(this.HeaderBar);
-                    this.BtnGoSub1 = new Fw.Views.ButtonView();
+                    var bottom = new Views.StuckerBoxView();
+                    bottom.HasBorder = true;
+                    bottom.BorderRadius = 5;
+                    bottom.BackgroundColor = 'transparent';
+                    bottom.Color = '#D4B16A';
+                    bottom.SetAnchor(null, 10, 10, 10);
+                    bottom.ReferencePoint = Property.ReferencePoint.RightBottom;
+                    bottom.Size.Height = 50;
+                    this.Add(bottom);
+                    this.BtnGoSub1 = new Controls.ButtonView();
                     this.BtnGoSub1.Label = 'Show Sub1';
                     this.BtnGoSub1.SetSize(80, 30);
-                    this.BtnGoSub1.SetLeftTop(10, 70);
-                    this.Add(this.BtnGoSub1);
-                    this.BtnGoSub2 = new Fw.Views.ButtonView();
+                    bottom.Add(this.BtnGoSub1);
+                    this.BtnGoSub2 = new Controls.ButtonView();
                     this.BtnGoSub2.Label = 'Show Sub2';
                     this.BtnGoSub2.SetSize(80, 30);
-                    this.BtnGoSub2.SetLeftTop(10, 120);
-                    this.Add(this.BtnGoSub2);
-                    this.BtnGoSub3 = new Fw.Views.ButtonView();
+                    bottom.Add(this.BtnGoSub2);
+                    this.BtnGoSub3 = new Controls.ButtonView();
                     this.BtnGoSub3.Label = 'Show Sub3';
                     this.BtnGoSub3.SetSize(80, 30);
-                    this.BtnGoSub3.SetLeftTop(10, 170);
-                    this.Add(this.BtnGoSub3);
-                    this.BtnGoDynamic = new Fw.Views.ButtonView();
-                    this.BtnGoDynamic.Label = 'Show LayoutCheck';
+                    bottom.Add(this.BtnGoSub3);
+                    this.BtnGoDynamic = new Controls.ButtonView();
+                    this.BtnGoDynamic.Label = 'Layout';
                     this.BtnGoDynamic.SetSize(80, 30);
-                    this.BtnGoDynamic.SetLeftTop(10, 220);
-                    this.Add(this.BtnGoDynamic);
+                    bottom.Add(this.BtnGoDynamic);
                 };
                 return MainPageView;
             }(Fw.Views.PageView));
@@ -5182,4 +5220,33 @@ var Fw;
     }());
     Fw.Startup = Startup;
 })(Fw || (Fw = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Views/BoxView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../Color.ts" />
+var App;
+(function (App) {
+    var Views;
+    (function (Views_5) {
+        var Controls;
+        (function (Controls) {
+            var Color = App.Color;
+            var ButtonView = /** @class */ (function (_super) {
+                __extends(ButtonView, _super);
+                function ButtonView() {
+                    var _this = _super.call(this) || this;
+                    _this.HasBorder = false;
+                    _this.BackgroundColor = Color.MainBackground;
+                    _this.HoverColor = Color.MainHover;
+                    _this.Color = Color.Main;
+                    return _this;
+                }
+                return ButtonView;
+            }(Fw.Views.ButtonView));
+            Controls.ButtonView = ButtonView;
+        })(Controls = Views_5.Controls || (Views_5.Controls = {}));
+    })(Views = App.Views || (App.Views = {}));
+})(App || (App = {}));
 //# sourceMappingURL=tsout.js.map

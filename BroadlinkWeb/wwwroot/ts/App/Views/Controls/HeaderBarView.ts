@@ -3,11 +3,13 @@
 /// <reference path="../../../Fw/Views/BoxView.ts" />
 /// <reference path="../../../Fw/Views/Property/Anchor.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../Color.ts" />
 
 namespace App.Views.Controls {
     import Dump = Fw.Util.Dump;
     import Views = Fw.Views;
     import Property = Fw.Views.Property;
+    import Color = App.Color;
 
     export class HeaderBarView extends Fw.Views.BoxView {
 
@@ -21,13 +23,13 @@ namespace App.Views.Controls {
 
         private _label: Views.LabelView;
 
-        private _btnLeft: Views.ButtonView;
-        public get LeftButton(): Views.ButtonView {
+        private _btnLeft: App.Views.Controls.ButtonView;
+        public get LeftButton(): App.Views.Controls.ButtonView {
             return this._btnLeft;
         }
 
-        private _btnRight: Views.ButtonView;
-        public get RightButton(): Views.ButtonView {
+        private _btnRight: App.Views.Controls.ButtonView;
+        public get RightButton(): App.Views.Controls.ButtonView {
             return this._btnRight;
         }
 
@@ -40,22 +42,28 @@ namespace App.Views.Controls {
         private Initialize(): void {
             this.Size.Height = 50;
             this.SetAnchor(0, 0, 0, null);
-            this.BackgroundColor = '#555555';
+            this.BackgroundColor = Color.MainBackground;
             this.HasBorder = false;
 
             this._label = new Views.LabelView();
             this._label.FontSize = Property.FontSize.Large;
-            this._label.Color = '#FFFFFF';
+            this._label.Color = Color.Main;
             this.Add(this._label);
 
-            this._btnLeft = new Fw.Views.ButtonView();
+            this._btnLeft = new App.Views.Controls.ButtonView();
             this._btnLeft.SetSize(40, 40);
+            this._btnLeft.BackgroundColor = Color.HeaderButtonBackground;
+            this._btnLeft.HoverColor = Color.HeaderButtonHover;
+            this._btnLeft.Color = Color.Main;
             this._btnLeft.Label = '<<';
             this._btnLeft.SetAnchor(null, 5, null, null);
             this.Add(this._btnLeft);
 
-            this._btnRight = new Fw.Views.ButtonView();
+            this._btnRight = new App.Views.Controls.ButtonView();
             this._btnRight.SetSize(40, 40);
+            this._btnRight.BackgroundColor = Color.HeaderButtonBackground;
+            this._btnRight.HoverColor = Color.HeaderButtonHover;
+            this._btnRight.Color = Color.Main;
             this._btnRight.Label = '+';
             this._btnRight.SetAnchor(null, null, 5, null);
             this.Add(this._btnRight);

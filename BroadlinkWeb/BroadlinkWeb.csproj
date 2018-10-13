@@ -7,11 +7,13 @@
 
   <ItemGroup>
     <Content Remove="wwwroot\js\Page.ts" />
+    <Content Remove="wwwroot\ts\App\Color.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\LayoutCheckController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\Sub3Controller.ts" />
     <Content Remove="wwwroot\ts\App\Main.ts" />
     <Content Remove="wwwroot\ts\App\Models\Entities\BrDevice.ts" />
     <Content Remove="wwwroot\ts\App\Models\Stores\BrDeviceStore.ts" />
+    <Content Remove="wwwroot\ts\App\Views\Controls\ButtonView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Controls\HeaderBarView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Pages\LayoutCheckPageView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Pages\MainPageView.ts" />
@@ -87,6 +89,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Include="wwwroot\ts\App\Color.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\LayoutCheckController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\Sub3Controller.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Main.ts" />
@@ -95,6 +98,7 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\Sub2Controller.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\BrDevice.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\BrDeviceStore.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\ButtonView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\HeaderBarView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\Sub3PageView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\MainPageView.ts" />

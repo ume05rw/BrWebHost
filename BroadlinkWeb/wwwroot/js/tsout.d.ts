@@ -363,29 +363,36 @@ declare namespace Fw.Views {
         Dispose(): void;
     }
 }
+declare namespace App {
+    class Color {
+        static Main: string;
+        static MainBackground: string;
+        static MainHover: string;
+        static HeaderButtonBackground: string;
+        static HeaderButtonHover: string;
+    }
+}
 declare namespace App.Views.Controls {
-    import Views = Fw.Views;
     class HeaderBarView extends Fw.Views.BoxView {
         Text: string;
         private _label;
         private _btnLeft;
-        readonly LeftButton: Views.ButtonView;
+        readonly LeftButton: App.Views.Controls.ButtonView;
         private _btnRight;
-        readonly RightButton: Views.ButtonView;
+        readonly RightButton: App.Views.Controls.ButtonView;
         constructor();
         private Initialize;
         Dispose(): void;
     }
 }
 declare namespace App.Views.Pages {
-    import Views = Fw.Views;
     import Controls = App.Views.Controls;
     class MainPageView extends Fw.Views.PageView {
         HeaderBar: Controls.HeaderBarView;
-        BtnGoSub1: Views.ButtonView;
-        BtnGoSub2: Views.ButtonView;
-        BtnGoSub3: Views.ButtonView;
-        BtnGoDynamic: Views.ButtonView;
+        BtnGoSub1: Controls.ButtonView;
+        BtnGoSub2: Controls.ButtonView;
+        BtnGoSub3: Controls.ButtonView;
+        BtnGoDynamic: Controls.ButtonView;
         constructor();
         private Initialize;
     }
@@ -871,5 +878,10 @@ declare namespace Fw {
 declare namespace Fw {
     class Startup {
         static Init(): void;
+    }
+}
+declare namespace App.Views.Controls {
+    class ButtonView extends Fw.Views.ButtonView {
+        constructor();
     }
 }
