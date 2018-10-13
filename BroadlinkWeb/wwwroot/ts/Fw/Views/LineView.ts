@@ -63,8 +63,14 @@ namespace Fw.Views {
                 }
 
                 super.InnerRefresh();
-                this.Dom.style.borderWidth = '0';
-                this.Dom.style.backgroundColor = `${this.Color}`;
+
+                //this.Dom.style.borderWidth = '0';
+                //this.Dom.style.backgroundColor = `${this.Color}`;
+
+                this.SetStyles({
+                    borderWidth: '0',
+                    backgroundColor: `${this.Color}`,
+                });
 
             } catch (e) {
                 Dump.ErrorLog(e);

@@ -86,128 +86,6 @@ var Fw;
     }());
     Fw.Config = Config;
 })(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../Util/Dump.ts" />
-/*/// <reference path="IController.ts" />*/
-var Fw;
-(function (Fw) {
-    var Controllers;
-    (function (Controllers) {
-        var Factory = /** @class */ (function () {
-            function Factory() {
-            }
-            // https://qiita.com/kojiy72/items/8e3ac6ae2083d3e1284c
-            Factory.Create = function (id, elem) {
-                // 文字列からクラスを取得
-                var classObject = Function('return (App.Controllers.' + id + 'Controller)')();
-                var instance = new classObject(id, elem);
-                return instance;
-            };
-            return Factory;
-        }());
-        Controllers.Factory = Factory;
-    })(Controllers = Fw.Controllers || (Fw.Controllers = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../Config.ts" />
-/// <reference path="../Util/Dump.ts" />
-/// <reference path="Factory.ts" />
-var Fw;
-(function (Fw) {
-    var Controllers;
-    (function (Controllers) {
-        var Config = Fw.Config;
-        var Manager = /** @class */ (function () {
-            function Manager() {
-                this._controllers = {};
-                $("div[" + Config.PageIdAttribute + "]").each(function (i, el) {
-                    var $elem = $(el);
-                    var id = $elem.attr(Config.PageIdAttribute);
-                    var instance = Controllers.Factory.Create(id, $elem);
-                    this._controllers[id] = instance;
-                }.bind(this));
-            }
-            Object.defineProperty(Manager, "Instance", {
-                get: function () {
-                    if (!Manager._instance) {
-                        Manager.Init();
-                    }
-                    return Manager._instance;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            // TODO: ↓そのうち削除予定
-            Manager.Init = function () {
-                if (!Manager._instance)
-                    Manager._instance = new Manager();
-            };
-            Manager.prototype.Add = function (controller) {
-                if (this._controllers[controller.Id])
-                    throw new Error("Id[" + controller.Id + "] already exists");
-                this._controllers[controller.Id] = controller;
-            };
-            Manager.prototype.Show = function (id) {
-                var target = this._controllers[id];
-                if (!target)
-                    throw new Error("id not found: " + id);
-                _.each(this._controllers, function (c) {
-                    if (c !== target && c.View.IsVisible)
-                        c.View.Hide();
-                });
-                target.View.Show();
-            };
-            Manager.prototype.ShowOnce = function (controller) {
-                _.each(this._controllers, function (c) {
-                    c.View.Hide();
-                });
-                controller.View.Show();
-            };
-            Manager._instance = null;
-            return Manager;
-        }());
-        Controllers.Manager = Manager;
-    })(Controllers = Fw.Controllers || (Fw.Controllers = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../lib/jquery/index.d.ts" />
-/// <reference path="../../lib/underscore/index.d.ts" />
-/// <reference path="../Fw/Util/Dump.ts" />
-/// <reference path="../Fw/Controllers/Manager.ts" />
-var App;
-(function (App) {
-    var Color = /** @class */ (function () {
-        function Color() {
-        }
-        // ライトブラウン - 女っぽいからターゲット外
-        //public static Main: string = '#FFFFFF';
-        //public static MainBackground: string = '#D4B16A';
-        //public static MainHover: string = '#D9BA7C';
-        //public static HeaderButtonBackground = '#C79B41';
-        //public static HeaderButtonHover = '#CDA555';
-        Color.Transparent = 'transparent';
-        Color.Main = '#000000';
-        Color.MainBackground = '#f5f5f5';
-        Color.MainHover = '#e0e0e0';
-        Color.HeaderButtonBackground = '#ececec';
-        Color.HeaderButtonHover = '#e0e0e0';
-        Color.ReverseMain = '#FFFFFF';
-        Color.ButtonColors = [
-            '#fff796',
-            '#9d9e9e',
-            '#84bde8',
-            '#81c03b',
-            '#ccdc4b',
-            '#fcc91f',
-            '#F92068',
-            '#6545C6',
-            '#B5743B',
-        ];
-        return Color;
-    }());
-    App.Color = Color;
-})(App || (App = {}));
 /// <reference path="../../lib/jquery/index.d.ts" />
 /// <reference path="../../lib/underscore/index.d.ts" />
 /// <reference path="../../../lib/jquery/index.d.ts" />
@@ -455,6 +333,91 @@ var Fw;
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Views/IView.ts" />
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Util/Dump.ts" />
+/*/// <reference path="IController.ts" />*/
+var Fw;
+(function (Fw) {
+    var Controllers;
+    (function (Controllers) {
+        var Factory = /** @class */ (function () {
+            function Factory() {
+            }
+            // https://qiita.com/kojiy72/items/8e3ac6ae2083d3e1284c
+            Factory.Create = function (id, elem) {
+                // 文字列からクラスを取得
+                var classObject = Function('return (App.Controllers.' + id + 'Controller)')();
+                var instance = new classObject(id, elem);
+                return instance;
+            };
+            return Factory;
+        }());
+        Controllers.Factory = Factory;
+    })(Controllers = Fw.Controllers || (Fw.Controllers = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Config.ts" />
+/// <reference path="../Util/Dump.ts" />
+/// <reference path="Factory.ts" />
+var Fw;
+(function (Fw) {
+    var Controllers;
+    (function (Controllers) {
+        var Config = Fw.Config;
+        var Manager = /** @class */ (function () {
+            function Manager() {
+                this._controllers = {};
+                $("div[" + Config.PageIdAttribute + "]").each(function (i, el) {
+                    var $elem = $(el);
+                    var id = $elem.attr(Config.PageIdAttribute);
+                    var instance = Controllers.Factory.Create(id, $elem);
+                    this._controllers[id] = instance;
+                }.bind(this));
+            }
+            Object.defineProperty(Manager, "Instance", {
+                get: function () {
+                    if (!Manager._instance) {
+                        Manager.Init();
+                    }
+                    return Manager._instance;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            // TODO: ↓そのうち削除予定
+            Manager.Init = function () {
+                if (!Manager._instance)
+                    Manager._instance = new Manager();
+            };
+            Manager.prototype.Add = function (controller) {
+                if (this._controllers[controller.Id])
+                    throw new Error("Id[" + controller.Id + "] already exists");
+                this._controllers[controller.Id] = controller;
+            };
+            Manager.prototype.Show = function (id) {
+                var target = this._controllers[id];
+                if (!target)
+                    throw new Error("id not found: " + id);
+                _.each(this._controllers, function (c) {
+                    if (c !== target && c.View.IsVisible)
+                        c.View.Hide();
+                });
+                target.View.Show();
+            };
+            Manager.prototype.ShowOnce = function (controller) {
+                _.each(this._controllers, function (c) {
+                    c.View.Hide();
+                });
+                controller.View.Show();
+            };
+            Manager._instance = null;
+            return Manager;
+        }());
+        Controllers.Manager = Manager;
+    })(Controllers = Fw.Controllers || (Fw.Controllers = {}));
+})(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Config.ts" />
@@ -1007,6 +970,8 @@ var Fw;
                 _this._opacity = 1.0;
                 _this._isVisible = true;
                 _this._isInitialized = false;
+                _this._latestStyles = {};
+                _this._newStyles = {};
                 _this.SetElem(jqueryElem);
                 _this._children = new Array();
                 _this._size = new Property.Size(_this);
@@ -1344,6 +1309,7 @@ var Fw;
                 }, 10);
             };
             ViewBase.prototype.InnerRefresh = function () {
+                var _this = this;
                 try {
                     //Dump.Log(`${this.ClassName}.InnerRefresh`);
                     var parent_1 = $(this.Elem.parent());
@@ -1418,17 +1384,33 @@ var Fw;
                     //    positionX: this.Position.X,
                     //    elemLeft: elemLeft
                     //});
-                    this.Dom.style.left = elemLeft + "px";
-                    this.Dom.style.top = elemTop + "px";
-                    this.Dom.style.width = this.Size.Width + "px";
-                    this.Dom.style.height = this.Size.Height + "px";
-                    this.Dom.style.zIndex = "" + this.ZIndex;
-                    this.Dom.style.color = "" + this._color;
-                    this.Dom.style.backgroundColor = "" + this._backgroundColor;
-                    this.Dom.style.opacity = "" + this.Opacity;
-                    this.Dom.style.display = (this._isVisible)
-                        ? 'block'
-                        : 'none';
+                    this.SetStyles({
+                        left: elemLeft + "px",
+                        top: elemTop + "px",
+                        width: this.Size.Width + "px",
+                        height: this.Size.Height + "px",
+                        zIndex: "" + this.ZIndex,
+                        color: "" + this._color,
+                        backgroundColor: "" + this._backgroundColor,
+                        opacity: "" + this.Opacity,
+                        display: (this._isVisible)
+                            ? 'block'
+                            : 'none'
+                    });
+                    _.defer(function () {
+                        _this.ApplyStyles();
+                    });
+                    //this.Dom.style.left = `${elemLeft}px`;
+                    //this.Dom.style.top = `${elemTop}px`;
+                    //this.Dom.style.width = `${this.Size.Width}px`;
+                    //this.Dom.style.height = `${this.Size.Height}px`;
+                    //this.Dom.style.zIndex = `${this.ZIndex}`;
+                    //this.Dom.style.color = `${this._color}`;
+                    //this.Dom.style.backgroundColor = `${this._backgroundColor}`;
+                    //this.Dom.style.opacity = `${this.Opacity}`;
+                    //this.Dom.style.display = (this._isVisible)
+                    //    ? 'block'
+                    //    : 'none';
                     this._lastRefreshedTime = new Date();
                 }
                 catch (e) {
@@ -1439,6 +1421,22 @@ var Fw;
                     this.ResumeEvent(Events.PositionChanged);
                     this.ResumeLayout();
                 }
+            };
+            ViewBase.prototype.SetStyle = function (name, value) {
+                this._newStyles[name] = value;
+            };
+            ViewBase.prototype.SetStyles = function (styles) {
+                _.extend(this._newStyles, styles);
+            };
+            ViewBase.prototype.ApplyStyles = function () {
+                var _this = this;
+                _.each(this._newStyles, function (v, k) {
+                    if (_this._latestStyles[k] !== v) {
+                        _this.Dom.style[k] = v;
+                        _this._latestStyles[k] = v;
+                    }
+                });
+                this._newStyles = {};
             };
             ViewBase.prototype.SuppressLayout = function () {
                 this._isSuppressLayout = true;
@@ -1758,29 +1756,47 @@ var Fw;
                 //Dump.Log(`${this.ClassName}.Mask`);
                 this._isMasked = true;
                 Fw.Root.Instance.Mask();
-                this.Dom.style.zIndex = '-1';
+                //this.Dom.style.zIndex = '-1';
+                this.SetStyle('zIndex', '-1');
+                this.Refresh();
             };
             PageView.prototype.UnMask = function () {
                 //Dump.Log(`${this.ClassName}.UnMask`);
                 this._isMasked = false;
                 Fw.Root.Instance.UnMask();
-                this.Dom.style.zIndex = '0';
+                //this.Dom.style.zIndex = '0';
+                this.SetStyle('zIndex', '0');
+                this.Refresh();
             };
             PageView.prototype.InnerRefresh = function () {
+                var _this = this;
                 try {
                     this.SuppressLayout();
                     // TODO: Anchor実装する。
                     // 親View(=Root)とPageは常に同サイズなので、X/YがそのままLeft/Topになる。
-                    this.Dom.style.left = this.Position.X + "px";
-                    this.Dom.style.top = this.Position.Y + "px";
-                    this.Dom.style.width = "100%";
-                    this.Dom.style.height = "100%";
-                    this.Dom.style.zIndex = "" + this.ZIndex;
-                    this.Dom.style.color = "" + this.Color;
-                    this.Dom.style.backgroundColor = "" + this.BackgroundColor;
-                    this.Dom.style.display = (this.IsVisible)
-                        ? 'block'
-                        : 'none';
+                    //this.Dom.style.left = `${this.Position.X}px`;
+                    //this.Dom.style.top = `${this.Position.Y}px`;
+                    //this.Dom.style.width = `100%`;
+                    //this.Dom.style.height = `100%`;
+                    //this.Dom.style.zIndex = `${this.ZIndex}`;
+                    //this.Dom.style.color = `${this.Color}`;
+                    //this.Dom.style.backgroundColor = `${this.BackgroundColor}`;
+                    //this.Dom.style.display = (this.IsVisible)
+                    //    ? 'block'
+                    //    : 'none';
+                    this.SetStyles({
+                        left: this.Position.X + "px",
+                        top: this.Position.Y + "px",
+                        width: "100%",
+                        height: "100%",
+                        zIndex: "" + this.ZIndex,
+                        color: "" + this.Color,
+                        backgroundColor: "" + this.BackgroundColor,
+                        display: (this.IsVisible) ? 'block' : 'none'
+                    });
+                    _.defer(function () {
+                        _this.ApplyStyles();
+                    });
                 }
                 catch (e) {
                     Dump.ErrorLog(e);
@@ -1839,9 +1855,11 @@ var Fw;
                 },
                 set: function (value) {
                     this._hasBorder = value;
-                    this.Dom.style.borderWidth = (value)
+                    //this.Dom.style.borderWidth = (value) ? '1px' : '0';
+                    this.SetStyle('borderWidth', (value)
                         ? '1px'
-                        : '0';
+                        : '0');
+                    this.Refresh();
                 },
                 enumerable: true,
                 configurable: true
@@ -1858,7 +1876,9 @@ var Fw;
                     if (value > 50)
                         value = 50;
                     this._borderRadius = value;
-                    this.Dom.style.borderRadius = this._borderRadius + "%";
+                    //this.Dom.style.borderRadius = `${this._borderRadius}%`;
+                    this.SetStyle('borderRadius', this._borderRadius + "%");
+                    this.Refresh();
                 },
                 enumerable: true,
                 configurable: true
@@ -1867,7 +1887,8 @@ var Fw;
                 try {
                     this.SuppressLayout();
                     _super.prototype.InnerRefresh.call(this);
-                    this.Dom.style.borderColor = "" + this.Color;
+                    //this.Dom.style.borderColor = `${this.Color}`;
+                    this.SetStyle('borderColor', "" + this.Color);
                 }
                 catch (e) {
                     Dump.ErrorLog(e);
@@ -1886,6 +1907,43 @@ var Fw;
         Views.BoxView = BoxView;
     })(Views = Fw.Views || (Fw.Views = {}));
 })(Fw || (Fw = {}));
+/// <reference path="../../lib/jquery/index.d.ts" />
+/// <reference path="../../lib/underscore/index.d.ts" />
+/// <reference path="../Fw/Util/Dump.ts" />
+/// <reference path="../Fw/Controllers/Manager.ts" />
+var App;
+(function (App) {
+    var Color = /** @class */ (function () {
+        function Color() {
+        }
+        // ライトブラウン - 女っぽいからターゲット外
+        //public static Main: string = '#FFFFFF';
+        //public static MainBackground: string = '#D4B16A';
+        //public static MainHover: string = '#D9BA7C';
+        //public static HeaderButtonBackground = '#C79B41';
+        //public static HeaderButtonHover = '#CDA555';
+        Color.Transparent = 'transparent';
+        Color.Main = '#000000';
+        Color.MainBackground = '#f5f5f5';
+        Color.MainHover = '#e0e0e0';
+        Color.HeaderButtonBackground = '#ececec';
+        Color.HeaderButtonHover = '#e0e0e0';
+        Color.ReverseMain = '#FFFFFF';
+        Color.ButtonColors = [
+            '#fff796',
+            '#9d9e9e',
+            '#84bde8',
+            '#81c03b',
+            '#ccdc4b',
+            '#fcc91f',
+            '#F92068',
+            '#6545C6',
+            '#B5743B',
+        ];
+        return Color;
+    }());
+    App.Color = Color;
+})(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../../Fw/Views/BoxView.ts" />
@@ -2129,69 +2187,6 @@ var App;
         Controllers.LayoutCheckController = LayoutCheckController;
     })(Controllers = App.Controllers || (App.Controllers = {}));
 })(App || (App = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../../Fw/Controllers/ControllerBase.ts" />
-/// <reference path="../../Fw/Controllers/Manager.ts" />
-/// <reference path="../../Fw/Util/Dump.ts" />
-/// <reference path="../../Fw/Events/ControlViewEvents.ts" />
-var App;
-(function (App) {
-    var Controllers;
-    (function (Controllers) {
-        var Events = Fw.Events;
-        var Manager = Fw.Controllers.Manager;
-        var Sub3Controller = /** @class */ (function (_super) {
-            __extends(Sub3Controller, _super);
-            function Sub3Controller(id) {
-                var _this = _super.call(this, id) || this;
-                _this.Init();
-                return _this;
-            }
-            Sub3Controller.prototype.Init = function () {
-                this.View = new App.Views.Pages.Sub3PageView();
-                var page = this.View;
-                page.HeaderBar.LeftButton.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
-                    Manager.Instance.Show("Main");
-                });
-            };
-            return Sub3Controller;
-        }(Fw.Controllers.ControllerBase));
-        Controllers.Sub3Controller = Sub3Controller;
-    })(Controllers = App.Controllers || (App.Controllers = {}));
-})(App || (App = {}));
-/// <reference path="../../lib/jquery/index.d.ts" />
-/// <reference path="../../lib/underscore/index.d.ts" />
-/// <reference path="../Fw/Util/Dump.ts" />
-/// <reference path="../Fw/Controllers/Manager.ts" />
-var App;
-(function (App) {
-    var Manager = Fw.Controllers.Manager;
-    var Main = /** @class */ (function () {
-        function Main() {
-        }
-        Main.StartUp = function () {
-            // フレームワーク初期化
-            Fw.Startup.Init();
-            // API仕様に応じて、クエリ先URLの土台を作っておく。
-            var proto = location.protocol;
-            var host = location.hostname;
-            var port = location.port;
-            Fw.Config.XhrBaseUrl = proto + '//' + host + ':' + port + '/api/';
-            var main = new App.Controllers.MainController('Main');
-            main.IsDefaultView = true;
-            Manager.Instance.Add(main);
-            Manager.Instance.Show('Main');
-        };
-        return Main;
-    }());
-    App.Main = Main;
-})(App || (App = {}));
-// アプリケーションを起動する。
-// 以下にはこれ以上書かないこと。
-$(function () {
-    App.Main.StartUp();
-});
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Fw/Controllers/ControllerBase.ts" />
@@ -2599,6 +2594,37 @@ var App;
 })(App || (App = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Fw/Controllers/ControllerBase.ts" />
+/// <reference path="../../Fw/Controllers/Manager.ts" />
+/// <reference path="../../Fw/Util/Dump.ts" />
+/// <reference path="../../Fw/Events/ControlViewEvents.ts" />
+var App;
+(function (App) {
+    var Controllers;
+    (function (Controllers) {
+        var Events = Fw.Events;
+        var Manager = Fw.Controllers.Manager;
+        var Sub3Controller = /** @class */ (function (_super) {
+            __extends(Sub3Controller, _super);
+            function Sub3Controller(id) {
+                var _this = _super.call(this, id) || this;
+                _this.Init();
+                return _this;
+            }
+            Sub3Controller.prototype.Init = function () {
+                this.View = new App.Views.Pages.Sub3PageView();
+                var page = this.View;
+                page.HeaderBar.LeftButton.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
+                    Manager.Instance.Show("Main");
+                });
+            };
+            return Sub3Controller;
+        }(Fw.Controllers.ControllerBase));
+        Controllers.Sub3Controller = Sub3Controller;
+    })(Controllers = App.Controllers || (App.Controllers = {}));
+})(App || (App = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Events/ControlViewEvents.ts" />
 /// <reference path="../Util/Dump.ts" />
 /// <reference path="../Util/Number.ts" />
@@ -2729,8 +2755,12 @@ var Fw;
                 _this.Elem.hover(function () {
                     //Dump.Log(`${this.ClassName}.hover: color = ${this.HoverColor}`);
                     _this.Dom.style.backgroundColor = _this.HoverColor;
+                    //this.SetStyle('backgroundColor', this.HoverColor);
+                    //this.Refresh();
                 }, function () {
                     _this.Dom.style.backgroundColor = _this.BackgroundColor;
+                    //this.SetStyle('backgroundColor', this.BackgroundColor);
+                    //this.Refresh();
                 });
                 return _this;
             }
@@ -2846,11 +2876,18 @@ var App;
                     try {
                         this.SuppressLayout();
                         _super.prototype.InnerRefresh.call(this);
-                        this.Dom.style.color = 'transparent';
-                        this.Dom.style.backgroundColor = 'transparent';
-                        this.Dom.style.borderWidth = '0';
-                        this.Dom.style.borderColor = 'transparent';
-                        this.Dom.style.opacity = "" + this.Opacity;
+                        this.SetStyles({
+                            color: 'transparent',
+                            backgroundColor: 'transparent',
+                            borderWidth: '0',
+                            borderColor: 'transparent',
+                            opacity: "" + this.Opacity
+                        });
+                        //this.Dom.style.color = 'transparent';
+                        //this.Dom.style.backgroundColor = 'transparent';
+                        //this.Dom.style.borderWidth = '0';
+                        //this.Dom.style.borderColor = 'transparent';
+                        //this.Dom.style.opacity = `${this.Opacity}`;
                     }
                     catch (e) {
                         Dump.ErrorLog(e);
@@ -2939,12 +2976,14 @@ var App;
                     _this.Button.BackgroundColor = Color.MainBackground;
                     _this.Button.HoverColor = Color.MainHover;
                     _this.Button.Color = Color.Main;
+                    _this.Button.SetStyle('borderColor', Color.MainHover);
                     _this.Label.Color = Color.Main;
                     return _this;
                 }
                 SceneButtonView.prototype.InnerRefresh = function () {
                     _super.prototype.InnerRefresh.call(this);
                     this.Button.Dom.style.borderColor = Color.MainHover;
+                    //this.Button.SetStyle('borderColor', Color.MainHover);
                 };
                 return SceneButtonView;
             }(Controls.LabeledButtonView));
@@ -2962,80 +3001,6 @@ var App;
 (function (App) {
     var Views;
     (function (Views_7) {
-        var Pages;
-        (function (Pages) {
-            var Views = Fw.Views;
-            var Property = Fw.Views.Property;
-            var Sub3PageView = /** @class */ (function (_super) {
-                __extends(Sub3PageView, _super);
-                function Sub3PageView() {
-                    var _this = this;
-                    var jqueryElem = $("");
-                    _this = _super.call(this, jqueryElem) || this;
-                    _this.HeaderBar = new Views_7.Controls.HeaderBarView();
-                    _this.Stucker = new Views.StuckerBoxView();
-                    _this.SetClassName('Sub3PageView');
-                    _this.HeaderBar.Text = 'Sub 3 Page';
-                    _this.HeaderBar.RightButton.Hide(0);
-                    _this.Add(_this.HeaderBar);
-                    //this.Stucker.SetSize(600, 400);
-                    _this.Stucker.SetAnchor(70, 20, 20, null);
-                    _this.Stucker.Size.Height = 400;
-                    _this.Stucker.SetLeftTop(10, 70);
-                    _this.Add(_this.Stucker);
-                    var btn1 = new Views.ButtonView();
-                    btn1.SetSize(100, 120);
-                    btn1.Text = 'btn1: LeftTop';
-                    _this.Stucker.Add(btn1);
-                    btn1.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, function () {
-                        _this.Stucker.ReferencePoint = Property.ReferencePoint.LeftTop;
-                    });
-                    var btn2 = new Views.ButtonView();
-                    btn2.SetSize(100, 120);
-                    btn2.Text = 'btn2: RightTop';
-                    _this.Stucker.Add(btn2);
-                    btn2.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, function () {
-                        _this.Stucker.ReferencePoint = Property.ReferencePoint.RightTop;
-                    });
-                    var btn3 = new Views.ButtonView();
-                    btn3.SetSize(100, 120);
-                    btn3.Text = 'btn3: LeftBottom';
-                    _this.Stucker.Add(btn3);
-                    btn3.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, function () {
-                        _this.Stucker.ReferencePoint = Property.ReferencePoint.LeftBottom;
-                    });
-                    var btn4 = new Views.ButtonView();
-                    btn4.SetSize(100, 120);
-                    btn4.Text = 'btn4: RightBottom';
-                    _this.Stucker.Add(btn4);
-                    btn4.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, function () {
-                        _this.Stucker.ReferencePoint = Property.ReferencePoint.RightBottom;
-                    });
-                    var idx = 5;
-                    for (var i = 0; i < 20; i++) {
-                        var btn = new Views.ButtonView();
-                        btn.SetSize(100, 120);
-                        btn.Text = "btn" + (idx + i);
-                        _this.Stucker.Add(btn);
-                    }
-                    return _this;
-                }
-                return Sub3PageView;
-            }(Fw.Views.PageView));
-            Pages.Sub3PageView = Sub3PageView;
-        })(Pages = Views_7.Pages || (Views_7.Pages = {}));
-    })(Views = App.Views || (App.Views = {}));
-})(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Views/PageView.ts" />
-/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
-/// <reference path="../../../Fw/Events/PageViewEvents.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-var App;
-(function (App) {
-    var Views;
-    (function (Views_8) {
         var Pages;
         (function (Pages) {
             var Property = Fw.Views.Property;
@@ -3116,9 +3081,115 @@ var App;
                 return LayoutCheckPageView;
             }(Fw.Views.PageView));
             Pages.LayoutCheckPageView = LayoutCheckPageView;
+        })(Pages = Views_7.Pages || (Views_7.Pages = {}));
+    })(Views = App.Views || (App.Views = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Views/PageView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Events/PageViewEvents.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+var App;
+(function (App) {
+    var Views;
+    (function (Views_8) {
+        var Pages;
+        (function (Pages) {
+            var Views = Fw.Views;
+            var Property = Fw.Views.Property;
+            var Sub3PageView = /** @class */ (function (_super) {
+                __extends(Sub3PageView, _super);
+                function Sub3PageView() {
+                    var _this = this;
+                    var jqueryElem = $("");
+                    _this = _super.call(this, jqueryElem) || this;
+                    _this.HeaderBar = new Views_8.Controls.HeaderBarView();
+                    _this.Stucker = new Views.StuckerBoxView();
+                    _this.SetClassName('Sub3PageView');
+                    _this.HeaderBar.Text = 'Sub 3 Page';
+                    _this.HeaderBar.RightButton.Hide(0);
+                    _this.Add(_this.HeaderBar);
+                    //this.Stucker.SetSize(600, 400);
+                    _this.Stucker.SetAnchor(70, 20, 20, null);
+                    _this.Stucker.Size.Height = 400;
+                    _this.Stucker.SetLeftTop(10, 70);
+                    _this.Add(_this.Stucker);
+                    var btn1 = new Views.ButtonView();
+                    btn1.SetSize(100, 120);
+                    btn1.Text = 'btn1: LeftTop';
+                    _this.Stucker.Add(btn1);
+                    btn1.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, function () {
+                        _this.Stucker.ReferencePoint = Property.ReferencePoint.LeftTop;
+                    });
+                    var btn2 = new Views.ButtonView();
+                    btn2.SetSize(100, 120);
+                    btn2.Text = 'btn2: RightTop';
+                    _this.Stucker.Add(btn2);
+                    btn2.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, function () {
+                        _this.Stucker.ReferencePoint = Property.ReferencePoint.RightTop;
+                    });
+                    var btn3 = new Views.ButtonView();
+                    btn3.SetSize(100, 120);
+                    btn3.Text = 'btn3: LeftBottom';
+                    _this.Stucker.Add(btn3);
+                    btn3.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, function () {
+                        _this.Stucker.ReferencePoint = Property.ReferencePoint.LeftBottom;
+                    });
+                    var btn4 = new Views.ButtonView();
+                    btn4.SetSize(100, 120);
+                    btn4.Text = 'btn4: RightBottom';
+                    _this.Stucker.Add(btn4);
+                    btn4.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, function () {
+                        _this.Stucker.ReferencePoint = Property.ReferencePoint.RightBottom;
+                    });
+                    var idx = 5;
+                    for (var i = 0; i < 20; i++) {
+                        var btn = new Views.ButtonView();
+                        btn.SetSize(100, 120);
+                        btn.Text = "btn" + (idx + i);
+                        _this.Stucker.Add(btn);
+                    }
+                    return _this;
+                }
+                return Sub3PageView;
+            }(Fw.Views.PageView));
+            Pages.Sub3PageView = Sub3PageView;
         })(Pages = Views_8.Pages || (Views_8.Pages = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
+/// <reference path="../../lib/jquery/index.d.ts" />
+/// <reference path="../../lib/underscore/index.d.ts" />
+/// <reference path="../Fw/Util/Dump.ts" />
+/// <reference path="../Fw/Controllers/Manager.ts" />
+var App;
+(function (App) {
+    var Manager = Fw.Controllers.Manager;
+    var Main = /** @class */ (function () {
+        function Main() {
+        }
+        Main.StartUp = function () {
+            // フレームワーク初期化
+            Fw.Startup.Init();
+            // API仕様に応じて、クエリ先URLの土台を作っておく。
+            var proto = location.protocol;
+            var host = location.hostname;
+            var port = location.port;
+            Fw.Config.XhrBaseUrl = proto + '//' + host + ':' + port + '/api/';
+            var main = new App.Controllers.MainController('Main');
+            main.IsDefaultView = true;
+            Manager.Instance.Add(main);
+            Manager.Instance.Show('Main');
+        };
+        return Main;
+    }());
+    App.Main = Main;
+})(App || (App = {}));
+// アプリケーションを起動する。
+// 以下にはこれ以上書かないこと。
+$(function () {
+    App.Main.StartUp();
+});
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="ControlViewEvents.ts" />
@@ -3135,24 +3206,6 @@ var Fw;
         }(Events.ControlViewEventsClass));
         Events.ButtonViewEventsClass = ButtonViewEventsClass;
         Events.ButtonViewEvents = new ButtonViewEventsClass();
-    })(Events = Fw.Events || (Fw.Events = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="BoxViewEvents.ts" />
-var Fw;
-(function (Fw) {
-    var Events;
-    (function (Events) {
-        var StuckerBoxViewEventsClass = /** @class */ (function (_super) {
-            __extends(StuckerBoxViewEventsClass, _super);
-            function StuckerBoxViewEventsClass() {
-                return _super !== null && _super.apply(this, arguments) || this;
-            }
-            return StuckerBoxViewEventsClass;
-        }(Events.BoxViewEventsClass));
-        Events.StuckerBoxViewEventsClass = StuckerBoxViewEventsClass;
-        Events.StuckerBoxViewEvents = new StuckerBoxViewEventsClass();
     })(Events = Fw.Events || (Fw.Events = {}));
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
@@ -3264,6 +3317,24 @@ var Fw;
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="BoxViewEvents.ts" />
+var Fw;
+(function (Fw) {
+    var Events;
+    (function (Events) {
+        var StuckerBoxViewEventsClass = /** @class */ (function (_super) {
+            __extends(StuckerBoxViewEventsClass, _super);
+            function StuckerBoxViewEventsClass() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            return StuckerBoxViewEventsClass;
+        }(Events.BoxViewEventsClass));
+        Events.StuckerBoxViewEventsClass = StuckerBoxViewEventsClass;
+        Events.StuckerBoxViewEvents = new StuckerBoxViewEventsClass();
+    })(Events = Fw.Events || (Fw.Events = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="ControlViewEvents.ts" />
 var Fw;
 (function (Fw) {
@@ -3283,31 +3354,6 @@ var Fw;
         Events.ToggleButtonViewEventsClass = ToggleButtonViewEventsClass;
         Events.ToggleButtonViewEvents = new ToggleButtonViewEventsClass();
     })(Events = Fw.Events || (Fw.Events = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../lib/jquery/index.d.ts" />
-/// <reference path="../../lib/underscore/index.d.ts" />
-/// <reference path="Util/Dump.ts" />
-/* /// <reference path="Views/Root.ts" /> */
-var Fw;
-(function (Fw) {
-    var Startup = /** @class */ (function () {
-        function Startup() {
-        }
-        Startup.Init = function () {
-            // ↓API仕様に応じて、App.Mainで書き換える。
-            Fw.Config.XhrBaseUrl
-                = location.protocol
-                    + '//' + location.hostname
-                    + ':' + location.port
-                    + '/';
-            // 画面全体のコンテナを初期化
-            Fw.Root.Init('div.body-content');
-            // Controllers.Managerの初期化
-            Fw.Controllers.Manager.Init();
-        };
-        return Startup;
-    }());
-    Fw.Startup = Startup;
 })(Fw || (Fw = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
@@ -3393,6 +3439,341 @@ var Fw;
     (function (Views) {
         var Property;
         (function (Property) {
+            var Direction;
+            (function (Direction) {
+                Direction[Direction["Horizontal"] = 0] = "Horizontal";
+                Direction[Direction["Vertical"] = 1] = "Vertical";
+            })(Direction = Property.Direction || (Property.Direction = {}));
+        })(Property = Views.Property || (Views.Property = {}));
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Property;
+        (function (Property) {
+            /**
+             * @description font-size
+             */
+            var FontSize;
+            (function (FontSize) {
+                FontSize["XxSmall"] = "xx-small";
+                FontSize["XSmall"] = "x-small";
+                FontSize["Small"] = "small";
+                FontSize["Medium"] = "medium";
+                FontSize["Large"] = "large";
+                FontSize["XLarge"] = "x-large";
+                FontSize["XxLarge"] = "xx-large";
+            })(FontSize = Property.FontSize || (Property.FontSize = {}));
+        })(Property = Views.Property || (Views.Property = {}));
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Property;
+        (function (Property) {
+            /**
+             * @description font-weight
+             */
+            var FontWeight;
+            (function (FontWeight) {
+                FontWeight["Lighter"] = "lighter";
+                FontWeight["Normal"] = "normal";
+                FontWeight["Bold"] = "bold";
+                FontWeight["Bolder"] = "bolder";
+            })(FontWeight = Property.FontWeight || (Property.FontWeight = {}));
+        })(Property = Views.Property || (Views.Property = {}));
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Property;
+        (function (Property) {
+            /**
+             * @description 配置基準
+             */
+            var PositionPolicy;
+            (function (PositionPolicy) {
+                /**
+                 * 中央ポリシー：親Viewの中心位置からの差分を X, Y で表現する。
+                 */
+                PositionPolicy[PositionPolicy["Centering"] = 1] = "Centering";
+                /**
+                 * 左上ポリシー：親Viewの左上からの差分を、Left, Top で表現する。
+                 */
+                PositionPolicy[PositionPolicy["LeftTop"] = 2] = "LeftTop";
+            })(PositionPolicy = Property.PositionPolicy || (Property.PositionPolicy = {}));
+        })(Property = Views.Property || (Views.Property = {}));
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Events/ViewEvents.ts" />
+/// <reference path="../../Util/Dump.ts" />
+/// <reference path="../../Util/Number.ts" />
+/// <reference path="PositionPolicy.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Property;
+        (function (Property) {
+            var Events = Fw.Events.ViewEvents;
+            var Number = Fw.Util.Number;
+            var Position = /** @class */ (function () {
+                function Position(view) {
+                    if (view === void 0) { view = null; }
+                    this._view = null;
+                    this._policy = Property.PositionPolicy.Centering;
+                    this._x = 0;
+                    this._y = 0;
+                    this._left = 0;
+                    this._top = 0;
+                    this._view = view;
+                }
+                Object.defineProperty(Position.prototype, "Policy", {
+                    get: function () {
+                        return this._policy;
+                    },
+                    set: function (value) {
+                        if (!value)
+                            throw new Error("value type not allowed");
+                        var changed = (this._policy !== value);
+                        if (changed && this._view.Parent) {
+                            if (this._policy === Property.PositionPolicy.Centering) {
+                                // 更新前が中央ポリシーのとき
+                                // 現在の値を左上ポリシー値に計算して保持させる。
+                                this._left = this.Left || 0;
+                                this._top = this.Top || 0;
+                            }
+                            else {
+                                // 更新前が左上ポリシーのとき
+                                // 現在の値を中央ポリシー値に計算して保持させる。
+                                this._x = this.X || 0;
+                                this._y = this.Y || 0;
+                            }
+                        }
+                        this._policy = value;
+                        if (changed && this._view)
+                            this._view.DispatchEvent(Events.PositionPolicyChanged);
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(Position.prototype, "X", {
+                    get: function () {
+                        if (this._policy === Property.PositionPolicy.Centering) {
+                            // 中央ポリシー
+                            return this._x;
+                        }
+                        else {
+                            // 左上ポリシー
+                            if (!this._view)
+                                return null;
+                            var sset = this.GetSizeSet();
+                            return sset.MyHalfWidth + this._left - sset.ParentHalfWidth;
+                        }
+                    },
+                    set: function (value) {
+                        // nullは許可、その他は例外
+                        if (Number.IsNaN(value) || value === undefined)
+                            throw new Error("value type not allowed");
+                        var changed = false;
+                        if (this._policy === Property.PositionPolicy.Centering) {
+                            // 中央ポリシー
+                            changed = (this._x !== value);
+                            this._x = value;
+                        }
+                        else {
+                            // 左上ポリシー
+                            var sset = this.GetSizeSet();
+                            // 更新後のLeftを取得
+                            var newValue = sset.ParentHalfWidth - sset.MyHalfWidth + value;
+                            changed = (this._left !== newValue);
+                            this._left = newValue;
+                        }
+                        if (changed && this._view)
+                            this._view.DispatchEvent(Events.PositionChanged);
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(Position.prototype, "Y", {
+                    get: function () {
+                        if (this._policy === Property.PositionPolicy.Centering) {
+                            // 中央ポリシー
+                            return this._y;
+                        }
+                        else {
+                            // 左上ポリシー
+                            if (!this._view)
+                                return null;
+                            var sset = this.GetSizeSet();
+                            return sset.MyHalfHeight + this._top - sset.ParentHalfHeight;
+                        }
+                    },
+                    set: function (value) {
+                        // nullは許可、その他は例外
+                        if (Number.IsNaN(value) || value === undefined)
+                            throw new Error("value type not allowed");
+                        var changed = false;
+                        if (this._policy === Property.PositionPolicy.Centering) {
+                            // 中央ポリシー
+                            changed = (this._y !== value);
+                            this._y = value;
+                        }
+                        else {
+                            // 左上ポリシー
+                            var sset = this.GetSizeSet();
+                            // 更新後のTopを取得
+                            var newValue = sset.ParentHalfHeight - sset.MyHalfHeight + value;
+                            changed = (this._top !== newValue);
+                            this._top = newValue;
+                        }
+                        if (changed && this._view)
+                            this._view.DispatchEvent(Events.PositionChanged);
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(Position.prototype, "Left", {
+                    get: function () {
+                        if (this._policy === Property.PositionPolicy.Centering) {
+                            // 中央ポリシー
+                            if (!this._view)
+                                return null;
+                            var sset = this.GetSizeSet();
+                            return sset.ParentHalfWidth - sset.MyHalfWidth + this._x;
+                        }
+                        else {
+                            // 左上ポリシー
+                            return this._left;
+                        }
+                    },
+                    set: function (value) {
+                        // nullは許可、その他は例外
+                        if (Number.IsNaN(value) || value === undefined)
+                            throw new Error("value type not allowed");
+                        var changed = false;
+                        if (this._policy === Property.PositionPolicy.Centering) {
+                            // 中央ポリシー
+                            var sset = this.GetSizeSet();
+                            // 更新後のXを取得
+                            var newValue = sset.MyHalfWidth + value - sset.ParentHalfWidth;
+                            changed = (this._x !== newValue);
+                            this._x = newValue;
+                        }
+                        else {
+                            // 左上ポリシー
+                            changed = (this._left !== value);
+                            this._left = value;
+                        }
+                        if (changed && this._view)
+                            this._view.DispatchEvent(Events.PositionChanged);
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(Position.prototype, "Top", {
+                    get: function () {
+                        if (this._policy === Property.PositionPolicy.Centering) {
+                            // 中央ポリシー
+                            if (!this._view)
+                                return null;
+                            var sset = this.GetSizeSet();
+                            return sset.ParentHalfHeight - sset.MyHalfHeight + this._y;
+                        }
+                        else {
+                            // 左上ポリシー
+                            return this._top;
+                        }
+                    },
+                    set: function (value) {
+                        // nullは許可、その他は例外
+                        if (Number.IsNaN(value) || value === undefined)
+                            throw new Error("value type not allowed");
+                        var changed = false;
+                        if (this._policy === Property.PositionPolicy.Centering) {
+                            // 中央ポリシー
+                            var sset = this.GetSizeSet();
+                            // 更新後のYを取得
+                            var newValue = sset.MyHalfHeight + value - sset.ParentHalfHeight;
+                            changed = (this._y !== newValue);
+                            this._y = newValue;
+                        }
+                        else {
+                            // 左上ポリシー
+                            changed = (this._top !== value);
+                            this._top = value;
+                        }
+                        if (changed && this._view)
+                            this._view.DispatchEvent(Events.PositionChanged);
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Position.prototype.GetSizeSet = function () {
+                    return new SizeSet(this._view);
+                };
+                Position.prototype.Dispose = function () {
+                    this._view = null;
+                    this._x = null;
+                    this._y = null;
+                };
+                return Position;
+            }());
+            Property.Position = Position;
+            var SizeSet = /** @class */ (function () {
+                function SizeSet(view) {
+                    var parentWidth;
+                    var parentHeight;
+                    if (view.Parent) {
+                        // 親Viewが存在する
+                        parentWidth = view.Parent.Size.Width;
+                        parentHeight = view.Parent.Size.Height;
+                    }
+                    else {
+                        // 親Viewが存在しない
+                        var parent_2 = $(view.Elem.parent());
+                        parentWidth = parent_2.width();
+                        parentHeight = parent_2.height();
+                    }
+                    this.ParentHalfWidth = parentWidth / 2;
+                    this.ParentHalfHeight = parentHeight / 2;
+                    this.MyHalfWidth = view.Size.Width / 2;
+                    this.MyHalfHeight = view.Size.Height / 2;
+                    //this.ParentWidth = parentWidth;
+                    //this.ParentHeight = parentHeight;
+                    //this.MyWidth = view.Size.Width;
+                    //this.MyHeight = view.Size.Height;
+                }
+                return SizeSet;
+            }());
+        })(Property = Views.Property || (Views.Property = {}));
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Events/ViewEvents.ts" />
+/// <reference path="../../Util/Dump.ts" />
+/// <reference path="../../Util/Number.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Property;
+        (function (Property) {
             /**
              * @description 基点、スタッキング時の基準点
              */
@@ -3404,6 +3785,870 @@ var Fw;
                 ReferencePoint[ReferencePoint["RightBottom"] = 4] = "RightBottom";
             })(ReferencePoint = Property.ReferencePoint || (Property.ReferencePoint = {}));
         })(Property = Views.Property || (Views.Property = {}));
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Events/ControlViewEvents.ts" />
+/// <reference path="../Util/Dump.ts" />
+/// <reference path="../Util/Number.ts" />
+/// <reference path="ViewBase.ts" />
+/// <reference path="Property/FitPolicy.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Dump = Fw.Util.Dump;
+        var FitPolicy = Fw.Views.Property.FitPolicy;
+        var ImageView = /** @class */ (function (_super) {
+            __extends(ImageView, _super);
+            function ImageView() {
+                var _this = _super.call(this, $('<div></div>')) || this;
+                _this._image = new Image();
+                _this.SetClassName('ImageView');
+                _this.Elem.addClass(_this.ClassName);
+                _this.BackgroundColor = 'transparent';
+                //this.Dom.style.borderWidth = '0';
+                //this.Dom.style.borderRadius = '0';
+                _this.SetStyles({
+                    borderWidth: '0',
+                    borderRadius: '0'
+                });
+                // 注) ImageオブジェクトはDomツリーに入れない。
+                _this._image.onload = function () {
+                    Dump.Log('Image Loaded!!');
+                    _this.Refresh();
+                };
+                _this._firPolicy = FitPolicy.Auto;
+                return _this;
+            }
+            Object.defineProperty(ImageView.prototype, "Src", {
+                get: function () {
+                    return this._src;
+                },
+                set: function (value) {
+                    this._src = value;
+                    this._image.src = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(ImageView.prototype, "FitPolicy", {
+                get: function () {
+                    return this._firPolicy;
+                },
+                set: function (value) {
+                    this._firPolicy = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            ImageView.prototype.InnerRefresh = function () {
+                try {
+                    this.SuppressLayout();
+                    _super.prototype.InnerRefresh.call(this);
+                    //this.Dom.style.backgroundPosition = 'center center';
+                    //this.Dom.style.backgroundRepeat = 'no-repeat';
+                    //this.Dom.style.backgroundSize = this.FitPolicy;
+                    //this.Dom.style.backgroundImage = (this._src)
+                    //    ? `url(${this._src})`
+                    //    : null;
+                    this.SetStyles({
+                        backgroundPosition: 'center center',
+                        backgroundRepeat: 'no-repeat',
+                        backgroundSize: this.FitPolicy,
+                        backgroundImage: (this._src) ? "url(" + this._src + ")" : null
+                    });
+                }
+                catch (e) {
+                    Dump.ErrorLog(e);
+                }
+                finally {
+                    this.ResumeLayout();
+                }
+            };
+            ImageView.prototype.Dispose = function () {
+                _super.prototype.Dispose.call(this);
+                this._image = null;
+                this._src = null;
+                this._firPolicy = null;
+            };
+            return ImageView;
+        }(Views.ViewBase));
+        Views.ImageView = ImageView;
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Events/ControlViewEvents.ts" />
+/// <reference path="../Util/Dump.ts" />
+/// <reference path="../Util/Number.ts" />
+/// <reference path="ViewBase.ts" />
+/// <reference path="Property/FontWeight.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Dump = Fw.Util.Dump;
+        var Events = Fw.Events.ControlViewEvents;
+        var Property = Fw.Views.Property;
+        var LabelView = /** @class */ (function (_super) {
+            __extends(LabelView, _super);
+            function LabelView() {
+                var _this = _super.call(this, $('<label></label>')) || this;
+                _this._hiddenSpan = document.createElement('span');
+                _this.SetClassName('LabelView');
+                _this.Elem.addClass(_this.ClassName);
+                _this.BackgroundColor = 'transparent';
+                _this.SetTransAnimation(false);
+                //this.Dom.style.borderWidth = '0';
+                //this.Dom.style.borderRadius = '0';
+                _this.SetStyles({
+                    borderWidth: '0',
+                    borderRadius: '0'
+                });
+                _this._text = '';
+                _this._fontWeight = Property.FontWeight.Normal;
+                _this._fontSize = Property.FontSize.Medium;
+                _this._fontFamily = 'Quicksand, 游ゴシック体, "Yu Gothic", YuGothic, "ヒラギノ角ゴシック Pro", "Hiragino Kaku Gothic Pro", メイリオ, Meiryo, Osaka, "ＭＳ Ｐゴシック", "MS PGothic", sans-serif';
+                _this._hiddenSpan.style.visibility = 'hidden';
+                _this._hiddenSpan.style.fontWeight = _this._fontWeight;
+                _this._hiddenSpan.style.fontSize = _this._fontSize;
+                _this._hiddenSpan.style.fontFamily = _this._fontFamily;
+                _this.AddEventListener(Events.Attached, function () {
+                    _this.Parent.Elem.append(_this._hiddenSpan);
+                });
+                _this.AddEventListener(Events.Detached, function () {
+                    $(_this._hiddenSpan).remove();
+                });
+                _this._autoSize = true;
+                return _this;
+            }
+            Object.defineProperty(LabelView.prototype, "Text", {
+                get: function () {
+                    return this._text;
+                },
+                set: function (value) {
+                    this._text = value;
+                    this.Elem.text(''); // 一旦消す。
+                    this._hiddenSpan.innerText = this._text;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(LabelView.prototype, "FontWeight", {
+                get: function () {
+                    return this._fontWeight;
+                },
+                set: function (value) {
+                    this._fontWeight = value;
+                    this._hiddenSpan.style.fontWeight = this._fontWeight;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(LabelView.prototype, "FontSize", {
+                get: function () {
+                    return this._fontSize;
+                },
+                set: function (value) {
+                    this._fontSize = value;
+                    this._hiddenSpan.style.fontSize = this._fontSize;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(LabelView.prototype, "FontFamily", {
+                get: function () {
+                    return this._fontFamily;
+                },
+                set: function (value) {
+                    this._fontFamily = value;
+                    this._hiddenSpan.style.fontFamily = this._fontFamily;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(LabelView.prototype, "AutoSize", {
+                get: function () {
+                    return this._autoSize;
+                },
+                set: function (value) {
+                    this._autoSize = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            LabelView.prototype.InnerRefresh = function () {
+                try {
+                    this.SuppressLayout();
+                    if (this._autoSize) {
+                        this.Size.Width = this._hiddenSpan.offsetWidth + 10;
+                        this.Size.Height = this._hiddenSpan.offsetHeight;
+                    }
+                    _super.prototype.InnerRefresh.call(this);
+                    //this.Dom.style.fontWeight = this._fontWeight;
+                    //this.Dom.style.fontSize = this._fontSize;
+                    //this.Dom.style.fontFamily = this._fontFamily;
+                    this.SetStyles({
+                        fontWeight: this._fontWeight,
+                        fontSize: this._fontSize,
+                        fontFamily: this._fontFamily
+                    });
+                    this.Elem.text(this._text);
+                }
+                catch (e) {
+                    Dump.ErrorLog(e);
+                }
+                finally {
+                    this.ResumeLayout();
+                }
+            };
+            LabelView.prototype.Dispose = function () {
+                _super.prototype.Dispose.call(this);
+                this._text = null;
+                $(this._hiddenSpan).remove();
+            };
+            return LabelView;
+        }(Views.ViewBase));
+        Views.LabelView = LabelView;
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Events/ControlViewEvents.ts" />
+/// <reference path="../Util/Dump.ts" />
+/// <reference path="../Util/Number.ts" />
+/// <reference path="./BoxView.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Dump = Fw.Util.Dump;
+        var LineView = /** @class */ (function (_super) {
+            __extends(LineView, _super);
+            function LineView(direction) {
+                var _this = _super.call(this, $('<div></div>')) || this;
+                // nullやundefinedを入れさせない。
+                _this._direction = (direction === Views.Property.Direction.Horizontal)
+                    ? Views.Property.Direction.Horizontal
+                    : Views.Property.Direction.Vertical;
+                _this.SetClassName('LineView');
+                _this.Elem.addClass(_this.ClassName);
+                _this._length = 0;
+                return _this;
+            }
+            Object.defineProperty(LineView.prototype, "Direction", {
+                get: function () {
+                    return this._direction;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(LineView.prototype, "Length", {
+                get: function () {
+                    return this._length;
+                },
+                set: function (value) {
+                    this._length = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(LineView.prototype, "BackgroundColor", {
+                get: function () {
+                    throw new Error('Not supported');
+                },
+                set: function (value) {
+                    throw new Error('Not supported');
+                },
+                enumerable: true,
+                configurable: true
+            });
+            LineView.prototype.InnerRefresh = function () {
+                try {
+                    //Dump.Log(`${this.ClassName}.InnerRefresh`);
+                    this.SuppressLayout();
+                    if (this.Direction === Views.Property.Direction.Horizontal) {
+                        //Dump.Log(`${this.ClassName}.Direction = ${this.Direction}`);
+                        this.Size.Height = 2;
+                        this.Size.Width = this.Length;
+                    }
+                    else {
+                        //Dump.Log(`${this.ClassName}.Direction = ${this.Direction}`);
+                        this.Size.Width = 2;
+                        this.Size.Height = this.Length;
+                    }
+                    _super.prototype.InnerRefresh.call(this);
+                    //this.Dom.style.borderWidth = '0';
+                    //this.Dom.style.backgroundColor = `${this.Color}`;
+                    this.SetStyles({
+                        borderWidth: '0',
+                        backgroundColor: "" + this.Color,
+                    });
+                }
+                catch (e) {
+                    Dump.ErrorLog(e);
+                }
+                finally {
+                    this.ResumeLayout();
+                }
+            };
+            LineView.prototype.Dispose = function () {
+                _super.prototype.Dispose.call(this);
+            };
+            return LineView;
+        }(Views.ViewBase));
+        Views.LineView = LineView;
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Util/Dump.ts" />
+/// <reference path="../Events/ControlViewEvents.ts" />
+/// <reference path="ButtonView.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Dump = Fw.Util.Dump;
+        var Events = Fw.Events.ControlViewEvents;
+        var RelocatableButtonView = /** @class */ (function (_super) {
+            __extends(RelocatableButtonView, _super);
+            function RelocatableButtonView() {
+                var _this = _super.call(this) || this;
+                _this._isRelocatable = false;
+                _this._isMouseMoveEventListened = false;
+                _this._isDragging = false;
+                _this._gridSize = 60;
+                _this._delayedResumeTimer = null;
+                _this._shadow = $('<div class="IView BoxView Shadow"></div>');
+                _this._dragStartMousePosition = new Views.Property.Position();
+                _this._dragStartViewPosition = new Views.Property.Position();
+                _this.SetClassName('RelocatableControlView');
+                _this.Elem.addClass(_this.ClassName);
+                _this.AddEventListener(Events.LongClick, function () {
+                    if (!_this._isRelocatable)
+                        _this.SetRelocatable(true);
+                });
+                _this.Elem.on('touchstart mousedown', function (e) {
+                    if (!_this._isRelocatable) {
+                        _this._isDragging = false;
+                    }
+                    else {
+                        _this._isDragging = true;
+                        _this._dragStartMousePosition.X = e.pageX;
+                        _this._dragStartMousePosition.Y = e.pageY;
+                        if (_this.Position.Policy === Views.Property.PositionPolicy.Centering) {
+                            _this._dragStartViewPosition.X = _this.Position.X;
+                            _this._dragStartViewPosition.Y = _this.Position.Y;
+                        }
+                        else {
+                            _this._dragStartViewPosition.X = _this.Position.Left;
+                            _this._dragStartViewPosition.Y = _this.Position.Top;
+                        }
+                        _this.Refresh();
+                    }
+                });
+                // ↓mouseoutイベントは捕捉しない。途切れまくるので。
+                _this.Elem.on('touchend mouseup', function (e) {
+                    if (!_this._isRelocatable) {
+                        _this._isDragging = false;
+                    }
+                    else {
+                        _this._isDragging = false;
+                        if (_this.Position.Policy === Views.Property.PositionPolicy.Centering) {
+                            _this.Position.X = Math.round(_this.Position.X / _this.GridSize) * _this.GridSize;
+                            _this.Position.Y = Math.round(_this.Position.Y / _this.GridSize) * _this.GridSize;
+                        }
+                        else {
+                            _this.Position.Left = Math.round(_this.Position.Left / _this.GridSize) * _this.GridSize;
+                            _this.Position.Top = Math.round(_this.Position.Top / _this.GridSize) * _this.GridSize;
+                        }
+                        _this.Refresh();
+                    }
+                });
+                var onMouseMove = _this.OnMouseMove.bind(_this);
+                _this.AddEventListener(Events.Attached, function () {
+                    var parent = $(_this.Elem.parent());
+                    if (parent.length <= 0 || _this._isMouseMoveEventListened)
+                        return;
+                    parent.on('touchmove mousemove', onMouseMove);
+                    _this._isMouseMoveEventListened = true;
+                });
+                _this.AddEventListener(Events.Detached, function () {
+                    var parent = $(_this.Elem.parent());
+                    if (parent.length <= 0 || !_this._isMouseMoveEventListened)
+                        return;
+                    parent.off('touchmove mousemove', onMouseMove);
+                    _this._isMouseMoveEventListened = false;
+                });
+                return _this;
+            }
+            Object.defineProperty(RelocatableButtonView.prototype, "IsRelocatable", {
+                get: function () {
+                    return this._isRelocatable;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(RelocatableButtonView.prototype, "GridSize", {
+                get: function () {
+                    return this._gridSize;
+                },
+                set: function (value) {
+                    this._gridSize = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            RelocatableButtonView.prototype.OnMouseMove = function (e) {
+                if (this._isRelocatable && this._isDragging) {
+                    var addX = e.pageX - this._dragStartMousePosition.X;
+                    var addY = e.pageY - this._dragStartMousePosition.Y;
+                    if (this.Position.Policy === Views.Property.PositionPolicy.Centering) {
+                        this.Position.X = this._dragStartViewPosition.X + addX;
+                        this.Position.Y = this._dragStartViewPosition.Y + addY;
+                    }
+                    else {
+                        this.Position.Left = this._dragStartViewPosition.X + addX;
+                        this.Position.Top = this._dragStartViewPosition.Y + addY;
+                    }
+                    // マウスボタン押下中のクリックイベント発火を抑止する。
+                    if (!this.IsSuppressedEvent(Events.LongClick))
+                        this.SuppressEvent(Events.LongClick);
+                    if (!this.IsSuppressedEvent(Events.SingleClick))
+                        this.SuppressEvent(Events.SingleClick);
+                    Fw.Root.Instance.SetTextSelection(false);
+                    this.DelayedResume();
+                }
+            };
+            RelocatableButtonView.prototype.DelayedResume = function () {
+                var _this = this;
+                if (this._delayedResumeTimer !== null) {
+                    clearTimeout(this._delayedResumeTimer);
+                    this._delayedResumeTimer = null;
+                }
+                this._delayedResumeTimer = setTimeout(function () {
+                    //Dump.Log('ResumeMouseEvents');
+                    if (_this.IsSuppressedEvent(Events.LongClick))
+                        _this.ResumeEvent(Events.LongClick);
+                    if (_this.IsSuppressedEvent(Events.SingleClick))
+                        _this.ResumeEvent(Events.SingleClick);
+                    Fw.Root.Instance.SetTextSelection(true);
+                }, 100);
+            };
+            RelocatableButtonView.prototype.SetRelocatable = function (relocatable) {
+                if (this._isRelocatable) {
+                    // 固定する。
+                    this._isRelocatable = false;
+                    this._shadow.detach();
+                }
+                else {
+                    // 移動可能にする。
+                    this._isRelocatable = true;
+                    this.Elem.parent().append(this._shadow);
+                }
+                this.Refresh();
+            };
+            RelocatableButtonView.prototype.InnerRefresh = function () {
+                try {
+                    this.SuppressLayout();
+                    var parent_3 = $(this.Elem.parent());
+                    if (parent_3.length <= 0)
+                        return;
+                    if (!this._isRelocatable) {
+                        if (this.Position.Policy === Views.Property.PositionPolicy.Centering) {
+                            this.Position.X = Math.round(this.Position.X / this.GridSize) * this.GridSize;
+                            this.Position.Y = Math.round(this.Position.Y / this.GridSize) * this.GridSize;
+                        }
+                        else {
+                            this.Position.Left = Math.round(this.Position.Left / this.GridSize) * this.GridSize;
+                            this.Position.Top = Math.round(this.Position.Top / this.GridSize) * this.GridSize;
+                        }
+                    }
+                    var shadowDom = this._shadow.get(0);
+                    if (!this._isRelocatable) {
+                        shadowDom.style.display = 'none';
+                        this.Opacity = 1.0;
+                        _super.prototype.InnerRefresh.call(this);
+                        return;
+                    }
+                    this.Opacity = 0.7;
+                    _super.prototype.InnerRefresh.call(this);
+                    if (this._isDragging) {
+                        var parentWidth = (this.Parent)
+                            ? this.Parent.Size.Width
+                            : parent_3.width();
+                        var parentHeight = (this.Parent)
+                            ? this.Parent.Size.Height
+                            : parent_3.height();
+                        var centerLeft = (parentWidth / 2);
+                        var centerTop = (parentHeight / 2);
+                        var sX = void 0, sY = void 0, sLeft = void 0, sTop = void 0;
+                        if (this.Position.Policy === Views.Property.PositionPolicy.Centering) {
+                            sX = Math.round(this.Position.X / this.GridSize) * this.GridSize;
+                            sY = Math.round(this.Position.Y / this.GridSize) * this.GridSize;
+                            sLeft = centerLeft + sX - (this.Size.Width / 2);
+                            sTop = centerTop + sY - (this.Size.Height / 2);
+                        }
+                        else {
+                            sX = Math.round(this.Position.Left / this.GridSize) * this.GridSize;
+                            sY = Math.round(this.Position.Top / this.GridSize) * this.GridSize;
+                            sLeft = sX;
+                            sTop = sY;
+                        }
+                        shadowDom.style.display = 'block';
+                        shadowDom.style.left = sLeft + "px";
+                        shadowDom.style.top = sTop + "px";
+                        shadowDom.style.width = this.Size.Width + "px";
+                        shadowDom.style.height = this.Size.Height + "px";
+                        shadowDom.style.color = "" + this.Color;
+                        shadowDom.style.borderColor = "" + this.Color;
+                        shadowDom.style.backgroundColor = "" + this.BackgroundColor;
+                    }
+                    else {
+                        shadowDom.style.display = 'none';
+                    }
+                }
+                catch (e) {
+                    Dump.ErrorLog(e);
+                }
+                finally {
+                    this.ResumeLayout();
+                }
+            };
+            RelocatableButtonView.prototype.Dispose = function () {
+                _super.prototype.Dispose.call(this);
+                this._isRelocatable = null;
+                this._shadow.remove();
+                this._shadow = null;
+                this._isMouseMoveEventListened = null;
+                this._isDragging = null;
+                this._gridSize = null;
+            };
+            return RelocatableButtonView;
+        }(Views.ButtonView));
+        Views.RelocatableButtonView = RelocatableButtonView;
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Util/Dump.ts" />
+/// <reference path="../Events/SlidableBoxViewEvents.ts" />
+/// <reference path="Animation/Animator.ts" />
+/// <reference path="Animation/Params.ts" />
+/// <reference path="BoxView.ts" />
+/// <reference path="Property/Size.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Dump = Fw.Util.Dump;
+        var Property = Fw.Views.Property;
+        var Anim = Fw.Views.Animation;
+        var Events = Fw.Events.SlidableBoxViewEvents;
+        var SlidableBoxView = /** @class */ (function (_super) {
+            __extends(SlidableBoxView, _super);
+            function SlidableBoxView(direction) {
+                var _this = _super.call(this) || this;
+                _this._innerBackgroundColor = '#F5F5F5';
+                _this._innerLength = 2;
+                _this._barMargin = 10;
+                _this._isDragging = false;
+                _this._spcvMouseSuppressor = false;
+                // nullやundefinedを入れさせない。
+                _this._direction = (direction === Property.Direction.Horizontal)
+                    ? Property.Direction.Horizontal
+                    : Property.Direction.Vertical;
+                _this._innerBox = new Views.BoxView();
+                _this._positionBarMax = new Views.LineView(_this._direction);
+                _this._positionBarCurrent = new Views.LineView(_this._direction);
+                _this.SetClassName('SlidablePanelView');
+                _this.Elem.addClass(_this.ClassName);
+                _this._dragStartMousePosition = new Property.Position();
+                _this._dragStartViewPosition = new Property.Position();
+                _this.HasBorder = false;
+                _this.BorderRadius = 0;
+                _this._innerBox.HasBorder = false;
+                _this._innerBox.SetTransAnimation(false);
+                _this.Elem.append(_this._innerBox.Elem);
+                //super.Add(this._innerBox); // Addメソッドでthis.Childrenを呼ぶため循環参照になる。
+                // コンストラクタ完了後に実行。
+                // コンストラクタ引数で取得したDirectionがセットされていないため。
+                _this._positionBarMax.Position.Policy = Property.PositionPolicy.LeftTop;
+                _this._positionBarMax.SetTransAnimation(false);
+                _this._positionBarMax.Color = '#888888';
+                _super.prototype.Add.call(_this, _this._positionBarMax);
+                _this._positionBarCurrent.Position.Policy = Property.PositionPolicy.LeftTop;
+                _this._positionBarCurrent.SetTransAnimation(false);
+                _this._positionBarCurrent.Color = '#EEEEEE';
+                _super.prototype.Add.call(_this, _this._positionBarCurrent);
+                _this.AddEventListener(Events.Initialized, function () {
+                    _this.InitView();
+                });
+                _this._innerBox.Elem.addClass('SlidablePanelInnerView');
+                _this._innerBox.Elem.on('touchstart mousedown', function (e) {
+                    _this._isDragging = true;
+                    _this._dragStartMousePosition.X = e.clientX;
+                    _this._dragStartMousePosition.Y = e.clientY;
+                    _this._dragStartViewPosition.X = _this._innerBox.Position.X;
+                    _this._dragStartViewPosition.Y = _this._innerBox.Position.Y;
+                    //Fw.Root.Instance.SetTextSelection(false);
+                });
+                _this._innerBox.Elem.on('touchmove mousemove', function (e) {
+                    if (!_this._isDragging || _this._spcvMouseSuppressor)
+                        return;
+                    // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
+                    if (e.eventPhase !== 2)
+                        return;
+                    var addX = e.clientX - _this._dragStartMousePosition.X;
+                    var addY = e.clientY - _this._dragStartMousePosition.Y;
+                    if (_this._direction === Property.Direction.Horizontal) {
+                        // 横方向
+                        _this._innerBox.Position.X = _this._dragStartViewPosition.X + addX;
+                    }
+                    else {
+                        // 縦方向
+                        _this._innerBox.Position.Y = _this._dragStartViewPosition.Y + addY;
+                    }
+                    _this.Refresh();
+                });
+                _this._innerBox.Elem.on('touchend mouseup mouseout', function () {
+                    _this._isDragging = false;
+                    //Fw.Root.Instance.SetTextSelection(true);
+                    _.delay(function () {
+                        _this.AdjustSlidePosition();
+                    }, 200);
+                });
+                return _this;
+            }
+            Object.defineProperty(SlidableBoxView.prototype, "Children", {
+                get: function () {
+                    return this._innerBox.Children;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(SlidableBoxView.prototype, "Direction", {
+                get: function () {
+                    return this._direction;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(SlidableBoxView.prototype, "InnerBackgroundColor", {
+                get: function () {
+                    return this._innerBackgroundColor;
+                },
+                set: function (value) {
+                    this._innerBackgroundColor = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(SlidableBoxView.prototype, "InnerLength", {
+                get: function () {
+                    return this._innerLength;
+                },
+                set: function (value) {
+                    this._innerLength = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            SlidableBoxView.prototype.InitView = function () {
+                if (this.Direction === Property.Direction.Horizontal) {
+                    // 横方向
+                    if (this.InnerLength < this.Size.Width)
+                        this.InnerLength = this.Size.Width;
+                    //this.Dom.style.overflowX = 'hidden';//'scroll';
+                    //this.Dom.style.overflowY = 'hidden';
+                    this.SetStyles({
+                        overflowX: 'hidden',
+                        overflowY: 'hidden'
+                    });
+                    this._innerBox.Size.Width = this.InnerLength;
+                    this._innerBox.Size.Height = this.Size.Height;
+                    this._innerBox.Position.X = (this._innerBox.Size.Width - this.Size.Width) / 2;
+                    this._innerBox.Position.Y = 0;
+                }
+                else {
+                    // 縦方向
+                    if (this.InnerLength < this.Size.Height)
+                        this.InnerLength = this.Size.Height;
+                    //this.Dom.style.overflowY = 'hidden';//'scroll';
+                    //this.Dom.style.overflowX = 'hidden';
+                    this.SetStyles({
+                        overflowX: 'hidden',
+                        overflowY: 'hidden'
+                    });
+                    this._innerBox.Size.Height = this.InnerLength;
+                    this._innerBox.Size.Width = this.Size.Width;
+                    this._innerBox.Position.Y = (this._innerBox.Size.Height - this.Size.Height) / 2;
+                    this._innerBox.Position.X = 0;
+                }
+            };
+            SlidableBoxView.prototype.AdjustSlidePosition = function () {
+                var _this = this;
+                var unitWidth = this.Size.Width / 2;
+                var unitHeight = this.Size.Height / 2;
+                var maxLeft = 0;
+                var maxTop = 0;
+                var minLeft = this.Size.Width - this._innerBox.Size.Width;
+                var minTop = this.Size.Height - this._innerBox.Size.Height;
+                var left = this._innerBox.Position.Left;
+                var top = this._innerBox.Position.Top;
+                // 座標値がマイナスのため、floorでなくceilで切り捨てる。
+                var toLeft = Math.ceil(left / unitWidth) * unitWidth;
+                var toTop = Math.ceil(top / unitHeight) * unitHeight;
+                if (toLeft < minLeft) {
+                    toLeft = minLeft;
+                }
+                else if (maxLeft < toLeft) {
+                    toLeft = maxLeft;
+                }
+                else {
+                    var remainderLeft = Math.abs(left % unitWidth);
+                    if (remainderLeft > (unitWidth / 2))
+                        toLeft -= unitWidth;
+                }
+                if (toTop < minTop) {
+                    toTop = minTop;
+                }
+                else if (maxTop < toTop) {
+                    toTop = maxTop;
+                }
+                else {
+                    var remainderTop = Math.abs(top % unitHeight);
+                    if (remainderTop > (unitHeight / 2))
+                        toTop -= unitHeight;
+                }
+                var animator = new Anim.Animator(this._innerBox);
+                if (this.Direction === Property.Direction.Horizontal) {
+                    animator.ToParams.X = (toLeft - left);
+                }
+                else {
+                    animator.ToParams.Y = (toTop - top);
+                }
+                animator.OnComplete = function () {
+                    if (_this.Direction === Property.Direction.Horizontal) {
+                        _this._innerBox.SetLeftTop(toLeft, null, false);
+                    }
+                    else {
+                        _this._innerBox.SetLeftTop(null, toTop, false);
+                    }
+                    _this._spcvMouseSuppressor = false;
+                };
+                this._spcvMouseSuppressor = true;
+                animator.Invoke(500);
+            };
+            SlidableBoxView.prototype.Add = function (view) {
+                this._innerBox.Add(view);
+            };
+            SlidableBoxView.prototype.Remove = function (view) {
+                this._innerBox.Remove(view);
+            };
+            SlidableBoxView.prototype.InnerRefresh = function () {
+                try {
+                    this.SuppressLayout();
+                    if (this.Direction === Property.Direction.Horizontal) {
+                        // 横方向
+                        if (this.InnerLength < this.Size.Width)
+                            this.InnerLength = this.Size.Width;
+                        //this.Dom.style.overflowX = 'hidden';//'scroll';
+                        //this.Dom.style.overflowY = 'hidden';
+                        this._innerBox.Size.Width = this.InnerLength;
+                        this._innerBox.Size.Height = this.Size.Height;
+                        this._positionBarMax.SetAnchor(null, this._barMargin, this._barMargin, this._barMargin);
+                        this._positionBarMax.Length = this.Size.Width - (this._barMargin * 2);
+                        this._positionBarCurrent.SetAnchor(null, null, null, this._barMargin);
+                        this._positionBarCurrent.Length
+                            = this._positionBarMax.Length
+                                * (this.Size.Width / this.InnerLength);
+                        var maxLeft = this.InnerLength - this.Size.Width;
+                        var currentLeft = this._innerBox.Position.Left;
+                        var posRate = (maxLeft === 0)
+                            ? 1
+                            : currentLeft / maxLeft;
+                        var leftLength = this._positionBarMax.Length - this._positionBarCurrent.Length;
+                        this._positionBarCurrent.Position.Left = this._barMargin - (leftLength * posRate);
+                        //Dump.Log({
+                        //    max_Length: this._positionBarMax.Length,
+                        //    current_Length: this._positionBarCurrent.Length,
+                        //    maxLeft: maxLeft,
+                        //    currentLeft: currentLeft,
+                        //    posRate: posRate,
+                        //    leftLength: leftLength,
+                        //    current_Left: this._positionBarCurrent.Position.Left
+                        //});
+                    }
+                    else {
+                        // 縦方向
+                        if (this.InnerLength < this.Size.Height)
+                            this.InnerLength = this.Size.Height;
+                        //this.Dom.style.overflowY = 'hidden';//'scroll';
+                        //this.Dom.style.overflowX = 'hidden';
+                        this._innerBox.Size.Height = this.InnerLength;
+                        this._innerBox.Size.Width = this.Size.Width;
+                        this._positionBarMax.SetAnchor(this._barMargin, null, this._barMargin, this._barMargin);
+                        this._positionBarMax.Length = this.Size.Height - (this._barMargin * 2);
+                        this._positionBarCurrent.SetAnchor(null, null, this._barMargin, null);
+                        this._positionBarCurrent.Length
+                            = this._positionBarMax.Length
+                                * (this.Size.Height / this.InnerLength);
+                        var maxTop = this.InnerLength - this.Size.Height;
+                        var currentTop = this._innerBox.Position.Top;
+                        var posRate = (maxTop === 0)
+                            ? 1
+                            : currentTop / maxTop;
+                        var topLength = this._positionBarMax.Length - this._positionBarCurrent.Length;
+                        this._positionBarCurrent.Position.Top = this._barMargin - (topLength * posRate);
+                    }
+                    this._innerBox.BackgroundColor = this._innerBackgroundColor;
+                    _super.prototype.InnerRefresh.call(this);
+                    this.SetStyles({
+                        overflowY: 'hidden',
+                        overflowX: 'hidden'
+                    });
+                }
+                catch (e) {
+                    Dump.ErrorLog(e);
+                }
+                finally {
+                    this.ResumeLayout();
+                }
+            };
+            SlidableBoxView.prototype.Dispose = function () {
+                this._innerBox.Elem.off('touchstart mousedown');
+                this._innerBox.Elem.off('touchmove mousemove');
+                this._innerBox.Elem.off('touchend mouseup mouseout');
+                _super.prototype.Dispose.call(this);
+                this._innerBackgroundColor = null;
+                this._innerLength = null;
+                this._innerBox.Dispose();
+                this._innerBox = null;
+                this._isDragging = null;
+                this._spcvMouseSuppressor = null;
+                this._dragStartMousePosition.Dispose();
+                this._dragStartMousePosition = null;
+                this._dragStartViewPosition.Dispose();
+                this._dragStartViewPosition = null;
+            };
+            return SlidableBoxView;
+        }(Views.BoxView));
+        Views.SlidableBoxView = SlidableBoxView;
     })(Views = Fw.Views || (Fw.Views = {}));
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
@@ -4028,845 +5273,99 @@ var Fw;
 /// <reference path="../Events/ControlViewEvents.ts" />
 /// <reference path="../Util/Dump.ts" />
 /// <reference path="../Util/Number.ts" />
-/// <reference path="ViewBase.ts" />
-/// <reference path="Property/FitPolicy.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var Dump = Fw.Util.Dump;
-        var FitPolicy = Fw.Views.Property.FitPolicy;
-        var ImageView = /** @class */ (function (_super) {
-            __extends(ImageView, _super);
-            function ImageView() {
-                var _this = _super.call(this, $('<div></div>')) || this;
-                _this._image = new Image();
-                _this.SetClassName('ImageView');
-                _this.Elem.addClass(_this.ClassName);
-                _this.BackgroundColor = 'transparent';
-                _this.Dom.style.borderWidth = '0';
-                _this.Dom.style.borderRadius = '0';
-                // 注) ImageオブジェクトはDomツリーに入れない。
-                _this._image.onload = function () {
-                    Dump.Log('Image Loaded!!');
-                    _this.Refresh();
-                };
-                _this._firPolicy = FitPolicy.Auto;
-                return _this;
-            }
-            Object.defineProperty(ImageView.prototype, "Src", {
-                get: function () {
-                    return this._src;
-                },
-                set: function (value) {
-                    this._src = value;
-                    this._image.src = value;
-                    this.Refresh();
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(ImageView.prototype, "FitPolicy", {
-                get: function () {
-                    return this._firPolicy;
-                },
-                set: function (value) {
-                    this._firPolicy = value;
-                    this.Refresh();
-                },
-                enumerable: true,
-                configurable: true
-            });
-            ImageView.prototype.InnerRefresh = function () {
-                try {
-                    this.SuppressLayout();
-                    _super.prototype.InnerRefresh.call(this);
-                    this.Dom.style.backgroundPosition = 'center center';
-                    this.Dom.style.backgroundRepeat = 'no-repeat';
-                    this.Dom.style.backgroundSize = this.FitPolicy;
-                    this.Dom.style.backgroundImage = (this._src)
-                        ? "url(" + this._src + ")"
-                        : null;
-                }
-                catch (e) {
-                    Dump.ErrorLog(e);
-                }
-                finally {
-                    this.ResumeLayout();
-                }
-            };
-            ImageView.prototype.Dispose = function () {
-                _super.prototype.Dispose.call(this);
-                this._image = null;
-                this._src = null;
-                this._firPolicy = null;
-            };
-            return ImageView;
-        }(Views.ViewBase));
-        Views.ImageView = ImageView;
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../Events/ControlViewEvents.ts" />
-/// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
-/// <reference path="./BoxView.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var Dump = Fw.Util.Dump;
-        var LineView = /** @class */ (function (_super) {
-            __extends(LineView, _super);
-            function LineView(direction) {
-                var _this = _super.call(this, $('<div></div>')) || this;
-                // nullやundefinedを入れさせない。
-                _this._direction = (direction === Views.Property.Direction.Horizontal)
-                    ? Views.Property.Direction.Horizontal
-                    : Views.Property.Direction.Vertical;
-                _this.SetClassName('LineView');
-                _this.Elem.addClass(_this.ClassName);
-                _this._length = 0;
-                return _this;
-            }
-            Object.defineProperty(LineView.prototype, "Direction", {
-                get: function () {
-                    return this._direction;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(LineView.prototype, "Length", {
-                get: function () {
-                    return this._length;
-                },
-                set: function (value) {
-                    this._length = value;
-                    this.Refresh();
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(LineView.prototype, "BackgroundColor", {
-                get: function () {
-                    throw new Error('Not supported');
-                },
-                set: function (value) {
-                    throw new Error('Not supported');
-                },
-                enumerable: true,
-                configurable: true
-            });
-            LineView.prototype.InnerRefresh = function () {
-                try {
-                    //Dump.Log(`${this.ClassName}.InnerRefresh`);
-                    this.SuppressLayout();
-                    if (this.Direction === Views.Property.Direction.Horizontal) {
-                        //Dump.Log(`${this.ClassName}.Direction = ${this.Direction}`);
-                        this.Size.Height = 2;
-                        this.Size.Width = this.Length;
-                    }
-                    else {
-                        //Dump.Log(`${this.ClassName}.Direction = ${this.Direction}`);
-                        this.Size.Width = 2;
-                        this.Size.Height = this.Length;
-                    }
-                    _super.prototype.InnerRefresh.call(this);
-                    this.Dom.style.borderWidth = '0';
-                    this.Dom.style.backgroundColor = "" + this.Color;
-                }
-                catch (e) {
-                    Dump.ErrorLog(e);
-                }
-                finally {
-                    this.ResumeLayout();
-                }
-            };
-            LineView.prototype.Dispose = function () {
-                _super.prototype.Dispose.call(this);
-            };
-            return LineView;
-        }(Views.ViewBase));
-        Views.LineView = LineView;
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var Property;
-        (function (Property) {
-            /**
-             * @description font-weight
-             */
-            var FontWeight;
-            (function (FontWeight) {
-                FontWeight["Lighter"] = "lighter";
-                FontWeight["Normal"] = "normal";
-                FontWeight["Bold"] = "bold";
-                FontWeight["Bolder"] = "bolder";
-            })(FontWeight = Property.FontWeight || (Property.FontWeight = {}));
-        })(Property = Views.Property || (Views.Property = {}));
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../Events/ControlViewEvents.ts" />
-/// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
-/// <reference path="ViewBase.ts" />
-/// <reference path="Property/FontWeight.ts" />
+/// <reference path="ControlView.ts" />
 var Fw;
 (function (Fw) {
     var Views;
     (function (Views) {
         var Dump = Fw.Util.Dump;
         var Events = Fw.Events.ControlViewEvents;
-        var Property = Fw.Views.Property;
-        var LabelView = /** @class */ (function (_super) {
-            __extends(LabelView, _super);
-            function LabelView() {
-                var _this = _super.call(this, $('<label></label>')) || this;
-                _this._hiddenSpan = document.createElement('span');
-                _this.SetClassName('LabelView');
-                _this.Elem.addClass(_this.ClassName);
-                _this.BackgroundColor = 'transparent';
-                _this.SetTransAnimation(false);
-                _this.Dom.style.borderWidth = '0';
-                _this.Dom.style.borderRadius = '0';
-                _this._text = '';
-                _this._fontWeight = Property.FontWeight.Normal;
-                _this._fontSize = Property.FontSize.Medium;
-                _this._fontFamily = 'Quicksand, 游ゴシック体, "Yu Gothic", YuGothic, "ヒラギノ角ゴシック Pro", "Hiragino Kaku Gothic Pro", メイリオ, Meiryo, Osaka, "ＭＳ Ｐゴシック", "MS PGothic", sans-serif';
-                _this._hiddenSpan.style.visibility = 'hidden';
-                _this._hiddenSpan.style.fontWeight = _this._fontWeight;
-                _this._hiddenSpan.style.fontSize = _this._fontSize;
-                _this._hiddenSpan.style.fontFamily = _this._fontFamily;
-                _this.AddEventListener(Events.Attached, function () {
-                    _this.Parent.Elem.append(_this._hiddenSpan);
-                });
-                _this.AddEventListener(Events.Detached, function () {
-                    $(_this._hiddenSpan).remove();
-                });
-                _this._autoSize = true;
-                return _this;
-            }
-            Object.defineProperty(LabelView.prototype, "Text", {
-                get: function () {
-                    return this._text;
-                },
-                set: function (value) {
-                    this._text = value;
-                    this.Elem.text(''); // 一旦消す。
-                    this._hiddenSpan.innerText = this._text;
-                    this.Refresh();
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(LabelView.prototype, "FontWeight", {
-                get: function () {
-                    return this._fontWeight;
-                },
-                set: function (value) {
-                    this._fontWeight = value;
-                    this._hiddenSpan.style.fontWeight = this._fontWeight;
-                    this.Refresh();
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(LabelView.prototype, "FontSize", {
-                get: function () {
-                    return this._fontSize;
-                },
-                set: function (value) {
-                    this._fontSize = value;
-                    this._hiddenSpan.style.fontSize = this._fontSize;
-                    this.Refresh();
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(LabelView.prototype, "FontFamily", {
-                get: function () {
-                    return this._fontFamily;
-                },
-                set: function (value) {
-                    this._fontFamily = value;
-                    this._hiddenSpan.style.fontFamily = this._fontFamily;
-                    this.Refresh();
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(LabelView.prototype, "AutoSize", {
-                get: function () {
-                    return this._autoSize;
-                },
-                set: function (value) {
-                    this._autoSize = value;
-                    this.Refresh();
-                },
-                enumerable: true,
-                configurable: true
-            });
-            LabelView.prototype.InnerRefresh = function () {
-                try {
-                    this.SuppressLayout();
-                    if (this._autoSize) {
-                        this.Size.Width = this._hiddenSpan.offsetWidth + 10;
-                        this.Size.Height = this._hiddenSpan.offsetHeight;
-                    }
-                    _super.prototype.InnerRefresh.call(this);
-                    this.Dom.style.fontWeight = this._fontWeight;
-                    this.Dom.style.fontSize = this._fontSize;
-                    this.Dom.style.fontFamily = this._fontFamily;
-                    this.Elem.text(this._text);
-                }
-                catch (e) {
-                    Dump.ErrorLog(e);
-                }
-                finally {
-                    this.ResumeLayout();
-                }
-            };
-            LabelView.prototype.Dispose = function () {
-                _super.prototype.Dispose.call(this);
-                this._text = null;
-                $(this._hiddenSpan).remove();
-            };
-            return LabelView;
-        }(Views.ViewBase));
-        Views.LabelView = LabelView;
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../Events/ViewEvents.ts" />
-/// <reference path="../../Util/Dump.ts" />
-/// <reference path="../../Util/Number.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var Property;
-        (function (Property) {
-            var Direction;
-            (function (Direction) {
-                Direction[Direction["Horizontal"] = 0] = "Horizontal";
-                Direction[Direction["Vertical"] = 1] = "Vertical";
-            })(Direction = Property.Direction || (Property.Direction = {}));
-        })(Property = Views.Property || (Views.Property = {}));
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var Property;
-        (function (Property) {
-            /**
-             * @description font-size
-             */
-            var FontSize;
-            (function (FontSize) {
-                FontSize["XxSmall"] = "xx-small";
-                FontSize["XSmall"] = "x-small";
-                FontSize["Small"] = "small";
-                FontSize["Medium"] = "medium";
-                FontSize["Large"] = "large";
-                FontSize["XLarge"] = "x-large";
-                FontSize["XxLarge"] = "xx-large";
-            })(FontSize = Property.FontSize || (Property.FontSize = {}));
-        })(Property = Views.Property || (Views.Property = {}));
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var Property;
-        (function (Property) {
-            /**
-             * @description 配置基準
-             */
-            var PositionPolicy;
-            (function (PositionPolicy) {
-                /**
-                 * 中央ポリシー：親Viewの中心位置からの差分を X, Y で表現する。
-                 */
-                PositionPolicy[PositionPolicy["Centering"] = 1] = "Centering";
-                /**
-                 * 左上ポリシー：親Viewの左上からの差分を、Left, Top で表現する。
-                 */
-                PositionPolicy[PositionPolicy["LeftTop"] = 2] = "LeftTop";
-            })(PositionPolicy = Property.PositionPolicy || (Property.PositionPolicy = {}));
-        })(Property = Views.Property || (Views.Property = {}));
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../Events/ViewEvents.ts" />
-/// <reference path="../../Util/Dump.ts" />
-/// <reference path="../../Util/Number.ts" />
-/// <reference path="PositionPolicy.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var Property;
-        (function (Property) {
-            var Events = Fw.Events.ViewEvents;
-            var Number = Fw.Util.Number;
-            var Position = /** @class */ (function () {
-                function Position(view) {
-                    if (view === void 0) { view = null; }
-                    this._view = null;
-                    this._policy = Property.PositionPolicy.Centering;
-                    this._x = 0;
-                    this._y = 0;
-                    this._left = 0;
-                    this._top = 0;
-                    this._view = view;
-                }
-                Object.defineProperty(Position.prototype, "Policy", {
-                    get: function () {
-                        return this._policy;
-                    },
-                    set: function (value) {
-                        if (!value)
-                            throw new Error("value type not allowed");
-                        var changed = (this._policy !== value);
-                        if (changed && this._view.Parent) {
-                            if (this._policy === Property.PositionPolicy.Centering) {
-                                // 更新前が中央ポリシーのとき
-                                // 現在の値を左上ポリシー値に計算して保持させる。
-                                this._left = this.Left || 0;
-                                this._top = this.Top || 0;
-                            }
-                            else {
-                                // 更新前が左上ポリシーのとき
-                                // 現在の値を中央ポリシー値に計算して保持させる。
-                                this._x = this.X || 0;
-                                this._y = this.Y || 0;
-                            }
-                        }
-                        this._policy = value;
-                        if (changed && this._view)
-                            this._view.DispatchEvent(Events.PositionPolicyChanged);
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Object.defineProperty(Position.prototype, "X", {
-                    get: function () {
-                        if (this._policy === Property.PositionPolicy.Centering) {
-                            // 中央ポリシー
-                            return this._x;
-                        }
-                        else {
-                            // 左上ポリシー
-                            if (!this._view)
-                                return null;
-                            var sset = this.GetSizeSet();
-                            return sset.MyHalfWidth + this._left - sset.ParentHalfWidth;
-                        }
-                    },
-                    set: function (value) {
-                        // nullは許可、その他は例外
-                        if (Number.IsNaN(value) || value === undefined)
-                            throw new Error("value type not allowed");
-                        var changed = false;
-                        if (this._policy === Property.PositionPolicy.Centering) {
-                            // 中央ポリシー
-                            changed = (this._x !== value);
-                            this._x = value;
-                        }
-                        else {
-                            // 左上ポリシー
-                            var sset = this.GetSizeSet();
-                            // 更新後のLeftを取得
-                            var newValue = sset.ParentHalfWidth - sset.MyHalfWidth + value;
-                            changed = (this._left !== newValue);
-                            this._left = newValue;
-                        }
-                        if (changed && this._view)
-                            this._view.DispatchEvent(Events.PositionChanged);
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Object.defineProperty(Position.prototype, "Y", {
-                    get: function () {
-                        if (this._policy === Property.PositionPolicy.Centering) {
-                            // 中央ポリシー
-                            return this._y;
-                        }
-                        else {
-                            // 左上ポリシー
-                            if (!this._view)
-                                return null;
-                            var sset = this.GetSizeSet();
-                            return sset.MyHalfHeight + this._top - sset.ParentHalfHeight;
-                        }
-                    },
-                    set: function (value) {
-                        // nullは許可、その他は例外
-                        if (Number.IsNaN(value) || value === undefined)
-                            throw new Error("value type not allowed");
-                        var changed = false;
-                        if (this._policy === Property.PositionPolicy.Centering) {
-                            // 中央ポリシー
-                            changed = (this._y !== value);
-                            this._y = value;
-                        }
-                        else {
-                            // 左上ポリシー
-                            var sset = this.GetSizeSet();
-                            // 更新後のTopを取得
-                            var newValue = sset.ParentHalfHeight - sset.MyHalfHeight + value;
-                            changed = (this._top !== newValue);
-                            this._top = newValue;
-                        }
-                        if (changed && this._view)
-                            this._view.DispatchEvent(Events.PositionChanged);
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Object.defineProperty(Position.prototype, "Left", {
-                    get: function () {
-                        if (this._policy === Property.PositionPolicy.Centering) {
-                            // 中央ポリシー
-                            if (!this._view)
-                                return null;
-                            var sset = this.GetSizeSet();
-                            return sset.ParentHalfWidth - sset.MyHalfWidth + this._x;
-                        }
-                        else {
-                            // 左上ポリシー
-                            return this._left;
-                        }
-                    },
-                    set: function (value) {
-                        // nullは許可、その他は例外
-                        if (Number.IsNaN(value) || value === undefined)
-                            throw new Error("value type not allowed");
-                        var changed = false;
-                        if (this._policy === Property.PositionPolicy.Centering) {
-                            // 中央ポリシー
-                            var sset = this.GetSizeSet();
-                            // 更新後のXを取得
-                            var newValue = sset.MyHalfWidth + value - sset.ParentHalfWidth;
-                            changed = (this._x !== newValue);
-                            this._x = newValue;
-                        }
-                        else {
-                            // 左上ポリシー
-                            changed = (this._left !== value);
-                            this._left = value;
-                        }
-                        if (changed && this._view)
-                            this._view.DispatchEvent(Events.PositionChanged);
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Object.defineProperty(Position.prototype, "Top", {
-                    get: function () {
-                        if (this._policy === Property.PositionPolicy.Centering) {
-                            // 中央ポリシー
-                            if (!this._view)
-                                return null;
-                            var sset = this.GetSizeSet();
-                            return sset.ParentHalfHeight - sset.MyHalfHeight + this._y;
-                        }
-                        else {
-                            // 左上ポリシー
-                            return this._top;
-                        }
-                    },
-                    set: function (value) {
-                        // nullは許可、その他は例外
-                        if (Number.IsNaN(value) || value === undefined)
-                            throw new Error("value type not allowed");
-                        var changed = false;
-                        if (this._policy === Property.PositionPolicy.Centering) {
-                            // 中央ポリシー
-                            var sset = this.GetSizeSet();
-                            // 更新後のYを取得
-                            var newValue = sset.MyHalfHeight + value - sset.ParentHalfHeight;
-                            changed = (this._y !== newValue);
-                            this._y = newValue;
-                        }
-                        else {
-                            // 左上ポリシー
-                            changed = (this._top !== value);
-                            this._top = value;
-                        }
-                        if (changed && this._view)
-                            this._view.DispatchEvent(Events.PositionChanged);
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Position.prototype.GetSizeSet = function () {
-                    return new SizeSet(this._view);
-                };
-                Position.prototype.Dispose = function () {
-                    this._view = null;
-                    this._x = null;
-                    this._y = null;
-                };
-                return Position;
-            }());
-            Property.Position = Position;
-            var SizeSet = /** @class */ (function () {
-                function SizeSet(view) {
-                    var parentWidth;
-                    var parentHeight;
-                    if (view.Parent) {
-                        // 親Viewが存在する
-                        parentWidth = view.Parent.Size.Width;
-                        parentHeight = view.Parent.Size.Height;
-                    }
-                    else {
-                        // 親Viewが存在しない
-                        var parent_2 = $(view.Elem.parent());
-                        parentWidth = parent_2.width();
-                        parentHeight = parent_2.height();
-                    }
-                    this.ParentHalfWidth = parentWidth / 2;
-                    this.ParentHalfHeight = parentHeight / 2;
-                    this.MyHalfWidth = view.Size.Width / 2;
-                    this.MyHalfHeight = view.Size.Height / 2;
-                    //this.ParentWidth = parentWidth;
-                    //this.ParentHeight = parentHeight;
-                    //this.MyWidth = view.Size.Width;
-                    //this.MyHeight = view.Size.Height;
-                }
-                return SizeSet;
-            }());
-        })(Property = Views.Property || (Views.Property = {}));
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../Util/Dump.ts" />
-/// <reference path="../Events/ControlViewEvents.ts" />
-/// <reference path="ButtonView.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var Dump = Fw.Util.Dump;
-        var Events = Fw.Events.ControlViewEvents;
-        var RelocatableButtonView = /** @class */ (function (_super) {
-            __extends(RelocatableButtonView, _super);
-            function RelocatableButtonView() {
+        var ToggleButtonView = /** @class */ (function (_super) {
+            __extends(ToggleButtonView, _super);
+            function ToggleButtonView() {
                 var _this = _super.call(this) || this;
-                _this._isRelocatable = false;
-                _this._isMouseMoveEventListened = false;
-                _this._isDragging = false;
-                _this._gridSize = 60;
-                _this._delayedResumeTimer = null;
-                _this._shadow = $('<div class="IView BoxView Shadow"></div>');
-                _this._dragStartMousePosition = new Views.Property.Position();
-                _this._dragStartViewPosition = new Views.Property.Position();
-                _this.SetClassName('RelocatableControlView');
+                _this.HoverColor = '';
+                _this._value = false;
+                _this._sliderBox = new Views.BoxView();
+                _this._notch = new Views.BoxView();
+                _this._maskOn = new Views.BoxView();
+                _this._value = false;
+                _this._overMargin = 5;
+                _this.SetClassName('ToggleButtonView');
                 _this.Elem.addClass(_this.ClassName);
-                _this.AddEventListener(Events.LongClick, function () {
-                    if (!_this._isRelocatable)
-                        _this.SetRelocatable(true);
+                // 標準サイズ：50 x 20
+                var width = 50;
+                var height = 20;
+                _this.HasBorder = false;
+                _this.SetSize(width, height);
+                _this._sliderBox.Size.Width = _this.Size.Width - _this._overMargin;
+                _this._sliderBox.Size.Height = _this.Size.Height - _this._overMargin;
+                _this._sliderBox.HasBorder = true;
+                _this._sliderBox.BorderRadius = 15;
+                _this._sliderBox.Color = '#e5e5e5';
+                _this._sliderBox.BackgroundColor = '#FFFFFF';
+                _this._sliderBox.Dom.style.overflow = 'hidden';
+                _this.Add(_this._sliderBox);
+                _this._maskOn.Size.Width = _this.Size.Width - _this._overMargin;
+                _this._maskOn.Size.Height = _this.Size.Height - _this._overMargin;
+                _this._maskOn.HasBorder = false;
+                _this._maskOn.BorderRadius = 15;
+                _this._maskOn.BackgroundColor = '#4e748b';
+                _this._maskOn.Position.X = -(_this.Size.Width - _this._overMargin);
+                _this._sliderBox.Add(_this._maskOn);
+                _this._notch.SetSize(_this.Size.Height, _this.Size.Height);
+                _this._notch.HasBorder = true;
+                _this._notch.BorderRadius = 50;
+                _this._notch.Color = '#e5e5e5';
+                _this._notch.BackgroundColor = '#cfcfcf';
+                _this._notch.Position.X = -(_this.Size.Width / 2) + (_this.Size.Height / 2);
+                _this.Add(_this._notch);
+                _this.Elem.hover(function () {
+                    //this.Dom.style.backgroundColor = this.HoverColor;
+                    _this.SetStyle('backgroundColor', _this.HoverColor);
+                    _this.Refresh();
+                }, function () {
+                    //this.Dom.style.backgroundColor = this.BackgroundColor;
+                    _this.SetStyle('backgroundColor', _this.BackgroundColor);
+                    _this.Refresh();
                 });
-                _this.Elem.on('touchstart mousedown', function (e) {
-                    if (!_this._isRelocatable) {
-                        _this._isDragging = false;
-                    }
-                    else {
-                        _this._isDragging = true;
-                        _this._dragStartMousePosition.X = e.pageX;
-                        _this._dragStartMousePosition.Y = e.pageY;
-                        if (_this.Position.Policy === Views.Property.PositionPolicy.Centering) {
-                            _this._dragStartViewPosition.X = _this.Position.X;
-                            _this._dragStartViewPosition.Y = _this.Position.Y;
-                        }
-                        else {
-                            _this._dragStartViewPosition.X = _this.Position.Left;
-                            _this._dragStartViewPosition.Y = _this.Position.Top;
-                        }
-                        _this.Refresh();
-                    }
-                });
-                // ↓mouseoutイベントは捕捉しない。途切れまくるので。
-                _this.Elem.on('touchend mouseup', function (e) {
-                    if (!_this._isRelocatable) {
-                        _this._isDragging = false;
-                    }
-                    else {
-                        _this._isDragging = false;
-                        if (_this.Position.Policy === Views.Property.PositionPolicy.Centering) {
-                            _this.Position.X = Math.round(_this.Position.X / _this.GridSize) * _this.GridSize;
-                            _this.Position.Y = Math.round(_this.Position.Y / _this.GridSize) * _this.GridSize;
-                        }
-                        else {
-                            _this.Position.Left = Math.round(_this.Position.Left / _this.GridSize) * _this.GridSize;
-                            _this.Position.Top = Math.round(_this.Position.Top / _this.GridSize) * _this.GridSize;
-                        }
-                        _this.Refresh();
-                    }
-                });
-                var onMouseMove = _this.OnMouseMove.bind(_this);
-                _this.AddEventListener(Events.Attached, function () {
-                    var parent = $(_this.Elem.parent());
-                    if (parent.length <= 0 || _this._isMouseMoveEventListened)
-                        return;
-                    parent.on('touchmove mousemove', onMouseMove);
-                    _this._isMouseMoveEventListened = true;
-                });
-                _this.AddEventListener(Events.Detached, function () {
-                    var parent = $(_this.Elem.parent());
-                    if (parent.length <= 0 || !_this._isMouseMoveEventListened)
-                        return;
-                    parent.off('touchmove mousemove', onMouseMove);
-                    _this._isMouseMoveEventListened = false;
+                _this.AddEventListener(Events.SingleClick, function () {
+                    _this._value = !_this._value;
+                    _this.Refresh();
                 });
                 return _this;
             }
-            Object.defineProperty(RelocatableButtonView.prototype, "IsRelocatable", {
+            Object.defineProperty(ToggleButtonView.prototype, "Value", {
                 get: function () {
-                    return this._isRelocatable;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(RelocatableButtonView.prototype, "GridSize", {
-                get: function () {
-                    return this._gridSize;
+                    return this._value;
                 },
                 set: function (value) {
-                    this._gridSize = value;
-                    this.Refresh();
+                    var changed = (this._value !== value);
+                    if (changed)
+                        this._value = !this._value;
                 },
                 enumerable: true,
                 configurable: true
             });
-            RelocatableButtonView.prototype.OnMouseMove = function (e) {
-                if (this._isRelocatable && this._isDragging) {
-                    var addX = e.pageX - this._dragStartMousePosition.X;
-                    var addY = e.pageY - this._dragStartMousePosition.Y;
-                    if (this.Position.Policy === Views.Property.PositionPolicy.Centering) {
-                        this.Position.X = this._dragStartViewPosition.X + addX;
-                        this.Position.Y = this._dragStartViewPosition.Y + addY;
-                    }
-                    else {
-                        this.Position.Left = this._dragStartViewPosition.X + addX;
-                        this.Position.Top = this._dragStartViewPosition.Y + addY;
-                    }
-                    // マウスボタン押下中のクリックイベント発火を抑止する。
-                    if (!this.IsSuppressedEvent(Events.LongClick))
-                        this.SuppressEvent(Events.LongClick);
-                    if (!this.IsSuppressedEvent(Events.SingleClick))
-                        this.SuppressEvent(Events.SingleClick);
-                    Fw.Root.Instance.SetTextSelection(false);
-                    this.DelayedResume();
-                }
-            };
-            RelocatableButtonView.prototype.DelayedResume = function () {
-                var _this = this;
-                if (this._delayedResumeTimer !== null) {
-                    clearTimeout(this._delayedResumeTimer);
-                    this._delayedResumeTimer = null;
-                }
-                this._delayedResumeTimer = setTimeout(function () {
-                    //Dump.Log('ResumeMouseEvents');
-                    if (_this.IsSuppressedEvent(Events.LongClick))
-                        _this.ResumeEvent(Events.LongClick);
-                    if (_this.IsSuppressedEvent(Events.SingleClick))
-                        _this.ResumeEvent(Events.SingleClick);
-                    Fw.Root.Instance.SetTextSelection(true);
-                }, 100);
-            };
-            RelocatableButtonView.prototype.SetRelocatable = function (relocatable) {
-                if (this._isRelocatable) {
-                    // 固定する。
-                    this._isRelocatable = false;
-                    this._shadow.detach();
-                }
-                else {
-                    // 移動可能にする。
-                    this._isRelocatable = true;
-                    this.Elem.parent().append(this._shadow);
-                }
-                this.Refresh();
-            };
-            RelocatableButtonView.prototype.InnerRefresh = function () {
+            //private SwitchToOn(): void {
+            //}
+            //private SwitchToOff(): void {
+            //}
+            ToggleButtonView.prototype.InnerRefresh = function () {
                 try {
                     this.SuppressLayout();
-                    var parent_3 = $(this.Elem.parent());
-                    if (parent_3.length <= 0)
-                        return;
-                    if (!this._isRelocatable) {
-                        if (this.Position.Policy === Views.Property.PositionPolicy.Centering) {
-                            this.Position.X = Math.round(this.Position.X / this.GridSize) * this.GridSize;
-                            this.Position.Y = Math.round(this.Position.Y / this.GridSize) * this.GridSize;
-                        }
-                        else {
-                            this.Position.Left = Math.round(this.Position.Left / this.GridSize) * this.GridSize;
-                            this.Position.Top = Math.round(this.Position.Top / this.GridSize) * this.GridSize;
-                        }
-                    }
-                    var shadowDom = this._shadow.get(0);
-                    if (!this._isRelocatable) {
-                        shadowDom.style.display = 'none';
-                        this.Opacity = 1.0;
-                        _super.prototype.InnerRefresh.call(this);
-                        return;
-                    }
-                    this.Opacity = 0.7;
+                    this._sliderBox.Size.Width = this.Size.Width - this._overMargin;
+                    this._sliderBox.Size.Height = this.Size.Height - this._overMargin;
+                    this._maskOn.Size.Width = this.Size.Width - this._overMargin;
+                    this._maskOn.Size.Height = this.Size.Height - this._overMargin;
+                    this._notch.SetSize(this.Size.Height, this.Size.Height);
+                    this._notch.Position.X = (this.Value)
+                        ? (this.Size.Width / 2) - (this.Size.Height / 2)
+                        : -(this.Size.Width / 2) + (this.Size.Height / 2);
+                    this._maskOn.Position.X = (this.Value)
+                        ? 0
+                        : -(this.Size.Width - this._overMargin);
                     _super.prototype.InnerRefresh.call(this);
-                    if (this._isDragging) {
-                        var parentWidth = (this.Parent)
-                            ? this.Parent.Size.Width
-                            : parent_3.width();
-                        var parentHeight = (this.Parent)
-                            ? this.Parent.Size.Height
-                            : parent_3.height();
-                        var centerLeft = (parentWidth / 2);
-                        var centerTop = (parentHeight / 2);
-                        var sX = void 0, sY = void 0, sLeft = void 0, sTop = void 0;
-                        if (this.Position.Policy === Views.Property.PositionPolicy.Centering) {
-                            sX = Math.round(this.Position.X / this.GridSize) * this.GridSize;
-                            sY = Math.round(this.Position.Y / this.GridSize) * this.GridSize;
-                            sLeft = centerLeft + sX - (this.Size.Width / 2);
-                            sTop = centerTop + sY - (this.Size.Height / 2);
-                        }
-                        else {
-                            sX = Math.round(this.Position.Left / this.GridSize) * this.GridSize;
-                            sY = Math.round(this.Position.Top / this.GridSize) * this.GridSize;
-                            sLeft = sX;
-                            sTop = sY;
-                        }
-                        shadowDom.style.display = 'block';
-                        shadowDom.style.left = sLeft + "px";
-                        shadowDom.style.top = sTop + "px";
-                        shadowDom.style.width = this.Size.Width + "px";
-                        shadowDom.style.height = this.Size.Height + "px";
-                        shadowDom.style.color = "" + this.Color;
-                        shadowDom.style.borderColor = "" + this.Color;
-                        shadowDom.style.backgroundColor = "" + this.BackgroundColor;
-                    }
-                    else {
-                        shadowDom.style.display = 'none';
-                    }
                 }
                 catch (e) {
                     Dump.ErrorLog(e);
@@ -4875,18 +5374,13 @@ var Fw;
                     this.ResumeLayout();
                 }
             };
-            RelocatableButtonView.prototype.Dispose = function () {
+            ToggleButtonView.prototype.Dispose = function () {
                 _super.prototype.Dispose.call(this);
-                this._isRelocatable = null;
-                this._shadow.remove();
-                this._shadow = null;
-                this._isMouseMoveEventListened = null;
-                this._isDragging = null;
-                this._gridSize = null;
+                this.HoverColor = null;
             };
-            return RelocatableButtonView;
-        }(Views.ButtonView));
-        Views.RelocatableButtonView = RelocatableButtonView;
+            return ToggleButtonView;
+        }(Views.ControlView));
+        Views.ToggleButtonView = ToggleButtonView;
     })(Views = Fw.Views || (Fw.Views = {}));
 })(Fw || (Fw = {}));
 /// <reference path="../../lib/jquery/index.d.ts" />
@@ -5001,413 +5495,29 @@ var Fw;
     }(Fw.ObjectBase));
     Fw.Root = Root;
 })(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../Util/Dump.ts" />
-/// <reference path="../Events/SlidableBoxViewEvents.ts" />
-/// <reference path="Animation/Animator.ts" />
-/// <reference path="Animation/Params.ts" />
-/// <reference path="BoxView.ts" />
-/// <reference path="Property/Size.ts" />
+/// <reference path="../../lib/jquery/index.d.ts" />
+/// <reference path="../../lib/underscore/index.d.ts" />
+/// <reference path="Util/Dump.ts" />
+/* /// <reference path="Views/Root.ts" /> */
 var Fw;
 (function (Fw) {
-    var Views;
-    (function (Views) {
-        var Dump = Fw.Util.Dump;
-        var Property = Fw.Views.Property;
-        var Anim = Fw.Views.Animation;
-        var Events = Fw.Events.SlidableBoxViewEvents;
-        var SlidableBoxView = /** @class */ (function (_super) {
-            __extends(SlidableBoxView, _super);
-            function SlidableBoxView(direction) {
-                var _this = _super.call(this) || this;
-                _this._innerBackgroundColor = '#F5F5F5';
-                _this._innerLength = 2;
-                _this._barMargin = 10;
-                _this._isDragging = false;
-                _this._spcvMouseSuppressor = false;
-                // nullやundefinedを入れさせない。
-                _this._direction = (direction === Property.Direction.Horizontal)
-                    ? Property.Direction.Horizontal
-                    : Property.Direction.Vertical;
-                _this._innerBox = new Views.BoxView();
-                _this._positionBarMax = new Views.LineView(_this._direction);
-                _this._positionBarCurrent = new Views.LineView(_this._direction);
-                _this.SetClassName('SlidablePanelView');
-                _this.Elem.addClass(_this.ClassName);
-                _this._dragStartMousePosition = new Property.Position();
-                _this._dragStartViewPosition = new Property.Position();
-                _this.HasBorder = false;
-                _this.BorderRadius = 0;
-                _this._innerBox.HasBorder = false;
-                _this._innerBox.SetTransAnimation(false);
-                _this.Elem.append(_this._innerBox.Elem);
-                //super.Add(this._innerBox); // Addメソッドでthis.Childrenを呼ぶため循環参照になる。
-                // コンストラクタ完了後に実行。
-                // コンストラクタ引数で取得したDirectionがセットされていないため。
-                _this._positionBarMax.Position.Policy = Property.PositionPolicy.LeftTop;
-                _this._positionBarMax.SetTransAnimation(false);
-                _this._positionBarMax.Color = '#888888';
-                _super.prototype.Add.call(_this, _this._positionBarMax);
-                _this._positionBarCurrent.Position.Policy = Property.PositionPolicy.LeftTop;
-                _this._positionBarCurrent.SetTransAnimation(false);
-                _this._positionBarCurrent.Color = '#EEEEEE';
-                _super.prototype.Add.call(_this, _this._positionBarCurrent);
-                _this.AddEventListener(Events.Initialized, function () {
-                    _this.InitView();
-                });
-                _this._innerBox.Elem.addClass('SlidablePanelInnerView');
-                _this._innerBox.Elem.on('touchstart mousedown', function (e) {
-                    _this._isDragging = true;
-                    _this._dragStartMousePosition.X = e.clientX;
-                    _this._dragStartMousePosition.Y = e.clientY;
-                    _this._dragStartViewPosition.X = _this._innerBox.Position.X;
-                    _this._dragStartViewPosition.Y = _this._innerBox.Position.Y;
-                    //Fw.Root.Instance.SetTextSelection(false);
-                });
-                _this._innerBox.Elem.on('touchmove mousemove', function (e) {
-                    if (!_this._isDragging || _this._spcvMouseSuppressor)
-                        return;
-                    // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
-                    if (e.eventPhase !== 2)
-                        return;
-                    var addX = e.clientX - _this._dragStartMousePosition.X;
-                    var addY = e.clientY - _this._dragStartMousePosition.Y;
-                    if (_this._direction === Property.Direction.Horizontal) {
-                        // 横方向
-                        _this._innerBox.Position.X = _this._dragStartViewPosition.X + addX;
-                    }
-                    else {
-                        // 縦方向
-                        _this._innerBox.Position.Y = _this._dragStartViewPosition.Y + addY;
-                    }
-                    _this.Refresh();
-                });
-                _this._innerBox.Elem.on('touchend mouseup mouseout', function () {
-                    _this._isDragging = false;
-                    //Fw.Root.Instance.SetTextSelection(true);
-                    _.delay(function () {
-                        _this.AdjustSlidePosition();
-                    }, 200);
-                });
-                return _this;
-            }
-            Object.defineProperty(SlidableBoxView.prototype, "Children", {
-                get: function () {
-                    return this._innerBox.Children;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(SlidableBoxView.prototype, "Direction", {
-                get: function () {
-                    return this._direction;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(SlidableBoxView.prototype, "InnerBackgroundColor", {
-                get: function () {
-                    return this._innerBackgroundColor;
-                },
-                set: function (value) {
-                    this._innerBackgroundColor = value;
-                    this.Refresh();
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(SlidableBoxView.prototype, "InnerLength", {
-                get: function () {
-                    return this._innerLength;
-                },
-                set: function (value) {
-                    this._innerLength = value;
-                    this.Refresh();
-                },
-                enumerable: true,
-                configurable: true
-            });
-            SlidableBoxView.prototype.InitView = function () {
-                if (this.Direction === Property.Direction.Horizontal) {
-                    // 横方向
-                    if (this.InnerLength < this.Size.Width)
-                        this.InnerLength = this.Size.Width;
-                    this.Dom.style.overflowX = 'hidden'; //'scroll';
-                    this.Dom.style.overflowY = 'hidden';
-                    this._innerBox.Size.Width = this.InnerLength;
-                    this._innerBox.Size.Height = this.Size.Height;
-                    this._innerBox.Position.X = (this._innerBox.Size.Width - this.Size.Width) / 2;
-                    this._innerBox.Position.Y = 0;
-                }
-                else {
-                    // 縦方向
-                    if (this.InnerLength < this.Size.Height)
-                        this.InnerLength = this.Size.Height;
-                    this.Dom.style.overflowY = 'hidden'; //'scroll';
-                    this.Dom.style.overflowX = 'hidden';
-                    this._innerBox.Size.Height = this.InnerLength;
-                    this._innerBox.Size.Width = this.Size.Width;
-                    this._innerBox.Position.Y = (this._innerBox.Size.Height - this.Size.Height) / 2;
-                    this._innerBox.Position.X = 0;
-                }
-            };
-            SlidableBoxView.prototype.AdjustSlidePosition = function () {
-                var _this = this;
-                var unitWidth = this.Size.Width / 2;
-                var unitHeight = this.Size.Height / 2;
-                var maxLeft = 0;
-                var maxTop = 0;
-                var minLeft = this.Size.Width - this._innerBox.Size.Width;
-                var minTop = this.Size.Height - this._innerBox.Size.Height;
-                var left = this._innerBox.Position.Left;
-                var top = this._innerBox.Position.Top;
-                // 座標値がマイナスのため、floorでなくceilで切り捨てる。
-                var toLeft = Math.ceil(left / unitWidth) * unitWidth;
-                var toTop = Math.ceil(top / unitHeight) * unitHeight;
-                if (toLeft < minLeft) {
-                    toLeft = minLeft;
-                }
-                else if (maxLeft < toLeft) {
-                    toLeft = maxLeft;
-                }
-                else {
-                    var remainderLeft = Math.abs(left % unitWidth);
-                    if (remainderLeft > (unitWidth / 2))
-                        toLeft -= unitWidth;
-                }
-                if (toTop < minTop) {
-                    toTop = minTop;
-                }
-                else if (maxTop < toTop) {
-                    toTop = maxTop;
-                }
-                else {
-                    var remainderTop = Math.abs(top % unitHeight);
-                    if (remainderTop > (unitHeight / 2))
-                        toTop -= unitHeight;
-                }
-                var animator = new Anim.Animator(this._innerBox);
-                if (this.Direction === Property.Direction.Horizontal) {
-                    animator.ToParams.X = (toLeft - left);
-                }
-                else {
-                    animator.ToParams.Y = (toTop - top);
-                }
-                animator.OnComplete = function () {
-                    if (_this.Direction === Property.Direction.Horizontal) {
-                        _this._innerBox.SetLeftTop(toLeft, null, false);
-                    }
-                    else {
-                        _this._innerBox.SetLeftTop(null, toTop, false);
-                    }
-                    _this._spcvMouseSuppressor = false;
-                };
-                this._spcvMouseSuppressor = true;
-                animator.Invoke(500);
-            };
-            SlidableBoxView.prototype.Add = function (view) {
-                this._innerBox.Add(view);
-            };
-            SlidableBoxView.prototype.Remove = function (view) {
-                this._innerBox.Remove(view);
-            };
-            SlidableBoxView.prototype.InnerRefresh = function () {
-                try {
-                    this.SuppressLayout();
-                    if (this.Direction === Property.Direction.Horizontal) {
-                        // 横方向
-                        if (this.InnerLength < this.Size.Width)
-                            this.InnerLength = this.Size.Width;
-                        this.Dom.style.overflowX = 'hidden'; //'scroll';
-                        this.Dom.style.overflowY = 'hidden';
-                        this._innerBox.Size.Width = this.InnerLength;
-                        this._innerBox.Size.Height = this.Size.Height;
-                        this._positionBarMax.SetAnchor(null, this._barMargin, this._barMargin, this._barMargin);
-                        this._positionBarMax.Length = this.Size.Width - (this._barMargin * 2);
-                        this._positionBarCurrent.SetAnchor(null, null, null, this._barMargin);
-                        this._positionBarCurrent.Length
-                            = this._positionBarMax.Length
-                                * (this.Size.Width / this.InnerLength);
-                        var maxLeft = this.InnerLength - this.Size.Width;
-                        var currentLeft = this._innerBox.Position.Left;
-                        var posRate = (maxLeft === 0)
-                            ? 1
-                            : currentLeft / maxLeft;
-                        var leftLength = this._positionBarMax.Length - this._positionBarCurrent.Length;
-                        this._positionBarCurrent.Position.Left = this._barMargin - (leftLength * posRate);
-                        //Dump.Log({
-                        //    max_Length: this._positionBarMax.Length,
-                        //    current_Length: this._positionBarCurrent.Length,
-                        //    maxLeft: maxLeft,
-                        //    currentLeft: currentLeft,
-                        //    posRate: posRate,
-                        //    leftLength: leftLength,
-                        //    current_Left: this._positionBarCurrent.Position.Left
-                        //});
-                    }
-                    else {
-                        // 縦方向
-                        if (this.InnerLength < this.Size.Height)
-                            this.InnerLength = this.Size.Height;
-                        this.Dom.style.overflowY = 'hidden'; //'scroll';
-                        this.Dom.style.overflowX = 'hidden';
-                        this._innerBox.Size.Height = this.InnerLength;
-                        this._innerBox.Size.Width = this.Size.Width;
-                        this._positionBarMax.SetAnchor(this._barMargin, null, this._barMargin, this._barMargin);
-                        this._positionBarMax.Length = this.Size.Height - (this._barMargin * 2);
-                        this._positionBarCurrent.SetAnchor(null, null, this._barMargin, null);
-                        this._positionBarCurrent.Length
-                            = this._positionBarMax.Length
-                                * (this.Size.Height / this.InnerLength);
-                        var maxTop = this.InnerLength - this.Size.Height;
-                        var currentTop = this._innerBox.Position.Top;
-                        var posRate = (maxTop === 0)
-                            ? 1
-                            : currentTop / maxTop;
-                        var topLength = this._positionBarMax.Length - this._positionBarCurrent.Length;
-                        this._positionBarCurrent.Position.Top = this._barMargin - (topLength * posRate);
-                    }
-                    this._innerBox.BackgroundColor = this._innerBackgroundColor;
-                    _super.prototype.InnerRefresh.call(this);
-                }
-                catch (e) {
-                    Dump.ErrorLog(e);
-                }
-                finally {
-                    this.ResumeLayout();
-                }
-            };
-            SlidableBoxView.prototype.Dispose = function () {
-                this._innerBox.Elem.off('touchstart mousedown');
-                this._innerBox.Elem.off('touchmove mousemove');
-                this._innerBox.Elem.off('touchend mouseup mouseout');
-                _super.prototype.Dispose.call(this);
-                this._innerBackgroundColor = null;
-                this._innerLength = null;
-                this._innerBox.Dispose();
-                this._innerBox = null;
-                this._isDragging = null;
-                this._spcvMouseSuppressor = null;
-                this._dragStartMousePosition.Dispose();
-                this._dragStartMousePosition = null;
-                this._dragStartViewPosition.Dispose();
-                this._dragStartViewPosition = null;
-            };
-            return SlidableBoxView;
-        }(Views.BoxView));
-        Views.SlidableBoxView = SlidableBoxView;
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../Events/ControlViewEvents.ts" />
-/// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
-/// <reference path="ControlView.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var Dump = Fw.Util.Dump;
-        var Events = Fw.Events.ControlViewEvents;
-        var ToggleButtonView = /** @class */ (function (_super) {
-            __extends(ToggleButtonView, _super);
-            function ToggleButtonView() {
-                var _this = _super.call(this) || this;
-                _this.HoverColor = '';
-                _this._value = false;
-                _this._sliderBox = new Views.BoxView();
-                _this._notch = new Views.BoxView();
-                _this._maskOn = new Views.BoxView();
-                _this._value = false;
-                _this._overMargin = 5;
-                _this.SetClassName('ToggleButtonView');
-                _this.Elem.addClass(_this.ClassName);
-                // 標準サイズ：50 x 20
-                var width = 50;
-                var height = 20;
-                _this.HasBorder = false;
-                _this.SetSize(width, height);
-                _this._sliderBox.Size.Width = _this.Size.Width - _this._overMargin;
-                _this._sliderBox.Size.Height = _this.Size.Height - _this._overMargin;
-                _this._sliderBox.HasBorder = true;
-                _this._sliderBox.BorderRadius = 15;
-                _this._sliderBox.Color = '#e5e5e5';
-                _this._sliderBox.BackgroundColor = '#FFFFFF';
-                _this._sliderBox.Dom.style.overflow = 'hidden';
-                _this.Add(_this._sliderBox);
-                _this._maskOn.Size.Width = _this.Size.Width - _this._overMargin;
-                _this._maskOn.Size.Height = _this.Size.Height - _this._overMargin;
-                _this._maskOn.HasBorder = false;
-                _this._maskOn.BorderRadius = 15;
-                _this._maskOn.BackgroundColor = '#4e748b';
-                _this._maskOn.Position.X = -(_this.Size.Width - _this._overMargin);
-                _this._sliderBox.Add(_this._maskOn);
-                _this._notch.SetSize(_this.Size.Height, _this.Size.Height);
-                _this._notch.HasBorder = true;
-                _this._notch.BorderRadius = 50;
-                _this._notch.Color = '#e5e5e5';
-                _this._notch.BackgroundColor = '#cfcfcf';
-                _this._notch.Position.X = -(_this.Size.Width / 2) + (_this.Size.Height / 2);
-                _this.Add(_this._notch);
-                _this.Elem.hover(function () {
-                    _this.Dom.style.backgroundColor = _this.HoverColor;
-                }, function () {
-                    _this.Dom.style.backgroundColor = _this.BackgroundColor;
-                });
-                _this.AddEventListener(Events.SingleClick, function () {
-                    _this._value = !_this._value;
-                    _this.Refresh();
-                });
-                return _this;
-            }
-            Object.defineProperty(ToggleButtonView.prototype, "Value", {
-                get: function () {
-                    return this._value;
-                },
-                set: function (value) {
-                    var changed = (this._value !== value);
-                    if (changed)
-                        this._value = !this._value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            //private SwitchToOn(): void {
-            //}
-            //private SwitchToOff(): void {
-            //}
-            ToggleButtonView.prototype.InnerRefresh = function () {
-                try {
-                    this.SuppressLayout();
-                    this._sliderBox.Size.Width = this.Size.Width - this._overMargin;
-                    this._sliderBox.Size.Height = this.Size.Height - this._overMargin;
-                    this._maskOn.Size.Width = this.Size.Width - this._overMargin;
-                    this._maskOn.Size.Height = this.Size.Height - this._overMargin;
-                    this._notch.SetSize(this.Size.Height, this.Size.Height);
-                    this._notch.Position.X = (this.Value)
-                        ? (this.Size.Width / 2) - (this.Size.Height / 2)
-                        : -(this.Size.Width / 2) + (this.Size.Height / 2);
-                    this._maskOn.Position.X = (this.Value)
-                        ? 0
-                        : -(this.Size.Width - this._overMargin);
-                    _super.prototype.InnerRefresh.call(this);
-                }
-                catch (e) {
-                    Dump.ErrorLog(e);
-                }
-                finally {
-                    this.ResumeLayout();
-                }
-            };
-            ToggleButtonView.prototype.Dispose = function () {
-                _super.prototype.Dispose.call(this);
-                this.HoverColor = null;
-            };
-            return ToggleButtonView;
-        }(Views.ControlView));
-        Views.ToggleButtonView = ToggleButtonView;
-    })(Views = Fw.Views || (Fw.Views = {}));
+    var Startup = /** @class */ (function () {
+        function Startup() {
+        }
+        Startup.Init = function () {
+            // ↓API仕様に応じて、App.Mainで書き換える。
+            Fw.Config.XhrBaseUrl
+                = location.protocol
+                    + '//' + location.hostname
+                    + ':' + location.port
+                    + '/';
+            // 画面全体のコンテナを初期化
+            Fw.Root.Init('div.body-content');
+            // Controllers.Managerの初期化
+            Fw.Controllers.Manager.Init();
+        };
+        return Startup;
+    }());
+    Fw.Startup = Startup;
 })(Fw || (Fw = {}));
 //# sourceMappingURL=tsout.js.map

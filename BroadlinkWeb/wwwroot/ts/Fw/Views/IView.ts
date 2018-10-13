@@ -39,6 +39,9 @@ namespace Fw.Views {
         Remove(view: IView): void;
 
         Refresh(): void;
+        SetStyle(name: string, value: string): void;
+        SetStyles(styles: { [name: string]: string }): void;
+
         SuppressLayout(): void;
         IsSuppressedLayout(): boolean;
         ResumeLayout(): void;

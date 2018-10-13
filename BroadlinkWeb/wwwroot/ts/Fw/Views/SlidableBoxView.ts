@@ -137,8 +137,13 @@ namespace Fw.Views {
                 if (this.InnerLength < this.Size.Width)
                     this.InnerLength = this.Size.Width;
 
-                this.Dom.style.overflowX = 'hidden';//'scroll';
-                this.Dom.style.overflowY = 'hidden';
+                //this.Dom.style.overflowX = 'hidden';//'scroll';
+                //this.Dom.style.overflowY = 'hidden';
+                this.SetStyles({
+                    overflowX: 'hidden',
+                    overflowY: 'hidden'
+                });
+
                 this._innerBox.Size.Width = this.InnerLength;
                 this._innerBox.Size.Height = this.Size.Height;
                 this._innerBox.Position.X = (this._innerBox.Size.Width - this.Size.Width) / 2;
@@ -148,8 +153,13 @@ namespace Fw.Views {
                 if (this.InnerLength < this.Size.Height)
                     this.InnerLength = this.Size.Height;
 
-                this.Dom.style.overflowY = 'hidden';//'scroll';
-                this.Dom.style.overflowX = 'hidden';
+                //this.Dom.style.overflowY = 'hidden';//'scroll';
+                //this.Dom.style.overflowX = 'hidden';
+                this.SetStyles({
+                    overflowX: 'hidden',
+                    overflowY: 'hidden'
+                });
+
                 this._innerBox.Size.Height = this.InnerLength;
                 this._innerBox.Size.Width = this.Size.Width;
                 this._innerBox.Position.Y = (this._innerBox.Size.Height - this.Size.Height) / 2;
@@ -227,8 +237,10 @@ namespace Fw.Views {
                     if (this.InnerLength < this.Size.Width)
                         this.InnerLength = this.Size.Width;
 
-                    this.Dom.style.overflowX = 'hidden';//'scroll';
-                    this.Dom.style.overflowY = 'hidden';
+                    //this.Dom.style.overflowX = 'hidden';//'scroll';
+                    //this.Dom.style.overflowY = 'hidden';
+
+
                     this._innerBox.Size.Width = this.InnerLength;
                     this._innerBox.Size.Height = this.Size.Height;
 
@@ -264,8 +276,8 @@ namespace Fw.Views {
                     if (this.InnerLength < this.Size.Height)
                         this.InnerLength = this.Size.Height;
 
-                    this.Dom.style.overflowY = 'hidden';//'scroll';
-                    this.Dom.style.overflowX = 'hidden';
+                    //this.Dom.style.overflowY = 'hidden';//'scroll';
+                    //this.Dom.style.overflowX = 'hidden';
                     this._innerBox.Size.Height = this.InnerLength;
                     this._innerBox.Size.Width = this.Size.Width;
 
@@ -290,6 +302,11 @@ namespace Fw.Views {
                 this._innerBox.BackgroundColor = this._innerBackgroundColor;
                 
                 super.InnerRefresh();
+
+                this.SetStyles({
+                    overflowY: 'hidden',
+                    overflowX: 'hidden'
+                });
 
             } catch (e) {
                 Dump.ErrorLog(e);

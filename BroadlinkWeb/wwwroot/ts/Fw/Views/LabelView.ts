@@ -77,8 +77,12 @@ namespace Fw.Views {
             this.BackgroundColor = 'transparent';
             this.SetTransAnimation(false);
 
-            this.Dom.style.borderWidth = '0';
-            this.Dom.style.borderRadius = '0';
+            //this.Dom.style.borderWidth = '0';
+            //this.Dom.style.borderRadius = '0';
+            this.SetStyles({
+                borderWidth: '0',
+                borderRadius: '0'
+            });
 
             this._text = '';
             this._fontWeight = Property.FontWeight.Normal;
@@ -111,9 +115,16 @@ namespace Fw.Views {
 
                 super.InnerRefresh();
 
-                this.Dom.style.fontWeight = this._fontWeight;
-                this.Dom.style.fontSize = this._fontSize;
-                this.Dom.style.fontFamily = this._fontFamily;
+                //this.Dom.style.fontWeight = this._fontWeight;
+                //this.Dom.style.fontSize = this._fontSize;
+                //this.Dom.style.fontFamily = this._fontFamily;
+
+                this.SetStyles({
+                    fontWeight: this._fontWeight,
+                    fontSize: this._fontSize,
+                    fontFamily: this._fontFamily
+                });
+
                 this.Elem.text(this._text);
             } catch (e) {
                 Dump.ErrorLog(e);

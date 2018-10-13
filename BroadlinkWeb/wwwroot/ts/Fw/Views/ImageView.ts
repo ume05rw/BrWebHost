@@ -44,8 +44,12 @@ namespace Fw.Views {
 
             this.BackgroundColor = 'transparent';
 
-            this.Dom.style.borderWidth = '0';
-            this.Dom.style.borderRadius = '0';
+            //this.Dom.style.borderWidth = '0';
+            //this.Dom.style.borderRadius = '0';
+            this.SetStyles({
+                borderWidth: '0',
+                borderRadius: '0'
+            });
 
             // 注) ImageオブジェクトはDomツリーに入れない。
             this._image.onload = () => {
@@ -62,12 +66,19 @@ namespace Fw.Views {
 
                 super.InnerRefresh();
 
-                this.Dom.style.backgroundPosition = 'center center';
-                this.Dom.style.backgroundRepeat = 'no-repeat';
-                this.Dom.style.backgroundSize = this.FitPolicy;
-                this.Dom.style.backgroundImage = (this._src)
-                    ? `url(${this._src})`
-                    : null;
+                //this.Dom.style.backgroundPosition = 'center center';
+                //this.Dom.style.backgroundRepeat = 'no-repeat';
+                //this.Dom.style.backgroundSize = this.FitPolicy;
+                //this.Dom.style.backgroundImage = (this._src)
+                //    ? `url(${this._src})`
+                //    : null;
+
+                this.SetStyles({
+                    backgroundPosition: 'center center',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundSize: this.FitPolicy,
+                    backgroundImage: (this._src) ? `url(${this._src})` : null
+                });
             } catch (e) {
                 Dump.ErrorLog(e);
             } finally {

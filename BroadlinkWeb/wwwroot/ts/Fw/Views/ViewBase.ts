@@ -451,17 +451,34 @@ namespace Fw.Views {
                 //    elemLeft: elemLeft
                 //});
 
-                this.Dom.style.left = `${elemLeft}px`;
-                this.Dom.style.top = `${elemTop}px`;
-                this.Dom.style.width = `${this.Size.Width}px`;
-                this.Dom.style.height = `${this.Size.Height}px`;
-                this.Dom.style.zIndex = `${this.ZIndex}`;
-                this.Dom.style.color = `${this._color}`;
-                this.Dom.style.backgroundColor = `${this._backgroundColor}`;
-                this.Dom.style.opacity = `${this.Opacity}`;
-                this.Dom.style.display = (this._isVisible)
-                    ? 'block'
-                    : 'none';
+                this.SetStyles({
+                    left: `${elemLeft}px`,
+                    top: `${elemTop}px`,
+                    width: `${this.Size.Width}px`,
+                    height: `${this.Size.Height}px`,
+                    zIndex: `${this.ZIndex}`,
+                    color: `${this._color}`,
+                    backgroundColor: `${this._backgroundColor}`,
+                    opacity: `${this.Opacity}`,
+                    display: (this._isVisible)
+                        ? 'block'
+                        : 'none'
+                });
+                _.defer(() => {
+                    this.ApplyStyles();
+                });
+
+                //this.Dom.style.left = `${elemLeft}px`;
+                //this.Dom.style.top = `${elemTop}px`;
+                //this.Dom.style.width = `${this.Size.Width}px`;
+                //this.Dom.style.height = `${this.Size.Height}px`;
+                //this.Dom.style.zIndex = `${this.ZIndex}`;
+                //this.Dom.style.color = `${this._color}`;
+                //this.Dom.style.backgroundColor = `${this._backgroundColor}`;
+                //this.Dom.style.opacity = `${this.Opacity}`;
+                //this.Dom.style.display = (this._isVisible)
+                //    ? 'block'
+                //    : 'none';
 
                 this._lastRefreshedTime = new Date();
             } catch (e) {
@@ -471,6 +488,24 @@ namespace Fw.Views {
                 this.ResumeEvent(Events.PositionChanged);
                 this.ResumeLayout();
             }
+        }
+
+        private _latestStyles: { [name: string]: string } = {};
+        private _newStyles: { [name: string]: string } = {};
+        public SetStyle(name: string, value: string): void {
+            this._newStyles[name] = value;
+        }
+        public SetStyles(styles: { [name: string]: string }): void {
+            _.extend(this._newStyles, styles);
+        }
+        protected ApplyStyles(): void {
+            _.each(this._newStyles, (v, k) => {
+                if (this._latestStyles[k] !== v) {
+                    this.Dom.style[k] = v;
+                    this._latestStyles[k] = v;
+                }
+            });
+            this._newStyles = {};
         }
 
         public SuppressLayout(): void {

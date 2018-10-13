@@ -23,6 +23,7 @@ namespace App.Views.Controls {
             this.Button.BackgroundColor = Color.MainBackground;
             this.Button.HoverColor = Color.MainHover;
             this.Button.Color = Color.Main;
+            this.Button.SetStyle('borderColor', Color.MainHover);
 
             this.Label.Color = Color.Main;
         }
@@ -30,6 +31,7 @@ namespace App.Views.Controls {
         protected InnerRefresh(): void {
             super.InnerRefresh();
             this.Button.Dom.style.borderColor = Color.MainHover;
+            //this.Button.SetStyle('borderColor', Color.MainHover);
         }
     }
 }

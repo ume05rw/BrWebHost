@@ -18,9 +18,11 @@ namespace Fw.Views {
         }
         public set HasBorder(value: boolean) {
             this._hasBorder = value;
-            this.Dom.style.borderWidth = (value)
+            //this.Dom.style.borderWidth = (value) ? '1px' : '0';
+            this.SetStyle('borderWidth', (value)
                 ? '1px'
-                : '0';
+                : '0');
+            this.Refresh();
         }
 
         private _borderRadius: number;
@@ -38,7 +40,9 @@ namespace Fw.Views {
 
             this._borderRadius = value;
 
-            this.Dom.style.borderRadius = `${this._borderRadius}%`;
+            //this.Dom.style.borderRadius = `${this._borderRadius}%`;
+            this.SetStyle('borderRadius', `${this._borderRadius}%`);
+            this.Refresh();
         }
 
         constructor() {
@@ -56,7 +60,9 @@ namespace Fw.Views {
                 this.SuppressLayout();
 
                 super.InnerRefresh();
-                this.Dom.style.borderColor = `${this.Color}`;
+
+                //this.Dom.style.borderColor = `${this.Color}`;
+                this.SetStyle('borderColor', `${this.Color}`);
             } catch (e) {
                 Dump.ErrorLog(e);
             } finally {

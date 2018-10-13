@@ -272,14 +272,18 @@ namespace Fw.Views {
             //Dump.Log(`${this.ClassName}.Mask`);
             this._isMasked = true;
             Fw.Root.Instance.Mask();
-            this.Dom.style.zIndex = '-1';
+            //this.Dom.style.zIndex = '-1';
+            this.SetStyle('zIndex', '-1');
+            this.Refresh();
         }
 
         public UnMask(): void {
             //Dump.Log(`${this.ClassName}.UnMask`);
             this._isMasked = false;
             Fw.Root.Instance.UnMask();
-            this.Dom.style.zIndex = '0';
+            //this.Dom.style.zIndex = '0';
+            this.SetStyle('zIndex', '0');
+            this.Refresh();
         }
 
         protected InnerRefresh(): void {
@@ -288,18 +292,30 @@ namespace Fw.Views {
 
                 // TODO: Anchor実装する。
                 // 親View(=Root)とPageは常に同サイズなので、X/YがそのままLeft/Topになる。
-                this.Dom.style.left = `${this.Position.X}px`;
-                this.Dom.style.top = `${this.Position.Y}px`;
+                //this.Dom.style.left = `${this.Position.X}px`;
+                //this.Dom.style.top = `${this.Position.Y}px`;
+                //this.Dom.style.width = `100%`;
+                //this.Dom.style.height = `100%`;
+                //this.Dom.style.zIndex = `${this.ZIndex}`;
+                //this.Dom.style.color = `${this.Color}`;
+                //this.Dom.style.backgroundColor = `${this.BackgroundColor}`;
+                //this.Dom.style.display = (this.IsVisible)
+                //    ? 'block'
+                //    : 'none';
 
-
-                this.Dom.style.width = `100%`;
-                this.Dom.style.height = `100%`;
-                this.Dom.style.zIndex = `${this.ZIndex}`;
-                this.Dom.style.color = `${this.Color}`;
-                this.Dom.style.backgroundColor = `${this.BackgroundColor}`;
-                this.Dom.style.display = (this.IsVisible)
-                    ? 'block'
-                    : 'none';
+                this.SetStyles({
+                    left: `${this.Position.X}px`,
+                    top: `${this.Position.Y}px`,
+                    width: `100%`,
+                    height: `100%`,
+                    zIndex: `${this.ZIndex}`,
+                    color: `${this.Color}`,
+                    backgroundColor: `${this.BackgroundColor}`,
+                    display: (this.IsVisible) ? 'block' : 'none'
+                });
+                _.defer(() => {
+                    this.ApplyStyles();
+                });
 
             } catch (e) {
                 Dump.ErrorLog(e);

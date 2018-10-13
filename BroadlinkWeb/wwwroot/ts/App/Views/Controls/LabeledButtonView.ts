@@ -52,11 +52,19 @@ namespace App.Views.Controls {
 
                 super.InnerRefresh()
 
-                this.Dom.style.color = 'transparent';
-                this.Dom.style.backgroundColor = 'transparent';
-                this.Dom.style.borderWidth = '0';
-                this.Dom.style.borderColor = 'transparent';
-                this.Dom.style.opacity = `${this.Opacity}`;
+                this.SetStyles({
+                    color: 'transparent',
+                    backgroundColor: 'transparent',
+                    borderWidth: '0',
+                    borderColor: 'transparent',
+                    opacity: `${this.Opacity}`
+                });
+
+                //this.Dom.style.color = 'transparent';
+                //this.Dom.style.backgroundColor = 'transparent';
+                //this.Dom.style.borderWidth = '0';
+                //this.Dom.style.borderColor = 'transparent';
+                //this.Dom.style.opacity = `${this.Opacity}`;
 
             } catch (e) {
                 Dump.ErrorLog(e);
