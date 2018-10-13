@@ -17,6 +17,7 @@ namespace Fw.Views {
             return this._hasBorder;
         }
         public set HasBorder(value: boolean) {
+            this._hasBorder = value;
             this.Dom.style.borderWidth = (value)
                 ? '1px'
                 : '0';

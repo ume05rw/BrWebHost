@@ -501,6 +501,35 @@ declare namespace App.Views.Controls {
         constructor();
     }
 }
+declare namespace App.Views.Controls {
+    import Views = Fw.Views;
+    class LabeledButtonView extends Fw.Views.ControlView {
+        private _buttonView;
+        readonly Button: Views.ButtonView;
+        private _labelView;
+        readonly Label: Views.LabelView;
+        ImageSrc: string;
+        Text: string;
+        HasBorder: boolean;
+        BorderRadius: number;
+        Color: string;
+        BackgroundColor: string;
+        Opacity: number;
+        /**
+         * @see publicプロパティの初期化タイミングに注意。コンストラクタ実行後に値がセットされる。
+         */
+        HoverColor: string;
+        protected Init(): void;
+        protected InnerRefresh(): void;
+        Dispose(): void;
+    }
+}
+declare namespace App.Views.Controls {
+    class SceneButtonView extends LabeledButtonView {
+        constructor();
+        protected InnerRefresh(): void;
+    }
+}
 declare namespace App.Views.Pages {
     import Views = Fw.Views;
     class LayoutCheckPageView extends Fw.Views.PageView {
@@ -889,13 +918,10 @@ declare namespace Fw {
     }
 }
 declare namespace App.Views.Controls {
-    class SceneButtonView extends Fw.Views.ButtonView {
-        constructor();
-        protected InnerRefresh(): void;
-    }
-}
-declare namespace App.Views.Controls {
-    class RemconButtonView extends Fw.Views.ButtonView {
+    import Views = Fw.Views;
+    class ControlSetButtonView extends LabeledButtonView {
+        private _toggle;
+        readonly Toggle: Views.ToggleButtonView;
         constructor();
     }
 }

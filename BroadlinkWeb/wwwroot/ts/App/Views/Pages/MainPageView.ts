@@ -57,7 +57,7 @@ namespace App.Views.Pages {
 
             for (let i = 0; i < 5; i++) {
                 const btn = new Controls.SceneButtonView();
-                btn.Text = `Button ${i}`;
+                btn.Text = `Scene ${i + 1}`;
                 scenePanel.Add(btn);
             }
 
@@ -72,8 +72,8 @@ namespace App.Views.Pages {
             this.Add(remConPanel);
 
             for (let i = 0; i < 20; i++) {
-                const btn = new Controls.RemconButtonView();
-                btn.Text = `Button ${i}`;
+                const btn = new Controls.ControlSetButtonView();
+                btn.Text = `Control ${i + 1}`;
                 const idx = i % Color.ButtonColors.length;
                 btn.BackgroundColor = Color.ButtonColors[idx];
                 btn.Color = Color.ReverseMain;

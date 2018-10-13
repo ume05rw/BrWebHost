@@ -4,6 +4,7 @@
 /// <reference path="../../../Fw/Views/Property/Anchor.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../../Color.ts" />
+/// <reference path="LabeledButtonView.ts" />
 
 namespace App.Views.Controls {
     import Dump = Fw.Util.Dump;
@@ -11,12 +12,13 @@ namespace App.Views.Controls {
     import Property = Fw.Views.Property;
     import Color = App.Color;
 
-    export class SceneButtonView extends Fw.Views.ButtonView {
+    export class SceneButtonView extends LabeledButtonView {
         constructor() {
             super();
 
             this.HasBorder = true;
             this.SetSize(200, 150);
+            this.BorderRadius = 50;
             this.BackgroundColor = Color.MainBackground;
             this.HoverColor = Color.MainHover;
             this.Color = Color.Main;
@@ -24,7 +26,7 @@ namespace App.Views.Controls {
 
         protected InnerRefresh(): void {
             super.InnerRefresh();
-            this.Dom.style.borderColor = Color.MainHover;
+            this.Button.Dom.style.borderColor = Color.MainHover;
         }
     }
 }

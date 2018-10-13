@@ -14,8 +14,9 @@
     <Content Remove="wwwroot\ts\App\Models\Entities\BrDevice.ts" />
     <Content Remove="wwwroot\ts\App\Models\Stores\BrDeviceStore.ts" />
     <Content Remove="wwwroot\ts\App\Views\Controls\ButtonView.ts" />
+    <Content Remove="wwwroot\ts\App\Views\Controls\ControlSetButtonView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Controls\HeaderBarView.ts" />
-    <Content Remove="wwwroot\ts\App\Views\Controls\RemconButtonView.ts" />
+    <Content Remove="wwwroot\ts\App\Views\Controls\LabeledButtonView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Controls\SceneButtonView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Pages\LayoutCheckPageView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Pages\MainPageView.ts" />
@@ -102,7 +103,8 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\BrDeviceStore.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\ButtonView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\HeaderBarView.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\RemconButtonView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\LabeledButtonView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\ControlSetButtonView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\SceneButtonView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\Sub3PageView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\MainPageView.ts" />
