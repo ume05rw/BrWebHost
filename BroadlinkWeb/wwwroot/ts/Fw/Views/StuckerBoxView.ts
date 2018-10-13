@@ -53,8 +53,13 @@ namespace Fw.Views {
         private _dragStartMousePosition: Property.Position = new Property.Position();
         private _dragStartViewPosition: Property.Position = new Property.Position();
 
-        protected Init(): void {
-            super.Init();
+        constructor() {
+            super();
+
+            this._innerBox = new BoxView();
+            this._positionBarMax = new LineView(Property.Direction.Vertical);
+            this._positionBarCurrent = new LineView(Property.Direction.Vertical);
+            this._dummyView = new Fw.Views.BoxView();
 
             this.SetClassName('StuckerBoxView');
             this.Elem.addClass(this.ClassName);
@@ -63,7 +68,6 @@ namespace Fw.Views {
             this._referencePoint = Property.ReferencePoint.LeftTop;
             this._scrollMargin = 0;
 
-            this._innerBox = new BoxView();
             this._innerBox.HasBorder = false;
             this._innerBox.SetTransAnimation(false);
             this._innerBox.SetLeftTop(0, 0);
@@ -71,14 +75,12 @@ namespace Fw.Views {
             this.Elem.append(this._innerBox.Elem);
             //super.Add(this._innerBox); // Addメソッドでthis.Childrenを呼ぶため循環参照になる。
 
-            this._positionBarMax = new LineView(Property.Direction.Vertical);
             this._positionBarMax.Position.Policy = Property.PositionPolicy.LeftTop;
             this._positionBarMax.SetTransAnimation(false);
             this._positionBarMax.Color = '#888888';
             this._positionBarMax.SetParent(this);
             this.Elem.append(this._positionBarMax.Elem);
 
-            this._positionBarCurrent = new LineView(Property.Direction.Vertical);
             this._positionBarCurrent.Position.Policy = Property.PositionPolicy.LeftTop;
             this._positionBarCurrent.SetTransAnimation(false);
             this._positionBarCurrent.Color = '#EEEEEE';
@@ -86,7 +88,6 @@ namespace Fw.Views {
             this.Elem.append(this._positionBarCurrent.Elem);
 
             this._backupView = null;
-            this._dummyView = new Fw.Views.BoxView();
             this._dummyView.Elem.addClass('Shadow');
             this._dummyView.Position.Policy = Property.PositionPolicy.LeftTop;
 

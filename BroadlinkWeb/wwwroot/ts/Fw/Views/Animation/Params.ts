@@ -13,7 +13,7 @@ namespace Fw.Views.Animation {
             result.Y = 0;
             result.Width = view.Size.Width;
             result.Height = view.Size.Height;
-            result.Opacity = Number(view.Dom.style.opacity || 1);
+            result.Opacity = Number(view.Opacity || 1);
             return result;
         }
 

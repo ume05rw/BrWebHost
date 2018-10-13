@@ -36,10 +36,8 @@ namespace Fw.Views {
 
         constructor() {
             super($('<div></div>'));
-        }
 
-        protected Init(): void {
-            super.Init();
+            this._image = new Image();
 
             this.SetClassName('ImageView');
             this.Elem.addClass(this.ClassName);
@@ -50,7 +48,6 @@ namespace Fw.Views {
             this.Dom.style.borderRadius = '0';
 
             // 注) ImageオブジェクトはDomツリーに入れない。
-            this._image = new Image();
             this._image.onload = () => {
                 Dump.Log('Image Loaded!!');
                 this.Refresh();

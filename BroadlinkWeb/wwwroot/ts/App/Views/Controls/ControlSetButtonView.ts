@@ -20,7 +20,9 @@ namespace App.Views.Controls {
         }
 
         constructor() {
-            super();
+            super()
+
+            this._toggle = new Views.ToggleButtonView();
 
             this.SetSize(150, 170);
 
@@ -32,7 +34,6 @@ namespace App.Views.Controls {
 
             this.Label.Color = Color.Main;
 
-            this._toggle = new Views.ToggleButtonView();
             this._toggle.SetAnchor(null, 40, 40, 30);
             this._toggle.BackgroundColor = 'transparent';
             this.Add(this._toggle);

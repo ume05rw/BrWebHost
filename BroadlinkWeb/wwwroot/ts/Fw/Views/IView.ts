@@ -23,6 +23,8 @@ namespace Fw.Views {
         Opacity: number;
         IsVisible: boolean;
 
+        readonly IsInitialized: boolean;
+
         SetParent(parent: IView): void;
         SetSize(width: number, height: number): void;
         SetXY(x: number, y: number, updatePolicy?: boolean): void;

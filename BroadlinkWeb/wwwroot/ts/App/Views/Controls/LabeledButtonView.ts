@@ -28,11 +28,11 @@ namespace App.Views.Controls {
          */
         public HoverColor: string; // = '';
 
-        protected Init(): void {
+        constructor() {
+            super()
+
             this._buttonView = new Views.ButtonView();
             this._labelView = new Views.LabelView();
-
-            super.Init();
 
             this.SetClassName('LabeledButtonView');
             this.Elem.addClass(this.ClassName);
@@ -44,13 +44,6 @@ namespace App.Views.Controls {
             this._labelView.Size.Height = 15;
             this._labelView.FontSize = Property.FontSize.Small;
             this.Add(this._labelView);
-
-            //this.Elem.hover(() => {
-            //    //Dump.Log(`${this.ClassName}.hover: color = ${this.HoverColor}`);
-            //    this._buttonView.Dom.style.backgroundColor = this.HoverColor;
-            //}, () => {
-            //    this._buttonView.Dom.style.backgroundColor = this.BackgroundColor;
-            //});
         }
 
         protected InnerRefresh(): void {

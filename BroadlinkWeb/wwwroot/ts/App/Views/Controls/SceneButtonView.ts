@@ -14,7 +14,7 @@ namespace App.Views.Controls {
 
     export class SceneButtonView extends LabeledButtonView {
         constructor() {
-            super();
+            super()
 
             this.SetSize(200, 150);
 

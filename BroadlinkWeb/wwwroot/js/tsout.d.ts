@@ -25,6 +25,35 @@ declare namespace Fw {
         static DefaultPageAttribute: string;
     }
 }
+declare namespace Fw.Controllers {
+    class Factory {
+        static Create(id: string, elem: JQuery): IController;
+    }
+}
+declare namespace Fw.Controllers {
+    class Manager {
+        private static _instance;
+        static readonly Instance: Manager;
+        static Init(): void;
+        private _controllers;
+        private constructor();
+        Add(controller: IController): void;
+        Show(id: string): void;
+        ShowOnce(controller: IController): void;
+    }
+}
+declare namespace App {
+    class Color {
+        static Transparent: string;
+        static Main: string;
+        static MainBackground: string;
+        static MainHover: string;
+        static HeaderButtonBackground: string;
+        static HeaderButtonHover: string;
+        static ReverseMain: string;
+        static ButtonColors: Array<string>;
+    }
+}
 declare namespace Fw {
     interface IObject {
         readonly Elem: JQuery;
@@ -105,6 +134,7 @@ declare namespace Fw.Views {
         BackgroundColor: string;
         Opacity: number;
         IsVisible: boolean;
+        readonly IsInitialized: boolean;
         SetParent(parent: IView): void;
         SetSize(width: number, height: number): void;
         SetXY(x: number, y: number, updatePolicy?: boolean): void;
@@ -128,23 +158,6 @@ declare namespace Fw.Controllers {
         Id: string;
         IsDefaultView: boolean;
         View: Fw.Views.IView;
-    }
-}
-declare namespace Fw.Controllers {
-    class Factory {
-        static Create(id: string, elem: JQuery): IController;
-    }
-}
-declare namespace Fw.Controllers {
-    class Manager {
-        private static _instance;
-        static readonly Instance: Manager;
-        static Init(): void;
-        private _controllers;
-        private constructor();
-        Add(controller: IController): void;
-        Show(id: string): void;
-        ShowOnce(controller: IController): void;
     }
 }
 declare namespace Fw.Controllers {
@@ -272,7 +285,6 @@ declare namespace Fw.Views {
     abstract class ViewBase extends ObjectBase implements IView {
         private _lastRefreshTimer;
         private _lastRefreshedTime;
-        private _initialized;
         private _isSuppressLayout;
         private _dom;
         readonly Dom: HTMLElement;
@@ -298,9 +310,10 @@ declare namespace Fw.Views {
         Opacity: number;
         private _isVisible;
         IsVisible: boolean;
+        private _isInitialized;
+        readonly IsInitialized: boolean;
         constructor(jqueryElem: JQuery);
         protected SetElem(jqueryElem: JQuery): void;
-        protected Init(): void;
         protected InitPage(): void;
         SetParent(parent: IView): void;
         SetSize(width: number, height: number): void;
@@ -338,7 +351,6 @@ declare namespace Fw.Views {
         private _isMasked;
         readonly IsMasked: boolean;
         constructor(jqueryElem?: JQuery);
-        protected Init(): void;
         SuppressDragging(): void;
         IsSuppressDragging(): boolean;
         ResumeDragging(): void;
@@ -358,21 +370,8 @@ declare namespace Fw.Views {
         private _borderRadius;
         BorderRadius: number;
         constructor();
-        protected Init(): void;
         protected InnerRefresh(): void;
         Dispose(): void;
-    }
-}
-declare namespace App {
-    class Color {
-        static Transparent: string;
-        static Main: string;
-        static MainBackground: string;
-        static MainHover: string;
-        static HeaderButtonBackground: string;
-        static HeaderButtonHover: string;
-        static ReverseMain: string;
-        static ButtonColors: Array<string>;
     }
 }
 declare namespace App.Views.Controls {
@@ -384,7 +383,6 @@ declare namespace App.Views.Controls {
         private _btnRight;
         readonly RightButton: App.Views.Controls.ButtonView;
         constructor();
-        private Initialize;
         Dispose(): void;
     }
 }
@@ -397,13 +395,23 @@ declare namespace App.Views.Pages {
         BtnGoSub3: Controls.ButtonView;
         BtnGoDynamic: Controls.ButtonView;
         constructor();
-        private Initialize;
     }
 }
 declare namespace App.Controllers {
     class LayoutCheckController extends Fw.Controllers.ControllerBase {
         constructor(id: string);
         private Init;
+    }
+}
+declare namespace App.Controllers {
+    class Sub3Controller extends Fw.Controllers.ControllerBase {
+        constructor(id: string);
+        private Init;
+    }
+}
+declare namespace App {
+    class Main {
+        static StartUp(): void;
     }
 }
 declare namespace App.Controllers {
@@ -463,12 +471,6 @@ declare namespace App.Controllers {
         private Init;
     }
 }
-declare namespace App.Controllers {
-    class Sub3Controller extends Fw.Controllers.ControllerBase {
-        constructor(id: string);
-        private Init;
-    }
-}
 declare namespace Fw.Views {
     class ControlView extends BoxView {
         private _label;
@@ -477,7 +479,6 @@ declare namespace Fw.Views {
         private _cvDelayedResumeEventsTimer;
         Text: string;
         constructor();
-        protected Init(): void;
         protected InitPage(): void;
         private OnPageDragging;
         Dispose(): void;
@@ -491,7 +492,7 @@ declare namespace Fw.Views {
          * @see publicプロパティの初期化タイミングに注意。コンストラクタ実行後に値がセットされる。
          */
         HoverColor: string;
-        protected Init(): void;
+        constructor();
         protected InnerRefresh(): void;
         Dispose(): void;
     }
@@ -512,7 +513,7 @@ declare namespace App.Views.Controls {
          * @see publicプロパティの初期化タイミングに注意。コンストラクタ実行後に値がセットされる。
          */
         HoverColor: string;
-        protected Init(): void;
+        constructor();
         protected InnerRefresh(): void;
         Dispose(): void;
     }
@@ -533,6 +534,14 @@ declare namespace App.Views.Controls {
 }
 declare namespace App.Views.Pages {
     import Views = Fw.Views;
+    class Sub3PageView extends Fw.Views.PageView {
+        HeaderBar: Controls.HeaderBarView;
+        Stucker: Views.StuckerBoxView;
+        constructor();
+    }
+}
+declare namespace App.Views.Pages {
+    import Views = Fw.Views;
     class LayoutCheckPageView extends Fw.Views.PageView {
         BtnGoSub1: Views.ButtonView;
         BtnGoSub2: Views.ButtonView;
@@ -546,27 +555,17 @@ declare namespace App.Views.Pages {
         AncCtl5: Views.ButtonView;
         AncCtl6: Views.ButtonView;
         constructor();
-        private Initialize;
-    }
-}
-declare namespace App.Views.Pages {
-    import Views = Fw.Views;
-    class Sub3PageView extends Fw.Views.PageView {
-        HeaderBar: Controls.HeaderBarView;
-        Stucker: Views.StuckerBoxView;
-        constructor();
-        private Initialize;
-    }
-}
-declare namespace App {
-    class Main {
-        static StartUp(): void;
     }
 }
 declare namespace Fw.Events {
     class ButtonViewEventsClass extends ControlViewEventsClass {
     }
     const ButtonViewEvents: ButtonViewEventsClass;
+}
+declare namespace Fw.Events {
+    class StuckerBoxViewEventsClass extends BoxViewEventsClass {
+    }
+    const StuckerBoxViewEvents: StuckerBoxViewEventsClass;
 }
 declare namespace Fw.Events {
     class ImageViewEventsClass extends ViewEventsClass {
@@ -601,17 +600,17 @@ declare namespace Fw.Events {
     const SlidableBoxViewEvents: SlidableBoxViewEventsClass;
 }
 declare namespace Fw.Events {
-    class StuckerBoxViewEventsClass extends BoxViewEventsClass {
-    }
-    const StuckerBoxViewEvents: StuckerBoxViewEventsClass;
-}
-declare namespace Fw.Events {
     class ToggleButtonViewEventsClass extends ControlViewEventsClass {
         readonly Switched: string;
         readonly ToOn: string;
         readonly ToOff: string;
     }
     const ToggleButtonViewEvents: ToggleButtonViewEventsClass;
+}
+declare namespace Fw {
+    class Startup {
+        static Init(): void;
+    }
 }
 declare namespace Fw.Util.Xhr {
     enum MethodType {
@@ -641,70 +640,6 @@ declare namespace Fw.Util.Xhr {
     }
 }
 declare namespace Fw.Views.Property {
-    enum Direction {
-        Horizontal = 0,
-        Vertical = 1
-    }
-}
-declare namespace Fw.Views.Property {
-    /**
-     * @description font-size
-     */
-    enum FontSize {
-        XxSmall = "xx-small",
-        XSmall = "x-small",
-        Small = "small",
-        Medium = "medium",
-        Large = "large",
-        XLarge = "x-large",
-        XxLarge = "xx-large"
-    }
-}
-declare namespace Fw.Views.Property {
-    /**
-     * @description font-weight
-     */
-    enum FontWeight {
-        Lighter = "lighter",
-        Normal = "normal",
-        Bold = "bold",
-        Bolder = "bolder"
-    }
-}
-declare namespace Fw.Views.Property {
-    /**
-     * @description 配置基準
-     */
-    enum PositionPolicy {
-        /**
-         * 中央ポリシー：親Viewの中心位置からの差分を X, Y で表現する。
-         */
-        Centering = 1,
-        /**
-         * 左上ポリシー：親Viewの左上からの差分を、Left, Top で表現する。
-         */
-        LeftTop = 2
-    }
-}
-declare namespace Fw.Views.Property {
-    class Position {
-        private _view;
-        private _policy;
-        Policy: PositionPolicy;
-        private _x;
-        X: number;
-        private _y;
-        Y: number;
-        private _left;
-        Left: number;
-        private _top;
-        Top: number;
-        constructor(view?: IView);
-        private GetSizeSet;
-        Dispose(): void;
-    }
-}
-declare namespace Fw.Views.Property {
     /**
      * @description 基点、スタッキング時の基準点
      */
@@ -713,101 +648,6 @@ declare namespace Fw.Views.Property {
         RightTop = 2,
         LeftBottom = 3,
         RightBottom = 4
-    }
-}
-declare namespace Fw.Views {
-    import FitPolicy = Fw.Views.Property.FitPolicy;
-    class ImageView extends ViewBase {
-        private _image;
-        private _src;
-        Src: string;
-        private _firPolicy;
-        FitPolicy: FitPolicy;
-        constructor();
-        protected Init(): void;
-        protected InnerRefresh(): void;
-        Dispose(): void;
-    }
-}
-declare namespace Fw.Views {
-    import Property = Fw.Views.Property;
-    class LabelView extends ViewBase {
-        private _text;
-        Text: string;
-        private _fontWeight;
-        FontWeight: Property.FontWeight;
-        private _fontSize;
-        FontSize: Property.FontSize;
-        private _fontFamily;
-        FontFamily: string;
-        private _autoSize;
-        AutoSize: boolean;
-        private _hiddenSpan;
-        constructor();
-        protected Init(): void;
-        protected InnerRefresh(): void;
-        Dispose(): void;
-    }
-}
-declare namespace Fw.Views {
-    class LineView extends ViewBase {
-        private _direction;
-        readonly Direction: Property.Direction;
-        private _length;
-        Length: number;
-        BackgroundColor: string;
-        constructor(direction: Property.Direction);
-        protected Init(): void;
-        protected InnerRefresh(): void;
-        Dispose(): void;
-    }
-}
-declare namespace Fw.Views {
-    class RelocatableButtonView extends ButtonView {
-        private _isRelocatable;
-        readonly IsRelocatable: boolean;
-        private _shadow;
-        private _isMouseMoveEventListened;
-        private _isDragging;
-        private _dragStartMousePosition;
-        private _dragStartViewPosition;
-        private _gridSize;
-        GridSize: number;
-        protected Init(): void;
-        private OnMouseMove;
-        private _delayedResumeTimer;
-        private DelayedResume;
-        SetRelocatable(relocatable: boolean): void;
-        protected InnerRefresh(): void;
-        Dispose(): void;
-    }
-}
-declare namespace Fw.Views {
-    import Property = Fw.Views.Property;
-    class SlidableBoxView extends BoxView {
-        readonly Children: Array<IView>;
-        private _direction;
-        readonly Direction: Property.Direction;
-        private _innerBackgroundColor;
-        InnerBackgroundColor: string;
-        private _innerLength;
-        InnerLength: number;
-        private _innerBox;
-        private _positionBarMax;
-        private _positionBarCurrent;
-        private _barMargin;
-        private _isDragging;
-        private _spcvMouseSuppressor;
-        private _dragStartMousePosition;
-        private _dragStartViewPosition;
-        constructor(direction: Property.Direction);
-        protected Init(): void;
-        private InitView;
-        private AdjustSlidePosition;
-        Add(view: IView): void;
-        Remove(view: IView): void;
-        protected InnerRefresh(): void;
-        Dispose(): void;
     }
 }
 declare namespace Fw.Views {
@@ -830,7 +670,7 @@ declare namespace Fw.Views {
         private _relocationTargetView;
         private _dragStartMousePosition;
         private _dragStartViewPosition;
-        protected Init(): void;
+        constructor();
         Add(view: IView): void;
         Remove(view: IView): void;
         private OnInnerMouseDown;
@@ -878,17 +718,129 @@ declare namespace Fw.Views {
     }
 }
 declare namespace Fw.Views {
-    class ToggleButtonView extends ControlView {
-        HoverColor: string;
-        private _value;
-        Value: boolean;
-        private _overMargin;
-        private _sliderBox;
-        private _notch;
-        private _maskOn;
-        protected Init(): void;
-        private SwitchToOn;
-        private SwitchToOff;
+    import FitPolicy = Fw.Views.Property.FitPolicy;
+    class ImageView extends ViewBase {
+        private _image;
+        private _src;
+        Src: string;
+        private _firPolicy;
+        FitPolicy: FitPolicy;
+        constructor();
+        protected InnerRefresh(): void;
+        Dispose(): void;
+    }
+}
+declare namespace Fw.Views {
+    class LineView extends ViewBase {
+        private _direction;
+        readonly Direction: Property.Direction;
+        private _length;
+        Length: number;
+        BackgroundColor: string;
+        constructor(direction: Property.Direction);
+        protected InnerRefresh(): void;
+        Dispose(): void;
+    }
+}
+declare namespace Fw.Views.Property {
+    /**
+     * @description font-weight
+     */
+    enum FontWeight {
+        Lighter = "lighter",
+        Normal = "normal",
+        Bold = "bold",
+        Bolder = "bolder"
+    }
+}
+declare namespace Fw.Views {
+    import Property = Fw.Views.Property;
+    class LabelView extends ViewBase {
+        private _text;
+        Text: string;
+        private _fontWeight;
+        FontWeight: Property.FontWeight;
+        private _fontSize;
+        FontSize: Property.FontSize;
+        private _fontFamily;
+        FontFamily: string;
+        private _autoSize;
+        AutoSize: boolean;
+        private _hiddenSpan;
+        constructor();
+        protected InnerRefresh(): void;
+        Dispose(): void;
+    }
+}
+declare namespace Fw.Views.Property {
+    enum Direction {
+        Horizontal = 0,
+        Vertical = 1
+    }
+}
+declare namespace Fw.Views.Property {
+    /**
+     * @description font-size
+     */
+    enum FontSize {
+        XxSmall = "xx-small",
+        XSmall = "x-small",
+        Small = "small",
+        Medium = "medium",
+        Large = "large",
+        XLarge = "x-large",
+        XxLarge = "xx-large"
+    }
+}
+declare namespace Fw.Views.Property {
+    /**
+     * @description 配置基準
+     */
+    enum PositionPolicy {
+        /**
+         * 中央ポリシー：親Viewの中心位置からの差分を X, Y で表現する。
+         */
+        Centering = 1,
+        /**
+         * 左上ポリシー：親Viewの左上からの差分を、Left, Top で表現する。
+         */
+        LeftTop = 2
+    }
+}
+declare namespace Fw.Views.Property {
+    class Position {
+        private _view;
+        private _policy;
+        Policy: PositionPolicy;
+        private _x;
+        X: number;
+        private _y;
+        Y: number;
+        private _left;
+        Left: number;
+        private _top;
+        Top: number;
+        constructor(view?: IView);
+        private GetSizeSet;
+        Dispose(): void;
+    }
+}
+declare namespace Fw.Views {
+    class RelocatableButtonView extends ButtonView {
+        private _isRelocatable;
+        readonly IsRelocatable: boolean;
+        private _shadow;
+        private _isMouseMoveEventListened;
+        private _isDragging;
+        private _dragStartMousePosition;
+        private _dragStartViewPosition;
+        private _gridSize;
+        GridSize: number;
+        constructor();
+        private OnMouseMove;
+        private _delayedResumeTimer;
+        private DelayedResume;
+        SetRelocatable(relocatable: boolean): void;
         protected InnerRefresh(): void;
         Dispose(): void;
     }
@@ -913,8 +865,44 @@ declare namespace Fw {
         Dispose(): void;
     }
 }
-declare namespace Fw {
-    class Startup {
-        static Init(): void;
+declare namespace Fw.Views {
+    import Property = Fw.Views.Property;
+    class SlidableBoxView extends BoxView {
+        readonly Children: Array<IView>;
+        private _direction;
+        readonly Direction: Property.Direction;
+        private _innerBackgroundColor;
+        InnerBackgroundColor: string;
+        private _innerLength;
+        InnerLength: number;
+        private _innerBox;
+        private _positionBarMax;
+        private _positionBarCurrent;
+        private _barMargin;
+        private _isDragging;
+        private _spcvMouseSuppressor;
+        private _dragStartMousePosition;
+        private _dragStartViewPosition;
+        constructor(direction: Property.Direction);
+        private InitView;
+        private AdjustSlidePosition;
+        Add(view: IView): void;
+        Remove(view: IView): void;
+        protected InnerRefresh(): void;
+        Dispose(): void;
+    }
+}
+declare namespace Fw.Views {
+    class ToggleButtonView extends ControlView {
+        HoverColor: string;
+        private _value;
+        Value: boolean;
+        private _overMargin;
+        private _sliderBox;
+        private _notch;
+        private _maskOn;
+        constructor();
+        protected InnerRefresh(): void;
+        Dispose(): void;
     }
 }

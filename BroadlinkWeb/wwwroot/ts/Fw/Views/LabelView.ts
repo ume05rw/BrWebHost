@@ -68,10 +68,8 @@ namespace Fw.Views {
 
         constructor() {
             super($('<label></label>'));
-        }
 
-        protected Init(): void {
-            super.Init();
+            this._hiddenSpan = document.createElement('span') as HTMLSpanElement;
 
             this.SetClassName('LabelView');
             this.Elem.addClass(this.ClassName);
@@ -87,7 +85,6 @@ namespace Fw.Views {
             this._fontSize = Property.FontSize.Medium;
             this._fontFamily = 'Quicksand, 游ゴシック体, "Yu Gothic", YuGothic, "ヒラギノ角ゴシック Pro", "Hiragino Kaku Gothic Pro", メイリオ, Meiryo, Osaka, "ＭＳ Ｐゴシック", "MS PGothic", sans-serif';
 
-            this._hiddenSpan = document.createElement('span') as HTMLSpanElement;
             this._hiddenSpan.style.visibility = 'hidden';
             this._hiddenSpan.style.fontWeight = this._fontWeight;
             this._hiddenSpan.style.fontSize = this._fontSize;

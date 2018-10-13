@@ -36,21 +36,21 @@ namespace App.Views.Controls {
         constructor() {
             super();
 
-            this.Initialize();
-        }
+            this._label = new Views.LabelView();
+            this._btnLeft = new App.Views.Controls.ButtonView();
+            this._btnRight = new App.Views.Controls.ButtonView();
 
-        private Initialize(): void {
             this.Size.Height = 50;
             this.SetAnchor(0, 0, 0, null);
             this.BackgroundColor = Color.MainBackground;
             this.HasBorder = false;
 
-            this._label = new Views.LabelView();
+            
             this._label.FontSize = Property.FontSize.Large;
             this._label.Color = Color.Main;
             this.Add(this._label);
 
-            this._btnLeft = new App.Views.Controls.ButtonView();
+            
             this._btnLeft.SetSize(40, 40);
             this._btnLeft.BackgroundColor = Color.HeaderButtonBackground;
             this._btnLeft.HoverColor = Color.HeaderButtonHover;
@@ -59,7 +59,7 @@ namespace App.Views.Controls {
             this._btnLeft.SetAnchor(null, 5, null, null);
             this.Add(this._btnLeft);
 
-            this._btnRight = new App.Views.Controls.ButtonView();
+            
             this._btnRight.SetSize(40, 40);
             this._btnRight.BackgroundColor = Color.HeaderButtonBackground;
             this._btnRight.HoverColor = Color.HeaderButtonHover;

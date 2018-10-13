@@ -58,10 +58,10 @@ namespace Fw.Views {
             this._direction = (direction === Property.Direction.Horizontal)
                 ? Property.Direction.Horizontal
                 : Property.Direction.Vertical;
-        }
 
-        protected Init(): void {
-            super.Init();
+            this._innerBox = new BoxView();
+            this._positionBarMax = new LineView(this._direction);
+            this._positionBarCurrent = new LineView(this._direction);
 
             this.SetClassName('SlidablePanelView');
             this.Elem.addClass(this.ClassName);
@@ -72,7 +72,6 @@ namespace Fw.Views {
             this.HasBorder = false;
             this.BorderRadius = 0;
 
-            this._innerBox = new BoxView();
             this._innerBox.HasBorder = false;
             this._innerBox.SetTransAnimation(false);
             this.Elem.append(this._innerBox.Elem);
@@ -80,18 +79,14 @@ namespace Fw.Views {
 
             // コンストラクタ完了後に実行。
             // コンストラクタ引数で取得したDirectionがセットされていないため。
-            _.defer(() => {
-                this._positionBarMax = new LineView(this._direction);
-                this._positionBarMax.Position.Policy = Property.PositionPolicy.LeftTop;
-                this._positionBarMax.SetTransAnimation(false);
-                this._positionBarMax.Color = '#888888';
-                super.Add(this._positionBarMax);
-                this._positionBarCurrent = new LineView(this._direction);
-                this._positionBarCurrent.Position.Policy = Property.PositionPolicy.LeftTop;
-                this._positionBarCurrent.SetTransAnimation(false);
-                this._positionBarCurrent.Color = '#EEEEEE';
-                super.Add(this._positionBarCurrent);
-            });
+            this._positionBarMax.Position.Policy = Property.PositionPolicy.LeftTop;
+            this._positionBarMax.SetTransAnimation(false);
+            this._positionBarMax.Color = '#888888';
+            super.Add(this._positionBarMax);
+            this._positionBarCurrent.Position.Policy = Property.PositionPolicy.LeftTop;
+            this._positionBarCurrent.SetTransAnimation(false);
+            this._positionBarCurrent.Color = '#EEEEEE';
+            super.Add(this._positionBarCurrent);
 
             this.AddEventListener(Events.Initialized, () => {
                 this.InitView();

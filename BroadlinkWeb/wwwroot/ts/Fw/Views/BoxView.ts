@@ -43,10 +43,6 @@ namespace Fw.Views {
 
         constructor() {
             super($('<div></div>'));
-        }
-
-        protected Init(): void {
-            super.Init();
 
             this.SetClassName('BoxView');
             this.Elem.addClass(this.ClassName);

@@ -18,7 +18,6 @@ namespace Fw.Views {
         private _lastRefreshTimer: number;
         private _lastRefreshedTime: Date;
 
-        private _initialized: boolean = false;
         private _isSuppressLayout: boolean = false;
 
         // Properties
@@ -104,34 +103,27 @@ namespace Fw.Views {
             this.Refresh();
         }
 
+        private _isInitialized: boolean = false;
+        public get IsInitialized(): boolean {
+            return this._isInitialized;
+        }
+
         constructor(jqueryElem: JQuery) {
             super();
 
             this.SetElem(jqueryElem);
 
-            this.Init();
-        }
+            this._children = new Array<IView>();
+            this._size = new Property.Size(this);
+            this._position = new Property.Position(this);
+            this._anchor = new Property.Anchor(this);
 
-        protected SetElem(jqueryElem: JQuery): void {
-            if (!jqueryElem)
-                return;
-
-            super.SetElem(jqueryElem);
-            this._dom = jqueryElem.get(0) as HTMLElement;
-        }
-
-        protected Init(): void {
             this.SetClassName('ViewBase');
             this.Elem.addClass('IView TransAnimation');
 
             this._page = null;
             this._parent = null;
-            this._children = new Array<IView>();
-            this._size = new Property.Size(this);
-            this._position = new Property.Position(this);
-            this._anchor = new Property.Anchor(this);
             this._color = '#000000';
-
             this._size.Width = this.Elem.width();
             this._size.Height = this.Elem.height();
 
@@ -165,6 +157,23 @@ namespace Fw.Views {
             Fw.Root.Instance.AddEventListener(Fw.Events.RootEvents.Resized, () => {
                 this.Refresh();
             });
+
+            _.defer(() => {
+                // 初期化終了イベント
+                if (!this._isInitialized) {
+                    this._isInitialized = true;
+                    this.DispatchEvent(Events.Initialized);
+                    this.Refresh();
+                }
+            });
+        }
+
+        protected SetElem(jqueryElem: JQuery): void {
+            if (!jqueryElem)
+                return;
+
+            super.SetElem(jqueryElem);
+            this._dom = jqueryElem.get(0) as HTMLElement;
         }
 
         protected InitPage(): void {
@@ -324,7 +333,7 @@ namespace Fw.Views {
 
         public Refresh(): void {
             //Dump.Log(`${this.ClassName}.Refresh`);
-            if (this._isSuppressLayout)
+            if (this._isSuppressLayout || !this._isInitialized)
                 return;
 
             //Dump.Log(`${this.ClassName}.Refresh`);
@@ -371,11 +380,11 @@ namespace Fw.Views {
                 this.SuppressEvent(Events.PositionChanged);
                 this.SuppressLayout();
 
-                // 最初の描画開始直前を初期化終了とする。
-                if (!this._initialized) {
-                    this.DispatchEvent(Events.Initialized);
-                    this._initialized = true;
-                }
+                //// 最初の描画開始直前を初期化終了とする。
+                //if (!this._initialized) {
+                //    this.DispatchEvent(Events.Initialized);
+                //    this._initialized = true;
+                //}
 
                 const parentWidth = (this.Parent)
                     ? this.Parent.Size.Width

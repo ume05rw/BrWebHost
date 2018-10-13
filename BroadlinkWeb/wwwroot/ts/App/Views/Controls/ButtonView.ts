@@ -12,8 +12,9 @@ namespace App.Views.Controls {
     import Color = App.Color;
 
     export class ButtonView extends Fw.Views.ButtonView {
+
         constructor() {
-            super();
+            super()
 
             this.HasBorder = false;
             this.BackgroundColor = Color.MainBackground;

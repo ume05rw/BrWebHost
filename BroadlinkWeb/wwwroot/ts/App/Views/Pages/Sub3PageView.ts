@@ -22,18 +22,15 @@ namespace App.Views.Pages {
             const jqueryElem = $("");
             super(jqueryElem);
 
-            this.Initialize();
-        }
+            this.HeaderBar = new Controls.HeaderBarView();
+            this.Stucker = new Views.StuckerBoxView();
 
-        private Initialize(): void {
             this.SetClassName('Sub3PageView');
 
-            this.HeaderBar = new Controls.HeaderBarView();
             this.HeaderBar.Text = 'Sub 3 Page';
             this.HeaderBar.RightButton.Hide(0);
             this.Add(this.HeaderBar);
 
-            this.Stucker = new Views.StuckerBoxView();
             //this.Stucker.SetSize(600, 400);
             this.Stucker.SetAnchor(70, 20, 20, null);
             this.Stucker.Size.Height = 400;
@@ -63,7 +60,6 @@ namespace App.Views.Pages {
             btn3.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, () => {
                 this.Stucker.ReferencePoint = Property.ReferencePoint.LeftBottom;
             });
-
 
             const btn4 = new Views.ButtonView();
             btn4.SetSize(100, 120);

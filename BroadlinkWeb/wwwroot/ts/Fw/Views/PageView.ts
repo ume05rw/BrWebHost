@@ -41,10 +41,18 @@ namespace Fw.Views {
 
         constructor(jqueryElem?: JQuery) {
             super(jqueryElem);
-        }
 
-        protected Init(): void {
-            super.Init();
+            if (!this.Dom) {
+                const elem = $(`<div class="IController IView TransAnimation"></div>`);
+                Fw.Root.Instance.Elem.append(elem);
+                this.SetElem(elem);
+            }
+
+            this._minDragPosition = new Property.Position();
+            this._maxDragPosition = new Property.Position();
+            this._dragStartMousePosition = new Property.Position();
+            this._dragStartViewPosition = new Property.Position();
+            this._draggedPosition = new Property.Position();
 
             this._isMasked = false;
             this._isNeedDragX = false;
@@ -53,24 +61,11 @@ namespace Fw.Views {
             this._isSuppressDrag = false;
 
             this.SetClassName('PageView');
-
-            if (!this.Dom) {
-                const elem = $(`<div class="IController IView TransAnimation"></div>`);
-                Fw.Root.Instance.Elem.append(elem);
-                this.SetElem(elem);
-            }
-
             this.Elem.addClass(this.ClassName);
 
             this.Size.Width = Fw.Root.Instance.Size.Width;
             this.Size.Height = Fw.Root.Instance.Size.Height;
             this.IsVisible = false;
-
-            this._minDragPosition = new Property.Position();
-            this._maxDragPosition = new Property.Position();
-            this._dragStartMousePosition = new Property.Position();
-            this._dragStartViewPosition = new Property.Position();
-            this._draggedPosition = new Property.Position();
 
             this.Elem.on('touchstart mousedown', (e) => {
                 //Dump.Log(`${this.ClassName}.MouseDown`);
@@ -221,7 +216,7 @@ namespace Fw.Views {
         }
 
         public Show(duration: number = 200): void {
-            //Dump.Log(`PageView.Show: ${this.Elem.data('controller')}`);
+            Dump.Log(`PageView.Show: ${this.ClassName}`);
             if (this.IsVisible) {
                 this.Refresh();
                 return;

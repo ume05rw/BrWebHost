@@ -40,10 +40,6 @@ namespace Fw.Views {
             this._direction = (direction === Property.Direction.Horizontal)
                 ? Property.Direction.Horizontal
                 : Property.Direction.Vertical;
-        }
-
-        protected Init(): void {
-            super.Init();
 
             this.SetClassName('LineView');
             this.Elem.addClass(this.ClassName);

@@ -30,16 +30,15 @@ namespace Fw.Views {
             this.Refresh();
         }
 
-
-        protected Init(): void {
-            super.Init();
-
-            this.SetClassName('RelocatableControlView');
-            this.Elem.addClass(this.ClassName);
+        constructor() {
+            super()
 
             this._shadow = $('<div class="IView BoxView Shadow"></div>');
             this._dragStartMousePosition = new Property.Position();
             this._dragStartViewPosition = new Property.Position();
+
+            this.SetClassName('RelocatableControlView');
+            this.Elem.addClass(this.ClassName);
 
             this.AddEventListener(Events.LongClick, () => {
                 if (!this._isRelocatable)

@@ -27,10 +27,8 @@ namespace Fw.Views {
 
         constructor() {
             super();
-        }
 
-        protected Init(): void {
-            super.Init();
+            this._label = $('<span class="ControlViewProperty"></span>');
 
             this.SetClassName('ControlView');
             this.Elem.addClass(this.ClassName);
@@ -38,8 +36,6 @@ namespace Fw.Views {
             // プロパティsetterを一度通しておく。
             this.HasBorder = true;
             this.BorderRadius = 5;
-
-            this._label = $('<span class="ControlViewProperty"></span>');
             this.Elem.append(this._label);
 
             this.Elem.on('touchstart mousedown', (e) => {
