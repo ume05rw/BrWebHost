@@ -16,12 +16,15 @@ namespace App.Views.Controls {
         constructor() {
             super();
 
-            this.HasBorder = true;
             this.SetSize(200, 150);
-            this.BorderRadius = 50;
-            this.BackgroundColor = Color.MainBackground;
-            this.HoverColor = Color.MainHover;
-            this.Color = Color.Main;
+
+            this.Button.HasBorder = true;
+            this.Button.BorderRadius = 50;
+            this.Button.BackgroundColor = Color.MainBackground;
+            this.Button.HoverColor = Color.MainHover;
+            this.Button.Color = Color.Main;
+
+            this.Label.Color = Color.Main;
         }
 
         protected InnerRefresh(): void {

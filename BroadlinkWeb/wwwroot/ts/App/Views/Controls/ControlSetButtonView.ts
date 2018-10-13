@@ -22,12 +22,15 @@ namespace App.Views.Controls {
         constructor() {
             super();
 
-            this.HasBorder = false;
-            this.BorderRadius = 5;
             this.SetSize(150, 170);
-            this.BackgroundColor = Color.MainBackground;
-            this.HoverColor = Color.MainHover;
-            this.Color = Color.Main;
+
+            this.Button.HasBorder = false;
+            this.Button.BorderRadius = 5;
+            this.Button.BackgroundColor = Color.MainBackground;
+            this.Button.HoverColor = Color.MainHover;
+            this.Button.Color = Color.Main;
+
+            this.Label.Color = Color.Main;
 
             this._toggle = new Views.ToggleButtonView();
             this._toggle.SetAnchor(null, 40, 40, 30);

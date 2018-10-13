@@ -2016,7 +2016,7 @@ var App;
                     this.Add(scenePanel);
                     for (var i = 0; i < 5; i++) {
                         var btn = new Controls.SceneButtonView();
-                        btn.Text = "Scene " + (i + 1);
+                        btn.Label.Text = "Scene " + (i + 1);
                         scenePanel.Add(btn);
                     }
                     var remConPanel = new Views.StuckerBoxView();
@@ -2030,10 +2030,11 @@ var App;
                     this.Add(remConPanel);
                     for (var i = 0; i < 20; i++) {
                         var btn = new Controls.ControlSetButtonView();
-                        btn.Text = "Control " + (i + 1);
                         var idx = i % App.Color.ButtonColors.length;
-                        btn.BackgroundColor = App.Color.ButtonColors[idx];
-                        btn.Color = App.Color.ReverseMain;
+                        btn.Button.BackgroundColor = App.Color.ButtonColors[idx];
+                        btn.Button.Color = App.Color.ReverseMain;
+                        btn.Label.Text = "Control " + (i + 1);
+                        //btn.Label.Color = Color.ReverseMain;
                         remConPanel.Add(btn);
                     }
                     var bottom = new Views.StuckerBoxView();
@@ -2807,101 +2808,24 @@ var App;
                     enumerable: true,
                     configurable: true
                 });
-                Object.defineProperty(LabeledButtonView.prototype, "ImageSrc", {
-                    get: function () {
-                        return this._buttonView.ImageSrc;
-                    },
-                    set: function (value) {
-                        this._buttonView.ImageSrc = value;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Object.defineProperty(LabeledButtonView.prototype, "Text", {
-                    get: function () {
-                        return this._labelView.Text;
-                    },
-                    set: function (value) {
-                        this._labelView.Text = value;
-                        this.Refresh();
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Object.defineProperty(LabeledButtonView.prototype, "HasBorder", {
-                    get: function () {
-                        return this._buttonView.HasBorder;
-                    },
-                    set: function (value) {
-                        this._buttonView.HasBorder = value;
-                        this._buttonView.Dom.style.borderWidth = (value)
-                            ? '1px'
-                            : '0';
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Object.defineProperty(LabeledButtonView.prototype, "BorderRadius", {
-                    get: function () {
-                        return this._buttonView.BorderRadius;
-                    },
-                    set: function (value) {
-                        this._buttonView.BorderRadius = value;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Object.defineProperty(LabeledButtonView.prototype, "Color", {
-                    get: function () {
-                        return this._buttonView.Color;
-                    },
-                    set: function (value) {
-                        this._buttonView.Color = value;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Object.defineProperty(LabeledButtonView.prototype, "BackgroundColor", {
-                    get: function () {
-                        return this._buttonView.BackgroundColor;
-                    },
-                    set: function (value) {
-                        this._buttonView.BackgroundColor = value;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Object.defineProperty(LabeledButtonView.prototype, "Opacity", {
-                    get: function () {
-                        return this._buttonView.Opacity;
-                    },
-                    set: function (value) {
-                        this._buttonView.Opacity = value;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
                 LabeledButtonView.prototype.Init = function () {
-                    var _this = this;
                     this._buttonView = new Views.ButtonView();
                     this._labelView = new Views.LabelView();
                     _super.prototype.Init.call(this);
                     this.SetClassName('LabeledButtonView');
                     this.Elem.addClass(this.ClassName);
-                    this.BackgroundColor = '#add8e6';
-                    this.HoverColor = '#6495ed';
                     this._buttonView.SetAnchor(0, 0, 0, 20);
                     this.Add(this._buttonView);
                     this._labelView.SetAnchor(null, null, null, 0);
                     this._labelView.Size.Height = 15;
                     this._labelView.FontSize = Property.FontSize.Small;
                     this.Add(this._labelView);
-                    this.Elem.hover(function () {
-                        //Dump.Log(`${this.ClassName}.hover: color = ${this.HoverColor}`);
-                        _this._buttonView.Dom.style.backgroundColor = _this.HoverColor;
-                    }, function () {
-                        _this._buttonView.Dom.style.backgroundColor = _this.BackgroundColor;
-                    });
+                    //this.Elem.hover(() => {
+                    //    //Dump.Log(`${this.ClassName}.hover: color = ${this.HoverColor}`);
+                    //    this._buttonView.Dom.style.backgroundColor = this.HoverColor;
+                    //}, () => {
+                    //    this._buttonView.Dom.style.backgroundColor = this.BackgroundColor;
+                    //});
                 };
                 LabeledButtonView.prototype.InnerRefresh = function () {
                     try {
@@ -2944,17 +2868,63 @@ var App;
     (function (Views_5) {
         var Controls;
         (function (Controls) {
+            var Views = Fw.Views;
+            var Color = App.Color;
+            var ControlSetButtonView = /** @class */ (function (_super) {
+                __extends(ControlSetButtonView, _super);
+                function ControlSetButtonView() {
+                    var _this = _super.call(this) || this;
+                    _this.SetSize(150, 170);
+                    _this.Button.HasBorder = false;
+                    _this.Button.BorderRadius = 5;
+                    _this.Button.BackgroundColor = Color.MainBackground;
+                    _this.Button.HoverColor = Color.MainHover;
+                    _this.Button.Color = Color.Main;
+                    _this.Label.Color = Color.Main;
+                    _this._toggle = new Views.ToggleButtonView();
+                    _this._toggle.SetAnchor(null, 40, 40, 30);
+                    _this._toggle.BackgroundColor = 'transparent';
+                    _this.Add(_this._toggle);
+                    return _this;
+                }
+                Object.defineProperty(ControlSetButtonView.prototype, "Toggle", {
+                    get: function () {
+                        return this._toggle;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                return ControlSetButtonView;
+            }(Controls.LabeledButtonView));
+            Controls.ControlSetButtonView = ControlSetButtonView;
+        })(Controls = Views_5.Controls || (Views_5.Controls = {}));
+    })(Views = App.Views || (App.Views = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Views/ButtonView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../Color.ts" />
+/// <reference path="LabeledButtonView.ts" />
+var App;
+(function (App) {
+    var Views;
+    (function (Views_6) {
+        var Controls;
+        (function (Controls) {
             var Color = App.Color;
             var SceneButtonView = /** @class */ (function (_super) {
                 __extends(SceneButtonView, _super);
                 function SceneButtonView() {
                     var _this = _super.call(this) || this;
-                    _this.HasBorder = true;
                     _this.SetSize(200, 150);
-                    _this.BorderRadius = 50;
-                    _this.BackgroundColor = Color.MainBackground;
-                    _this.HoverColor = Color.MainHover;
-                    _this.Color = Color.Main;
+                    _this.Button.HasBorder = true;
+                    _this.Button.BorderRadius = 50;
+                    _this.Button.BackgroundColor = Color.MainBackground;
+                    _this.Button.HoverColor = Color.MainHover;
+                    _this.Button.Color = Color.Main;
+                    _this.Label.Color = Color.Main;
                     return _this;
                 }
                 SceneButtonView.prototype.InnerRefresh = function () {
@@ -2964,7 +2934,7 @@ var App;
                 return SceneButtonView;
             }(Controls.LabeledButtonView));
             Controls.SceneButtonView = SceneButtonView;
-        })(Controls = Views_5.Controls || (Views_5.Controls = {}));
+        })(Controls = Views_6.Controls || (Views_6.Controls = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
@@ -2976,7 +2946,7 @@ var App;
 var App;
 (function (App) {
     var Views;
-    (function (Views_6) {
+    (function (Views_7) {
         var Pages;
         (function (Pages) {
             var Property = Fw.Views.Property;
@@ -3060,7 +3030,7 @@ var App;
                 return LayoutCheckPageView;
             }(Fw.Views.PageView));
             Pages.LayoutCheckPageView = LayoutCheckPageView;
-        })(Pages = Views_6.Pages || (Views_6.Pages = {}));
+        })(Pages = Views_7.Pages || (Views_7.Pages = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
@@ -3072,7 +3042,7 @@ var App;
 var App;
 (function (App) {
     var Views;
-    (function (Views_7) {
+    (function (Views_8) {
         var Pages;
         (function (Pages) {
             var Views = Fw.Views;
@@ -3089,7 +3059,7 @@ var App;
                 Sub3PageView.prototype.Initialize = function () {
                     var _this = this;
                     this.SetClassName('Sub3PageView');
-                    this.HeaderBar = new Views_7.Controls.HeaderBarView();
+                    this.HeaderBar = new Views_8.Controls.HeaderBarView();
                     this.HeaderBar.Text = 'Sub 3 Page';
                     this.HeaderBar.RightButton.Hide(0);
                     this.Add(this.HeaderBar);
@@ -3138,7 +3108,7 @@ var App;
                 return Sub3PageView;
             }(Fw.Views.PageView));
             Pages.Sub3PageView = Sub3PageView;
-        })(Pages = Views_7.Pages || (Views_7.Pages = {}));
+        })(Pages = Views_8.Pages || (Views_8.Pages = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../lib/jquery/index.d.ts" />
@@ -5494,48 +5464,4 @@ var Fw;
     }());
     Fw.Startup = Startup;
 })(Fw || (Fw = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Views/ButtonView.ts" />
-/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-/// <reference path="../../Color.ts" />
-/// <reference path="LabeledButtonView.ts" />
-var App;
-(function (App) {
-    var Views;
-    (function (Views_8) {
-        var Controls;
-        (function (Controls) {
-            var Views = Fw.Views;
-            var Color = App.Color;
-            var ControlSetButtonView = /** @class */ (function (_super) {
-                __extends(ControlSetButtonView, _super);
-                function ControlSetButtonView() {
-                    var _this = _super.call(this) || this;
-                    _this.HasBorder = false;
-                    _this.BorderRadius = 5;
-                    _this.SetSize(150, 170);
-                    _this.BackgroundColor = Color.MainBackground;
-                    _this.HoverColor = Color.MainHover;
-                    _this.Color = Color.Main;
-                    _this._toggle = new Views.ToggleButtonView();
-                    _this._toggle.SetAnchor(null, 40, 40, 30);
-                    _this._toggle.BackgroundColor = 'transparent';
-                    _this.Add(_this._toggle);
-                    return _this;
-                }
-                Object.defineProperty(ControlSetButtonView.prototype, "Toggle", {
-                    get: function () {
-                        return this._toggle;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                return ControlSetButtonView;
-            }(Controls.LabeledButtonView));
-            Controls.ControlSetButtonView = ControlSetButtonView;
-        })(Controls = Views_8.Controls || (Views_8.Controls = {}));
-    })(Views = App.Views || (App.Views = {}));
-})(App || (App = {}));
 //# sourceMappingURL=tsout.js.map

@@ -508,13 +508,6 @@ declare namespace App.Views.Controls {
         readonly Button: Views.ButtonView;
         private _labelView;
         readonly Label: Views.LabelView;
-        ImageSrc: string;
-        Text: string;
-        HasBorder: boolean;
-        BorderRadius: number;
-        Color: string;
-        BackgroundColor: string;
-        Opacity: number;
         /**
          * @see publicプロパティの初期化タイミングに注意。コンストラクタ実行後に値がセットされる。
          */
@@ -522,6 +515,14 @@ declare namespace App.Views.Controls {
         protected Init(): void;
         protected InnerRefresh(): void;
         Dispose(): void;
+    }
+}
+declare namespace App.Views.Controls {
+    import Views = Fw.Views;
+    class ControlSetButtonView extends LabeledButtonView {
+        private _toggle;
+        readonly Toggle: Views.ToggleButtonView;
+        constructor();
     }
 }
 declare namespace App.Views.Controls {
@@ -915,13 +916,5 @@ declare namespace Fw {
 declare namespace Fw {
     class Startup {
         static Init(): void;
-    }
-}
-declare namespace App.Views.Controls {
-    import Views = Fw.Views;
-    class ControlSetButtonView extends LabeledButtonView {
-        private _toggle;
-        readonly Toggle: Views.ToggleButtonView;
-        constructor();
     }
 }
