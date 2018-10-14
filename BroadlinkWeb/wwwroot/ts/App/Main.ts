@@ -22,6 +22,7 @@ namespace App {
             main.IsDefaultView = true;
             Manager.Instance.Add(main);
             Manager.Instance.Show('Main');
+            Fw.Util.Dump.Log('Show');
         }
     }
 }
@@ -29,5 +30,6 @@ namespace App {
 // アプリケーションを起動する。
 // 以下にはこれ以上書かないこと。
 $(function () {
+    Fw.Util.Dump.Log('Start');
     App.Main.StartUp();
 });

@@ -353,8 +353,8 @@ namespace Fw.Views {
                 const now = new Date();
                 const elapsed = (now.getTime() - this._lastRefreshedTime.getTime());
 
-                // 描画抑止中でも、300msに一度は描画する。
-                if (elapsed > 300) {
+                // 描画抑止中でも、100msに一度は描画する。
+                if (elapsed > Root.Instance.ViewRefreshInterval) {
                     this.InnerRefresh();
                     return;
                 }
@@ -490,6 +490,9 @@ namespace Fw.Views {
             }
         }
 
+        private _lastApplyTimer: number = null;
+        private _lastAppliedTime: Date = null;
+        private _innerApplyCount: number = 0;
         private _latestStyles: { [name: string]: string } = {};
         private _newStyles: { [name: string]: string } = {};
         public SetStyle(name: string, value: string): void {
@@ -499,6 +502,32 @@ namespace Fw.Views {
             _.extend(this._newStyles, styles);
         }
         protected ApplyStyles(): void {
+            if (this._lastApplyTimer != null) {
+                clearTimeout(this._lastApplyTimer);
+                this._lastApplyTimer = null;
+
+                if (!this._lastAppliedTime)
+                    this._lastAppliedTime = new Date();
+
+                const now = new Date();
+                const elapsed = (now.getTime() - this._lastAppliedTime.getTime());
+
+                // 描画抑止中でも、100msに一度はDom適用する。
+                if (elapsed > Root.Instance.ViewRefreshInterval) {
+                    //Dump.Log(`${this.ClassName}.ApplyStyles: ${elapsed} > ${Root.Instance.ViewRefreshInterval}`);
+                    this.InnerApplyStyles();
+                    return;
+                }
+            }
+            this._lastApplyTimer = setTimeout(() => {
+                this.InnerApplyStyles();
+            }, 10);
+        }
+
+        protected InnerApplyStyles(): void {
+            this._innerApplyCount++;
+            this._lastAppliedTime = new Date();
+            //Dump.Log(`${this.ClassName}.InnerApplyStyles: ${this._innerApplyCount}`);
             _.each(this._newStyles, (v, k) => {
                 if (this._latestStyles[k] !== v) {
                     this.Dom.style[k] = v;
@@ -506,6 +535,7 @@ namespace Fw.Views {
                 }
             });
             this._newStyles = {};
+            Root.Instance.ReleasePageInitialize();
         }
 
         public SuppressLayout(): void {

@@ -320,6 +320,9 @@ declare namespace Fw.Views {
         Remove(view: IView): void;
         Refresh(): void;
         protected InnerRefresh(): void;
+        private _lastApplyTimer;
+        private _lastAppliedTime;
+        private _innerApplyCount;
         private _latestStyles;
         private _newStyles;
         SetStyle(name: string, value: string): void;
@@ -327,6 +330,7 @@ declare namespace Fw.Views {
             [name: string]: string;
         }): void;
         protected ApplyStyles(): void;
+        protected InnerApplyStyles(): void;
         SuppressLayout(): void;
         IsSuppressedLayout(): boolean;
         ResumeLayout(): void;
@@ -908,6 +912,15 @@ declare namespace Fw {
         Mask(): void;
         UnMask(): void;
         SetTextSelection(enable: boolean): void;
+        private _viewRefreshInterval;
+        readonly ViewRefreshInterval: number;
+        /**
+         * @description ページ生成開始から一定時間、ViewのDom更新頻度を大幅に下げる。
+         */
+        private _lastInitializeTimer;
+        StartPageInitialize(): void;
+        private _releaseInitializeTimer;
+        ReleasePageInitialize(): void;
         Refresh(): void;
         Dispose(): void;
     }

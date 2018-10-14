@@ -96,6 +96,47 @@ namespace Fw {
                 this.Elem.addClass('TextUnselect');
         }
 
+        private _viewRefreshInterval: number = 100;
+        public get ViewRefreshInterval(): number {
+            return this._viewRefreshInterval;
+        }
+
+        /**
+         * @description ページ生成開始から一定時間、ViewのDom更新頻度を大幅に下げる。
+         */
+        private _lastInitializeTimer: number = null;
+        public StartPageInitialize(): void {
+            if (this._lastInitializeTimer != null) {
+                clearTimeout(this._lastInitializeTimer);
+                this._lastInitializeTimer = null;
+            }
+
+            // 最長5秒間、ViewのDom更新を抑止する。
+            this._viewRefreshInterval = 800;
+            //Dump.Log('Root.StartPageInitialize');
+
+            //this._lastInitializeTimer = setTimeout(() => {
+            //    this._viewRefreshInterval = 100;
+            //}, 5000);
+        }
+
+        private _releaseInitializeTimer: number = null;
+        public ReleasePageInitialize(): void {
+            if (this._viewRefreshInterval <= 100)
+                return;
+            //Dump.Log('Root.ReleasePageInitialize');
+
+            if (this._releaseInitializeTimer != null) {
+                clearTimeout(this._releaseInitializeTimer);
+            }
+
+            this._releaseInitializeTimer = setTimeout(() => {
+                this._viewRefreshInterval = 100;
+                Dump.Log('Root.ReleasePageInitialize - Released');
+            }, 300);
+        }
+
+
         public Refresh(): void {
             // this.Sizeのセッターが無いので、フィールドに直接書き込む。
             this._size.Width = this.Elem.width();

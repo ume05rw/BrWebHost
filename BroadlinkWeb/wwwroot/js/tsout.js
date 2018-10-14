@@ -970,6 +970,9 @@ var Fw;
                 _this._opacity = 1.0;
                 _this._isVisible = true;
                 _this._isInitialized = false;
+                _this._lastApplyTimer = null;
+                _this._lastAppliedTime = null;
+                _this._innerApplyCount = 0;
                 _this._latestStyles = {};
                 _this._newStyles = {};
                 _this.SetElem(jqueryElem);
@@ -1298,8 +1301,8 @@ var Fw;
                         this._lastRefreshedTime = new Date();
                     var now = new Date();
                     var elapsed = (now.getTime() - this._lastRefreshedTime.getTime());
-                    // 描画抑止中でも、300msに一度は描画する。
-                    if (elapsed > 300) {
+                    // 描画抑止中でも、100msに一度は描画する。
+                    if (elapsed > Fw.Root.Instance.ViewRefreshInterval) {
                         this.InnerRefresh();
                         return;
                     }
@@ -1430,6 +1433,29 @@ var Fw;
             };
             ViewBase.prototype.ApplyStyles = function () {
                 var _this = this;
+                if (this._lastApplyTimer != null) {
+                    clearTimeout(this._lastApplyTimer);
+                    this._lastApplyTimer = null;
+                    if (!this._lastAppliedTime)
+                        this._lastAppliedTime = new Date();
+                    var now = new Date();
+                    var elapsed = (now.getTime() - this._lastAppliedTime.getTime());
+                    // 描画抑止中でも、100msに一度はDom適用する。
+                    if (elapsed > Fw.Root.Instance.ViewRefreshInterval) {
+                        //Dump.Log(`${this.ClassName}.ApplyStyles: ${elapsed} > ${Root.Instance.ViewRefreshInterval}`);
+                        this.InnerApplyStyles();
+                        return;
+                    }
+                }
+                this._lastApplyTimer = setTimeout(function () {
+                    _this.InnerApplyStyles();
+                }, 10);
+            };
+            ViewBase.prototype.InnerApplyStyles = function () {
+                var _this = this;
+                this._innerApplyCount++;
+                this._lastAppliedTime = new Date();
+                //Dump.Log(`${this.ClassName}.InnerApplyStyles: ${this._innerApplyCount}`);
                 _.each(this._newStyles, function (v, k) {
                     if (_this._latestStyles[k] !== v) {
                         _this.Dom.style[k] = v;
@@ -1437,6 +1463,7 @@ var Fw;
                     }
                 });
                 this._newStyles = {};
+                Fw.Root.Instance.ReleasePageInitialize();
             };
             ViewBase.prototype.SuppressLayout = function () {
                 this._isSuppressLayout = true;
@@ -1540,6 +1567,7 @@ var Fw;
                 _this._isDragging = false;
                 _this._isSuppressDrag = false;
                 _this._isMasked = false;
+                Fw.Root.Instance.StartPageInitialize();
                 if (!_this.Dom) {
                     var elem = $("<div class=\"IController IView TransAnimation\"></div>");
                     Fw.Root.Instance.Elem.append(elem);
@@ -3180,6 +3208,7 @@ var App;
             main.IsDefaultView = true;
             Manager.Instance.Add(main);
             Manager.Instance.Show('Main');
+            Fw.Util.Dump.Log('Show');
         };
         return Main;
     }());
@@ -3188,6 +3217,7 @@ var App;
 // アプリケーションを起動する。
 // 以下にはこれ以上書かないこと。
 $(function () {
+    Fw.Util.Dump.Log('Start');
     App.Main.StartUp();
 });
 /// <reference path="../../../lib/jquery/index.d.ts" />
@@ -3816,7 +3846,7 @@ var Fw;
                 });
                 // 注) ImageオブジェクトはDomツリーに入れない。
                 _this._image.onload = function () {
-                    Dump.Log('Image Loaded!!');
+                    //Dump.Log('Image Loaded!!');
                     _this.Refresh();
                 };
                 _this._firPolicy = FitPolicy.Auto;
@@ -5390,12 +5420,19 @@ var Fw;
 /// <reference path="Views/Property/Size.ts" />
 var Fw;
 (function (Fw) {
+    var Dump = Fw.Util.Dump;
     var Events = Fw.Events.RootEvents;
     var Property = Fw.Views.Property;
     var Root = /** @class */ (function (_super) {
         __extends(Root, _super);
         function Root(jqueryElem) {
             var _this = _super.call(this) || this;
+            _this._viewRefreshInterval = 100;
+            /**
+             * @description ページ生成開始から一定時間、ViewのDom更新頻度を大幅に下げる。
+             */
+            _this._lastInitializeTimer = null;
+            _this._releaseInitializeTimer = null;
             _this.SetElem(jqueryElem);
             _this.SetClassName('Root');
             _this._size = new Property.Size();
@@ -5467,6 +5504,38 @@ var Fw;
                 this.Elem.removeClass('TextUnselect');
             else if (!enable && !this.Elem.hasClass('TextUnselect'))
                 this.Elem.addClass('TextUnselect');
+        };
+        Object.defineProperty(Root.prototype, "ViewRefreshInterval", {
+            get: function () {
+                return this._viewRefreshInterval;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Root.prototype.StartPageInitialize = function () {
+            if (this._lastInitializeTimer != null) {
+                clearTimeout(this._lastInitializeTimer);
+                this._lastInitializeTimer = null;
+            }
+            // 最長5秒間、ViewのDom更新を抑止する。
+            this._viewRefreshInterval = 800;
+            //Dump.Log('Root.StartPageInitialize');
+            //this._lastInitializeTimer = setTimeout(() => {
+            //    this._viewRefreshInterval = 100;
+            //}, 5000);
+        };
+        Root.prototype.ReleasePageInitialize = function () {
+            var _this = this;
+            if (this._viewRefreshInterval <= 100)
+                return;
+            //Dump.Log('Root.ReleasePageInitialize');
+            if (this._releaseInitializeTimer != null) {
+                clearTimeout(this._releaseInitializeTimer);
+            }
+            this._releaseInitializeTimer = setTimeout(function () {
+                _this._viewRefreshInterval = 100;
+                Dump.Log('Root.ReleasePageInitialize - Released');
+            }, 300);
         };
         Root.prototype.Refresh = function () {
             // this.Sizeのセッターが無いので、フィールドに直接書き込む。

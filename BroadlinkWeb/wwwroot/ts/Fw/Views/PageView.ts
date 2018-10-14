@@ -42,6 +42,8 @@ namespace Fw.Views {
         constructor(jqueryElem?: JQuery) {
             super(jqueryElem);
 
+            Fw.Root.Instance.StartPageInitialize();
+
             if (!this.Dom) {
                 const elem = $(`<div class="IController IView TransAnimation"></div>`);
                 Fw.Root.Instance.Elem.append(elem);
