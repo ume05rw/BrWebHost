@@ -24,8 +24,7 @@ namespace App.Views.Pages {
 
 
         constructor() {
-            const jqueryElem = $("");
-            super(jqueryElem);
+            super($(""));
 
             this.HeaderBar = new Controls.HeaderBarView();
             this.BtnGoSub1 = new Controls.ButtonView();
@@ -38,12 +37,12 @@ namespace App.Views.Pages {
             const background = new Views.ImageView();
             background.SetAnchor(0, 0, 0, 0);
             background.FitPolicy = Property.FitPolicy.Cover;
-            background.Src = 'images/Main/app_background.jpg';
+            background.Src = 'images/Pages/Main/background.jpg';
             this.Add(background);
 
             this.HeaderBar.Text = 'Broadlink Web Host(仮題)';
             this.HeaderBar.LeftButton.Hide(0);
-            this.HeaderBar.RightButton.Hide(0);
+            //this.HeaderBar.RightButton.Hide(0);
             this.Add(this.HeaderBar);
 
             const scenePanel = new Views.StuckerBoxView();

@@ -420,8 +420,7 @@ declare namespace App.Controllers {
 }
 declare namespace App.Controllers {
     class MainController extends Fw.Controllers.ControllerBase {
-        constructor(id: string);
-        private Init;
+        constructor();
     }
 }
 declare namespace Fw.Models.Entities {
@@ -466,19 +465,16 @@ declare namespace App.Models.Stores {
 declare namespace App.Controllers {
     class Sub1Controller extends Fw.Controllers.ControllerBase {
         constructor(id: string, jqueryElem: JQuery);
-        private Init;
     }
 }
 declare namespace App.Controllers {
     class Sub2Controller extends Fw.Controllers.ControllerBase {
         constructor(id: string, jqueryElem: JQuery);
-        private Init;
     }
 }
 declare namespace App.Controllers {
     class Sub3Controller extends Fw.Controllers.ControllerBase {
-        constructor(id: string);
-        private Init;
+        constructor();
     }
 }
 declare namespace Fw.Views {
@@ -779,6 +775,8 @@ declare namespace Fw.Views {
         private _dragStartViewPosition;
         private _gridSize;
         GridSize: number;
+        private _margin;
+        Margin: number;
         constructor();
         private OnMouseMove;
         private _delayedResumeTimer;
@@ -928,5 +926,25 @@ declare namespace Fw {
 declare namespace Fw {
     class Startup {
         static Init(): void;
+    }
+}
+declare namespace App.Views.Pages {
+    import Views = Fw.Views;
+    import Controls = App.Views.Controls;
+    class ControlSetPageView extends Fw.Views.PageView {
+        HeaderBar: Controls.HeaderBarView;
+        ButtonPanel: Views.SlidableBoxView;
+        constructor();
+    }
+}
+declare namespace App.Views.Controls {
+    import Views = Fw.Views;
+    class ControlButtonView extends Views.RelocatableButtonView {
+        constructor();
+    }
+}
+declare namespace App.Controllers {
+    class ControlSetController extends Fw.Controllers.ControllerBase {
+        constructor();
     }
 }

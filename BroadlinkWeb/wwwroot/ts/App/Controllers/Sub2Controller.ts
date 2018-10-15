@@ -17,10 +17,6 @@ namespace App.Controllers {
 
         constructor(id: string, jqueryElem: JQuery) {
             super(id, jqueryElem);
-            this.Init();
-        }
-
-        private Init(): void {
 
             const header = new App.Views.Controls.HeaderBarView();
             header.Text = 'A1 Sensor';

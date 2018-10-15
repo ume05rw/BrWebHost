@@ -16,21 +16,22 @@ namespace App.Controllers {
 
     export class MainController extends Fw.Controllers.ControllerBase {
 
-        constructor(id: string) {
-            super(id);
+        constructor() {
+            super('Main');
 
-            this.Init();
-        }
-
-        private Init(): void {
             this.SetClassName('MainController');
 
-            const sub3Ctr = new Sub3Controller('Sub3');
+            const sub3Ctr = new Sub3Controller();
+            const controlSetCtr = new ControlSetController();
             Manager.Instance.Add(sub3Ctr);
+            Manager.Instance.Add(controlSetCtr);
 
             this.View = new Pages.MainPageView();
             const page = this.View as Pages.MainPageView;
 
+            page.HeaderBar.RightButton.AddEventListener(Events.ButtonViewEvents.SingleClick, () => {
+                Manager.Instance.Show("ControlSet");
+            });
 
             page.BtnGoSub1.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
                 // イベント通知でなく、参照保持でよいか？

@@ -4,28 +4,29 @@
 /// <reference path="../../Fw/Controllers/Manager.ts" />
 /// <reference path="../../Fw/Util/Dump.ts" />
 /// <reference path="../../Fw/Events/ControlViewEvents.ts" />
+/// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
+/// <reference path="../Views/Pages/MainPageView.ts" />
 
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
-    import Xhr = Fw.Util.Xhr;
     import Events = Fw.Events;
-    import Views = Fw.Views;
-    import Property = Fw.Views.Property;
     import Manager = Fw.Controllers.Manager;
+    import Property = Fw.Views.Property;
+    import Pages = App.Views.Pages;
 
-    export class Sub3Controller extends Fw.Controllers.ControllerBase {
+    export class ControlSetController extends Fw.Controllers.ControllerBase {
 
         constructor() {
-            super('Sub3');
+            super('ControlSet');
 
-            this.View = new App.Views.Pages.Sub3PageView();
-            const page = this.View as App.Views.Pages.Sub3PageView;
+            this.SetClassName('ControlSetController');
 
-            page.HeaderBar.LeftButton.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
+            this.View = new Pages.ControlSetPageView();
+            const page = this.View as Pages.ControlSetPageView;
+
+            page.HeaderBar.LeftButton.AddEventListener(Events.ButtonViewEvents.SingleClick, () => {
                 Manager.Instance.Show("Main");
             });
-
-
         }
     }
 }

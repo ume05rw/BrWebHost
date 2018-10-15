@@ -18,10 +18,7 @@ namespace App.Controllers {
 
         constructor(id: string, jqueryElem: JQuery) {
             super(id, jqueryElem);
-            this.Init();
-        }
 
-        private Init(): void {
             const header = new App.Views.Controls.HeaderBarView();
             header.Text = 'ヘッダ';
             header.RightButton.Hide(0);

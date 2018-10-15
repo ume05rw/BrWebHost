@@ -2074,9 +2074,7 @@ var App;
             var MainPageView = /** @class */ (function (_super) {
                 __extends(MainPageView, _super);
                 function MainPageView() {
-                    var _this = this;
-                    var jqueryElem = $("");
-                    _this = _super.call(this, jqueryElem) || this;
+                    var _this = _super.call(this, $("")) || this;
                     _this.HeaderBar = new Controls.HeaderBarView();
                     _this.BtnGoSub1 = new Controls.ButtonView();
                     _this.BtnGoSub2 = new Controls.ButtonView();
@@ -2086,11 +2084,11 @@ var App;
                     var background = new Views.ImageView();
                     background.SetAnchor(0, 0, 0, 0);
                     background.FitPolicy = Property.FitPolicy.Cover;
-                    background.Src = 'images/Main/app_background.jpg';
+                    background.Src = 'images/Pages/Main/background.jpg';
                     _this.Add(background);
                     _this.HeaderBar.Text = 'Broadlink Web Host(仮題)';
                     _this.HeaderBar.LeftButton.Hide(0);
-                    _this.HeaderBar.RightButton.Hide(0);
+                    //this.HeaderBar.RightButton.Hide(0);
                     _this.Add(_this.HeaderBar);
                     var scenePanel = new Views.StuckerBoxView();
                     scenePanel.HasBorder = true;
@@ -2232,17 +2230,18 @@ var App;
         var Pages = App.Views.Pages;
         var MainController = /** @class */ (function (_super) {
             __extends(MainController, _super);
-            function MainController(id) {
-                var _this = _super.call(this, id) || this;
-                _this.Init();
-                return _this;
-            }
-            MainController.prototype.Init = function () {
-                this.SetClassName('MainController');
-                var sub3Ctr = new Controllers.Sub3Controller('Sub3');
+            function MainController() {
+                var _this = _super.call(this, 'Main') || this;
+                _this.SetClassName('MainController');
+                var sub3Ctr = new Controllers.Sub3Controller();
+                var controlSetCtr = new Controllers.ControlSetController();
                 Manager.Instance.Add(sub3Ctr);
-                this.View = new Pages.MainPageView();
-                var page = this.View;
+                Manager.Instance.Add(controlSetCtr);
+                _this.View = new Pages.MainPageView();
+                var page = _this.View;
+                page.HeaderBar.RightButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
+                    Manager.Instance.Show("ControlSet");
+                });
                 page.BtnGoSub1.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
                     // イベント通知でなく、参照保持でよいか？
                     Manager.Instance.Show("Sub1");
@@ -2260,7 +2259,8 @@ var App;
                     var ctr = new Controllers.LayoutCheckController('LayoutCheck');
                     Manager.Instance.ShowOnce(ctr);
                 });
-            };
+                return _this;
+            }
             return MainController;
         }(Fw.Controllers.ControllerBase));
         Controllers.MainController = MainController;
@@ -2508,17 +2508,13 @@ var App;
             __extends(Sub1Controller, _super);
             function Sub1Controller(id, jqueryElem) {
                 var _this = _super.call(this, id, jqueryElem) || this;
-                _this.Init();
-                return _this;
-            }
-            Sub1Controller.prototype.Init = function () {
                 var header = new App.Views.Controls.HeaderBarView();
                 header.Text = 'ヘッダ';
                 header.RightButton.Hide(0);
                 header.LeftButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
                     Manager.Instance.Show("Main");
                 });
-                this.View.Add(header);
+                _this.View.Add(header);
                 var devices = new Fw.Views.ButtonView();
                 devices.SetSize(80, 30);
                 devices.SetLeftTop(10, 70);
@@ -2539,13 +2535,14 @@ var App;
                         });
                     });
                 });
-                this.View.Add(devices);
+                _this.View.Add(devices);
                 var slider = new Fw.Views.SlidableBoxView(Fw.Views.Property.Direction.Horizontal);
                 slider.SetSize(400, 200);
                 devices.SetLeftTop(10, 120);
                 slider.InnerLength = 1000;
-                this.View.Add(slider);
-            };
+                _this.View.Add(slider);
+                return _this;
+            }
             return Sub1Controller;
         }(Fw.Controllers.ControllerBase));
         Controllers.Sub1Controller = Sub1Controller;
@@ -2569,17 +2566,13 @@ var App;
             __extends(Sub2Controller, _super);
             function Sub2Controller(id, jqueryElem) {
                 var _this = _super.call(this, id, jqueryElem) || this;
-                _this.Init();
-                return _this;
-            }
-            Sub2Controller.prototype.Init = function () {
                 var header = new App.Views.Controls.HeaderBarView();
                 header.Text = 'A1 Sensor';
                 header.RightButton.Hide(0);
                 header.LeftButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
                     Manager.Instance.Show("Main");
                 });
-                this.View.Add(header);
+                _this.View.Add(header);
                 var btnA1Value = new Fw.Views.ButtonView();
                 btnA1Value.Text = 'A1 Value';
                 btnA1Value.SetSize(80, 30);
@@ -2593,7 +2586,7 @@ var App;
                     };
                     Xhr.Query.Invoke(params);
                 });
-                this.View.Add(btnA1Value);
+                _this.View.Add(btnA1Value);
                 var btnMove = new Fw.Views.RelocatableButtonView();
                 btnMove.SetSize(60, 60);
                 btnMove.Color = '#1188FF';
@@ -2603,7 +2596,7 @@ var App;
                 btnMove.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
                     Dump.Log('btnMove.SingleClick');
                 });
-                this.View.Add(btnMove);
+                _this.View.Add(btnMove);
                 var btnReset = new Fw.Views.ButtonView();
                 btnReset.SetDisplayParams(60, 60, 0, 0, '#1188FF');
                 btnReset.SetAnchor(70, null, 5, null);
@@ -2613,8 +2606,9 @@ var App;
                     if (btnMove.IsRelocatable)
                         btnMove.SetRelocatable(false);
                 });
-                this.View.Add(btnReset);
-            };
+                _this.View.Add(btnReset);
+                return _this;
+            }
             return Sub2Controller;
         }(Fw.Controllers.ControllerBase));
         Controllers.Sub2Controller = Sub2Controller;
@@ -2634,18 +2628,15 @@ var App;
         var Manager = Fw.Controllers.Manager;
         var Sub3Controller = /** @class */ (function (_super) {
             __extends(Sub3Controller, _super);
-            function Sub3Controller(id) {
-                var _this = _super.call(this, id) || this;
-                _this.Init();
-                return _this;
-            }
-            Sub3Controller.prototype.Init = function () {
-                this.View = new App.Views.Pages.Sub3PageView();
-                var page = this.View;
+            function Sub3Controller() {
+                var _this = _super.call(this, 'Sub3') || this;
+                _this.View = new App.Views.Pages.Sub3PageView();
+                var page = _this.View;
                 page.HeaderBar.LeftButton.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
                     Manager.Instance.Show("Main");
                 });
-            };
+                return _this;
+            }
             return Sub3Controller;
         }(Fw.Controllers.ControllerBase));
         Controllers.Sub3Controller = Sub3Controller;
@@ -3204,7 +3195,7 @@ var App;
             var host = location.hostname;
             var port = location.port;
             Fw.Config.XhrBaseUrl = proto + '//' + host + ':' + port + '/api/';
-            var main = new App.Controllers.MainController('Main');
+            var main = new App.Controllers.MainController();
             main.IsDefaultView = true;
             Manager.Instance.Add(main);
             Manager.Instance.Show('Main');
@@ -4159,6 +4150,7 @@ var Fw;
                 _this._isMouseMoveEventListened = false;
                 _this._isDragging = false;
                 _this._gridSize = 60;
+                _this._margin = 0;
                 _this._delayedResumeTimer = null;
                 _this._shadow = $('<div class="IView BoxView Shadow"></div>');
                 _this._dragStartMousePosition = new Views.Property.Position();
@@ -4196,12 +4188,12 @@ var Fw;
                     else {
                         _this._isDragging = false;
                         if (_this.Position.Policy === Views.Property.PositionPolicy.Centering) {
-                            _this.Position.X = Math.round(_this.Position.X / _this.GridSize) * _this.GridSize;
-                            _this.Position.Y = Math.round(_this.Position.Y / _this.GridSize) * _this.GridSize;
+                            _this.Position.X = (Math.round(_this.Position.X / _this.GridSize) * _this.GridSize) + _this._margin;
+                            _this.Position.Y = (Math.round(_this.Position.Y / _this.GridSize) * _this.GridSize) + _this._margin;
                         }
                         else {
-                            _this.Position.Left = Math.round(_this.Position.Left / _this.GridSize) * _this.GridSize;
-                            _this.Position.Top = Math.round(_this.Position.Top / _this.GridSize) * _this.GridSize;
+                            _this.Position.Left = (Math.round(_this.Position.Left / _this.GridSize) * _this.GridSize) + _this._margin;
+                            _this.Position.Top = (Math.round(_this.Position.Top / _this.GridSize) * _this.GridSize) + _this._margin;
                         }
                         _this.Refresh();
                     }
@@ -4236,6 +4228,17 @@ var Fw;
                 },
                 set: function (value) {
                     this._gridSize = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(RelocatableButtonView.prototype, "Margin", {
+                get: function () {
+                    return this._margin;
+                },
+                set: function (value) {
+                    this._margin = value;
                     this.Refresh();
                 },
                 enumerable: true,
@@ -4298,12 +4301,12 @@ var Fw;
                         return;
                     if (!this._isRelocatable) {
                         if (this.Position.Policy === Views.Property.PositionPolicy.Centering) {
-                            this.Position.X = Math.round(this.Position.X / this.GridSize) * this.GridSize;
-                            this.Position.Y = Math.round(this.Position.Y / this.GridSize) * this.GridSize;
+                            this.Position.X = (Math.round(this.Position.X / this.GridSize) * this.GridSize) + this._margin;
+                            this.Position.Y = (Math.round(this.Position.Y / this.GridSize) * this.GridSize) + this._margin;
                         }
                         else {
-                            this.Position.Left = Math.round(this.Position.Left / this.GridSize) * this.GridSize;
-                            this.Position.Top = Math.round(this.Position.Top / this.GridSize) * this.GridSize;
+                            this.Position.Left = (Math.round(this.Position.Left / this.GridSize) * this.GridSize) + this._margin;
+                            this.Position.Top = (Math.round(this.Position.Top / this.GridSize) * this.GridSize) + this._margin;
                         }
                     }
                     var shadowDom = this._shadow.get(0);
@@ -4326,14 +4329,14 @@ var Fw;
                         var centerTop = (parentHeight / 2);
                         var sX = void 0, sY = void 0, sLeft = void 0, sTop = void 0;
                         if (this.Position.Policy === Views.Property.PositionPolicy.Centering) {
-                            sX = Math.round(this.Position.X / this.GridSize) * this.GridSize;
-                            sY = Math.round(this.Position.Y / this.GridSize) * this.GridSize;
+                            sX = (Math.round(this.Position.X / this.GridSize) * this.GridSize) + this._margin;
+                            sY = (Math.round(this.Position.Y / this.GridSize) * this.GridSize) + this._margin;
                             sLeft = centerLeft + sX - (this.Size.Width / 2);
                             sTop = centerTop + sY - (this.Size.Height / 2);
                         }
                         else {
-                            sX = Math.round(this.Position.Left / this.GridSize) * this.GridSize;
-                            sY = Math.round(this.Position.Top / this.GridSize) * this.GridSize;
+                            sX = (Math.round(this.Position.Left / this.GridSize) * this.GridSize) + this._margin;
+                            sY = (Math.round(this.Position.Top / this.GridSize) * this.GridSize) + this._margin;
                             sLeft = sX;
                             sTop = sY;
                         }
@@ -5589,4 +5592,123 @@ var Fw;
     }());
     Fw.Startup = Startup;
 })(Fw || (Fw = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Views/PageView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Events/PageViewEvents.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../Controls/HeaderBarView.ts" />
+var App;
+(function (App) {
+    var Views;
+    (function (Views_9) {
+        var Pages;
+        (function (Pages) {
+            var Views = Fw.Views;
+            var Property = Fw.Views.Property;
+            var Controls = App.Views.Controls;
+            var ControlSetPageView = /** @class */ (function (_super) {
+                __extends(ControlSetPageView, _super);
+                function ControlSetPageView() {
+                    var _this = _super.call(this, $("")) || this;
+                    _this.HeaderBar = new Controls.HeaderBarView();
+                    _this.ButtonPanel = new Views.SlidableBoxView(Property.Direction.Vertical);
+                    _this.SetClassName('ControlSetPageView');
+                    var background = new Views.ImageView();
+                    background.SetAnchor(0, 0, 0, 0);
+                    background.FitPolicy = Property.FitPolicy.Cover;
+                    background.Src = 'images/Pages/ControlSet/background.jpg';
+                    _this.Add(background);
+                    _this.HeaderBar.Text = 'Remote Control';
+                    _this.HeaderBar.RightButton.Hide(0);
+                    _this.Add(_this.HeaderBar);
+                    _this.ButtonPanel.Position.Policy = Property.PositionPolicy.LeftTop;
+                    _this.ButtonPanel.Size.Width = 300;
+                    _this.ButtonPanel.SetAnchor(70, 10, null, 10);
+                    _this.Add(_this.ButtonPanel);
+                    for (var i = 0; i < 10; i++) {
+                        var left = (i % 3) * 100;
+                        var top_2 = Math.floor(i / 3) * 100;
+                        var btn = new Controls.ControlButtonView();
+                        btn.SetLeftTop(left, top_2);
+                        _this.ButtonPanel.Add(btn);
+                    }
+                    return _this;
+                }
+                return ControlSetPageView;
+            }(Fw.Views.PageView));
+            Pages.ControlSetPageView = ControlSetPageView;
+        })(Pages = Views_9.Pages || (Views_9.Pages = {}));
+    })(Views = App.Views || (App.Views = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Views/RelocatableButtonView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../Color.ts" />
+/// <reference path="LabeledButtonView.ts" />
+var App;
+(function (App) {
+    var Views;
+    (function (Views_10) {
+        var Controls;
+        (function (Controls) {
+            var Views = Fw.Views;
+            var Property = Fw.Views.Property;
+            var Color = App.Color;
+            var ControlButtonView = /** @class */ (function (_super) {
+                __extends(ControlButtonView, _super);
+                function ControlButtonView() {
+                    var _this = _super.call(this) || this;
+                    _this.SetSize(85, 85);
+                    _this.GridSize = 95;
+                    _this.Margin = 5;
+                    _this.Position.Policy = Property.PositionPolicy.LeftTop;
+                    _this.HasBorder = true;
+                    _this.BorderRadius = 50;
+                    _this.BackgroundColor = Color.MainBackground;
+                    _this.HoverColor = Color.MainHover;
+                    _this.Color = Color.Main;
+                    return _this;
+                }
+                return ControlButtonView;
+            }(Views.RelocatableButtonView));
+            Controls.ControlButtonView = ControlButtonView;
+        })(Controls = Views_10.Controls || (Views_10.Controls = {}));
+    })(Views = App.Views || (App.Views = {}));
+})(App || (App = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Fw/Controllers/ControllerBase.ts" />
+/// <reference path="../../Fw/Controllers/Manager.ts" />
+/// <reference path="../../Fw/Util/Dump.ts" />
+/// <reference path="../../Fw/Events/ControlViewEvents.ts" />
+/// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
+/// <reference path="../Views/Pages/MainPageView.ts" />
+var App;
+(function (App) {
+    var Controllers;
+    (function (Controllers) {
+        var Events = Fw.Events;
+        var Manager = Fw.Controllers.Manager;
+        var Pages = App.Views.Pages;
+        var ControlSetController = /** @class */ (function (_super) {
+            __extends(ControlSetController, _super);
+            function ControlSetController() {
+                var _this = _super.call(this, 'ControlSet') || this;
+                _this.SetClassName('ControlSetController');
+                _this.View = new Pages.ControlSetPageView();
+                var page = _this.View;
+                page.HeaderBar.LeftButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
+                    Manager.Instance.Show("Main");
+                });
+                return _this;
+            }
+            return ControlSetController;
+        }(Fw.Controllers.ControllerBase));
+        Controllers.ControlSetController = ControlSetController;
+    })(Controllers = App.Controllers || (App.Controllers = {}));
+})(App || (App = {}));
 //# sourceMappingURL=tsout.js.map

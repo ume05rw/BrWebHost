@@ -18,7 +18,7 @@ namespace App {
             const port = location.port;
             Fw.Config.XhrBaseUrl = proto + '//' + host + ':' + port + '/api/';
 
-            const main = new App.Controllers.MainController('Main');
+            const main = new App.Controllers.MainController();
             main.IsDefaultView = true;
             Manager.Instance.Add(main);
             Manager.Instance.Show('Main');

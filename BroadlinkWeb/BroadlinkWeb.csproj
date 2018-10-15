@@ -8,16 +8,19 @@
   <ItemGroup>
     <Content Remove="wwwroot\js\Page.ts" />
     <Content Remove="wwwroot\ts\App\Color.ts" />
+    <Content Remove="wwwroot\ts\App\Controllers\ControlSetController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\LayoutCheckController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\Sub3Controller.ts" />
     <Content Remove="wwwroot\ts\App\Main.ts" />
     <Content Remove="wwwroot\ts\App\Models\Entities\BrDevice.ts" />
     <Content Remove="wwwroot\ts\App\Models\Stores\BrDeviceStore.ts" />
     <Content Remove="wwwroot\ts\App\Views\Controls\ButtonView.ts" />
+    <Content Remove="wwwroot\ts\App\Views\Controls\ControlButtonView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Controls\ControlSetButtonView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Controls\HeaderBarView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Controls\LabeledButtonView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Controls\SceneButtonView.ts" />
+    <Content Remove="wwwroot\ts\App\Views\Pages\ControlSetPageView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Pages\LayoutCheckPageView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Pages\MainPageView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Pages\Sub3PageView.ts" />
@@ -93,6 +96,7 @@
 
   <ItemGroup>
     <TypeScriptCompile Include="wwwroot\ts\App\Color.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ControlSetController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\LayoutCheckController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\Sub3Controller.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Main.ts" />
@@ -102,10 +106,12 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\BrDevice.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\BrDeviceStore.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\ButtonView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\ControlButtonView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\HeaderBarView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\LabeledButtonView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\ControlSetButtonView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\SceneButtonView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\ControlSetPageView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\Sub3PageView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\MainPageView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\LayoutCheckPageView.ts" />
