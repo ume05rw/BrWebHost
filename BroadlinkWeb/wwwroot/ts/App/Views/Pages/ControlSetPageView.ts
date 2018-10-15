@@ -40,7 +40,8 @@ namespace App.Views.Pages {
 
             this.ButtonPanel.Position.Policy = Property.PositionPolicy.LeftTop;
             this.ButtonPanel.Size.Width = 300;
-            this.ButtonPanel.SetAnchor(70, 10, null, 10);
+            this.ButtonPanel.SetAnchor(70, null, null, 10);
+            this.SetButtonsLeft();
             this.Add(this.ButtonPanel);
 
             for (let i = 0; i < 10; i++) {
@@ -51,6 +52,16 @@ namespace App.Views.Pages {
                 btn.SetLeftTop(left, top);
                 this.ButtonPanel.Add(btn);
             }
+        }
+
+        public SetButtonsCenter(): void {
+            const left = (this.Size.Width / 2) - (this.ButtonPanel.Size.Width / 2);
+            this.ButtonPanel.Position.Left = left;
+        }
+
+        public SetButtonsLeft(): void {
+            const left = 10;
+            this.ButtonPanel.Position.Left = left;
         }
     }
 }

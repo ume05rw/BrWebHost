@@ -413,6 +413,11 @@ declare namespace App.Views.Pages {
     }
 }
 declare namespace App.Controllers {
+    class ControlSetController extends Fw.Controllers.ControllerBase {
+        constructor();
+    }
+}
+declare namespace App.Controllers {
     class LayoutCheckController extends Fw.Controllers.ControllerBase {
         constructor(id: string);
         private Init;
@@ -508,6 +513,28 @@ declare namespace App.Views.Controls {
         constructor();
     }
 }
+declare namespace Fw.Views {
+    class RelocatableButtonView extends ButtonView {
+        private _isRelocatable;
+        readonly IsRelocatable: boolean;
+        private _shadow;
+        private _isMouseMoveEventListened;
+        private _isDragging;
+        private _dragStartMousePosition;
+        private _dragStartViewPosition;
+        private _gridSize;
+        GridSize: number;
+        private _margin;
+        Margin: number;
+        constructor();
+        private OnMouseMove;
+        private _delayedResumeTimer;
+        private DelayedResume;
+        SetRelocatable(relocatable: boolean): void;
+        protected InnerRefresh(): void;
+        Dispose(): void;
+    }
+}
 declare namespace App.Views.Controls {
     import Views = Fw.Views;
     class LabeledButtonView extends Fw.Views.ControlView {
@@ -526,6 +553,12 @@ declare namespace App.Views.Controls {
 }
 declare namespace App.Views.Controls {
     import Views = Fw.Views;
+    class ControlButtonView extends Views.RelocatableButtonView {
+        constructor();
+    }
+}
+declare namespace App.Views.Controls {
+    import Views = Fw.Views;
     class ControlSetButtonView extends LabeledButtonView {
         private _toggle;
         readonly Toggle: Views.ToggleButtonView;
@@ -536,6 +569,17 @@ declare namespace App.Views.Controls {
     class SceneButtonView extends LabeledButtonView {
         constructor();
         protected InnerRefresh(): void;
+    }
+}
+declare namespace App.Views.Pages {
+    import Views = Fw.Views;
+    import Controls = App.Views.Controls;
+    class ControlSetPageView extends Fw.Views.PageView {
+        HeaderBar: Controls.HeaderBarView;
+        ButtonPanel: Views.SlidableBoxView;
+        constructor();
+        SetButtonsCenter(): void;
+        SetButtonsLeft(): void;
     }
 }
 declare namespace App.Views.Pages {
@@ -765,28 +809,6 @@ declare namespace Fw.Views {
     }
 }
 declare namespace Fw.Views {
-    class RelocatableButtonView extends ButtonView {
-        private _isRelocatable;
-        readonly IsRelocatable: boolean;
-        private _shadow;
-        private _isMouseMoveEventListened;
-        private _isDragging;
-        private _dragStartMousePosition;
-        private _dragStartViewPosition;
-        private _gridSize;
-        GridSize: number;
-        private _margin;
-        Margin: number;
-        constructor();
-        private OnMouseMove;
-        private _delayedResumeTimer;
-        private DelayedResume;
-        SetRelocatable(relocatable: boolean): void;
-        protected InnerRefresh(): void;
-        Dispose(): void;
-    }
-}
-declare namespace Fw.Views {
     import Property = Fw.Views.Property;
     class SlidableBoxView extends BoxView {
         readonly Children: Array<IView>;
@@ -926,25 +948,5 @@ declare namespace Fw {
 declare namespace Fw {
     class Startup {
         static Init(): void;
-    }
-}
-declare namespace App.Views.Pages {
-    import Views = Fw.Views;
-    import Controls = App.Views.Controls;
-    class ControlSetPageView extends Fw.Views.PageView {
-        HeaderBar: Controls.HeaderBarView;
-        ButtonPanel: Views.SlidableBoxView;
-        constructor();
-    }
-}
-declare namespace App.Views.Controls {
-    import Views = Fw.Views;
-    class ControlButtonView extends Views.RelocatableButtonView {
-        constructor();
-    }
-}
-declare namespace App.Controllers {
-    class ControlSetController extends Fw.Controllers.ControllerBase {
-        constructor();
     }
 }

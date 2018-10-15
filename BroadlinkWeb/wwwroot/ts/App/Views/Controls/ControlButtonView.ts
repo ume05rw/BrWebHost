@@ -25,8 +25,7 @@ namespace App.Views.Controls {
             this.BorderRadius = 50;
             this.BackgroundColor = Color.MainBackground;
             this.HoverColor = Color.MainHover;
-            this.Color = Color.Main;
-
+            this.Color = Color.MainHover;
         }
     }
 }

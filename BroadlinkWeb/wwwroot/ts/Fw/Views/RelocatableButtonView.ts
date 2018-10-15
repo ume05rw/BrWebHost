@@ -82,8 +82,8 @@ namespace Fw.Views {
                     this._isDragging = false;
 
                     if (this.Position.Policy === Property.PositionPolicy.Centering) {
-                        this.Position.X = (Math.round(this.Position.X / this.GridSize) * this.GridSize) + this._margin;
-                        this.Position.Y = (Math.round(this.Position.Y / this.GridSize) * this.GridSize) + this._margin;
+                        this.Position.X = Math.round(this.Position.X / this.GridSize) * this.GridSize;
+                        this.Position.Y = Math.round(this.Position.Y / this.GridSize) * this.GridSize;
                     } else {
                         this.Position.Left = (Math.round(this.Position.Left / this.GridSize) * this.GridSize) + this._margin;
                         this.Position.Top = (Math.round(this.Position.Top     / this.GridSize) * this.GridSize) + this._margin;
@@ -179,8 +179,8 @@ namespace Fw.Views {
 
                 if (!this._isRelocatable) {
                     if (this.Position.Policy === Property.PositionPolicy.Centering) {
-                        this.Position.X = (Math.round(this.Position.X / this.GridSize) * this.GridSize) + this._margin;
-                        this.Position.Y = (Math.round(this.Position.Y / this.GridSize) * this.GridSize) + this._margin;
+                        this.Position.X = Math.round(this.Position.X / this.GridSize) * this.GridSize;
+                        this.Position.Y = Math.round(this.Position.Y / this.GridSize) * this.GridSize;
                     } else {
                         this.Position.Left = (Math.round(this.Position.Left / this.GridSize) * this.GridSize) + this._margin;
                         this.Position.Top = (Math.round(this.Position.Top / this.GridSize) * this.GridSize) + this._margin;
@@ -213,8 +213,8 @@ namespace Fw.Views {
 
                     let sX: number, sY: number, sLeft: number, sTop: number;
                     if (this.Position.Policy === Property.PositionPolicy.Centering) {
-                        sX = (Math.round(this.Position.X / this.GridSize) * this.GridSize) + this._margin;
-                        sY = (Math.round(this.Position.Y / this.GridSize) * this.GridSize) + this._margin;
+                        sX = Math.round(this.Position.X / this.GridSize) * this.GridSize;
+                        sY = Math.round(this.Position.Y / this.GridSize) * this.GridSize;
                         sLeft = centerLeft + sX - (this.Size.Width / 2);
                         sTop = centerTop + sY - (this.Size.Height / 2);
                     } else {

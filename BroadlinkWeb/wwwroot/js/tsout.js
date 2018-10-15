@@ -2163,6 +2163,38 @@ var App;
 (function (App) {
     var Controllers;
     (function (Controllers) {
+        var Events = Fw.Events;
+        var Manager = Fw.Controllers.Manager;
+        var Pages = App.Views.Pages;
+        var ControlSetController = /** @class */ (function (_super) {
+            __extends(ControlSetController, _super);
+            function ControlSetController() {
+                var _this = _super.call(this, 'ControlSet') || this;
+                _this.SetClassName('ControlSetController');
+                _this.View = new Pages.ControlSetPageView();
+                var page = _this.View;
+                page.HeaderBar.LeftButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
+                    Manager.Instance.Show("Main");
+                });
+                return _this;
+            }
+            return ControlSetController;
+        }(Fw.Controllers.ControllerBase));
+        Controllers.ControlSetController = ControlSetController;
+    })(Controllers = App.Controllers || (App.Controllers = {}));
+})(App || (App = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Fw/Controllers/ControllerBase.ts" />
+/// <reference path="../../Fw/Controllers/Manager.ts" />
+/// <reference path="../../Fw/Util/Dump.ts" />
+/// <reference path="../../Fw/Events/ControlViewEvents.ts" />
+/// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
+/// <reference path="../Views/Pages/MainPageView.ts" />
+var App;
+(function (App) {
+    var Controllers;
+    (function (Controllers) {
         var Dump = Fw.Util.Dump;
         var Events = Fw.Events;
         var Manager = Fw.Controllers.Manager;
@@ -2846,6 +2878,249 @@ var App;
         })(Controls = Views_3.Controls || (Views_3.Controls = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Util/Dump.ts" />
+/// <reference path="../Events/ControlViewEvents.ts" />
+/// <reference path="ButtonView.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Dump = Fw.Util.Dump;
+        var Events = Fw.Events.ControlViewEvents;
+        var RelocatableButtonView = /** @class */ (function (_super) {
+            __extends(RelocatableButtonView, _super);
+            function RelocatableButtonView() {
+                var _this = _super.call(this) || this;
+                _this._isRelocatable = false;
+                _this._isMouseMoveEventListened = false;
+                _this._isDragging = false;
+                _this._gridSize = 60;
+                _this._margin = 0;
+                _this._delayedResumeTimer = null;
+                _this._shadow = $('<div class="IView BoxView Shadow"></div>');
+                _this._dragStartMousePosition = new Views.Property.Position();
+                _this._dragStartViewPosition = new Views.Property.Position();
+                _this.SetClassName('RelocatableControlView');
+                _this.Elem.addClass(_this.ClassName);
+                _this.AddEventListener(Events.LongClick, function () {
+                    if (!_this._isRelocatable)
+                        _this.SetRelocatable(true);
+                });
+                _this.Elem.on('touchstart mousedown', function (e) {
+                    if (!_this._isRelocatable) {
+                        _this._isDragging = false;
+                    }
+                    else {
+                        _this._isDragging = true;
+                        _this._dragStartMousePosition.X = e.pageX;
+                        _this._dragStartMousePosition.Y = e.pageY;
+                        if (_this.Position.Policy === Views.Property.PositionPolicy.Centering) {
+                            _this._dragStartViewPosition.X = _this.Position.X;
+                            _this._dragStartViewPosition.Y = _this.Position.Y;
+                        }
+                        else {
+                            _this._dragStartViewPosition.X = _this.Position.Left;
+                            _this._dragStartViewPosition.Y = _this.Position.Top;
+                        }
+                        _this.Refresh();
+                    }
+                });
+                // ↓mouseoutイベントは捕捉しない。途切れまくるので。
+                _this.Elem.on('touchend mouseup', function (e) {
+                    if (!_this._isRelocatable) {
+                        _this._isDragging = false;
+                    }
+                    else {
+                        _this._isDragging = false;
+                        if (_this.Position.Policy === Views.Property.PositionPolicy.Centering) {
+                            _this.Position.X = Math.round(_this.Position.X / _this.GridSize) * _this.GridSize;
+                            _this.Position.Y = Math.round(_this.Position.Y / _this.GridSize) * _this.GridSize;
+                        }
+                        else {
+                            _this.Position.Left = (Math.round(_this.Position.Left / _this.GridSize) * _this.GridSize) + _this._margin;
+                            _this.Position.Top = (Math.round(_this.Position.Top / _this.GridSize) * _this.GridSize) + _this._margin;
+                        }
+                        _this.Refresh();
+                    }
+                });
+                var onMouseMove = _this.OnMouseMove.bind(_this);
+                _this.AddEventListener(Events.Attached, function () {
+                    var parent = $(_this.Elem.parent());
+                    if (parent.length <= 0 || _this._isMouseMoveEventListened)
+                        return;
+                    parent.on('touchmove mousemove', onMouseMove);
+                    _this._isMouseMoveEventListened = true;
+                });
+                _this.AddEventListener(Events.Detached, function () {
+                    var parent = $(_this.Elem.parent());
+                    if (parent.length <= 0 || !_this._isMouseMoveEventListened)
+                        return;
+                    parent.off('touchmove mousemove', onMouseMove);
+                    _this._isMouseMoveEventListened = false;
+                });
+                return _this;
+            }
+            Object.defineProperty(RelocatableButtonView.prototype, "IsRelocatable", {
+                get: function () {
+                    return this._isRelocatable;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(RelocatableButtonView.prototype, "GridSize", {
+                get: function () {
+                    return this._gridSize;
+                },
+                set: function (value) {
+                    this._gridSize = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(RelocatableButtonView.prototype, "Margin", {
+                get: function () {
+                    return this._margin;
+                },
+                set: function (value) {
+                    this._margin = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            RelocatableButtonView.prototype.OnMouseMove = function (e) {
+                if (this._isRelocatable && this._isDragging) {
+                    var addX = e.pageX - this._dragStartMousePosition.X;
+                    var addY = e.pageY - this._dragStartMousePosition.Y;
+                    if (this.Position.Policy === Views.Property.PositionPolicy.Centering) {
+                        this.Position.X = this._dragStartViewPosition.X + addX;
+                        this.Position.Y = this._dragStartViewPosition.Y + addY;
+                    }
+                    else {
+                        this.Position.Left = this._dragStartViewPosition.X + addX;
+                        this.Position.Top = this._dragStartViewPosition.Y + addY;
+                    }
+                    // マウスボタン押下中のクリックイベント発火を抑止する。
+                    if (!this.IsSuppressedEvent(Events.LongClick))
+                        this.SuppressEvent(Events.LongClick);
+                    if (!this.IsSuppressedEvent(Events.SingleClick))
+                        this.SuppressEvent(Events.SingleClick);
+                    Fw.Root.Instance.SetTextSelection(false);
+                    this.DelayedResume();
+                }
+            };
+            RelocatableButtonView.prototype.DelayedResume = function () {
+                var _this = this;
+                if (this._delayedResumeTimer !== null) {
+                    clearTimeout(this._delayedResumeTimer);
+                    this._delayedResumeTimer = null;
+                }
+                this._delayedResumeTimer = setTimeout(function () {
+                    //Dump.Log('ResumeMouseEvents');
+                    if (_this.IsSuppressedEvent(Events.LongClick))
+                        _this.ResumeEvent(Events.LongClick);
+                    if (_this.IsSuppressedEvent(Events.SingleClick))
+                        _this.ResumeEvent(Events.SingleClick);
+                    Fw.Root.Instance.SetTextSelection(true);
+                }, 100);
+            };
+            RelocatableButtonView.prototype.SetRelocatable = function (relocatable) {
+                if (this._isRelocatable) {
+                    // 固定する。
+                    this._isRelocatable = false;
+                    this._shadow.detach();
+                }
+                else {
+                    // 移動可能にする。
+                    this._isRelocatable = true;
+                    this.Elem.parent().append(this._shadow);
+                }
+                this.Refresh();
+            };
+            RelocatableButtonView.prototype.InnerRefresh = function () {
+                try {
+                    this.SuppressLayout();
+                    var parent_2 = $(this.Elem.parent());
+                    if (parent_2.length <= 0)
+                        return;
+                    if (!this._isRelocatable) {
+                        if (this.Position.Policy === Views.Property.PositionPolicy.Centering) {
+                            this.Position.X = Math.round(this.Position.X / this.GridSize) * this.GridSize;
+                            this.Position.Y = Math.round(this.Position.Y / this.GridSize) * this.GridSize;
+                        }
+                        else {
+                            this.Position.Left = (Math.round(this.Position.Left / this.GridSize) * this.GridSize) + this._margin;
+                            this.Position.Top = (Math.round(this.Position.Top / this.GridSize) * this.GridSize) + this._margin;
+                        }
+                    }
+                    var shadowDom = this._shadow.get(0);
+                    if (!this._isRelocatable) {
+                        shadowDom.style.display = 'none';
+                        this.Opacity = 1.0;
+                        _super.prototype.InnerRefresh.call(this);
+                        return;
+                    }
+                    this.Opacity = 0.7;
+                    _super.prototype.InnerRefresh.call(this);
+                    if (this._isDragging) {
+                        var parentWidth = (this.Parent)
+                            ? this.Parent.Size.Width
+                            : parent_2.width();
+                        var parentHeight = (this.Parent)
+                            ? this.Parent.Size.Height
+                            : parent_2.height();
+                        var centerLeft = (parentWidth / 2);
+                        var centerTop = (parentHeight / 2);
+                        var sX = void 0, sY = void 0, sLeft = void 0, sTop = void 0;
+                        if (this.Position.Policy === Views.Property.PositionPolicy.Centering) {
+                            sX = Math.round(this.Position.X / this.GridSize) * this.GridSize;
+                            sY = Math.round(this.Position.Y / this.GridSize) * this.GridSize;
+                            sLeft = centerLeft + sX - (this.Size.Width / 2);
+                            sTop = centerTop + sY - (this.Size.Height / 2);
+                        }
+                        else {
+                            sX = (Math.round(this.Position.Left / this.GridSize) * this.GridSize) + this._margin;
+                            sY = (Math.round(this.Position.Top / this.GridSize) * this.GridSize) + this._margin;
+                            sLeft = sX;
+                            sTop = sY;
+                        }
+                        shadowDom.style.display = 'block';
+                        shadowDom.style.left = sLeft + "px";
+                        shadowDom.style.top = sTop + "px";
+                        shadowDom.style.width = this.Size.Width + "px";
+                        shadowDom.style.height = this.Size.Height + "px";
+                        shadowDom.style.color = "" + this.Color;
+                        shadowDom.style.borderColor = "" + this.Color;
+                        shadowDom.style.backgroundColor = "" + this.BackgroundColor;
+                    }
+                    else {
+                        shadowDom.style.display = 'none';
+                    }
+                }
+                catch (e) {
+                    Dump.ErrorLog(e);
+                }
+                finally {
+                    this.ResumeLayout();
+                }
+            };
+            RelocatableButtonView.prototype.Dispose = function () {
+                _super.prototype.Dispose.call(this);
+                this._isRelocatable = null;
+                this._shadow.remove();
+                this._shadow = null;
+                this._isMouseMoveEventListened = null;
+                this._isDragging = null;
+                this._gridSize = null;
+            };
+            return RelocatableButtonView;
+        }(Views.ButtonView));
+        Views.RelocatableButtonView = RelocatableButtonView;
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../../Fw/Views/ControlView.ts" />
@@ -2928,7 +3203,7 @@ var App;
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Views/ButtonView.ts" />
+/// <reference path="../../../Fw/Views/RelocatableButtonView.ts" />
 /// <reference path="../../../Fw/Views/Property/Anchor.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../../Color.ts" />
@@ -2937,6 +3212,43 @@ var App;
 (function (App) {
     var Views;
     (function (Views_5) {
+        var Controls;
+        (function (Controls) {
+            var Views = Fw.Views;
+            var Property = Fw.Views.Property;
+            var Color = App.Color;
+            var ControlButtonView = /** @class */ (function (_super) {
+                __extends(ControlButtonView, _super);
+                function ControlButtonView() {
+                    var _this = _super.call(this) || this;
+                    _this.SetSize(85, 85);
+                    _this.GridSize = 95;
+                    _this.Margin = 5;
+                    _this.Position.Policy = Property.PositionPolicy.LeftTop;
+                    _this.HasBorder = true;
+                    _this.BorderRadius = 50;
+                    _this.BackgroundColor = Color.MainBackground;
+                    _this.HoverColor = Color.MainHover;
+                    _this.Color = Color.MainHover;
+                    return _this;
+                }
+                return ControlButtonView;
+            }(Views.RelocatableButtonView));
+            Controls.ControlButtonView = ControlButtonView;
+        })(Controls = Views_5.Controls || (Views_5.Controls = {}));
+    })(Views = App.Views || (App.Views = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Views/ButtonView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../Color.ts" />
+/// <reference path="LabeledButtonView.ts" />
+var App;
+(function (App) {
+    var Views;
+    (function (Views_6) {
         var Controls;
         (function (Controls) {
             var Views = Fw.Views;
@@ -2968,7 +3280,7 @@ var App;
                 return ControlSetButtonView;
             }(Controls.LabeledButtonView));
             Controls.ControlSetButtonView = ControlSetButtonView;
-        })(Controls = Views_5.Controls || (Views_5.Controls = {}));
+        })(Controls = Views_6.Controls || (Views_6.Controls = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
@@ -2981,7 +3293,7 @@ var App;
 var App;
 (function (App) {
     var Views;
-    (function (Views_6) {
+    (function (Views_7) {
         var Controls;
         (function (Controls) {
             var Color = App.Color;
@@ -3007,7 +3319,66 @@ var App;
                 return SceneButtonView;
             }(Controls.LabeledButtonView));
             Controls.SceneButtonView = SceneButtonView;
-        })(Controls = Views_6.Controls || (Views_6.Controls = {}));
+        })(Controls = Views_7.Controls || (Views_7.Controls = {}));
+    })(Views = App.Views || (App.Views = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Views/PageView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Events/PageViewEvents.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../Controls/HeaderBarView.ts" />
+var App;
+(function (App) {
+    var Views;
+    (function (Views_8) {
+        var Pages;
+        (function (Pages) {
+            var Views = Fw.Views;
+            var Property = Fw.Views.Property;
+            var Controls = App.Views.Controls;
+            var ControlSetPageView = /** @class */ (function (_super) {
+                __extends(ControlSetPageView, _super);
+                function ControlSetPageView() {
+                    var _this = _super.call(this, $("")) || this;
+                    _this.HeaderBar = new Controls.HeaderBarView();
+                    _this.ButtonPanel = new Views.SlidableBoxView(Property.Direction.Vertical);
+                    _this.SetClassName('ControlSetPageView');
+                    var background = new Views.ImageView();
+                    background.SetAnchor(0, 0, 0, 0);
+                    background.FitPolicy = Property.FitPolicy.Cover;
+                    background.Src = 'images/Pages/ControlSet/background.jpg';
+                    _this.Add(background);
+                    _this.HeaderBar.Text = 'Remote Control';
+                    _this.HeaderBar.RightButton.Hide(0);
+                    _this.Add(_this.HeaderBar);
+                    _this.ButtonPanel.Position.Policy = Property.PositionPolicy.LeftTop;
+                    _this.ButtonPanel.Size.Width = 300;
+                    _this.ButtonPanel.SetAnchor(70, null, null, 10);
+                    _this.SetButtonsLeft();
+                    _this.Add(_this.ButtonPanel);
+                    for (var i = 0; i < 10; i++) {
+                        var left = (i % 3) * 100;
+                        var top_2 = Math.floor(i / 3) * 100;
+                        var btn = new Controls.ControlButtonView();
+                        btn.SetLeftTop(left, top_2);
+                        _this.ButtonPanel.Add(btn);
+                    }
+                    return _this;
+                }
+                ControlSetPageView.prototype.SetButtonsCenter = function () {
+                    var left = (this.Size.Width / 2) - (this.ButtonPanel.Size.Width / 2);
+                    this.ButtonPanel.Position.Left = left;
+                };
+                ControlSetPageView.prototype.SetButtonsLeft = function () {
+                    var left = 10;
+                    this.ButtonPanel.Position.Left = left;
+                };
+                return ControlSetPageView;
+            }(Fw.Views.PageView));
+            Pages.ControlSetPageView = ControlSetPageView;
+        })(Pages = Views_8.Pages || (Views_8.Pages = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
@@ -3019,7 +3390,7 @@ var App;
 var App;
 (function (App) {
     var Views;
-    (function (Views_7) {
+    (function (Views_9) {
         var Pages;
         (function (Pages) {
             var Property = Fw.Views.Property;
@@ -3100,7 +3471,7 @@ var App;
                 return LayoutCheckPageView;
             }(Fw.Views.PageView));
             Pages.LayoutCheckPageView = LayoutCheckPageView;
-        })(Pages = Views_7.Pages || (Views_7.Pages = {}));
+        })(Pages = Views_9.Pages || (Views_9.Pages = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
@@ -3112,7 +3483,7 @@ var App;
 var App;
 (function (App) {
     var Views;
-    (function (Views_8) {
+    (function (Views_10) {
         var Pages;
         (function (Pages) {
             var Views = Fw.Views;
@@ -3123,7 +3494,7 @@ var App;
                     var _this = this;
                     var jqueryElem = $("");
                     _this = _super.call(this, jqueryElem) || this;
-                    _this.HeaderBar = new Views_8.Controls.HeaderBarView();
+                    _this.HeaderBar = new Views_10.Controls.HeaderBarView();
                     _this.Stucker = new Views.StuckerBoxView();
                     _this.SetClassName('Sub3PageView');
                     _this.HeaderBar.Text = 'Sub 3 Page';
@@ -3174,7 +3545,7 @@ var App;
                 return Sub3PageView;
             }(Fw.Views.PageView));
             Pages.Sub3PageView = Sub3PageView;
-        })(Pages = Views_8.Pages || (Views_8.Pages = {}));
+        })(Pages = Views_10.Pages || (Views_10.Pages = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../lib/jquery/index.d.ts" />
@@ -3766,9 +4137,9 @@ var Fw;
                     }
                     else {
                         // 親Viewが存在しない
-                        var parent_2 = $(view.Elem.parent());
-                        parentWidth = parent_2.width();
-                        parentHeight = parent_2.height();
+                        var parent_3 = $(view.Elem.parent());
+                        parentWidth = parent_3.width();
+                        parentHeight = parent_3.height();
                     }
                     this.ParentHalfWidth = parentWidth / 2;
                     this.ParentHalfHeight = parentHeight / 2;
@@ -4129,249 +4500,6 @@ var Fw;
             return LineView;
         }(Views.ViewBase));
         Views.LineView = LineView;
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../Util/Dump.ts" />
-/// <reference path="../Events/ControlViewEvents.ts" />
-/// <reference path="ButtonView.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var Dump = Fw.Util.Dump;
-        var Events = Fw.Events.ControlViewEvents;
-        var RelocatableButtonView = /** @class */ (function (_super) {
-            __extends(RelocatableButtonView, _super);
-            function RelocatableButtonView() {
-                var _this = _super.call(this) || this;
-                _this._isRelocatable = false;
-                _this._isMouseMoveEventListened = false;
-                _this._isDragging = false;
-                _this._gridSize = 60;
-                _this._margin = 0;
-                _this._delayedResumeTimer = null;
-                _this._shadow = $('<div class="IView BoxView Shadow"></div>');
-                _this._dragStartMousePosition = new Views.Property.Position();
-                _this._dragStartViewPosition = new Views.Property.Position();
-                _this.SetClassName('RelocatableControlView');
-                _this.Elem.addClass(_this.ClassName);
-                _this.AddEventListener(Events.LongClick, function () {
-                    if (!_this._isRelocatable)
-                        _this.SetRelocatable(true);
-                });
-                _this.Elem.on('touchstart mousedown', function (e) {
-                    if (!_this._isRelocatable) {
-                        _this._isDragging = false;
-                    }
-                    else {
-                        _this._isDragging = true;
-                        _this._dragStartMousePosition.X = e.pageX;
-                        _this._dragStartMousePosition.Y = e.pageY;
-                        if (_this.Position.Policy === Views.Property.PositionPolicy.Centering) {
-                            _this._dragStartViewPosition.X = _this.Position.X;
-                            _this._dragStartViewPosition.Y = _this.Position.Y;
-                        }
-                        else {
-                            _this._dragStartViewPosition.X = _this.Position.Left;
-                            _this._dragStartViewPosition.Y = _this.Position.Top;
-                        }
-                        _this.Refresh();
-                    }
-                });
-                // ↓mouseoutイベントは捕捉しない。途切れまくるので。
-                _this.Elem.on('touchend mouseup', function (e) {
-                    if (!_this._isRelocatable) {
-                        _this._isDragging = false;
-                    }
-                    else {
-                        _this._isDragging = false;
-                        if (_this.Position.Policy === Views.Property.PositionPolicy.Centering) {
-                            _this.Position.X = (Math.round(_this.Position.X / _this.GridSize) * _this.GridSize) + _this._margin;
-                            _this.Position.Y = (Math.round(_this.Position.Y / _this.GridSize) * _this.GridSize) + _this._margin;
-                        }
-                        else {
-                            _this.Position.Left = (Math.round(_this.Position.Left / _this.GridSize) * _this.GridSize) + _this._margin;
-                            _this.Position.Top = (Math.round(_this.Position.Top / _this.GridSize) * _this.GridSize) + _this._margin;
-                        }
-                        _this.Refresh();
-                    }
-                });
-                var onMouseMove = _this.OnMouseMove.bind(_this);
-                _this.AddEventListener(Events.Attached, function () {
-                    var parent = $(_this.Elem.parent());
-                    if (parent.length <= 0 || _this._isMouseMoveEventListened)
-                        return;
-                    parent.on('touchmove mousemove', onMouseMove);
-                    _this._isMouseMoveEventListened = true;
-                });
-                _this.AddEventListener(Events.Detached, function () {
-                    var parent = $(_this.Elem.parent());
-                    if (parent.length <= 0 || !_this._isMouseMoveEventListened)
-                        return;
-                    parent.off('touchmove mousemove', onMouseMove);
-                    _this._isMouseMoveEventListened = false;
-                });
-                return _this;
-            }
-            Object.defineProperty(RelocatableButtonView.prototype, "IsRelocatable", {
-                get: function () {
-                    return this._isRelocatable;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(RelocatableButtonView.prototype, "GridSize", {
-                get: function () {
-                    return this._gridSize;
-                },
-                set: function (value) {
-                    this._gridSize = value;
-                    this.Refresh();
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(RelocatableButtonView.prototype, "Margin", {
-                get: function () {
-                    return this._margin;
-                },
-                set: function (value) {
-                    this._margin = value;
-                    this.Refresh();
-                },
-                enumerable: true,
-                configurable: true
-            });
-            RelocatableButtonView.prototype.OnMouseMove = function (e) {
-                if (this._isRelocatable && this._isDragging) {
-                    var addX = e.pageX - this._dragStartMousePosition.X;
-                    var addY = e.pageY - this._dragStartMousePosition.Y;
-                    if (this.Position.Policy === Views.Property.PositionPolicy.Centering) {
-                        this.Position.X = this._dragStartViewPosition.X + addX;
-                        this.Position.Y = this._dragStartViewPosition.Y + addY;
-                    }
-                    else {
-                        this.Position.Left = this._dragStartViewPosition.X + addX;
-                        this.Position.Top = this._dragStartViewPosition.Y + addY;
-                    }
-                    // マウスボタン押下中のクリックイベント発火を抑止する。
-                    if (!this.IsSuppressedEvent(Events.LongClick))
-                        this.SuppressEvent(Events.LongClick);
-                    if (!this.IsSuppressedEvent(Events.SingleClick))
-                        this.SuppressEvent(Events.SingleClick);
-                    Fw.Root.Instance.SetTextSelection(false);
-                    this.DelayedResume();
-                }
-            };
-            RelocatableButtonView.prototype.DelayedResume = function () {
-                var _this = this;
-                if (this._delayedResumeTimer !== null) {
-                    clearTimeout(this._delayedResumeTimer);
-                    this._delayedResumeTimer = null;
-                }
-                this._delayedResumeTimer = setTimeout(function () {
-                    //Dump.Log('ResumeMouseEvents');
-                    if (_this.IsSuppressedEvent(Events.LongClick))
-                        _this.ResumeEvent(Events.LongClick);
-                    if (_this.IsSuppressedEvent(Events.SingleClick))
-                        _this.ResumeEvent(Events.SingleClick);
-                    Fw.Root.Instance.SetTextSelection(true);
-                }, 100);
-            };
-            RelocatableButtonView.prototype.SetRelocatable = function (relocatable) {
-                if (this._isRelocatable) {
-                    // 固定する。
-                    this._isRelocatable = false;
-                    this._shadow.detach();
-                }
-                else {
-                    // 移動可能にする。
-                    this._isRelocatable = true;
-                    this.Elem.parent().append(this._shadow);
-                }
-                this.Refresh();
-            };
-            RelocatableButtonView.prototype.InnerRefresh = function () {
-                try {
-                    this.SuppressLayout();
-                    var parent_3 = $(this.Elem.parent());
-                    if (parent_3.length <= 0)
-                        return;
-                    if (!this._isRelocatable) {
-                        if (this.Position.Policy === Views.Property.PositionPolicy.Centering) {
-                            this.Position.X = (Math.round(this.Position.X / this.GridSize) * this.GridSize) + this._margin;
-                            this.Position.Y = (Math.round(this.Position.Y / this.GridSize) * this.GridSize) + this._margin;
-                        }
-                        else {
-                            this.Position.Left = (Math.round(this.Position.Left / this.GridSize) * this.GridSize) + this._margin;
-                            this.Position.Top = (Math.round(this.Position.Top / this.GridSize) * this.GridSize) + this._margin;
-                        }
-                    }
-                    var shadowDom = this._shadow.get(0);
-                    if (!this._isRelocatable) {
-                        shadowDom.style.display = 'none';
-                        this.Opacity = 1.0;
-                        _super.prototype.InnerRefresh.call(this);
-                        return;
-                    }
-                    this.Opacity = 0.7;
-                    _super.prototype.InnerRefresh.call(this);
-                    if (this._isDragging) {
-                        var parentWidth = (this.Parent)
-                            ? this.Parent.Size.Width
-                            : parent_3.width();
-                        var parentHeight = (this.Parent)
-                            ? this.Parent.Size.Height
-                            : parent_3.height();
-                        var centerLeft = (parentWidth / 2);
-                        var centerTop = (parentHeight / 2);
-                        var sX = void 0, sY = void 0, sLeft = void 0, sTop = void 0;
-                        if (this.Position.Policy === Views.Property.PositionPolicy.Centering) {
-                            sX = (Math.round(this.Position.X / this.GridSize) * this.GridSize) + this._margin;
-                            sY = (Math.round(this.Position.Y / this.GridSize) * this.GridSize) + this._margin;
-                            sLeft = centerLeft + sX - (this.Size.Width / 2);
-                            sTop = centerTop + sY - (this.Size.Height / 2);
-                        }
-                        else {
-                            sX = (Math.round(this.Position.Left / this.GridSize) * this.GridSize) + this._margin;
-                            sY = (Math.round(this.Position.Top / this.GridSize) * this.GridSize) + this._margin;
-                            sLeft = sX;
-                            sTop = sY;
-                        }
-                        shadowDom.style.display = 'block';
-                        shadowDom.style.left = sLeft + "px";
-                        shadowDom.style.top = sTop + "px";
-                        shadowDom.style.width = this.Size.Width + "px";
-                        shadowDom.style.height = this.Size.Height + "px";
-                        shadowDom.style.color = "" + this.Color;
-                        shadowDom.style.borderColor = "" + this.Color;
-                        shadowDom.style.backgroundColor = "" + this.BackgroundColor;
-                    }
-                    else {
-                        shadowDom.style.display = 'none';
-                    }
-                }
-                catch (e) {
-                    Dump.ErrorLog(e);
-                }
-                finally {
-                    this.ResumeLayout();
-                }
-            };
-            RelocatableButtonView.prototype.Dispose = function () {
-                _super.prototype.Dispose.call(this);
-                this._isRelocatable = null;
-                this._shadow.remove();
-                this._shadow = null;
-                this._isMouseMoveEventListened = null;
-                this._isDragging = null;
-                this._gridSize = null;
-            };
-            return RelocatableButtonView;
-        }(Views.ButtonView));
-        Views.RelocatableButtonView = RelocatableButtonView;
     })(Views = Fw.Views || (Fw.Views = {}));
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
@@ -5592,123 +5720,4 @@ var Fw;
     }());
     Fw.Startup = Startup;
 })(Fw || (Fw = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Views/PageView.ts" />
-/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
-/// <reference path="../../../Fw/Events/PageViewEvents.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-/// <reference path="../Controls/HeaderBarView.ts" />
-var App;
-(function (App) {
-    var Views;
-    (function (Views_9) {
-        var Pages;
-        (function (Pages) {
-            var Views = Fw.Views;
-            var Property = Fw.Views.Property;
-            var Controls = App.Views.Controls;
-            var ControlSetPageView = /** @class */ (function (_super) {
-                __extends(ControlSetPageView, _super);
-                function ControlSetPageView() {
-                    var _this = _super.call(this, $("")) || this;
-                    _this.HeaderBar = new Controls.HeaderBarView();
-                    _this.ButtonPanel = new Views.SlidableBoxView(Property.Direction.Vertical);
-                    _this.SetClassName('ControlSetPageView');
-                    var background = new Views.ImageView();
-                    background.SetAnchor(0, 0, 0, 0);
-                    background.FitPolicy = Property.FitPolicy.Cover;
-                    background.Src = 'images/Pages/ControlSet/background.jpg';
-                    _this.Add(background);
-                    _this.HeaderBar.Text = 'Remote Control';
-                    _this.HeaderBar.RightButton.Hide(0);
-                    _this.Add(_this.HeaderBar);
-                    _this.ButtonPanel.Position.Policy = Property.PositionPolicy.LeftTop;
-                    _this.ButtonPanel.Size.Width = 300;
-                    _this.ButtonPanel.SetAnchor(70, 10, null, 10);
-                    _this.Add(_this.ButtonPanel);
-                    for (var i = 0; i < 10; i++) {
-                        var left = (i % 3) * 100;
-                        var top_2 = Math.floor(i / 3) * 100;
-                        var btn = new Controls.ControlButtonView();
-                        btn.SetLeftTop(left, top_2);
-                        _this.ButtonPanel.Add(btn);
-                    }
-                    return _this;
-                }
-                return ControlSetPageView;
-            }(Fw.Views.PageView));
-            Pages.ControlSetPageView = ControlSetPageView;
-        })(Pages = Views_9.Pages || (Views_9.Pages = {}));
-    })(Views = App.Views || (App.Views = {}));
-})(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Views/RelocatableButtonView.ts" />
-/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-/// <reference path="../../Color.ts" />
-/// <reference path="LabeledButtonView.ts" />
-var App;
-(function (App) {
-    var Views;
-    (function (Views_10) {
-        var Controls;
-        (function (Controls) {
-            var Views = Fw.Views;
-            var Property = Fw.Views.Property;
-            var Color = App.Color;
-            var ControlButtonView = /** @class */ (function (_super) {
-                __extends(ControlButtonView, _super);
-                function ControlButtonView() {
-                    var _this = _super.call(this) || this;
-                    _this.SetSize(85, 85);
-                    _this.GridSize = 95;
-                    _this.Margin = 5;
-                    _this.Position.Policy = Property.PositionPolicy.LeftTop;
-                    _this.HasBorder = true;
-                    _this.BorderRadius = 50;
-                    _this.BackgroundColor = Color.MainBackground;
-                    _this.HoverColor = Color.MainHover;
-                    _this.Color = Color.Main;
-                    return _this;
-                }
-                return ControlButtonView;
-            }(Views.RelocatableButtonView));
-            Controls.ControlButtonView = ControlButtonView;
-        })(Controls = Views_10.Controls || (Views_10.Controls = {}));
-    })(Views = App.Views || (App.Views = {}));
-})(App || (App = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../../Fw/Controllers/ControllerBase.ts" />
-/// <reference path="../../Fw/Controllers/Manager.ts" />
-/// <reference path="../../Fw/Util/Dump.ts" />
-/// <reference path="../../Fw/Events/ControlViewEvents.ts" />
-/// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
-/// <reference path="../Views/Pages/MainPageView.ts" />
-var App;
-(function (App) {
-    var Controllers;
-    (function (Controllers) {
-        var Events = Fw.Events;
-        var Manager = Fw.Controllers.Manager;
-        var Pages = App.Views.Pages;
-        var ControlSetController = /** @class */ (function (_super) {
-            __extends(ControlSetController, _super);
-            function ControlSetController() {
-                var _this = _super.call(this, 'ControlSet') || this;
-                _this.SetClassName('ControlSetController');
-                _this.View = new Pages.ControlSetPageView();
-                var page = _this.View;
-                page.HeaderBar.LeftButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
-                    Manager.Instance.Show("Main");
-                });
-                return _this;
-            }
-            return ControlSetController;
-        }(Fw.Controllers.ControllerBase));
-        Controllers.ControlSetController = ControlSetController;
-    })(Controllers = App.Controllers || (App.Controllers = {}));
-})(App || (App = {}));
 //# sourceMappingURL=tsout.js.map
