@@ -398,10 +398,15 @@ var Fw;
                     throw new Error("Id[" + controller.Id + "] already exists");
                 this._controllers[controller.Id] = controller;
             };
-            Manager.prototype.Remove = function (controller) {
-                if (!this._controllers[controller.Id])
-                    throw new Error("Id[" + controller.Id + "] not found");
-                delete this._controllers[controller.Id];
+            Manager.prototype.Get = function (id) {
+                if (!this._controllers[id])
+                    throw new Error("Id[" + id + "] not found");
+                return this._controllers[id];
+            };
+            Manager.prototype.Remove = function (id) {
+                if (!this._controllers[id])
+                    throw new Error("Id[" + id + "] not found");
+                delete this._controllers[id];
             };
             Manager.prototype.Set = function (id) {
                 var target = this._controllers[id];
@@ -431,6 +436,32 @@ var Fw;
                     }
                 });
                 target.View.ShowModal();
+            };
+            Manager.prototype.HideModal = function (id) {
+                var target = this._controllers[id];
+                if (!target)
+                    throw new Error("id not found: " + id);
+                _.each(this._controllers, function (c) {
+                    if (c !== target && c.View.IsVisible) {
+                        //c.View.ZIndex = -1;
+                        c.View.UnMask();
+                    }
+                });
+                target.View.HideModal();
+            };
+            Manager.prototype.SetUnmodal = function (id) {
+                var target = this._controllers[id];
+                if (!target)
+                    throw new Error("id not found: " + id);
+                _.each(this._controllers, function (c) {
+                    if (c !== target && c.View.IsVisible) {
+                        //c.View.ZIndex = -1;
+                        var page = c.View;
+                        page.UnMask();
+                        page.Hide();
+                    }
+                });
+                target.View.SetUnmodal();
             };
             Manager._instance = null;
             return Manager;
@@ -512,11 +543,17 @@ var Fw;
             ControllerBase.prototype.SwitchController = function (controller) {
                 this.Manager.SetController(controller);
             };
-            ControllerBase.prototype.SetModal = function (id) {
-                this.Manager.SetModal(id);
+            ControllerBase.prototype.SetModal = function () {
+                this.Manager.SetModal(this.Id);
+            };
+            ControllerBase.prototype.HideModal = function () {
+                this.View.HideModal();
+            };
+            ControllerBase.prototype.SetUnmodal = function () {
+                this.Manager.SetUnmodal(this.Id);
             };
             ControllerBase.prototype.Dispose = function () {
-                this._manager.Remove(this);
+                this._manager.Remove(this.Id);
                 this._view.Dispose();
                 this._view = null;
                 this._id = null;
@@ -1897,7 +1934,7 @@ var Fw;
             PageView.prototype.HideModal = function (duration) {
                 var _this = this;
                 if (duration === void 0) { duration = 200; }
-                //Dump.Log(`PageView.Hide: ${this.Elem.data('controller')}`);
+                //Dump.Log(`PageView.HideModal: ${this.Elem.data('controller')}`);
                 if (!this.IsVisible) {
                     this.Refresh();
                     return;
@@ -1917,6 +1954,38 @@ var Fw;
                         _this.SetStyle('zIndex', '0');
                         _this.Dom.style.zIndex = '0';
                         _this.IsVisible = false;
+                        _this._isModal = false;
+                        _this.Position.X = 0;
+                        _this.Position.Y = 0;
+                        _this.Refresh();
+                        _this.DispatchEvent(Events.Hidden);
+                    };
+                    animator.Invoke(duration);
+                }
+            };
+            PageView.prototype.SetUnmodal = function (duration) {
+                var _this = this;
+                if (duration === void 0) { duration = 200; }
+                //Dump.Log(`PageView.SetUnmodal: ${this.Elem.data('controller')}`);
+                if (this.IsVisible && !this._isModal) {
+                    this.Refresh();
+                    return;
+                }
+                if (duration <= 0) {
+                    this.IsVisible = false;
+                    this.DispatchEvent(Events.Hidden);
+                }
+                else {
+                    var animator = new Anim.Animator(this);
+                    animator.FromParams = Anim.Params.GetCurrent(this);
+                    animator.FromParams.Opacity = 1.0;
+                    animator.ToParams = Anim.Params.GetSlided(this, 0, 0);
+                    animator.ToParams.X = -this.Position.X;
+                    animator.ToParams.Opacity = 1.0;
+                    animator.OnComplete = function () {
+                        _this.SetStyle('zIndex', '0');
+                        _this.Dom.style.zIndex = '0';
+                        _this.IsVisible = true;
                         _this._isModal = false;
                         _this.Position.X = 0;
                         _this.Position.Y = 0;
@@ -2407,8 +2476,7 @@ var App;
                 _this.SetPageView(new Pages.MainPageView());
                 var page = _this.View;
                 page.HeaderBar.RightButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
-                    //this.SwitchTo("ControlSet");
-                    _this.SetModal('ControlSet');
+                    _this.Manager.Get('ControlSet').SetModal();
                 });
                 page.BtnGoSub1.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
                     _this.SwitchTo("Sub1");

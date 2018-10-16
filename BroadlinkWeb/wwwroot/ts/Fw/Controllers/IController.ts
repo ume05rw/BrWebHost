@@ -4,8 +4,22 @@
 
 namespace Fw.Controllers {
     export interface IController {
-        Id: string;
-        IsDefaultView: boolean;
-        View: Fw.Views.IView;
+        readonly Id: string;
+        readonly IsDefaultView: boolean;
+        readonly View: Fw.Views.IView;
+        readonly Manager: Fw.Controllers.Manager;
+        readonly ClassName: string;
+
+        SetClassName(name: string): void;
+        SetPageView(view: Views.PageView): void;
+        SetPageViewByJQuery(elem: JQuery): void;
+
+        SwitchTo(id: string): void;
+        SwitchController(controller: IController): void;
+        SetModal(): void;
+        HideModal(): void;
+        SetUnmodal(): void;
+
+        Dispose(): void;
     }
 }

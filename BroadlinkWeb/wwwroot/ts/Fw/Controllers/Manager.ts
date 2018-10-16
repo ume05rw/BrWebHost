@@ -45,11 +45,18 @@ namespace Fw.Controllers {
             this._controllers[controller.Id] = controller;
         }
 
-        public Remove(controller: IController): void {
-            if (!this._controllers[controller.Id])
-                throw new Error(`Id[${controller.Id}] not found`);
+        public Get(id: string): IController {
+            if (!this._controllers[id])
+                throw new Error(`Id[${id}] not found`);
 
-            delete this._controllers[controller.Id];
+            return this._controllers[id];
+        }
+
+        public Remove(id: string): void {
+            if (!this._controllers[id])
+                throw new Error(`Id[${id}] not found`);
+
+            delete this._controllers[id];
         }
 
         public Set(id: string): void {
@@ -87,6 +94,38 @@ namespace Fw.Controllers {
             });
 
             (target.View as Views.PageView).ShowModal();
+        }
+
+        public HideModal(id: string): void {
+            const target = this._controllers[id];
+            if (!target)
+                throw new Error("id not found: " + id);
+
+            _.each(this._controllers, function (c) {
+                if (c !== target && c.View.IsVisible) {
+                    //c.View.ZIndex = -1;
+                    (c.View as Views.PageView).UnMask();
+                }
+            });
+
+            (target.View as Views.PageView).HideModal();
+        }
+
+        public SetUnmodal(id: string): void {
+            const target = this._controllers[id];
+            if (!target)
+                throw new Error("id not found: " + id);
+
+            _.each(this._controllers, function (c) {
+                if (c !== target && c.View.IsVisible) {
+                    //c.View.ZIndex = -1;
+                    const page = c.View as Views.PageView;
+                    page.UnMask();
+                    page.Hide();
+                }
+            });
+
+            (target.View as Views.PageView).SetUnmodal();
         }
     }
 }

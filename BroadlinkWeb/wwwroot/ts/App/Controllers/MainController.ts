@@ -28,8 +28,7 @@ namespace App.Controllers {
             const page = this.View as Pages.MainPageView;
 
             page.HeaderBar.RightButton.AddEventListener(Events.ButtonViewEvents.SingleClick, () => {
-                //this.SwitchTo("ControlSet");
-                this.SetModal('ControlSet');
+                this.Manager.Get('ControlSet').SetModal();
             });
 
             page.BtnGoSub1.AddEventListener(Events.ControlViewEvents.SingleClick, () => {

@@ -58,7 +58,7 @@ namespace Fw.Controllers {
             this._className = name;
         }
 
-        public SetPageView(view: Views.PageView) {
+        public SetPageView(view: Views.PageView): void {
             this._view = view;
         }
 
@@ -78,12 +78,20 @@ namespace Fw.Controllers {
             this.Manager.SetController(controller);
         }
 
-        public SetModal(id: string): void {
-            this.Manager.SetModal(id);
+        public SetModal(): void {
+            this.Manager.SetModal(this.Id);
+        }
+
+        public HideModal(): void {
+            (this.View as Views.PageView).HideModal();
+        }
+
+        public SetUnmodal(): void {
+            this.Manager.SetUnmodal(this.Id);
         }
 
         public Dispose(): void {
-            this._manager.Remove(this);
+            this._manager.Remove(this.Id);
 
             this._view.Dispose();
             this._view = null;

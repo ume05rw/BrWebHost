@@ -130,9 +130,20 @@ declare namespace Fw.Views {
 }
 declare namespace Fw.Controllers {
     interface IController {
-        Id: string;
-        IsDefaultView: boolean;
-        View: Fw.Views.IView;
+        readonly Id: string;
+        readonly IsDefaultView: boolean;
+        readonly View: Fw.Views.IView;
+        readonly Manager: Fw.Controllers.Manager;
+        readonly ClassName: string;
+        SetClassName(name: string): void;
+        SetPageView(view: Views.PageView): void;
+        SetPageViewByJQuery(elem: JQuery): void;
+        SwitchTo(id: string): void;
+        SwitchController(controller: IController): void;
+        SetModal(): void;
+        HideModal(): void;
+        SetUnmodal(): void;
+        Dispose(): void;
     }
 }
 declare namespace Fw.Controllers {
@@ -149,10 +160,13 @@ declare namespace Fw.Controllers {
         private constructor();
         InitControllersByTemplates(): void;
         Add(controller: IController): void;
-        Remove(controller: IController): void;
+        Get(id: string): IController;
+        Remove(id: string): void;
         Set(id: string): void;
         SetController(controller: IController): void;
         SetModal(id: string): void;
+        HideModal(id: string): void;
+        SetUnmodal(id: string): void;
     }
 }
 declare namespace Fw.Controllers {
@@ -175,7 +189,9 @@ declare namespace Fw.Controllers {
         SetPageViewByJQuery(elem: JQuery): void;
         SwitchTo(id: string): void;
         SwitchController(controller: IController): void;
-        SetModal(id: string): void;
+        SetModal(): void;
+        HideModal(): void;
+        SetUnmodal(): void;
         Dispose(): void;
     }
 }
@@ -375,6 +391,7 @@ declare namespace Fw.Views {
         Hide(duration?: number): void;
         ShowModal(duration?: number, width?: number): void;
         HideModal(duration?: number): void;
+        SetUnmodal(duration?: number): void;
         Mask(): void;
         UnMask(): void;
         protected InnerRefresh(): void;

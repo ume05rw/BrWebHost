@@ -323,7 +323,7 @@ namespace Fw.Views {
         }
 
         public HideModal(duration: number = 200): void {
-            //Dump.Log(`PageView.Hide: ${this.Elem.data('controller')}`);
+            //Dump.Log(`PageView.HideModal: ${this.Elem.data('controller')}`);
             if (!this.IsVisible) {
                 this.Refresh();
                 return;
@@ -344,6 +344,39 @@ namespace Fw.Views {
                     this.Dom.style.zIndex = '0';
 
                     this.IsVisible = false;
+                    this._isModal = false;
+                    this.Position.X = 0;
+                    this.Position.Y = 0;
+                    this.Refresh();
+                    this.DispatchEvent(Events.Hidden);
+                };
+
+                animator.Invoke(duration);
+            }
+        }
+
+        public SetUnmodal(duration: number = 200): void {
+            //Dump.Log(`PageView.SetUnmodal: ${this.Elem.data('controller')}`);
+            if (this.IsVisible && !this._isModal) {
+                this.Refresh();
+                return;
+            }
+
+            if (duration <= 0) {
+                this.IsVisible = false;
+                this.DispatchEvent(Events.Hidden);
+            } else {
+                const animator = new Anim.Animator(this);
+                animator.FromParams = Anim.Params.GetCurrent(this);
+                animator.FromParams.Opacity = 1.0;
+                animator.ToParams = Anim.Params.GetSlided(this, 0, 0);
+                animator.ToParams.X = - this.Position.X;
+                animator.ToParams.Opacity = 1.0;
+                animator.OnComplete = () => {
+                    this.SetStyle('zIndex', '0');
+                    this.Dom.style.zIndex = '0';
+
+                    this.IsVisible = true;
                     this._isModal = false;
                     this.Position.X = 0;
                     this.Position.Y = 0;
