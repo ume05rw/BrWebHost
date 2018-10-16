@@ -23,35 +23,32 @@ namespace App.Controllers {
 
             const sub3Ctr = new Sub3Controller();
             const controlSetCtr = new ControlSetController();
-            Manager.Instance.Add(sub3Ctr);
-            Manager.Instance.Add(controlSetCtr);
 
-            this.View = new Pages.MainPageView();
+            this.SetPageView(new Pages.MainPageView());
             const page = this.View as Pages.MainPageView;
 
             page.HeaderBar.RightButton.AddEventListener(Events.ButtonViewEvents.SingleClick, () => {
-                Manager.Instance.Show("ControlSet");
+                //this.SwitchTo("ControlSet");
+                this.SetModal('ControlSet');
             });
 
             page.BtnGoSub1.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
-                // イベント通知でなく、参照保持でよいか？
-                Manager.Instance.Show("Sub1");
+                this.SwitchTo("Sub1");
             });
 
             page.BtnGoSub2.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
-                // イベント通知でなく、参照保持でよいか？
-                Manager.Instance.Show("Sub2");
+                this.SwitchTo("Sub2");
             });
 
             page.BtnGoSub3.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
-                // イベント通知でなく、参照保持でよいか？
-                Manager.Instance.Show("Sub3");
+                this.SwitchTo("Sub3");
             });
 
             page.BtnGoDynamic.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
-                // イベント通知でなく、参照保持でよいか？
                 const ctr = new LayoutCheckController('LayoutCheck');
-                Manager.Instance.ShowOnce(ctr);
+                this.SwitchController(ctr);
+
+                // TODO: 二回目以降で落ちる。処理後にControllerをDisposeするフローを考える。
             });
         }
     }

@@ -58,12 +58,16 @@ namespace Fw.Views.Animation {
 
             //Dump.Log({
             //    name: 'center',
-            //    left: pHalfWidth,
-            //    top: pHalfHeight
+            //    pHalfWidth: pHalfWidth,
+            //    pHalfHeight: pHalfHeight,
+            //    currentX: this._view.Position.X,
+            //    currentY: this._view.Position.Y,
             //});
 
             //Dump.Log({
             //    name: 'from',
+            //    addX: this.FromParams.X,
+            //    addY: this.FromParams.Y,
             //    x: fromX,
             //    y: fromY,
             //    left: fromLeft,
@@ -74,6 +78,8 @@ namespace Fw.Views.Animation {
 
             //Dump.Log({
             //    name: 'to',
+            //    addX: this.ToParams.X,
+            //    addY: this.ToParams.Y,
             //    x: toX,
             //    y: toY,
             //    left: toLeft,

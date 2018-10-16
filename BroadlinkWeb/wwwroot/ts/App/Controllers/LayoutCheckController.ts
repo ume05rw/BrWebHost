@@ -25,17 +25,17 @@ namespace App.Controllers {
         private Init(): void {
             this.SetClassName('LayoutCheckController');
 
-            this.View = new Pages.LayoutCheckPageView();
+            this.SetPageView(new Pages.LayoutCheckPageView());
             const page = this.View as Pages.LayoutCheckPageView;
 
             page.BtnGoSub1.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
                 // イベント通知でなく、参照保持でよいか？
-                Manager.Instance.Show("Sub1");
+                this.SwitchTo("Sub1");
             });
 
             page.BtnGoSub2.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
                 // イベント通知でなく、参照保持でよいか？
-                Manager.Instance.Show("Sub2");
+                this.SwitchTo("Sub2");
             });
 
             page.TmpCtl.AddEventListener(Events.ControlViewEvents.SingleClick, () => {

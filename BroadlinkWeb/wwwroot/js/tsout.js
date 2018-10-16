@@ -369,12 +369,6 @@ var Fw;
         var Manager = /** @class */ (function () {
             function Manager() {
                 this._controllers = {};
-                $("div[" + Config.PageIdAttribute + "]").each(function (i, el) {
-                    var $elem = $(el);
-                    var id = $elem.attr(Config.PageIdAttribute);
-                    var instance = Controllers.Factory.Create(id, $elem);
-                    this._controllers[id] = instance;
-                }.bind(this));
             }
             Object.defineProperty(Manager, "Instance", {
                 get: function () {
@@ -391,12 +385,25 @@ var Fw;
                 if (!Manager._instance)
                     Manager._instance = new Manager();
             };
+            Manager.prototype.InitControllersByTemplates = function () {
+                $("div[" + Config.PageIdAttribute + "]").each(function (i, el) {
+                    var $elem = $(el);
+                    var id = $elem.attr(Config.PageIdAttribute);
+                    var instance = Controllers.Factory.Create(id, $elem);
+                    //this._controllers[id] = instance;
+                }.bind(this));
+            };
             Manager.prototype.Add = function (controller) {
                 if (this._controllers[controller.Id])
                     throw new Error("Id[" + controller.Id + "] already exists");
                 this._controllers[controller.Id] = controller;
             };
-            Manager.prototype.Show = function (id) {
+            Manager.prototype.Remove = function (controller) {
+                if (!this._controllers[controller.Id])
+                    throw new Error("Id[" + controller.Id + "] not found");
+                delete this._controllers[controller.Id];
+            };
+            Manager.prototype.Set = function (id) {
                 var target = this._controllers[id];
                 if (!target)
                     throw new Error("id not found: " + id);
@@ -406,11 +413,24 @@ var Fw;
                 });
                 target.View.Show();
             };
-            Manager.prototype.ShowOnce = function (controller) {
+            Manager.prototype.SetController = function (controller) {
                 _.each(this._controllers, function (c) {
-                    c.View.Hide();
+                    if (c !== controller && c.View.IsVisible)
+                        c.View.Hide();
                 });
                 controller.View.Show();
+            };
+            Manager.prototype.SetModal = function (id) {
+                var target = this._controllers[id];
+                if (!target)
+                    throw new Error("id not found: " + id);
+                _.each(this._controllers, function (c) {
+                    if (c !== target && c.View.IsVisible) {
+                        //c.View.ZIndex = -1;
+                        c.View.Mask();
+                    }
+                });
+                target.View.ShowModal();
             };
             Manager._instance = null;
             return Manager;
@@ -435,15 +455,38 @@ var Fw;
          * */
         var ControllerBase = /** @class */ (function () {
             function ControllerBase(id, jqueryElem) {
-                this.View = null;
                 if (!id)
-                    throw new Error('need Id');
-                this.Id = id;
-                if (jqueryElem) {
-                    this.SetPageViewByJQuery(jqueryElem);
-                }
+                    id = Fw.Util.App.CreateId();
+                this._id = id;
+                this.IsDefaultView = false;
+                this._view = null;
+                this._manager = Fw.Controllers.Manager.Instance;
                 this._className = 'ControllerBase';
+                this._manager.Add(this);
+                if (jqueryElem)
+                    this.SetPageViewByJQuery(jqueryElem);
             }
+            Object.defineProperty(ControllerBase.prototype, "Id", {
+                get: function () {
+                    return this._id;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(ControllerBase.prototype, "View", {
+                get: function () {
+                    return this._view;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(ControllerBase.prototype, "Manager", {
+                get: function () {
+                    return this._manager;
+                },
+                enumerable: true,
+                configurable: true
+            });
             Object.defineProperty(ControllerBase.prototype, "ClassName", {
                 get: function () {
                     return this._className;
@@ -454,17 +497,31 @@ var Fw;
             ControllerBase.prototype.SetClassName = function (name) {
                 this._className = name;
             };
+            ControllerBase.prototype.SetPageView = function (view) {
+                this._view = view;
+            };
             ControllerBase.prototype.SetPageViewByJQuery = function (elem) {
-                this.View = new Fw.Views.PageView(elem);
+                this._view = new Fw.Views.PageView(elem);
                 this.IsDefaultView = (this.View.Elem.attr(Config.DefaultPageAttribute) === "true");
                 if (this.IsDefaultView)
                     this.View.Show();
             };
+            ControllerBase.prototype.SwitchTo = function (id) {
+                this.Manager.Set(id);
+            };
+            ControllerBase.prototype.SwitchController = function (controller) {
+                this.Manager.SetController(controller);
+            };
+            ControllerBase.prototype.SetModal = function (id) {
+                this.Manager.SetModal(id);
+            };
             ControllerBase.prototype.Dispose = function () {
-                this.View.Dispose();
-                this.View = null;
-                this.Id = null;
+                this._manager.Remove(this);
+                this._view.Dispose();
+                this._view = null;
+                this._id = null;
                 this.IsDefaultView = null;
+                this._manager = null;
                 this._className = null;
             };
             return ControllerBase;
@@ -607,7 +664,7 @@ var Fw;
                 }
                 Params.GetCurrent = function (view) {
                     var result = new Params();
-                    result.X = 0;
+                    result.X = 0; // このX,Yは増分を指定するもののため、現時点の座標は X=0, Y= 0
                     result.Y = 0;
                     result.Width = view.Size.Width;
                     result.Height = view.Size.Height;
@@ -692,11 +749,15 @@ var Fw;
                     var hasTransAnimation = this._view.HasTransAnimation();
                     //Dump.Log({
                     //    name: 'center',
-                    //    left: pHalfWidth,
-                    //    top: pHalfHeight
+                    //    pHalfWidth: pHalfWidth,
+                    //    pHalfHeight: pHalfHeight,
+                    //    currentX: this._view.Position.X,
+                    //    currentY: this._view.Position.Y,
                     //});
                     //Dump.Log({
                     //    name: 'from',
+                    //    addX: this.FromParams.X,
+                    //    addY: this.FromParams.Y,
                     //    x: fromX,
                     //    y: fromY,
                     //    left: fromLeft,
@@ -706,6 +767,8 @@ var Fw;
                     //});
                     //Dump.Log({
                     //    name: 'to',
+                    //    addX: this.ToParams.X,
+                    //    addY: this.ToParams.Y,
                     //    x: toX,
                     //    y: toY,
                     //    left: toLeft,
@@ -961,7 +1024,6 @@ var Fw;
             __extends(ViewBase, _super);
             function ViewBase(jqueryElem) {
                 var _this = _super.call(this) || this;
-                _this._isSuppressLayout = false;
                 // Properties
                 _this._dom = null;
                 _this._zIndex = 0;
@@ -970,6 +1032,7 @@ var Fw;
                 _this._opacity = 1.0;
                 _this._isVisible = true;
                 _this._isInitialized = false;
+                _this._isSuppressLayout = false;
                 _this._lastApplyTimer = null;
                 _this._lastAppliedTime = null;
                 _this._innerApplyCount = 0;
@@ -1567,6 +1630,7 @@ var Fw;
                 _this._isDragging = false;
                 _this._isSuppressDrag = false;
                 _this._isMasked = false;
+                _this._isModal = false;
                 Fw.Root.Instance.StartPageInitialize();
                 if (!_this.Dom) {
                     var elem = $("<div class=\"IController IView TransAnimation\"></div>");
@@ -1649,6 +1713,9 @@ var Fw;
                 });
                 // マスクをクリックしたとき、戻る。
                 Fw.Root.Instance.AddEventListener(Fw.Events.RootEvents.MaskClicked, function () {
+                    //TODO: 自分がモーダル表示されているとき、引っ込む。
+                    if (_this.IsVisible && _this._isModal)
+                        _this.HideModal();
                     if (_this._isMasked)
                         _this.UnMask();
                 });
@@ -1664,6 +1731,13 @@ var Fw;
             Object.defineProperty(PageView.prototype, "IsMasked", {
                 get: function () {
                     return this._isMasked;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(PageView.prototype, "IsModal", {
+                get: function () {
+                    return this._isModal;
                 },
                 enumerable: true,
                 configurable: true
@@ -1730,10 +1804,12 @@ var Fw;
                 var _this = this;
                 if (duration === void 0) { duration = 200; }
                 Dump.Log("PageView.Show: " + this.ClassName);
-                if (this.IsVisible) {
+                if (this.IsVisible && !this.IsModal) {
                     this.Refresh();
                     return;
                 }
+                this.SetStyle('zIndex', '0');
+                this.Dom.style.zIndex = '0';
                 if (duration <= 0) {
                     this.IsVisible = true;
                     this.DispatchEvent(Events.Shown);
@@ -1746,6 +1822,7 @@ var Fw;
                     animator.ToParams.Opacity = 1.0;
                     animator.OnComplete = function () {
                         _this.IsVisible = true;
+                        _this._isModal = false;
                         _.delay(function () {
                             _this.Refresh();
                         }, 50);
@@ -1755,6 +1832,69 @@ var Fw;
                 }
             };
             PageView.prototype.Hide = function (duration) {
+                var _this = this;
+                if (duration === void 0) { duration = 200; }
+                //Dump.Log(`PageView.Hide: ${this.Elem.data('controller')}`);
+                if (!this.IsVisible && !this.IsModal) {
+                    this.Refresh();
+                    return;
+                }
+                this.SetStyle('zIndex', '0');
+                this.Dom.style.zIndex = '0';
+                if (duration <= 0) {
+                    this.IsVisible = false;
+                    this.DispatchEvent(Events.Hidden);
+                }
+                else {
+                    var animator = new Anim.Animator(this);
+                    animator.FromParams = Anim.Params.GetCurrent(this);
+                    animator.FromParams.Opacity = 1.0;
+                    animator.ToParams = Anim.Params.GetSlided(this, -1, 0);
+                    animator.ToParams.Opacity = 0.5;
+                    animator.OnComplete = function () {
+                        _this.IsVisible = false;
+                        _this._isModal = false;
+                        _this.Refresh();
+                        _this.DispatchEvent(Events.Hidden);
+                    };
+                    animator.Invoke(duration);
+                }
+            };
+            PageView.prototype.ShowModal = function (duration, width) {
+                var _this = this;
+                if (duration === void 0) { duration = 200; }
+                if (width === void 0) { width = 320; }
+                Dump.Log("PageView.ShowModal: " + this.ClassName);
+                if (this.IsVisible && this._isModal) {
+                    this.Refresh();
+                    return;
+                }
+                this.SetStyle('zIndex', '1');
+                this.Dom.style.zIndex = '1';
+                if (duration <= 0) {
+                    this.IsVisible = true;
+                    this.DispatchEvent(Events.Shown);
+                }
+                else {
+                    var animator_1 = new Anim.Animator(this);
+                    animator_1.FromParams = Anim.Params.GetSlided(this, 1, 0);
+                    animator_1.FromParams.Opacity = 0.5;
+                    animator_1.ToParams = Anim.Params.GetCurrent(this);
+                    animator_1.ToParams.Opacity = 1.0;
+                    animator_1.ToParams.X = animator_1.ToParams.Width - width;
+                    animator_1.OnComplete = function () {
+                        _this.IsVisible = true;
+                        _this._isModal = true;
+                        _this.Position.X = animator_1.ToParams.X;
+                        _.delay(function () {
+                            _this.Refresh();
+                        }, 50);
+                        _this.DispatchEvent(Events.Shown);
+                    };
+                    animator_1.Invoke(duration);
+                }
+            };
+            PageView.prototype.HideModal = function (duration) {
                 var _this = this;
                 if (duration === void 0) { duration = 200; }
                 //Dump.Log(`PageView.Hide: ${this.Elem.data('controller')}`);
@@ -1770,10 +1910,16 @@ var Fw;
                     var animator = new Anim.Animator(this);
                     animator.FromParams = Anim.Params.GetCurrent(this);
                     animator.FromParams.Opacity = 1.0;
-                    animator.ToParams = Anim.Params.GetSlided(this, -1, 0);
+                    animator.ToParams = Anim.Params.GetSlided(this, 1, 0);
+                    animator.ToParams.X = this.Size.Width - this.Position.X;
                     animator.ToParams.Opacity = 0.5;
                     animator.OnComplete = function () {
+                        _this.SetStyle('zIndex', '0');
+                        _this.Dom.style.zIndex = '0';
                         _this.IsVisible = false;
+                        _this._isModal = false;
+                        _this.Position.X = 0;
+                        _this.Position.Y = 0;
                         _this.Refresh();
                         _this.DispatchEvent(Events.Hidden);
                     };
@@ -1800,18 +1946,12 @@ var Fw;
                 var _this = this;
                 try {
                     this.SuppressLayout();
-                    // TODO: Anchor実装する。
-                    // 親View(=Root)とPageは常に同サイズなので、X/YがそのままLeft/Topになる。
-                    //this.Dom.style.left = `${this.Position.X}px`;
-                    //this.Dom.style.top = `${this.Position.Y}px`;
-                    //this.Dom.style.width = `100%`;
-                    //this.Dom.style.height = `100%`;
-                    //this.Dom.style.zIndex = `${this.ZIndex}`;
-                    //this.Dom.style.color = `${this.Color}`;
-                    //this.Dom.style.backgroundColor = `${this.BackgroundColor}`;
-                    //this.Dom.style.display = (this.IsVisible)
-                    //    ? 'block'
-                    //    : 'none';
+                    //const pHalfWidth = Root.Instance.Size.Width / 2;
+                    //const pHalfHeight = Root.Instance.Size.Height / 2;
+                    //const myHalfWidth = Root.Instance.Size.Width / 2;
+                    //const myHalfHeight = Root.Instance.Size.Height / 2;
+                    //let elemLeft = pHalfWidth - myHalfWidth + this.Position.X;
+                    //let elemTop = pHalfHeight - myHalfHeight + this.Position.Y;
                     this.SetStyles({
                         left: this.Position.X + "px",
                         top: this.Position.Y + "px",
@@ -2164,17 +2304,16 @@ var App;
     var Controllers;
     (function (Controllers) {
         var Events = Fw.Events;
-        var Manager = Fw.Controllers.Manager;
         var Pages = App.Views.Pages;
         var ControlSetController = /** @class */ (function (_super) {
             __extends(ControlSetController, _super);
             function ControlSetController() {
                 var _this = _super.call(this, 'ControlSet') || this;
                 _this.SetClassName('ControlSetController');
-                _this.View = new Pages.ControlSetPageView();
+                _this.SetPageView(new Pages.ControlSetPageView());
                 var page = _this.View;
                 page.HeaderBar.LeftButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
-                    Manager.Instance.Show("Main");
+                    _this.SwitchTo("Main");
                 });
                 return _this;
             }
@@ -2197,7 +2336,6 @@ var App;
     (function (Controllers) {
         var Dump = Fw.Util.Dump;
         var Events = Fw.Events;
-        var Manager = Fw.Controllers.Manager;
         var Pages = App.Views.Pages;
         var LayoutCheckController = /** @class */ (function (_super) {
             __extends(LayoutCheckController, _super);
@@ -2209,15 +2347,15 @@ var App;
             LayoutCheckController.prototype.Init = function () {
                 var _this = this;
                 this.SetClassName('LayoutCheckController');
-                this.View = new Pages.LayoutCheckPageView();
+                this.SetPageView(new Pages.LayoutCheckPageView());
                 var page = this.View;
                 page.BtnGoSub1.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
                     // イベント通知でなく、参照保持でよいか？
-                    Manager.Instance.Show("Sub1");
+                    _this.SwitchTo("Sub1");
                 });
                 page.BtnGoSub2.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
                     // イベント通知でなく、参照保持でよいか？
-                    Manager.Instance.Show("Sub2");
+                    _this.SwitchTo("Sub2");
                 });
                 page.TmpCtl.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
                     Dump.Log(_this.ClassName + ".SingleClick1");
@@ -2258,7 +2396,6 @@ var App;
     var Controllers;
     (function (Controllers) {
         var Events = Fw.Events;
-        var Manager = Fw.Controllers.Manager;
         var Pages = App.Views.Pages;
         var MainController = /** @class */ (function (_super) {
             __extends(MainController, _super);
@@ -2267,29 +2404,25 @@ var App;
                 _this.SetClassName('MainController');
                 var sub3Ctr = new Controllers.Sub3Controller();
                 var controlSetCtr = new Controllers.ControlSetController();
-                Manager.Instance.Add(sub3Ctr);
-                Manager.Instance.Add(controlSetCtr);
-                _this.View = new Pages.MainPageView();
+                _this.SetPageView(new Pages.MainPageView());
                 var page = _this.View;
                 page.HeaderBar.RightButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
-                    Manager.Instance.Show("ControlSet");
+                    //this.SwitchTo("ControlSet");
+                    _this.SetModal('ControlSet');
                 });
                 page.BtnGoSub1.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
-                    // イベント通知でなく、参照保持でよいか？
-                    Manager.Instance.Show("Sub1");
+                    _this.SwitchTo("Sub1");
                 });
                 page.BtnGoSub2.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
-                    // イベント通知でなく、参照保持でよいか？
-                    Manager.Instance.Show("Sub2");
+                    _this.SwitchTo("Sub2");
                 });
                 page.BtnGoSub3.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
-                    // イベント通知でなく、参照保持でよいか？
-                    Manager.Instance.Show("Sub3");
+                    _this.SwitchTo("Sub3");
                 });
                 page.BtnGoDynamic.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
-                    // イベント通知でなく、参照保持でよいか？
                     var ctr = new Controllers.LayoutCheckController('LayoutCheck');
-                    Manager.Instance.ShowOnce(ctr);
+                    _this.SwitchController(ctr);
+                    // TODO: 二回目以降で落ちる。処理後にControllerをDisposeするフローを考える。
                 });
                 return _this;
             }
@@ -2534,7 +2667,6 @@ var App;
     (function (Controllers) {
         var Dump = Fw.Util.Dump;
         var Events = Fw.Events;
-        var Manager = Fw.Controllers.Manager;
         var BrDeviceStore = App.Models.Stores.BrDeviceStore;
         var Sub1Controller = /** @class */ (function (_super) {
             __extends(Sub1Controller, _super);
@@ -2544,7 +2676,7 @@ var App;
                 header.Text = 'ヘッダ';
                 header.RightButton.Hide(0);
                 header.LeftButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
-                    Manager.Instance.Show("Main");
+                    _this.SwitchTo("Main");
                 });
                 _this.View.Add(header);
                 var devices = new Fw.Views.ButtonView();
@@ -2593,7 +2725,6 @@ var App;
         var Dump = Fw.Util.Dump;
         var Xhr = Fw.Util.Xhr;
         var Events = Fw.Events;
-        var Manager = Fw.Controllers.Manager;
         var Sub2Controller = /** @class */ (function (_super) {
             __extends(Sub2Controller, _super);
             function Sub2Controller(id, jqueryElem) {
@@ -2602,7 +2733,7 @@ var App;
                 header.Text = 'A1 Sensor';
                 header.RightButton.Hide(0);
                 header.LeftButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
-                    Manager.Instance.Show("Main");
+                    _this.SwitchTo("Main");
                 });
                 _this.View.Add(header);
                 var btnA1Value = new Fw.Views.ButtonView();
@@ -2657,15 +2788,14 @@ var App;
     var Controllers;
     (function (Controllers) {
         var Events = Fw.Events;
-        var Manager = Fw.Controllers.Manager;
         var Sub3Controller = /** @class */ (function (_super) {
             __extends(Sub3Controller, _super);
             function Sub3Controller() {
                 var _this = _super.call(this, 'Sub3') || this;
-                _this.View = new App.Views.Pages.Sub3PageView();
+                _this.SetPageView(new App.Views.Pages.Sub3PageView());
                 var page = _this.View;
                 page.HeaderBar.LeftButton.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
-                    Manager.Instance.Show("Main");
+                    _this.SwitchTo("Main");
                 });
                 return _this;
             }
@@ -2897,6 +3027,9 @@ var Fw;
                 _this._isMouseMoveEventListened = false;
                 _this._isDragging = false;
                 _this._gridSize = 60;
+                /**
+                 * @description 配置時の左／上マージン。LeftTop配置時のみ有効。
+                 */
                 _this._margin = 0;
                 _this._delayedResumeTimer = null;
                 _this._shadow = $('<div class="IView BoxView Shadow"></div>');
@@ -3554,6 +3687,7 @@ var App;
 /// <reference path="../Fw/Controllers/Manager.ts" />
 var App;
 (function (App) {
+    var Dump = Fw.Util.Dump;
     var Manager = Fw.Controllers.Manager;
     var Main = /** @class */ (function () {
         function Main() {
@@ -3566,11 +3700,11 @@ var App;
             var host = location.hostname;
             var port = location.port;
             Fw.Config.XhrBaseUrl = proto + '//' + host + ':' + port + '/api/';
+            Dump.Log('StartUp - 1');
             var main = new App.Controllers.MainController();
-            main.IsDefaultView = true;
-            Manager.Instance.Add(main);
-            Manager.Instance.Show('Main');
-            Fw.Util.Dump.Log('Show');
+            Dump.Log('StartUp - 2');
+            Manager.Instance.SetController(main);
+            Dump.Log('Show');
         };
         return Main;
     }());
@@ -5584,7 +5718,7 @@ var Fw;
                 _this._mask.HasBorder = false;
                 _this._mask.BackgroundColor = '#000000';
                 _this._mask.ZIndex = -1;
-                // IViewでないので、this.Addは出来ない。
+                // RootはIViewでないので、this.Addは出来ない。
                 _this.Elem.append(_this._mask.Elem);
                 _this._mask.Elem.on('click touchend', function () {
                     _this.DispatchEvent(Events.MaskClicked);
@@ -5715,6 +5849,7 @@ var Fw;
             Fw.Root.Init('div.body-content');
             // Controllers.Managerの初期化
             Fw.Controllers.Manager.Init();
+            Fw.Controllers.Manager.Instance.InitControllersByTemplates();
         };
         return Startup;
     }());

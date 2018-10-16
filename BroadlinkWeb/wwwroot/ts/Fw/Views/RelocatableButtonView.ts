@@ -30,6 +30,9 @@ namespace Fw.Views {
             this.Refresh();
         }
 
+        /**
+         * @description 配置時の左／上マージン。LeftTop配置時のみ有効。
+         */
         private _margin: number = 0;
         public get Margin(): number {
             return this._margin;

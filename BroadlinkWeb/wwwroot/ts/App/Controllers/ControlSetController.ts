@@ -21,12 +21,14 @@ namespace App.Controllers {
 
             this.SetClassName('ControlSetController');
 
-            this.View = new Pages.ControlSetPageView();
+            this.SetPageView(new Pages.ControlSetPageView());
             const page = this.View as Pages.ControlSetPageView;
 
             page.HeaderBar.LeftButton.AddEventListener(Events.ButtonViewEvents.SingleClick, () => {
-                Manager.Instance.Show("Main");
+                this.SwitchTo("Main");
             });
         }
+
+
     }
 }

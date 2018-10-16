@@ -14,12 +14,6 @@ namespace Fw.Views {
     import Events = Fw.Events.ViewEvents;
 
     export abstract class ViewBase extends ObjectBase implements IView {
-        // Refresh() Multiple execution suppressor
-        private _lastRefreshTimer: number;
-        private _lastRefreshedTime: Date;
-
-        private _isSuppressLayout: boolean = false;
-
         // Properties
         private _dom: HTMLElement = null;
         public get Dom(): HTMLElement {
@@ -107,6 +101,12 @@ namespace Fw.Views {
         public get IsInitialized(): boolean {
             return this._isInitialized;
         }
+
+        // Refresh() Multiple execution suppressor
+        private _lastRefreshTimer: number;
+        private _lastRefreshedTime: Date;
+        private _isSuppressLayout: boolean = false;
+
 
         constructor(jqueryElem: JQuery) {
             super();

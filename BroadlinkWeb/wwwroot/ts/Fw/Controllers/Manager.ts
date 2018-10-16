@@ -27,12 +27,14 @@ namespace Fw.Controllers {
 
         private constructor() {
             this._controllers = {};
+        }
 
+        public InitControllersByTemplates(): void {
             $(`div[${Config.PageIdAttribute}]`).each(function (i, el) {
                 const $elem = $(el);
                 const id = $elem.attr(Config.PageIdAttribute);
                 const instance = Factory.Create(id, $elem);
-                this._controllers[id] = instance;
+                //this._controllers[id] = instance;
             }.bind(this));
         }
 
@@ -43,7 +45,14 @@ namespace Fw.Controllers {
             this._controllers[controller.Id] = controller;
         }
 
-        public Show(id: string): void {
+        public Remove(controller: IController): void {
+            if (!this._controllers[controller.Id])
+                throw new Error(`Id[${controller.Id}] not found`);
+
+            delete this._controllers[controller.Id];
+        }
+
+        public Set(id: string): void {
             const target = this._controllers[id];
             if (!target)
                 throw new Error("id not found: " + id);
@@ -56,12 +65,28 @@ namespace Fw.Controllers {
             target.View.Show();
         }
 
-        public ShowOnce(controller: IController): void {
+        public SetController(controller: IController): void {
             _.each(this._controllers, function (c) {
-                c.View.Hide();
+                if (c !== controller && c.View.IsVisible)
+                    c.View.Hide();
             });
 
             controller.View.Show();
+        }
+
+        public SetModal(id: string): void {
+            const target = this._controllers[id];
+            if (!target)
+                throw new Error("id not found: " + id);
+
+            _.each(this._controllers, function (c) {
+                if (c !== target && c.View.IsVisible) {
+                    //c.View.ZIndex = -1;
+                    (c.View as Views.PageView).Mask();
+                }
+            });
+
+            (target.View as Views.PageView).ShowModal();
         }
     }
 }

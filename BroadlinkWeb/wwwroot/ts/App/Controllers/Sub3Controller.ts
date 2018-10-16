@@ -18,11 +18,11 @@ namespace App.Controllers {
         constructor() {
             super('Sub3');
 
-            this.View = new App.Views.Pages.Sub3PageView();
+            this.SetPageView(new App.Views.Pages.Sub3PageView());
             const page = this.View as App.Views.Pages.Sub3PageView;
 
             page.HeaderBar.LeftButton.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
-                Manager.Instance.Show("Main");
+                this.SwitchTo("Main");
             });
 
 

@@ -65,7 +65,7 @@ namespace Fw {
                 this._mask.BackgroundColor = '#000000';
                 this._mask.ZIndex = -1;
 
-                // IViewでないので、this.Addは出来ない。
+                // RootはIViewでないので、this.Addは出来ない。
                 this.Elem.append(this._mask.Elem);
 
                 this._mask.Elem.on('click touchend', () => {

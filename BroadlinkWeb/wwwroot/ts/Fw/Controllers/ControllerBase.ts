@@ -14,46 +14,83 @@ namespace Fw.Controllers {
      * @see コントローラはイベント等の実装が無いので、IObjectを実装しない。
      * */
     export abstract class ControllerBase implements IController {
-        public Id: string;
+
+        private _id: string;
+        public get Id(): string {
+            return this._id;
+        }
+
         public IsDefaultView: boolean;
-        public View: Fw.Views.IView = null;
+
+
+        private _view: Fw.Views.IView;
+        public get View(): Fw.Views.IView {
+            return this._view;
+        }
+
+        private _manager: Fw.Controllers.Manager;
+        public get Manager(): Fw.Controllers.Manager {
+            return this._manager;
+        }
 
         private _className: string;
         public get ClassName(): string {
             return this._className;
         }
 
-        constructor(id: string, jqueryElem?: JQuery) {
+        constructor(id?: string, jqueryElem?: JQuery) {
             if (!id)
-                throw new Error('need Id');
+                id = Fw.Util.App.CreateId();
 
-            this.Id = id;
-
-            if (jqueryElem) {
-                this.SetPageViewByJQuery(jqueryElem);
-            }
-
+            this._id = id;
+            this.IsDefaultView = false;
+            this._view = null;
+            this._manager = Fw.Controllers.Manager.Instance;
             this._className = 'ControllerBase';
+
+            this._manager.Add(this);
+
+            if (jqueryElem)
+                this.SetPageViewByJQuery(jqueryElem);
         }
 
         public SetClassName(name: string): void {
             this._className = name;
         }
 
+        public SetPageView(view: Views.PageView) {
+            this._view = view;
+        }
+
         public SetPageViewByJQuery(elem: JQuery): void {
-            this.View = new Fw.Views.PageView(elem);
+            this._view = new Fw.Views.PageView(elem);
             this.IsDefaultView = (this.View.Elem.attr(Config.DefaultPageAttribute) === "true");
 
             if (this.IsDefaultView)
                 this.View.Show();
         }
 
-        public Dispose(): void {
-            this.View.Dispose();
-            this.View = null;
+        public SwitchTo(id: string): void {
+            this.Manager.Set(id);
+        }
 
-            this.Id = null;
+        public SwitchController(controller: IController): void {
+            this.Manager.SetController(controller);
+        }
+
+        public SetModal(id: string): void {
+            this.Manager.SetModal(id);
+        }
+
+        public Dispose(): void {
+            this._manager.Remove(this);
+
+            this._view.Dispose();
+            this._view = null;
+
+            this._id = null;
             this.IsDefaultView = null;
+            this._manager = null;
             this._className = null;
         }
     }

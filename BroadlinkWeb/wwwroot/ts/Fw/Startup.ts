@@ -21,6 +21,7 @@ namespace Fw {
 
             // Controllers.Managerの初期化
             Fw.Controllers.Manager.Init();
+            Fw.Controllers.Manager.Instance.InitControllersByTemplates();
         }
     }
 }

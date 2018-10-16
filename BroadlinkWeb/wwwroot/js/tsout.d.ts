@@ -147,9 +147,12 @@ declare namespace Fw.Controllers {
         static Init(): void;
         private _controllers;
         private constructor();
+        InitControllersByTemplates(): void;
         Add(controller: IController): void;
-        Show(id: string): void;
-        ShowOnce(controller: IController): void;
+        Remove(controller: IController): void;
+        Set(id: string): void;
+        SetController(controller: IController): void;
+        SetModal(id: string): void;
     }
 }
 declare namespace Fw.Controllers {
@@ -157,14 +160,22 @@ declare namespace Fw.Controllers {
      * @see コントローラはイベント等の実装が無いので、IObjectを実装しない。
      * */
     abstract class ControllerBase implements IController {
-        Id: string;
+        private _id;
+        readonly Id: string;
         IsDefaultView: boolean;
-        View: Fw.Views.IView;
+        private _view;
+        readonly View: Fw.Views.IView;
+        private _manager;
+        readonly Manager: Fw.Controllers.Manager;
         private _className;
         readonly ClassName: string;
-        constructor(id: string, jqueryElem?: JQuery);
+        constructor(id?: string, jqueryElem?: JQuery);
         SetClassName(name: string): void;
+        SetPageView(view: Views.PageView): void;
         SetPageViewByJQuery(elem: JQuery): void;
+        SwitchTo(id: string): void;
+        SwitchController(controller: IController): void;
+        SetModal(id: string): void;
         Dispose(): void;
     }
 }
@@ -275,9 +286,6 @@ declare namespace Fw {
 declare namespace Fw.Views {
     import Property = Fw.Views.Property;
     abstract class ViewBase extends ObjectBase implements IView {
-        private _lastRefreshTimer;
-        private _lastRefreshedTime;
-        private _isSuppressLayout;
         private _dom;
         readonly Dom: HTMLElement;
         private _page;
@@ -304,6 +312,9 @@ declare namespace Fw.Views {
         IsVisible: boolean;
         private _isInitialized;
         readonly IsInitialized: boolean;
+        private _lastRefreshTimer;
+        private _lastRefreshedTime;
+        private _isSuppressLayout;
         constructor(jqueryElem: JQuery);
         protected SetElem(jqueryElem: JQuery): void;
         protected InitPage(): void;
@@ -353,6 +364,8 @@ declare namespace Fw.Views {
         readonly DraggedPosition: Property.Position;
         private _isMasked;
         readonly IsMasked: boolean;
+        private _isModal;
+        readonly IsModal: boolean;
         constructor(jqueryElem?: JQuery);
         SuppressDragging(): void;
         IsSuppressDragging(): boolean;
@@ -360,6 +373,8 @@ declare namespace Fw.Views {
         private DetectToNeedDrags;
         Show(duration?: number): void;
         Hide(duration?: number): void;
+        ShowModal(duration?: number, width?: number): void;
+        HideModal(duration?: number): void;
         Mask(): void;
         UnMask(): void;
         protected InnerRefresh(): void;
@@ -524,6 +539,9 @@ declare namespace Fw.Views {
         private _dragStartViewPosition;
         private _gridSize;
         GridSize: number;
+        /**
+         * @description 配置時の左／上マージン。LeftTop配置時のみ有効。
+         */
         private _margin;
         Margin: number;
         constructor();

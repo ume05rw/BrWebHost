@@ -39,6 +39,11 @@ namespace Fw.Views {
             return this._isMasked;
         }
 
+        private _isModal: boolean = false;
+        public get IsModal(): boolean {
+            return this._isModal;
+        }
+
         constructor(jqueryElem?: JQuery) {
             super(jqueryElem);
 
@@ -145,6 +150,11 @@ namespace Fw.Views {
 
             // マスクをクリックしたとき、戻る。
             Fw.Root.Instance.AddEventListener(Fw.Events.RootEvents.MaskClicked, () => {
+
+                //TODO: 自分がモーダル表示されているとき、引っ込む。
+                if (this.IsVisible && this._isModal)
+                    this.HideModal();
+
                 if (this._isMasked)
                     this.UnMask();
             });
@@ -219,10 +229,13 @@ namespace Fw.Views {
 
         public Show(duration: number = 200): void {
             Dump.Log(`PageView.Show: ${this.ClassName}`);
-            if (this.IsVisible) {
+            if (this.IsVisible && !this.IsModal) {
                 this.Refresh();
                 return;
             }
+
+            this.SetStyle('zIndex', '0');
+            this.Dom.style.zIndex = '0';
 
             if (duration <= 0) {
                 this.IsVisible = true;
@@ -235,6 +248,7 @@ namespace Fw.Views {
                 animator.ToParams.Opacity = 1.0;
                 animator.OnComplete = () => {
                     this.IsVisible = true;
+                    this._isModal = false;
                     _.delay(() => {
                         this.Refresh();
                     }, 50);
@@ -245,6 +259,70 @@ namespace Fw.Views {
         }
 
         public Hide(duration: number = 200): void {
+            //Dump.Log(`PageView.Hide: ${this.Elem.data('controller')}`);
+            if (!this.IsVisible && !this.IsModal) {
+                this.Refresh();
+                return;
+            }
+
+            this.SetStyle('zIndex', '0');
+            this.Dom.style.zIndex = '0';
+
+            if (duration <= 0) {
+                this.IsVisible = false;
+                this.DispatchEvent(Events.Hidden);
+            } else {
+                const animator = new Anim.Animator(this);
+                animator.FromParams = Anim.Params.GetCurrent(this);
+                animator.FromParams.Opacity = 1.0;
+                animator.ToParams = Anim.Params.GetSlided(this, -1, 0);
+                animator.ToParams.Opacity = 0.5;
+                animator.OnComplete = () => {
+                    this.IsVisible = false;
+                    this._isModal = false;
+                    this.Refresh();
+                    this.DispatchEvent(Events.Hidden);
+                };
+
+                animator.Invoke(duration);
+            }
+        }
+
+        public ShowModal(duration: number = 200, width: number = 320): void {
+            Dump.Log(`PageView.ShowModal: ${this.ClassName}`);
+            if (this.IsVisible && this._isModal) {
+                this.Refresh();
+                return;
+            }
+
+            this.SetStyle('zIndex', '1');
+            this.Dom.style.zIndex = '1';
+
+            if (duration <= 0) {
+                this.IsVisible = true;
+                this.DispatchEvent(Events.Shown);
+            } else {
+                const animator = new Anim.Animator(this);
+                animator.FromParams = Anim.Params.GetSlided(this, 1, 0);
+                animator.FromParams.Opacity = 0.5;
+                animator.ToParams = Anim.Params.GetCurrent(this);
+                animator.ToParams.Opacity = 1.0;
+                animator.ToParams.X = animator.ToParams.Width - width;
+
+                animator.OnComplete = () => {
+                    this.IsVisible = true;
+                    this._isModal = true;
+                    this.Position.X = animator.ToParams.X;
+                    _.delay(() => {
+                        this.Refresh();
+                    }, 50);
+                    this.DispatchEvent(Events.Shown);
+                };
+                animator.Invoke(duration);
+            }
+        }
+
+        public HideModal(duration: number = 200): void {
             //Dump.Log(`PageView.Hide: ${this.Elem.data('controller')}`);
             if (!this.IsVisible) {
                 this.Refresh();
@@ -258,10 +336,17 @@ namespace Fw.Views {
                 const animator = new Anim.Animator(this);
                 animator.FromParams = Anim.Params.GetCurrent(this);
                 animator.FromParams.Opacity = 1.0;
-                animator.ToParams = Anim.Params.GetSlided(this, -1, 0);
+                animator.ToParams = Anim.Params.GetSlided(this, 1, 0);
+                animator.ToParams.X = this.Size.Width - this.Position.X;
                 animator.ToParams.Opacity = 0.5;
                 animator.OnComplete = () => {
+                    this.SetStyle('zIndex', '0');
+                    this.Dom.style.zIndex = '0';
+
                     this.IsVisible = false;
+                    this._isModal = false;
+                    this.Position.X = 0;
+                    this.Position.Y = 0;
                     this.Refresh();
                     this.DispatchEvent(Events.Hidden);
                 };
@@ -292,18 +377,12 @@ namespace Fw.Views {
             try {
                 this.SuppressLayout();
 
-                // TODO: Anchor実装する。
-                // 親View(=Root)とPageは常に同サイズなので、X/YがそのままLeft/Topになる。
-                //this.Dom.style.left = `${this.Position.X}px`;
-                //this.Dom.style.top = `${this.Position.Y}px`;
-                //this.Dom.style.width = `100%`;
-                //this.Dom.style.height = `100%`;
-                //this.Dom.style.zIndex = `${this.ZIndex}`;
-                //this.Dom.style.color = `${this.Color}`;
-                //this.Dom.style.backgroundColor = `${this.BackgroundColor}`;
-                //this.Dom.style.display = (this.IsVisible)
-                //    ? 'block'
-                //    : 'none';
+                //const pHalfWidth = Root.Instance.Size.Width / 2;
+                //const pHalfHeight = Root.Instance.Size.Height / 2;
+                //const myHalfWidth = Root.Instance.Size.Width / 2;
+                //const myHalfHeight = Root.Instance.Size.Height / 2;
+                //let elemLeft = pHalfWidth - myHalfWidth + this.Position.X;
+                //let elemTop = pHalfHeight - myHalfHeight + this.Position.Y;
 
                 this.SetStyles({
                     left: `${this.Position.X}px`,

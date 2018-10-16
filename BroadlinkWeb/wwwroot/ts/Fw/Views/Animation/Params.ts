@@ -9,7 +9,7 @@ namespace Fw.Views.Animation {
     export class Params {
         public static GetCurrent(view: Fw.Views.IView): Params {
             const result = new Params();
-            result.X = 0;
+            result.X = 0; // このX,Yは増分を指定するもののため、現時点の座標は X=0, Y= 0
             result.Y = 0;
             result.Width = view.Size.Width;
             result.Height = view.Size.Height;
