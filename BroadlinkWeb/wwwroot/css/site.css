@@ -126,3 +126,18 @@ div.IController .TextAreaView {
     width: 99%;
     height: 99%;
 }
+
+div.IController .CheckBoxView > .CheckBoxViewProperty {
+    position: absolute;
+    /* border: none; */
+    display: block;
+    box-shadow: none;
+    font-size: 100%;
+}
+div.IController .CheckBoxView > input.CheckBoxViewProperty {
+    left: 5px;
+}
+div.IController .CheckBoxView > label.CheckBoxViewProperty {
+    left: 20px;
+    font-weight: normal;
+}

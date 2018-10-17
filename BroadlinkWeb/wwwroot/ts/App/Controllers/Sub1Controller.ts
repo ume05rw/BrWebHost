@@ -58,20 +58,39 @@ namespace App.Controllers {
             const textbox = new Fw.Views.TextBoxView();
             textbox.SetSize(60, 30);
             textbox.SetLeftTop(10, 10);
+            textbox.Name = 'textbox';
             slider.Add(textbox);
 
             const textarea = new Fw.Views.TextAreaView();
             textarea.SetSize(100, 50);
             textarea.SetLeftTop(10, 50);
+            textarea.Name = 'textarea';
             slider.Add(textarea);
 
             const selectbox = new Fw.Views.SelectBoxView();
             selectbox.SetSize(100, 30);
             selectbox.SetLeftTop(10, 110);
+            selectbox.Name = 'selectbox';
             selectbox.AddItem('いちばん', '1');
             selectbox.AddItem('にばん', '2');
             selectbox.AddItem('さんばん', '3');
             slider.Add(selectbox);
+
+            const checkbox1 = new Fw.Views.CheckBoxView();
+            checkbox1.SetSize(100, 30);
+            checkbox1.SetLeftTop(10, 150);
+            checkbox1.Name = 'toggle_on';
+            checkbox1.Value = 'true';
+            checkbox1.Text = 'トグルOn';
+            slider.Add(checkbox1);
+
+            const checkbox2 = new Fw.Views.CheckBoxView();
+            checkbox2.SetSize(100, 30);
+            checkbox2.SetLeftTop(10, 190);
+            checkbox2.Name = 'toggle_off';
+            checkbox2.Value = 'true';
+            checkbox2.Text = 'トグルOff';
+            slider.Add(checkbox2);
         }
     }
 }

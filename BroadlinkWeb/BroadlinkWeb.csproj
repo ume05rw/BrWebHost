@@ -60,6 +60,7 @@
     <Content Remove="wwwroot\ts\Fw\Views\Animation\Params.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\BoxView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\ButtonView.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\CheckBoxView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\ControlView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\ImageView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\IView.ts" />
@@ -157,6 +158,7 @@
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Xhr\Result.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\BoxView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ButtonView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\CheckBoxView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\ReferencePoint.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\SelectBoxView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\StuckerBoxView.ts" />
