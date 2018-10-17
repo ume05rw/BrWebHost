@@ -55,6 +55,15 @@ namespace Fw.Views {
             this.Refresh();
         }
 
+        private _textAlign: Property.TextAlign;
+        public get TextAlign(): Property.TextAlign {
+            return this._textAlign;
+        }
+        public set TextAlign(value: Property.TextAlign) {
+            this._textAlign = value;
+            this.Refresh();
+        }
+
         private _autoSize: boolean;
         public get AutoSize(): boolean {
             return this._autoSize;
@@ -88,6 +97,7 @@ namespace Fw.Views {
             this._fontWeight = Property.FontWeight.Normal;
             this._fontSize = Property.FontSize.Medium;
             this._fontFamily = 'Quicksand, 游ゴシック体, "Yu Gothic", YuGothic, "ヒラギノ角ゴシック Pro", "Hiragino Kaku Gothic Pro", メイリオ, Meiryo, Osaka, "ＭＳ Ｐゴシック", "MS PGothic", sans-serif';
+            this._textAlign = Property.TextAlign.Center;
 
             this._hiddenSpan.style.visibility = 'hidden';
             this._hiddenSpan.style.fontWeight = this._fontWeight;
@@ -109,6 +119,7 @@ namespace Fw.Views {
                 super.InnerRefresh();
 
                 this.SetStyles({
+                    textAlign: this._textAlign,
                     fontWeight: this._fontWeight,
                     fontSize: this._fontSize,
                     fontFamily: this._fontFamily

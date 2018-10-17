@@ -4,6 +4,7 @@
 /// <reference path="../../Fw/Controllers/Manager.ts" />
 /// <reference path="../../Fw/Util/Dump.ts" />
 /// <reference path="../../Fw/Events/ControlViewEvents.ts" />
+/// <reference path="../../Fw/Views/Property/Anchor.ts" />
 /// <reference path="../Models/Entities/BrDevice.ts" />
 /// <reference path="../Models/Stores/BrDeviceStore.ts" />
 
@@ -13,6 +14,7 @@ namespace App.Controllers {
     import Manager = Fw.Controllers.Manager;
     import BrDevice = App.Models.Entities.BrDevice;
     import BrDeviceStore = App.Models.Stores.BrDeviceStore;
+    import Property = Fw.Views.Property;
 
     export class Sub1Controller extends Fw.Controllers.ControllerBase {
 
@@ -91,6 +93,13 @@ namespace App.Controllers {
             checkbox2.Value = 'true';
             checkbox2.Text = 'トグルOff';
             slider.Add(checkbox2);
+
+            const label = new Fw.Views.LabelView();
+            label.AutoSize = true;
+            label.TextAlign = Property.TextAlign.Left;
+            label.Text = 'はろー？';
+            label.SetLeftTop(80, 10);
+            slider.Add(label);
         }
     }
 }

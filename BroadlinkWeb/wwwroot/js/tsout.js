@@ -2739,6 +2739,7 @@ var App;
 /// <reference path="../../Fw/Controllers/Manager.ts" />
 /// <reference path="../../Fw/Util/Dump.ts" />
 /// <reference path="../../Fw/Events/ControlViewEvents.ts" />
+/// <reference path="../../Fw/Views/Property/Anchor.ts" />
 /// <reference path="../Models/Entities/BrDevice.ts" />
 /// <reference path="../Models/Stores/BrDeviceStore.ts" />
 var App;
@@ -2748,6 +2749,7 @@ var App;
         var Dump = Fw.Util.Dump;
         var Events = Fw.Events;
         var BrDeviceStore = App.Models.Stores.BrDeviceStore;
+        var Property = Fw.Views.Property;
         var Sub1Controller = /** @class */ (function (_super) {
             __extends(Sub1Controller, _super);
             function Sub1Controller(id, jqueryElem) {
@@ -2817,6 +2819,12 @@ var App;
                 checkbox2.Value = 'true';
                 checkbox2.Text = 'トグルOff';
                 slider.Add(checkbox2);
+                var label = new Fw.Views.LabelView();
+                label.AutoSize = true;
+                label.TextAlign = Property.TextAlign.Left;
+                label.Text = 'はろー？';
+                label.SetLeftTop(80, 10);
+                slider.Add(label);
                 return _this;
             }
             return Sub1Controller;
@@ -4212,9 +4220,7 @@ var Fw;
 })(Fw || (Fw = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../Events/ViewEvents.ts" />
 /// <reference path="../../Util/Dump.ts" />
-/// <reference path="../../Util/Number.ts" />
 var Fw;
 (function (Fw) {
     var Views;
@@ -4687,6 +4693,7 @@ var Fw;
                 _this._fontWeight = Property.FontWeight.Normal;
                 _this._fontSize = Property.FontSize.Medium;
                 _this._fontFamily = 'Quicksand, 游ゴシック体, "Yu Gothic", YuGothic, "ヒラギノ角ゴシック Pro", "Hiragino Kaku Gothic Pro", メイリオ, Meiryo, Osaka, "ＭＳ Ｐゴシック", "MS PGothic", sans-serif';
+                _this._textAlign = Property.TextAlign.Center;
                 _this._hiddenSpan.style.visibility = 'hidden';
                 _this._hiddenSpan.style.fontWeight = _this._fontWeight;
                 _this._hiddenSpan.style.fontSize = _this._fontSize;
@@ -4749,6 +4756,17 @@ var Fw;
                 enumerable: true,
                 configurable: true
             });
+            Object.defineProperty(LabelView.prototype, "TextAlign", {
+                get: function () {
+                    return this._textAlign;
+                },
+                set: function (value) {
+                    this._textAlign = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
             Object.defineProperty(LabelView.prototype, "AutoSize", {
                 get: function () {
                     return this._autoSize;
@@ -4764,6 +4782,7 @@ var Fw;
                 try {
                     _super.prototype.InnerRefresh.call(this);
                     this.SetStyles({
+                        textAlign: this._textAlign,
                         fontWeight: this._fontWeight,
                         fontSize: this._fontSize,
                         fontFamily: this._fontFamily
@@ -6403,6 +6422,25 @@ var Fw;
             return CheckBoxView;
         }(Views.ViewBase));
         Views.CheckBoxView = CheckBoxView;
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Util/Dump.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Property;
+        (function (Property) {
+            var TextAlign;
+            (function (TextAlign) {
+                TextAlign["Left"] = "left";
+                TextAlign["Center"] = "center";
+                TextAlign["Right"] = "right";
+                TextAlign["JustifyAll"] = "justify-all";
+            })(TextAlign = Property.TextAlign || (Property.TextAlign = {}));
+        })(Property = Views.Property || (Views.Property = {}));
     })(Views = Fw.Views || (Fw.Views = {}));
 })(Fw || (Fw = {}));
 //# sourceMappingURL=tsout.js.map

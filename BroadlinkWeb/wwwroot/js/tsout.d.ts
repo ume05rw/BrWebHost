@@ -850,6 +850,8 @@ declare namespace Fw.Views {
         FontSize: Property.FontSize;
         private _fontFamily;
         FontFamily: string;
+        private _textAlign;
+        TextAlign: Property.TextAlign;
         private _autoSize;
         AutoSize: boolean;
         private _hiddenSpan;
@@ -1056,5 +1058,13 @@ declare namespace Fw.Views {
         private _input;
         private _label;
         constructor();
+    }
+}
+declare namespace Fw.Views.Property {
+    enum TextAlign {
+        Left = "left",
+        Center = "center",
+        Right = "right",
+        JustifyAll = "justify-all"
     }
 }
