@@ -1,6 +1,6 @@
 ﻿/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../Events/ControlViewEvents.ts" />
+/// <reference path="../Events/ViewEvents.ts" />
 /// <reference path="../Util/Dump.ts" />
 /// <reference path="../Util/Number.ts" />
 /// <reference path="ViewBase.ts" />
@@ -8,11 +8,12 @@
 
 namespace Fw.Views {
     import Dump = Fw.Util.Dump;
-    import Events = Fw.Events.ControlViewEvents;
+    import Events = Fw.Events.ViewEvents;
     import Number = Fw.Util.Number;
     import FitPolicy = Fw.Views.Property.FitPolicy;
 
     export class ImageView extends ViewBase {
+
         private _image: HTMLImageElement;
 
         private _src: string;

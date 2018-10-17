@@ -101,3 +101,28 @@ div.IController .ControlView.ToggleButtonView:hover {
 div.IController .ControlView.ToggleButtonView .BoxView {
     transition: all 0.3s ease-in-out;
 }
+
+div.IController .TextBoxView,
+div.IController .SelectBoxView {
+    position: absolute;
+    /* border: none; */
+    display: block;
+    box-shadow: none;
+    border-radius: 10px;
+    font-size: 100%;
+    left: 0;
+    width: 99%;
+}
+
+div.IController .TextAreaView {
+    position: absolute;
+    /* border: none; */
+    display: block;
+    box-shadow: none;
+    border-radius: 10px;
+    font-size: 100%;
+    left: 0;
+    top: 0;
+    width: 99%;
+    height: 99%;
+}

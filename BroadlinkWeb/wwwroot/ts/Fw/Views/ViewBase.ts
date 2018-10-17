@@ -435,10 +435,13 @@ namespace Fw.Views {
             if (parent.length <= 0)
                 return;
 
+            const isSuppressLayout =  this.IsSuppressedLayout();
             const isSuppressSizeChanged = this.IsSuppressedEvent(Events.SizeChanged);
             const isSuppressPositionChanged = this.IsSuppressedEvent(Events.PositionChanged);
 
             try {
+                if (!isSuppressLayout)
+                    this.SuppressLayout();
                 if (!isSuppressSizeChanged)
                     this.SuppressEvent(Events.SizeChanged);
                 if (!isSuppressPositionChanged)
@@ -490,6 +493,8 @@ namespace Fw.Views {
             } catch (e) {
                 Dump.ErrorLog(e);
             } finally {
+                if (!isSuppressLayout)
+                    this.ResumeLayout();
                 if (!isSuppressSizeChanged)
                     this.ResumeEvent(Events.SizeChanged);
                 if (!isSuppressPositionChanged)

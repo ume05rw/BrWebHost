@@ -429,6 +429,10 @@ namespace Fw.Views {
                 this._innerBox.Size.Width = this.Size.Width;
                 this._innerBox.Size.Height = this.Size.Height;
 
+                _.each(this._innerBox.Children, (view: IView) => {
+                    view.CalcLayout();
+                });
+
                 // 先に描画領域を計算し、this._scrollMargin を得る。
                 switch (this._referencePoint) {
                     case Property.ReferencePoint.LeftTop:

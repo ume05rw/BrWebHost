@@ -54,6 +54,24 @@ namespace App.Controllers {
             devices.SetLeftTop(10, 120);
             slider.InnerLength = 1000;
             this.View.Add(slider);
+
+            const textbox = new Fw.Views.TextBoxView();
+            textbox.SetSize(60, 30);
+            textbox.SetLeftTop(10, 10);
+            slider.Add(textbox);
+
+            const textarea = new Fw.Views.TextAreaView();
+            textarea.SetSize(100, 50);
+            textarea.SetLeftTop(10, 50);
+            slider.Add(textarea);
+
+            const selectbox = new Fw.Views.SelectBoxView();
+            selectbox.SetSize(100, 30);
+            selectbox.SetLeftTop(10, 110);
+            selectbox.AddItem('いちばん', '1');
+            selectbox.AddItem('にばん', '2');
+            selectbox.AddItem('さんばん', '3');
+            slider.Add(selectbox);
         }
     }
 }

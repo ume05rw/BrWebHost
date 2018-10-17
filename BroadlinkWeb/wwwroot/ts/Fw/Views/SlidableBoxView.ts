@@ -260,6 +260,10 @@ namespace Fw.Views {
                     if (this.InnerLength < this.Size.Width)
                         this.InnerLength = this.Size.Width;
 
+                    const maxInnerLength = this.GetMaxInnerLength();
+                    if (this.InnerLength < maxInnerLength)
+                        this.InnerLength = maxInnerLength;
+
                     this._innerBox.Size.Width = this.InnerLength;
                     this._innerBox.Size.Height = this.Size.Height;
 
@@ -295,9 +299,12 @@ namespace Fw.Views {
                     if (this.InnerLength < this.Size.Height)
                         this.InnerLength = this.Size.Height;
 
+                    const maxInnerLength = this.GetMaxInnerLength();
+                    if (this.InnerLength < maxInnerLength)
+                        this.InnerLength = maxInnerLength;
+
                     this._innerBox.Size.Height = this.InnerLength;
                     this._innerBox.Size.Width = this.Size.Width;
-
 
                     this._positionBarMax.SetAnchor(this._barMargin, null, this._barMargin, this._barMargin);
                     this._positionBarMax.Length = this.Size.Height - (this._barMargin * 2);
@@ -327,6 +334,25 @@ namespace Fw.Views {
                 this._positionBarMax.ResumeLayout();
                 this._positionBarCurrent.ResumeLayout();
             }
+        }
+
+        private GetMaxInnerLength(): number {
+
+            let maxWidth = 0;
+            let maxHeight = 0;
+
+            _.each(this._innerBox.Children, (view: IView) => {
+                const right = view.Position.Left + view.Size.Width + this._barMargin;
+                const bottom = view.Position.Top + view.Size.Height + this._barMargin;
+                if (maxWidth < right)
+                    maxWidth = right;
+                if (maxHeight < bottom)
+                    maxHeight = bottom;
+            });
+
+            return (this.Direction === Property.Direction.Horizontal)
+                ? maxWidth
+                : maxHeight;
         }
 
         public Dispose(): void {

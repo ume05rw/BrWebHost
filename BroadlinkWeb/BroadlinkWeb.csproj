@@ -75,9 +75,12 @@
     <Content Remove="wwwroot\ts\Fw\Views\Property\ReferencePoint.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\RelocatableButtonView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\Root.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\SelectBoxView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\Size.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\SlidableBoxView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\StuckerBoxView.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\TextAreaView.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\TextBoxView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\ToggleButtonView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\ViewBase.ts" />
     <Content Remove="wwwroot\ts\PageManager.ts" />
@@ -155,6 +158,7 @@
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\BoxView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ButtonView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\ReferencePoint.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\SelectBoxView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\StuckerBoxView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ImageView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\LineView.ts" />
@@ -175,6 +179,8 @@
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\Size.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Root.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\SlidableBoxView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\TextAreaView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\TextBoxView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ToggleButtonView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ViewBase.ts" />
   </ItemGroup>
