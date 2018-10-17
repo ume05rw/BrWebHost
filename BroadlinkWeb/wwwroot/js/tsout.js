@@ -2479,6 +2479,7 @@ var App;
                 var page = _this.View;
                 page.HeaderBar.RightButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
                     _this.Manager.Get('ControlSet').SetModal();
+                    //this.SwitchTo('ControlSet');
                 });
                 page.BtnGoSub1.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
                     _this.SwitchTo("Sub1");

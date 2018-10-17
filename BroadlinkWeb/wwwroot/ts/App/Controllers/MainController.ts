@@ -29,6 +29,7 @@ namespace App.Controllers {
 
             page.HeaderBar.RightButton.AddEventListener(Events.ButtonViewEvents.SingleClick, () => {
                 this.Manager.Get('ControlSet').SetModal();
+                //this.SwitchTo('ControlSet');
             });
 
             page.BtnGoSub1.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
