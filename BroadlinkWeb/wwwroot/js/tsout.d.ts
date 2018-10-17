@@ -162,6 +162,7 @@ declare namespace Fw.Controllers {
         Add(controller: IController): void;
         Get(id: string): IController;
         Remove(id: string): void;
+        private Reset;
         Set(id: string): void;
         SetController(controller: IController): void;
         SetModal(id: string): void;
@@ -178,7 +179,7 @@ declare namespace Fw.Controllers {
         readonly Id: string;
         IsDefaultView: boolean;
         private _view;
-        readonly View: Fw.Views.IView;
+        readonly View: Fw.Views.PageView;
         private _manager;
         readonly Manager: Fw.Controllers.Manager;
         private _className;
@@ -446,6 +447,7 @@ declare namespace App.Views.Pages {
 }
 declare namespace App.Controllers {
     class ControlSetController extends Fw.Controllers.ControllerBase {
+        private _page;
         constructor();
     }
 }
@@ -611,10 +613,14 @@ declare namespace App.Views.Pages {
     import Controls = App.Views.Controls;
     class ControlSetPageView extends Fw.Views.PageView {
         HeaderBar: Controls.HeaderBarView;
+        EditButton: Controls.ButtonView;
         ButtonPanel: Views.SlidableBoxView;
         constructor();
-        SetButtonsCenter(): void;
-        SetButtonsLeft(): void;
+        SetEditMode(): void;
+        SetOperateMode(): void;
+        ShowModal(duration?: number, width?: number): void;
+        SetUnmodal(duration?: number): void;
+        Show(duration?: number): void;
     }
 }
 declare namespace App.Views.Pages {

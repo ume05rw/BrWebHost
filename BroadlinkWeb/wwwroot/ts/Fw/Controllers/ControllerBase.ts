@@ -23,8 +23,8 @@ namespace Fw.Controllers {
         public IsDefaultView: boolean;
 
 
-        private _view: Fw.Views.IView;
-        public get View(): Fw.Views.IView {
+        private _view: Fw.Views.PageView;
+        public get View(): Fw.Views.PageView {
             return this._view;
         }
 

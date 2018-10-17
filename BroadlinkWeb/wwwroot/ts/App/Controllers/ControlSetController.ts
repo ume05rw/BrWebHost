@@ -16,19 +16,24 @@ namespace App.Controllers {
 
     export class ControlSetController extends Fw.Controllers.ControllerBase {
 
+        private _page: Pages.ControlSetPageView;
+
         constructor() {
             super('ControlSet');
 
             this.SetClassName('ControlSetController');
 
             this.SetPageView(new Pages.ControlSetPageView());
-            const page = this.View as Pages.ControlSetPageView;
+            this._page = this.View as Pages.ControlSetPageView;
 
-            page.HeaderBar.LeftButton.AddEventListener(Events.ButtonViewEvents.SingleClick, () => {
+            this._page.HeaderBar.LeftButton.Hide(0);
+            this._page.HeaderBar.LeftButton.AddEventListener(Events.ButtonViewEvents.SingleClick, () => {
                 this.SwitchTo("Main");
             });
+
+            this._page.EditButton.AddEventListener(Events.ButtonViewEvents.SingleClick, () => {
+                this.SetUnmodal();
+            });
         }
-
-
     }
 }

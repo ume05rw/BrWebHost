@@ -17,8 +17,8 @@ namespace App.Views.Controls {
         constructor() {
             super();
 
-            this.SetSize(85, 85);
-            this.GridSize = 95;
+            this.SetSize(78, 78);
+            this.GridSize = 90;
             this.Margin = 5;
             this.Position.Policy = Property.PositionPolicy.LeftTop;
             this.HasBorder = true;

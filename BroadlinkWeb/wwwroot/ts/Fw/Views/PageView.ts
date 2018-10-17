@@ -288,7 +288,7 @@ namespace Fw.Views {
             }
         }
 
-        public ShowModal(duration: number = 200, width: number = 320): void {
+        public ShowModal(duration: number = 200, width: number = 300): void {
             Dump.Log(`PageView.ShowModal: ${this.ClassName}`);
             if (this.IsVisible && this._isModal) {
                 this.Refresh();

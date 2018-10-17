@@ -59,25 +59,33 @@ namespace Fw.Controllers {
             delete this._controllers[id];
         }
 
+        private Reset(excludeController: IController): void {
+            _.each(this._controllers, function (c) {
+                if (c !== excludeController) {
+                    const page = c.View as Views.PageView;
+                    if (page.IsVisible) {
+                        if (page.IsModal)
+                            page.HideModal();
+                        else
+                            page.Hide();
+                    }
+                    if (page.IsMasked)
+                        page.UnMask();
+                }
+            });
+        }
+
         public Set(id: string): void {
             const target = this._controllers[id];
             if (!target)
                 throw new Error("id not found: " + id);
 
-            _.each(this._controllers, function (c) {
-                if (c !== target && c.View.IsVisible)
-                    c.View.Hide();
-            });
-
+            this.Reset(target);
             target.View.Show();
         }
 
         public SetController(controller: IController): void {
-            _.each(this._controllers, function (c) {
-                if (c !== controller && c.View.IsVisible)
-                    c.View.Hide();
-            });
-
+            this.Reset(controller);
             controller.View.Show();
         }
 
@@ -87,10 +95,8 @@ namespace Fw.Controllers {
                 throw new Error("id not found: " + id);
 
             _.each(this._controllers, function (c) {
-                if (c !== target && c.View.IsVisible) {
-                    //c.View.ZIndex = -1;
+                if (c !== target && c.View.IsVisible)
                     (c.View as Views.PageView).Mask();
-                }
             });
 
             (target.View as Views.PageView).ShowModal();
@@ -102,10 +108,8 @@ namespace Fw.Controllers {
                 throw new Error("id not found: " + id);
 
             _.each(this._controllers, function (c) {
-                if (c !== target && c.View.IsVisible) {
-                    //c.View.ZIndex = -1;
+                if (c !== target && c.View.IsVisible)
                     (c.View as Views.PageView).UnMask();
-                }
             });
 
             (target.View as Views.PageView).HideModal();
@@ -116,15 +120,7 @@ namespace Fw.Controllers {
             if (!target)
                 throw new Error("id not found: " + id);
 
-            _.each(this._controllers, function (c) {
-                if (c !== target && c.View.IsVisible) {
-                    //c.View.ZIndex = -1;
-                    const page = c.View as Views.PageView;
-                    page.UnMask();
-                    page.Hide();
-                }
-            });
-
+            this.Reset(target);
             (target.View as Views.PageView).SetUnmodal();
         }
     }

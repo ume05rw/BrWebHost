@@ -17,12 +17,14 @@ namespace App.Views.Pages {
     export class ControlSetPageView extends Fw.Views.PageView {
 
         public HeaderBar: Controls.HeaderBarView;
+        public EditButton: Controls.ButtonView;
         public ButtonPanel: Views.SlidableBoxView;
 
         constructor() {
             super($(""));
 
             this.HeaderBar = new Controls.HeaderBarView();
+            this.EditButton = new Controls.ButtonView();
             this.ButtonPanel = new Views.SlidableBoxView(Property.Direction.Vertical);
 
 
@@ -38,10 +40,19 @@ namespace App.Views.Pages {
             this.HeaderBar.RightButton.Hide(0);
             this.Add(this.HeaderBar);
 
+            this.EditButton.SetSize(40, 40);
+            this.EditButton.BackgroundColor = Color.HeaderButtonBackground;
+            this.EditButton.HoverColor = Color.HeaderButtonHover;
+            this.EditButton.Color = Color.Main;
+            this.EditButton.Text = '@';
+            this.EditButton.SetAnchor(null, 255, null, null);
+            this.HeaderBar.Add(this.EditButton);
+
+
             this.ButtonPanel.Position.Policy = Property.PositionPolicy.LeftTop;
-            this.ButtonPanel.Size.Width = 300;
+            this.ButtonPanel.Size.Width = 280;
             this.ButtonPanel.SetAnchor(70, null, null, 10);
-            this.SetButtonsLeft();
+            this.SetOperateMode();
             this.Add(this.ButtonPanel);
 
             for (let i = 0; i < 10; i++) {
@@ -54,14 +65,33 @@ namespace App.Views.Pages {
             }
         }
 
-        public SetButtonsCenter(): void {
+        public SetEditMode(): void {
             const left = (this.Size.Width / 2) - (this.ButtonPanel.Size.Width / 2);
             this.ButtonPanel.Position.Left = left;
+            this.HeaderBar.LeftButton.Show(0);
+            this.EditButton.Hide(0);
         }
 
-        public SetButtonsLeft(): void {
+        public SetOperateMode(): void {
             const left = 10;
             this.ButtonPanel.Position.Left = left;
+            this.HeaderBar.LeftButton.Hide(0);
+            this.EditButton.Show(0);
+        }
+
+        public ShowModal(duration: number = 200, width: number = 300): void {
+            this.SetOperateMode();
+            super.ShowModal(duration, width);
+        }
+
+        public SetUnmodal(duration: number = 200): void {
+            this.SetEditMode();
+            super.SetUnmodal();
+        }
+
+        public Show(duration: number = 200): void {
+            this.SetEditMode();
+            super.Show(duration);
         }
     }
 }

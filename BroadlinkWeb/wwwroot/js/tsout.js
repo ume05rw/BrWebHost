@@ -408,21 +408,30 @@ var Fw;
                     throw new Error("Id[" + id + "] not found");
                 delete this._controllers[id];
             };
+            Manager.prototype.Reset = function (excludeController) {
+                _.each(this._controllers, function (c) {
+                    if (c !== excludeController) {
+                        var page = c.View;
+                        if (page.IsVisible) {
+                            if (page.IsModal)
+                                page.HideModal();
+                            else
+                                page.Hide();
+                        }
+                        if (page.IsMasked)
+                            page.UnMask();
+                    }
+                });
+            };
             Manager.prototype.Set = function (id) {
                 var target = this._controllers[id];
                 if (!target)
                     throw new Error("id not found: " + id);
-                _.each(this._controllers, function (c) {
-                    if (c !== target && c.View.IsVisible)
-                        c.View.Hide();
-                });
+                this.Reset(target);
                 target.View.Show();
             };
             Manager.prototype.SetController = function (controller) {
-                _.each(this._controllers, function (c) {
-                    if (c !== controller && c.View.IsVisible)
-                        c.View.Hide();
-                });
+                this.Reset(controller);
                 controller.View.Show();
             };
             Manager.prototype.SetModal = function (id) {
@@ -430,10 +439,8 @@ var Fw;
                 if (!target)
                     throw new Error("id not found: " + id);
                 _.each(this._controllers, function (c) {
-                    if (c !== target && c.View.IsVisible) {
-                        //c.View.ZIndex = -1;
+                    if (c !== target && c.View.IsVisible)
                         c.View.Mask();
-                    }
                 });
                 target.View.ShowModal();
             };
@@ -442,10 +449,8 @@ var Fw;
                 if (!target)
                     throw new Error("id not found: " + id);
                 _.each(this._controllers, function (c) {
-                    if (c !== target && c.View.IsVisible) {
-                        //c.View.ZIndex = -1;
+                    if (c !== target && c.View.IsVisible)
                         c.View.UnMask();
-                    }
                 });
                 target.View.HideModal();
             };
@@ -453,14 +458,7 @@ var Fw;
                 var target = this._controllers[id];
                 if (!target)
                     throw new Error("id not found: " + id);
-                _.each(this._controllers, function (c) {
-                    if (c !== target && c.View.IsVisible) {
-                        //c.View.ZIndex = -1;
-                        var page = c.View;
-                        page.UnMask();
-                        page.Hide();
-                    }
-                });
+                this.Reset(target);
                 target.View.SetUnmodal();
             };
             Manager._instance = null;
@@ -1900,7 +1898,7 @@ var Fw;
             PageView.prototype.ShowModal = function (duration, width) {
                 var _this = this;
                 if (duration === void 0) { duration = 200; }
-                if (width === void 0) { width = 320; }
+                if (width === void 0) { width = 300; }
                 Dump.Log("PageView.ShowModal: " + this.ClassName);
                 if (this.IsVisible && this._isModal) {
                     this.Refresh();
@@ -2380,9 +2378,13 @@ var App;
                 var _this = _super.call(this, 'ControlSet') || this;
                 _this.SetClassName('ControlSetController');
                 _this.SetPageView(new Pages.ControlSetPageView());
-                var page = _this.View;
-                page.HeaderBar.LeftButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
+                _this._page = _this.View;
+                _this._page.HeaderBar.LeftButton.Hide(0);
+                _this._page.HeaderBar.LeftButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
                     _this.SwitchTo("Main");
+                });
+                _this._page.EditButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
+                    _this.SetUnmodal();
                 });
                 return _this;
             }
@@ -3422,8 +3424,8 @@ var App;
                 __extends(ControlButtonView, _super);
                 function ControlButtonView() {
                     var _this = _super.call(this) || this;
-                    _this.SetSize(85, 85);
-                    _this.GridSize = 95;
+                    _this.SetSize(78, 78);
+                    _this.GridSize = 90;
                     _this.Margin = 5;
                     _this.Position.Policy = Property.PositionPolicy.LeftTop;
                     _this.HasBorder = true;
@@ -3544,6 +3546,7 @@ var App;
                 function ControlSetPageView() {
                     var _this = _super.call(this, $("")) || this;
                     _this.HeaderBar = new Controls.HeaderBarView();
+                    _this.EditButton = new Controls.ButtonView();
                     _this.ButtonPanel = new Views.SlidableBoxView(Property.Direction.Vertical);
                     _this.SetClassName('ControlSetPageView');
                     var background = new Views.ImageView();
@@ -3554,10 +3557,17 @@ var App;
                     _this.HeaderBar.Text = 'Remote Control';
                     _this.HeaderBar.RightButton.Hide(0);
                     _this.Add(_this.HeaderBar);
+                    _this.EditButton.SetSize(40, 40);
+                    _this.EditButton.BackgroundColor = App.Color.HeaderButtonBackground;
+                    _this.EditButton.HoverColor = App.Color.HeaderButtonHover;
+                    _this.EditButton.Color = App.Color.Main;
+                    _this.EditButton.Text = '@';
+                    _this.EditButton.SetAnchor(null, 255, null, null);
+                    _this.HeaderBar.Add(_this.EditButton);
                     _this.ButtonPanel.Position.Policy = Property.PositionPolicy.LeftTop;
-                    _this.ButtonPanel.Size.Width = 300;
+                    _this.ButtonPanel.Size.Width = 280;
                     _this.ButtonPanel.SetAnchor(70, null, null, 10);
-                    _this.SetButtonsLeft();
+                    _this.SetOperateMode();
                     _this.Add(_this.ButtonPanel);
                     for (var i = 0; i < 10; i++) {
                         var left = (i % 3) * 100;
@@ -3568,13 +3578,33 @@ var App;
                     }
                     return _this;
                 }
-                ControlSetPageView.prototype.SetButtonsCenter = function () {
+                ControlSetPageView.prototype.SetEditMode = function () {
                     var left = (this.Size.Width / 2) - (this.ButtonPanel.Size.Width / 2);
                     this.ButtonPanel.Position.Left = left;
+                    this.HeaderBar.LeftButton.Show(0);
+                    this.EditButton.Hide(0);
                 };
-                ControlSetPageView.prototype.SetButtonsLeft = function () {
+                ControlSetPageView.prototype.SetOperateMode = function () {
                     var left = 10;
                     this.ButtonPanel.Position.Left = left;
+                    this.HeaderBar.LeftButton.Hide(0);
+                    this.EditButton.Show(0);
+                };
+                ControlSetPageView.prototype.ShowModal = function (duration, width) {
+                    if (duration === void 0) { duration = 200; }
+                    if (width === void 0) { width = 300; }
+                    this.SetOperateMode();
+                    _super.prototype.ShowModal.call(this, duration, width);
+                };
+                ControlSetPageView.prototype.SetUnmodal = function (duration) {
+                    if (duration === void 0) { duration = 200; }
+                    this.SetEditMode();
+                    _super.prototype.SetUnmodal.call(this);
+                };
+                ControlSetPageView.prototype.Show = function (duration) {
+                    if (duration === void 0) { duration = 200; }
+                    this.SetEditMode();
+                    _super.prototype.Show.call(this, duration);
                 };
                 return ControlSetPageView;
             }(Fw.Views.PageView));
