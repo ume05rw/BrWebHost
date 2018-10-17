@@ -6,9 +6,9 @@ namespace Fw {
         readonly Elem: JQuery;
         readonly ClassName: string;
 
-        AddEventListener(name: string, handler: (e: JQueryEventObject) => void, bindObject?: IObject): void;
-        RemoveEventListener(name: string, handler?: (e: JQueryEventObject) => void): void;
-        DispatchEvent(name: string): void;
+        AddEventListener(name: string, handler: (je: JQueryEventObject, eo: Fw.Events.EventObject) => void, bindObject?: IObject): void;
+        RemoveEventListener(name: string, handler?: (je: JQueryEventObject, eo: Fw.Events.EventObject) => void): void;
+        DispatchEvent(name: string, value?: Object): void;
         SuppressEvent(name: string): void;
         IsSuppressedEvent(name: string): boolean;
         ResumeEvent(name: string): void;

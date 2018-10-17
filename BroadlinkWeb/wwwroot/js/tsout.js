@@ -1005,11 +1005,13 @@ var Fw;
                 });
             }
         };
-        ObjectBase.prototype.DispatchEvent = function (name) {
+        ObjectBase.prototype.DispatchEvent = function (name, params) {
+            if (params === void 0) { params = null; }
             if (this.IsSuppressedEvent(name))
                 return;
             //Dump.Log(`${this.ClassName}.DispatchEvent: ${name}`);
-            this.Elem.trigger(name);
+            var eo = new Fw.Events.EventObject(this, name, params);
+            this.Elem.trigger(name, eo);
         };
         ObjectBase.prototype.SuppressEvent = function (name) {
             if (this.IsSuppressedEvent(name))
@@ -2890,7 +2892,7 @@ var Fw;
             __extends(ControlView, _super);
             function ControlView() {
                 var _this = _super.call(this) || this;
-                _this._tapEventTimer = null;
+                _this._clickEventTimer = null;
                 _this._cvMouseSuppressor = false;
                 _this._cvDelayedResumeEventsTimer = null;
                 _this._label = $('<span class="ControlViewProperty"></span>');
@@ -2901,11 +2903,11 @@ var Fw;
                 _this.BorderRadius = 5;
                 _this.Elem.append(_this._label);
                 _this.Elem.on('touchstart mousedown', function (e) {
-                    if (_this._tapEventTimer != null)
-                        clearTimeout(_this._tapEventTimer);
-                    _this._tapEventTimer = setTimeout(function () {
+                    if (_this._clickEventTimer != null)
+                        clearTimeout(_this._clickEventTimer);
+                    _this._clickEventTimer = setTimeout(function () {
                         // ロングタップイベント
-                        _this._tapEventTimer = null;
+                        _this._clickEventTimer = null;
                         // Pageのドラッグ処理中のとき、クリックイベントを抑制する。
                         if (_this._cvMouseSuppressor)
                             return;
@@ -2914,10 +2916,10 @@ var Fw;
                     }, 1000);
                 });
                 _this.Elem.on('touchend mouseup', function (e) {
-                    if (_this._tapEventTimer != null) {
+                    if (_this._clickEventTimer != null) {
                         // ロングタップ検出中のとき
-                        clearTimeout(_this._tapEventTimer);
-                        _this._tapEventTimer = null;
+                        clearTimeout(_this._clickEventTimer);
+                        _this._clickEventTimer = null;
                         // Pageのドラッグ処理中のとき、クリックイベントを抑制する。
                         if (_this._cvMouseSuppressor)
                             return;
@@ -2929,10 +2931,10 @@ var Fw;
                     }
                 });
                 _this.Elem.on('mouseout', function (e) {
-                    if (_this._tapEventTimer != null) {
+                    if (_this._clickEventTimer != null) {
                         // ロングタップ検出中のとき
-                        clearTimeout(_this._tapEventTimer);
-                        _this._tapEventTimer = null;
+                        clearTimeout(_this._clickEventTimer);
+                        _this._clickEventTimer = null;
                         //Dump.Log('tap canceled');
                     }
                 });
@@ -2973,7 +2975,7 @@ var Fw;
             ControlView.prototype.Dispose = function () {
                 _super.prototype.Dispose.call(this);
                 this._label = null;
-                this._tapEventTimer = null;
+                this._clickEventTimer = null;
                 this._cvMouseSuppressor = null;
                 this._cvDelayedResumeEventsTimer = null;
             };
@@ -3097,6 +3099,7 @@ var Fw;
                 _this._isRelocatable = false;
                 _this._isMouseMoveEventListened = false;
                 _this._isDragging = false;
+                _this._mouseDownTime = null;
                 _this._gridSize = 60;
                 /**
                  * @description 配置時の左／上マージン。LeftTop配置時のみ有効。
@@ -3120,6 +3123,7 @@ var Fw;
                         _this._isDragging = true;
                         _this._dragStartMousePosition.X = e.pageX;
                         _this._dragStartMousePosition.Y = e.pageY;
+                        _this._mouseDownTime = new Date();
                         if (_this.Position.Policy === Views.Property.PositionPolicy.Centering) {
                             _this._dragStartViewPosition.X = _this.Position.X;
                             _this._dragStartViewPosition.Y = _this.Position.Y;
@@ -3145,6 +3149,27 @@ var Fw;
                         else {
                             _this.Position.Left = (Math.round(_this.Position.Left / _this.GridSize) * _this.GridSize) + _this._margin;
                             _this.Position.Top = (Math.round(_this.Position.Top / _this.GridSize) * _this.GridSize) + _this._margin;
+                        }
+                        // SingleClick判定
+                        if (_this._mouseDownTime) {
+                            var elapsed = ((new Date()).getTime() - _this._mouseDownTime.getTime());
+                            var addX = e.pageX - _this._dragStartMousePosition.X;
+                            var addY = e.pageY - _this._dragStartMousePosition.Y;
+                            //Dump.Log({
+                            //    name: 'RelButton.SlickDetection',
+                            //    _mouseDownTime: this._mouseDownTime,
+                            //    elapsed: elapsed,
+                            //    addX: addX,
+                            //    addY: addY,
+                            //    add: (Math.abs(addX) + Math.abs(addY))
+                            //});
+                            if ((Math.abs(addX) + Math.abs(addY)) < 10
+                                && elapsed < 500) {
+                                Dump.Log('Fire.SingleClick');
+                                if (_this.IsSuppressedEvent(Events.SingleClick))
+                                    _this.ResumeEvent(Events.SingleClick);
+                                _this.DispatchEvent(Events.SingleClick);
+                            }
                         }
                         _this.Refresh();
                     }
@@ -3232,15 +3257,15 @@ var Fw;
                 }, 100);
             };
             RelocatableButtonView.prototype.SetRelocatable = function (relocatable) {
-                if (this._isRelocatable) {
-                    // 固定する。
-                    this._isRelocatable = false;
-                    this._shadow.detach();
-                }
-                else {
+                if (relocatable === true) {
                     // 移動可能にする。
                     this._isRelocatable = true;
                     this.Elem.parent().append(this._shadow);
+                }
+                else {
+                    // 固定する。
+                    this._isRelocatable = false;
+                    this._shadow.detach();
                 }
                 this.Refresh();
             };
@@ -3325,6 +3350,48 @@ var Fw;
         Views.RelocatableButtonView = RelocatableButtonView;
     })(Views = Fw.Views || (Fw.Views = {}));
 })(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="ControlViewEvents.ts" />
+var Fw;
+(function (Fw) {
+    var Events;
+    (function (Events) {
+        var ButtonViewEventsClass = /** @class */ (function (_super) {
+            __extends(ButtonViewEventsClass, _super);
+            function ButtonViewEventsClass() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            return ButtonViewEventsClass;
+        }(Events.ControlViewEventsClass));
+        Events.ButtonViewEventsClass = ButtonViewEventsClass;
+        Events.ButtonViewEvents = new ButtonViewEventsClass();
+    })(Events = Fw.Events || (Fw.Events = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Events/ButtonViewEvents.ts" />
+var App;
+(function (App) {
+    var Events;
+    (function (Events) {
+        var Controls;
+        (function (Controls) {
+            var ControlButtonViewEventsClass = /** @class */ (function (_super) {
+                __extends(ControlButtonViewEventsClass, _super);
+                function ControlButtonViewEventsClass() {
+                    var _this = _super !== null && _super.apply(this, arguments) || this;
+                    _this.EditOrdered = 'EditOrdered';
+                    _this.ExecOrdered = 'ExecOrdered';
+                    return _this;
+                }
+                return ControlButtonViewEventsClass;
+            }(Fw.Events.ButtonViewEventsClass));
+            Controls.ControlButtonViewEventsClass = ControlButtonViewEventsClass;
+            Controls.ControlButtonViewEvents = new ControlButtonViewEventsClass();
+        })(Controls = Events.Controls || (Events.Controls = {}));
+    })(Events = App.Events || (App.Events = {}));
+})(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../../Fw/Views/ControlView.ts" />
@@ -3411,6 +3478,7 @@ var App;
 /// <reference path="../../../Fw/Views/Property/Anchor.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../../Color.ts" />
+/// <reference path="../../Events/Controls/ControlButtonViewEvents.ts" />
 /// <reference path="LabeledButtonView.ts" />
 var App;
 (function (App) {
@@ -3418,14 +3486,16 @@ var App;
     (function (Views_5) {
         var Controls;
         (function (Controls) {
+            var Dump = Fw.Util.Dump;
             var Views = Fw.Views;
             var Property = Fw.Views.Property;
             var Color = App.Color;
+            var Events = App.Events.Controls.ControlButtonViewEvents;
             var ControlButtonView = /** @class */ (function (_super) {
                 __extends(ControlButtonView, _super);
                 function ControlButtonView() {
                     var _this = _super.call(this) || this;
-                    _this.SetSize(78, 78);
+                    _this.SetSize(75, 75);
                     _this.GridSize = 90;
                     _this.Margin = 5;
                     _this.Position.Policy = Property.PositionPolicy.LeftTop;
@@ -3434,8 +3504,24 @@ var App;
                     _this.BackgroundColor = Color.MainBackground;
                     _this.HoverColor = Color.MainHover;
                     _this.Color = Color.MainHover;
+                    _this.Code = '';
+                    _this.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, function (e) {
+                        _this.OnSingleClicked(e);
+                    });
                     return _this;
                 }
+                ControlButtonView.prototype.OnSingleClicked = function (e) {
+                    if (this.IsRelocatable) {
+                        // 編集モードのとき
+                        Dump.Log('Edit');
+                        this.DispatchEvent(Events.EditOrdered);
+                    }
+                    else {
+                        // 実行モードのとき
+                        Dump.Log('Exec');
+                        this.DispatchEvent(Events.ExecOrdered, this.Code);
+                    }
+                };
                 return ControlButtonView;
             }(Views.RelocatableButtonView));
             Controls.ControlButtonView = ControlButtonView;
@@ -3539,6 +3625,8 @@ var App;
     (function (Views_8) {
         var Pages;
         (function (Pages) {
+            var Dump = Fw.Util.Dump;
+            var Events = Fw.Events;
             var Views = Fw.Views;
             var Property = Fw.Views.Property;
             var Controls = App.Views.Controls;
@@ -3570,26 +3658,43 @@ var App;
                     _this.ButtonPanel.SetAnchor(70, null, null, 10);
                     _this.SetOperateMode();
                     _this.Add(_this.ButtonPanel);
-                    for (var i = 0; i < 10; i++) {
-                        var left = (i % 3) * 100;
-                        var top_2 = Math.floor(i / 3) * 100;
+                    _this.HeaderBar.RightButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
                         var btn = new Controls.ControlButtonView();
-                        btn.SetLeftTop(left, top_2);
+                        btn.SetLeftTop(185, _this.Size.Height - 90 - 70);
+                        btn.AddEventListener(App.Events.Controls.ControlButtonViewEvents.EditOrdered, function (e, p) {
+                            Dump.Log(p);
+                        }, _this);
+                        btn.AddEventListener(App.Events.Controls.ControlButtonViewEvents.ExecOrdered, function (e, p) {
+                            Dump.Log(p);
+                        }, _this);
                         _this.ButtonPanel.Add(btn);
-                    }
+                        // 再配置可能指示はパネルにaddした後で。
+                        btn.SetRelocatable(true);
+                    });
                     return _this;
                 }
                 ControlSetPageView.prototype.SetEditMode = function () {
                     var left = (this.Size.Width / 2) - (this.ButtonPanel.Size.Width / 2);
                     this.ButtonPanel.Position.Left = left;
                     this.HeaderBar.LeftButton.Show(0);
+                    this.HeaderBar.RightButton.Show(0);
                     this.EditButton.Hide(0);
+                    _.each(this.ButtonPanel.Children, function (v) {
+                        if (v instanceof Controls.ControlButtonView)
+                            v.SetRelocatable(true);
+                    });
                 };
                 ControlSetPageView.prototype.SetOperateMode = function () {
                     var left = 10;
                     this.ButtonPanel.Position.Left = left;
                     this.HeaderBar.LeftButton.Hide(0);
+                    this.HeaderBar.RightButton.Hide(0);
+                    this.HeaderBar.RightButton.Hide(0);
                     this.EditButton.Show(0);
+                    _.each(this.ButtonPanel.Children, function (v) {
+                        if (v instanceof Controls.ControlButtonView)
+                            v.SetRelocatable(false);
+                    });
                 };
                 ControlSetPageView.prototype.ShowModal = function (duration, width) {
                     if (duration === void 0) { duration = 200; }
@@ -3815,24 +3920,6 @@ $(function () {
     Fw.Util.Dump.Log('Start');
     App.Main.StartUp();
 });
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="ControlViewEvents.ts" />
-var Fw;
-(function (Fw) {
-    var Events;
-    (function (Events) {
-        var ButtonViewEventsClass = /** @class */ (function (_super) {
-            __extends(ButtonViewEventsClass, _super);
-            function ButtonViewEventsClass() {
-                return _super !== null && _super.apply(this, arguments) || this;
-            }
-            return ButtonViewEventsClass;
-        }(Events.ControlViewEventsClass));
-        Events.ButtonViewEventsClass = ButtonViewEventsClass;
-        Events.ButtonViewEvents = new ButtonViewEventsClass();
-    })(Events = Fw.Events || (Fw.Events = {}));
-})(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="ViewEvents.ts" />
@@ -5953,5 +6040,22 @@ var Fw;
         return Startup;
     }());
     Fw.Startup = Startup;
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+var Fw;
+(function (Fw) {
+    var Events;
+    (function (Events) {
+        var EventObject = /** @class */ (function () {
+            function EventObject(sender, eventName, params) {
+                this.Sender = sender;
+                this.EventName = eventName;
+                this.Params = params;
+            }
+            return EventObject;
+        }());
+        Events.EventObject = EventObject;
+    })(Events = Fw.Events || (Fw.Events = {}));
 })(Fw || (Fw = {}));
 //# sourceMappingURL=tsout.js.map

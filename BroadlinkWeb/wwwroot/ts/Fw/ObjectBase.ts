@@ -45,7 +45,7 @@ namespace Fw {
 
         public AddEventListener(
             name: string,
-            handler: (e: JQueryEventObject) => void,
+            handler: (je: JQueryEventObject, eo: Fw.Events.EventObject) => void,
             bindObject: IObject = null
         ): void {
             if (!bindObject)
@@ -60,7 +60,10 @@ namespace Fw {
             this.Elem.on(name, eRef.BindedHandler);
         }
 
-        public RemoveEventListener(name: string, handler?: (e: JQueryEventObject) => void): void {
+        public RemoveEventListener(
+            name: string,
+            handler?: (je: JQueryEventObject, eo: Fw.Events.EventObject) => void
+        ): void {
             if (handler) {
                 let key: number;
                 const eRef = _.find(this._eventHandlers, (er, idx) => {
@@ -90,12 +93,13 @@ namespace Fw {
             }
         }
 
-        public DispatchEvent(name: string): void {
+        public DispatchEvent(name: string, params: Object = null): void {
             if (this.IsSuppressedEvent(name))
                 return;
 
             //Dump.Log(`${this.ClassName}.DispatchEvent: ${name}`);
-            this.Elem.trigger(name);
+            const eo = new Fw.Events.EventObject(this, name, params);
+            this.Elem.trigger(name, eo);
         }
 
         public SuppressEvent(name: string): void {

@@ -11,6 +11,7 @@
     <Content Remove="wwwroot\ts\App\Controllers\ControlSetController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\LayoutCheckController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\Sub3Controller.ts" />
+    <Content Remove="wwwroot\ts\App\Events\Controls\ControlButtonViewEvents.ts" />
     <Content Remove="wwwroot\ts\App\Main.ts" />
     <Content Remove="wwwroot\ts\App\Models\Entities\BrDevice.ts" />
     <Content Remove="wwwroot\ts\App\Models\Stores\BrDeviceStore.ts" />
@@ -28,6 +29,7 @@
     <Content Remove="wwwroot\ts\Fw\Events\BoxViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\ButtonViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\ControlViewEvents.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\EventObject.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\EventReference.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\ImageViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\LabelViewEvents.ts" />
@@ -99,6 +101,7 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ControlSetController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\LayoutCheckController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\Sub3Controller.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Events\Controls\ControlButtonViewEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Main.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\MainController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\Sub1Controller.ts" />
@@ -122,6 +125,7 @@
     <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\Manager.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\BoxViewEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\ButtonViewEvents.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\EventObject.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\StuckerBoxViewEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\ControlViewEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\EventReference.ts" />
@@ -173,10 +177,6 @@
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\SlidableBoxView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ToggleButtonView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ViewBase.ts" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwroot\ts\App\Events\Controls\" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">

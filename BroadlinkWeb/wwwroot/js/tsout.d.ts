@@ -29,9 +29,9 @@ declare namespace Fw {
     interface IObject {
         readonly Elem: JQuery;
         readonly ClassName: string;
-        AddEventListener(name: string, handler: (e: JQueryEventObject) => void, bindObject?: IObject): void;
-        RemoveEventListener(name: string, handler?: (e: JQueryEventObject) => void): void;
-        DispatchEvent(name: string): void;
+        AddEventListener(name: string, handler: (je: JQueryEventObject, eo: Fw.Events.EventObject) => void, bindObject?: IObject): void;
+        RemoveEventListener(name: string, handler?: (je: JQueryEventObject, eo: Fw.Events.EventObject) => void): void;
+        DispatchEvent(name: string, value?: Object): void;
         SuppressEvent(name: string): void;
         IsSuppressedEvent(name: string): boolean;
         ResumeEvent(name: string): void;
@@ -276,7 +276,7 @@ declare namespace Fw.Views.Property {
 declare namespace Fw.Events {
     class EventReference {
         Name: string;
-        Handler: (e: JQueryEventObject) => void;
+        Handler: (je: JQueryEventObject, eo: Fw.Events.EventObject) => void;
         BindedHandler: any;
     }
 }
@@ -291,9 +291,9 @@ declare namespace Fw {
         constructor();
         protected SetClassName(name: string): void;
         protected SetElem(jqueryElem: JQuery): void;
-        AddEventListener(name: string, handler: (e: JQueryEventObject) => void, bindObject?: IObject): void;
-        RemoveEventListener(name: string, handler?: (e: JQueryEventObject) => void): void;
-        DispatchEvent(name: string): void;
+        AddEventListener(name: string, handler: (je: JQueryEventObject, eo: Fw.Events.EventObject) => void, bindObject?: IObject): void;
+        RemoveEventListener(name: string, handler?: (je: JQueryEventObject, eo: Fw.Events.EventObject) => void): void;
+        DispatchEvent(name: string, params?: Object): void;
         SuppressEvent(name: string): void;
         IsSuppressedEvent(name: string): boolean;
         ResumeEvent(name: string): void;
@@ -519,7 +519,7 @@ declare namespace App.Controllers {
 declare namespace Fw.Views {
     class ControlView extends BoxView {
         private _label;
-        private _tapEventTimer;
+        private _clickEventTimer;
         private _cvMouseSuppressor;
         private _cvDelayedResumeEventsTimer;
         Text: string;
@@ -556,6 +556,7 @@ declare namespace Fw.Views {
         private _isDragging;
         private _dragStartMousePosition;
         private _dragStartViewPosition;
+        private _mouseDownTime;
         private _gridSize;
         GridSize: number;
         /**
@@ -571,6 +572,18 @@ declare namespace Fw.Views {
         protected InnerRefresh(): void;
         Dispose(): void;
     }
+}
+declare namespace Fw.Events {
+    class ButtonViewEventsClass extends ControlViewEventsClass {
+    }
+    const ButtonViewEvents: ButtonViewEventsClass;
+}
+declare namespace App.Events.Controls {
+    class ControlButtonViewEventsClass extends Fw.Events.ButtonViewEventsClass {
+        readonly EditOrdered: string;
+        readonly ExecOrdered: string;
+    }
+    const ControlButtonViewEvents: ControlButtonViewEventsClass;
 }
 declare namespace App.Views.Controls {
     import Views = Fw.Views;
@@ -591,7 +604,9 @@ declare namespace App.Views.Controls {
 declare namespace App.Views.Controls {
     import Views = Fw.Views;
     class ControlButtonView extends Views.RelocatableButtonView {
+        Code: string;
         constructor();
+        private OnSingleClicked;
     }
 }
 declare namespace App.Views.Controls {
@@ -652,11 +667,6 @@ declare namespace App {
     class Main {
         static StartUp(): void;
     }
-}
-declare namespace Fw.Events {
-    class ButtonViewEventsClass extends ControlViewEventsClass {
-    }
-    const ButtonViewEvents: ButtonViewEventsClass;
 }
 declare namespace Fw.Events {
     class ImageViewEventsClass extends ViewEventsClass {
@@ -989,5 +999,13 @@ declare namespace Fw {
 declare namespace Fw {
     class Startup {
         static Init(): void;
+    }
+}
+declare namespace Fw.Events {
+    class EventObject {
+        readonly Sender: Fw.IObject;
+        readonly EventName: string;
+        readonly Params: any;
+        constructor(sender: Fw.IObject, eventName: string, params?: any);
     }
 }

@@ -55,28 +55,47 @@ namespace App.Views.Pages {
             this.SetOperateMode();
             this.Add(this.ButtonPanel);
 
-            for (let i = 0; i < 10; i++) {
-                const left = (i % 3) * 100;
-                const top = Math.floor(i / 3) * 100;
-
+            this.HeaderBar.RightButton.AddEventListener(Events.ButtonViewEvents.SingleClick, () => {
                 const btn = new Controls.ControlButtonView();
-                btn.SetLeftTop(left, top);
+                btn.SetLeftTop(185, this.Size.Height - 90 - 70);
+                btn.AddEventListener(App.Events.Controls.ControlButtonViewEvents.EditOrdered, (e, p) => {
+                    Dump.Log(p);
+                }, this);
+                btn.AddEventListener(App.Events.Controls.ControlButtonViewEvents.ExecOrdered, (e, p) => {
+                    Dump.Log(p);
+                }, this);
                 this.ButtonPanel.Add(btn);
-            }
+
+                // 再配置可能指示はパネルにaddした後で。
+                btn.SetRelocatable(true);
+            });
         }
 
         public SetEditMode(): void {
             const left = (this.Size.Width / 2) - (this.ButtonPanel.Size.Width / 2);
             this.ButtonPanel.Position.Left = left;
             this.HeaderBar.LeftButton.Show(0);
+            this.HeaderBar.RightButton.Show(0);
             this.EditButton.Hide(0);
+
+            _.each(this.ButtonPanel.Children, (v) => {
+                if (v instanceof Controls.ControlButtonView) 
+                    (v as Controls.ControlButtonView).SetRelocatable(true);
+            });
         }
 
         public SetOperateMode(): void {
             const left = 10;
             this.ButtonPanel.Position.Left = left;
             this.HeaderBar.LeftButton.Hide(0);
+            this.HeaderBar.RightButton.Hide(0);
+            this.HeaderBar.RightButton.Hide(0);
             this.EditButton.Show(0);
+
+            _.each(this.ButtonPanel.Children, (v) => {
+                if (v instanceof Controls.ControlButtonView)
+                    (v as Controls.ControlButtonView).SetRelocatable(false);
+            });
         }
 
         public ShowModal(duration: number = 200, width: number = 300): void {

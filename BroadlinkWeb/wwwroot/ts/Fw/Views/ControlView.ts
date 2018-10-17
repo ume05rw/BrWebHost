@@ -13,7 +13,7 @@ namespace Fw.Views {
     export class ControlView extends BoxView {
         // properties
         private _label: JQuery;
-        private _tapEventTimer: number = null;
+        private _clickEventTimer: number = null;
         private _cvMouseSuppressor = false;
         private _cvDelayedResumeEventsTimer: number = null;
 
@@ -39,12 +39,12 @@ namespace Fw.Views {
             this.Elem.append(this._label);
 
             this.Elem.on('touchstart mousedown', (e) => {
-                if (this._tapEventTimer != null)
-                    clearTimeout(this._tapEventTimer);
+                if (this._clickEventTimer != null)
+                    clearTimeout(this._clickEventTimer);
 
-                this._tapEventTimer = setTimeout(() => {
+                this._clickEventTimer = setTimeout(() => {
                     // ロングタップイベント
-                    this._tapEventTimer = null;
+                    this._clickEventTimer = null;
 
                     // Pageのドラッグ処理中のとき、クリックイベントを抑制する。
                     if (this._cvMouseSuppressor)
@@ -55,10 +55,10 @@ namespace Fw.Views {
                 }, 1000);
             });
             this.Elem.on('touchend mouseup', (e) => {
-                if (this._tapEventTimer != null) {
+                if (this._clickEventTimer != null) {
                     // ロングタップ検出中のとき
-                    clearTimeout(this._tapEventTimer);
-                    this._tapEventTimer = null;
+                    clearTimeout(this._clickEventTimer);
+                    this._clickEventTimer = null;
 
                     // Pageのドラッグ処理中のとき、クリックイベントを抑制する。
                     if (this._cvMouseSuppressor)
@@ -71,10 +71,10 @@ namespace Fw.Views {
                 }
             });
             this.Elem.on('mouseout', (e) => {
-                if (this._tapEventTimer != null) {
+                if (this._clickEventTimer != null) {
                     // ロングタップ検出中のとき
-                    clearTimeout(this._tapEventTimer);
-                    this._tapEventTimer = null;
+                    clearTimeout(this._clickEventTimer);
+                    this._clickEventTimer = null;
                     //Dump.Log('tap canceled');
                 }
             });
@@ -110,7 +110,7 @@ namespace Fw.Views {
             super.Dispose();
 
             this._label = null;
-            this._tapEventTimer = null;
+            this._clickEventTimer = null;
             this._cvMouseSuppressor = null;
             this._cvDelayedResumeEventsTimer = null;
         }

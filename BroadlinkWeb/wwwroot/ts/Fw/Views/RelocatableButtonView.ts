@@ -20,6 +20,7 @@ namespace Fw.Views {
         private _isDragging: boolean = false;
         private _dragStartMousePosition: Property.Position;
         private _dragStartViewPosition: Property.Position;
+        private _mouseDownTime: Date = null;
 
         private _gridSize: number = 60;
         public get GridSize(): number {
@@ -64,6 +65,7 @@ namespace Fw.Views {
                     this._isDragging = true;
                     this._dragStartMousePosition.X = e.pageX;
                     this._dragStartMousePosition.Y = e.pageY;
+                    this._mouseDownTime = new Date();
 
                     if (this.Position.Policy === Property.PositionPolicy.Centering) {
                         this._dragStartViewPosition.X = this.Position.X;
@@ -90,6 +92,32 @@ namespace Fw.Views {
                     } else {
                         this.Position.Left = (Math.round(this.Position.Left / this.GridSize) * this.GridSize) + this._margin;
                         this.Position.Top = (Math.round(this.Position.Top     / this.GridSize) * this.GridSize) + this._margin;
+                    }
+
+                    // SingleClick判定
+                    if (this._mouseDownTime) {
+                        const elapsed = ((new Date()).getTime() - this._mouseDownTime.getTime());
+                        const addX = e.pageX - this._dragStartMousePosition.X;
+                        const addY = e.pageY - this._dragStartMousePosition.Y;
+
+                        //Dump.Log({
+                        //    name: 'RelButton.SlickDetection',
+                        //    _mouseDownTime: this._mouseDownTime,
+                        //    elapsed: elapsed,
+                        //    addX: addX,
+                        //    addY: addY,
+                        //    add: (Math.abs(addX) + Math.abs(addY))
+                        //});
+
+                        if (
+                            (Math.abs(addX) + Math.abs(addY)) < 10
+                            && elapsed < 500
+                        ) {
+                            Dump.Log('Fire.SingleClick');
+                            if (this.IsSuppressedEvent(Events.SingleClick))
+                                this.ResumeEvent(Events.SingleClick);
+                            this.DispatchEvent(Events.SingleClick);
+                        }
                     }
 
                     this.Refresh();
@@ -158,15 +186,14 @@ namespace Fw.Views {
         }
 
         public SetRelocatable(relocatable: boolean): void {
-            if (this._isRelocatable) {
-                // 固定する。
-                this._isRelocatable = false;
-                this._shadow.detach();
-
-            } else {
+            if (relocatable === true) {
                 // 移動可能にする。
                 this._isRelocatable = true;
                 this.Elem.parent().append(this._shadow);
+            } else {
+                // 固定する。
+                this._isRelocatable = false;
+                this._shadow.detach();
             }
 
             this.Refresh();
