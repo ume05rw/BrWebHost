@@ -396,6 +396,36 @@ namespace Fw.Views {
                     view.SuppressLayout();
                 });
 
+                super.InnerRefresh();
+
+            } catch (e) {
+                Dump.ErrorLog(e);
+            } finally {
+                this.ResumeLayout();
+                this._innerBox.ResumeLayout();
+                this._innerBox.Refresh();
+                _.each(this._innerBox.Children, (view: IView) => {
+                    view.ResumeLayout();
+                    view.Refresh();
+                });
+                this._positionBarMax.ResumeLayout();
+                this._positionBarMax.Refresh();
+                this._positionBarCurrent.ResumeLayout();
+                this._positionBarCurrent.Refresh();
+                //Dump.Log(`${this.ClassName}.InnerRefresh-End`);
+            }
+        }
+
+        public CalcLayout(): void {
+            try {
+                this.SuppressLayout();
+                this._innerBox.SuppressLayout();
+                this._positionBarMax.SuppressLayout();
+                this._positionBarCurrent.SuppressLayout();
+                _.each(this._innerBox.Children, (view: IView) => {
+                    view.SuppressLayout();
+                });
+
                 this._innerBox.Size.Width = this.Size.Width;
                 this._innerBox.Size.Height = this.Size.Height;
 
@@ -445,21 +475,18 @@ namespace Fw.Views {
 
                 this.InnerRefreshPositionLine();
 
-                super.InnerRefresh();
+                super.CalcLayout();
 
             } catch (e) {
                 Dump.ErrorLog(e);
             } finally {
                 this.ResumeLayout();
                 this._innerBox.ResumeLayout();
-                this._innerBox.Refresh();
+                this._positionBarMax.ResumeLayout();
+                this._positionBarCurrent.ResumeLayout();
                 _.each(this._innerBox.Children, (view: IView) => {
                     view.ResumeLayout();
-                    view.Refresh();
                 });
-                this._positionBarMax.Refresh();
-                this._positionBarCurrent.Refresh();
-                //Dump.Log(`${this.ClassName}.InnerRefresh-End`);
             }
         }
 

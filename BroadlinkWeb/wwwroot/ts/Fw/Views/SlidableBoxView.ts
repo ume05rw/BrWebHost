@@ -232,14 +232,33 @@ namespace Fw.Views {
             try {
                 this.SuppressLayout();
 
+                this._innerBox.BackgroundColor = this._innerBackgroundColor;
+                
+                super.InnerRefresh();
+
+                this.SetStyles({
+                    overflowY: 'hidden',
+                    overflowX: 'hidden'
+                });
+
+            } catch (e) {
+                Dump.ErrorLog(e);
+            } finally {
+                this.ResumeLayout();
+            }
+        }
+
+        public CalcLayout(): void {
+            try {
+                this.SuppressLayout();
+                this._innerBox.SuppressLayout();
+                this._positionBarMax.SuppressLayout();
+                this._positionBarCurrent.SuppressLayout();
+
                 if (this.Direction === Property.Direction.Horizontal) {
                     // 横方向
                     if (this.InnerLength < this.Size.Width)
                         this.InnerLength = this.Size.Width;
-
-                    //this.Dom.style.overflowX = 'hidden';//'scroll';
-                    //this.Dom.style.overflowY = 'hidden';
-
 
                     this._innerBox.Size.Width = this.InnerLength;
                     this._innerBox.Size.Height = this.Size.Height;
@@ -276,8 +295,6 @@ namespace Fw.Views {
                     if (this.InnerLength < this.Size.Height)
                         this.InnerLength = this.Size.Height;
 
-                    //this.Dom.style.overflowY = 'hidden';//'scroll';
-                    //this.Dom.style.overflowX = 'hidden';
                     this._innerBox.Size.Height = this.InnerLength;
                     this._innerBox.Size.Width = this.Size.Width;
 
@@ -299,19 +316,16 @@ namespace Fw.Views {
                         = this._positionBarMax.Length - this._positionBarCurrent.Length;
                     this._positionBarCurrent.Position.Top = this._barMargin - (topLength * posRate);
                 }
-                this._innerBox.BackgroundColor = this._innerBackgroundColor;
-                
-                super.InnerRefresh();
 
-                this.SetStyles({
-                    overflowY: 'hidden',
-                    overflowX: 'hidden'
-                });
+                super.CalcLayout();
 
             } catch (e) {
                 Dump.ErrorLog(e);
             } finally {
                 this.ResumeLayout();
+                this._innerBox.ResumeLayout();
+                this._positionBarMax.ResumeLayout();
+                this._positionBarCurrent.ResumeLayout();
             }
         }
 

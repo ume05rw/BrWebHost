@@ -40,7 +40,6 @@ namespace Fw.Views {
 
             this._borderRadius = value;
 
-            //this.Dom.style.borderRadius = `${this._borderRadius}%`;
             this.SetStyle('borderRadius', `${this._borderRadius}%`);
             this.Refresh();
         }
@@ -61,7 +60,6 @@ namespace Fw.Views {
 
                 super.InnerRefresh();
 
-                //this.Dom.style.borderColor = `${this.Color}`;
                 this.SetStyle('borderColor', `${this.Color}`);
             } catch (e) {
                 Dump.ErrorLog(e);

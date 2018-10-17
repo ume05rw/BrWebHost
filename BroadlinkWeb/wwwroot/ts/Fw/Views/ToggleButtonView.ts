@@ -89,15 +89,12 @@ namespace Fw.Views {
             });
         }
 
-        //private SwitchToOn(): void {
-        //}
-
-        //private SwitchToOff(): void {
-        //}
-
-        protected InnerRefresh(): void {
+        public CalcLayout(): void {
             try {
                 this.SuppressLayout();
+                this._sliderBox.SuppressLayout();
+                this._maskOn.SuppressLayout();
+                this._notch.SuppressLayout();
 
                 this._sliderBox.Size.Width = this.Size.Width - this._overMargin;
                 this._sliderBox.Size.Height = this.Size.Height - this._overMargin;
@@ -113,12 +110,15 @@ namespace Fw.Views {
                     ? 0
                     : - (this.Size.Width - this._overMargin);
 
-                super.InnerRefresh();
+                super.CalcLayout();
 
             } catch (e) {
                 Dump.ErrorLog(e);
             } finally {
                 this.ResumeLayout();
+                this._sliderBox.ResumeLayout();
+                this._maskOn.ResumeLayout();
+                this._notch.ResumeLayout();
             }
         }
 

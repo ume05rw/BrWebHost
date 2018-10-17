@@ -52,6 +52,24 @@ namespace Fw.Views {
                 //Dump.Log(`${this.ClassName}.InnerRefresh`);
                 this.SuppressLayout();
 
+                super.InnerRefresh();
+
+                this.SetStyles({
+                    borderWidth: '0',
+                    backgroundColor: `${this.Color}`,
+                });
+
+            } catch (e) {
+                Dump.ErrorLog(e);
+            } finally {
+                this.ResumeLayout();
+            }
+        }
+
+        public CalcLayout(): void {
+            try {
+                this.SuppressLayout();
+
                 if (this.Direction === Property.Direction.Horizontal) {
                     //Dump.Log(`${this.ClassName}.Direction = ${this.Direction}`);
                     this.Size.Height = 2;
@@ -62,15 +80,7 @@ namespace Fw.Views {
                     this.Size.Height = this.Length;
                 }
 
-                super.InnerRefresh();
-
-                //this.Dom.style.borderWidth = '0';
-                //this.Dom.style.backgroundColor = `${this.Color}`;
-
-                this.SetStyles({
-                    borderWidth: '0',
-                    backgroundColor: `${this.Color}`,
-                });
+                super.CalcLayout();
 
             } catch (e) {
                 Dump.ErrorLog(e);

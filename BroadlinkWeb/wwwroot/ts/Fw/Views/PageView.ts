@@ -74,71 +74,71 @@ namespace Fw.Views {
             this.Size.Height = Fw.Root.Instance.Size.Height;
             this.IsVisible = false;
 
-            this.Elem.on('touchstart mousedown', (e) => {
-                //Dump.Log(`${this.ClassName}.MouseDown`);
-                this._isDragging = true;
-                this._dragStartMousePosition.X = e.pageX;
-                this._dragStartMousePosition.Y = e.pageY;
-                this._dragStartViewPosition.X = this._draggedPosition.X;
-                this._dragStartViewPosition.Y = this._draggedPosition.Y;
-                this.DetectToNeedDrags();
-            });
+            //this.Elem.on('touchstart mousedown', (e) => {
+            //    //Dump.Log(`${this.ClassName}.MouseDown`);
+            //    this._isDragging = true;
+            //    this._dragStartMousePosition.X = e.pageX;
+            //    this._dragStartMousePosition.Y = e.pageY;
+            //    this._dragStartViewPosition.X = this._draggedPosition.X;
+            //    this._dragStartViewPosition.Y = this._draggedPosition.Y;
+            //    this.DetectToNeedDrags();
+            //});
 
-            this.Elem.on('touchmove mousemove', (e) => {
-                //Dump.Log(`${this.ClassName}.MouseMove`);
-                if (!this._isDragging || this._isSuppressDrag)
-                    return;
+            //this.Elem.on('touchmove mousemove', (e) => {
+            //    //Dump.Log(`${this.ClassName}.MouseMove`);
+            //    if (!this._isDragging || this._isSuppressDrag)
+            //        return;
 
-                if (!this._isNeedDragX && !this._isNeedDragY)
-                    return;
+            //    if (!this._isNeedDragX && !this._isNeedDragY)
+            //        return;
 
-                //Dump.Log({
-                //    pageX: e.pageX,
-                //    pageY: e.pageY,
-                //    screenX: e.screenX,
-                //    screenY: e.screenY,
-                //    clientX: e.clientX,
-                //    clientY: e.clientY,
-                //    offsetX: e.offsetX,
-                //    offsetY: e.offsetY
-                //});
+            //    //Dump.Log({
+            //    //    pageX: e.pageX,
+            //    //    pageY: e.pageY,
+            //    //    screenX: e.screenX,
+            //    //    screenY: e.screenY,
+            //    //    clientX: e.clientX,
+            //    //    clientY: e.clientY,
+            //    //    offsetX: e.offsetX,
+            //    //    offsetY: e.offsetY
+            //    //});
 
-                const addX = e.pageX - this._dragStartMousePosition.X;
-                const addY = e.pageY - this._dragStartMousePosition.Y;
+            //    const addX = e.pageX - this._dragStartMousePosition.X;
+            //    const addY = e.pageY - this._dragStartMousePosition.Y;
 
-                if (this._isNeedDragX) {
-                    this._draggedPosition.X = this._dragStartViewPosition.X + addX;
+            //    if (this._isNeedDragX) {
+            //        this._draggedPosition.X = this._dragStartViewPosition.X + addX;
 
-                    if (this._draggedPosition.X < this._minDragPosition.X)
-                        this._draggedPosition.X = this._minDragPosition.X;
-                    if (this._maxDragPosition.X < this._draggedPosition.X)
-                        this._draggedPosition.X = this._maxDragPosition.X;
-                }
+            //        if (this._draggedPosition.X < this._minDragPosition.X)
+            //            this._draggedPosition.X = this._minDragPosition.X;
+            //        if (this._maxDragPosition.X < this._draggedPosition.X)
+            //            this._draggedPosition.X = this._maxDragPosition.X;
+            //    }
 
-                if (this._isNeedDragY) {
-                    this._draggedPosition.Y = this._dragStartViewPosition.Y + addY;
+            //    if (this._isNeedDragY) {
+            //        this._draggedPosition.Y = this._dragStartViewPosition.Y + addY;
 
-                    if (this._draggedPosition.Y < this._minDragPosition.Y)
-                        this._draggedPosition.Y = this._minDragPosition.Y;
-                    if (this._maxDragPosition.Y < this._draggedPosition.Y)
-                        this._draggedPosition.Y = this._maxDragPosition.Y;
-                }
+            //        if (this._draggedPosition.Y < this._minDragPosition.Y)
+            //            this._draggedPosition.Y = this._minDragPosition.Y;
+            //        if (this._maxDragPosition.Y < this._draggedPosition.Y)
+            //            this._draggedPosition.Y = this._maxDragPosition.Y;
+            //    }
 
-                const dragEventMargin = 10;
-                if (
-                    Math.abs(this._dragStartMousePosition.X - this._draggedPosition.X) > dragEventMargin
-                    || Math.abs(this._dragStartMousePosition.Y - this._draggedPosition.Y) > dragEventMargin
-                ) {
-                    this.DispatchEvent(Events.Dragging);
-                }
+            //    const dragEventMargin = 10;
+            //    if (
+            //        Math.abs(this._dragStartMousePosition.X - this._draggedPosition.X) > dragEventMargin
+            //        || Math.abs(this._dragStartMousePosition.Y - this._draggedPosition.Y) > dragEventMargin
+            //    ) {
+            //        this.DispatchEvent(Events.Dragging);
+            //    }
 
-                this.Refresh();
-            });
+            //    this.Refresh();
+            //});
 
-            this.Elem.on('touchend mouseup mouseout', (e) => {
-                //Dump.Log(`${this.ClassName}.MouseUp`);
-                this._isDragging = false;
-            });
+            //this.Elem.on('touchend mouseup mouseout', (e) => {
+            //    //Dump.Log(`${this.ClassName}.MouseUp`);
+            //    this._isDragging = false;
+            //});
 
             // ブラウザのリサイズ時、ページ全体を再描画
             Fw.Root.Instance.AddEventListener(Fw.Events.RootEvents.Resized, () => {

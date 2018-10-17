@@ -106,18 +106,7 @@ namespace Fw.Views {
 
         protected InnerRefresh(): void {
             try {
-                this.SuppressLayout();
-
-                if (this._autoSize) {
-                    this.Size.Width = this._hiddenSpan.offsetWidth + 10;
-                    this.Size.Height = this._hiddenSpan.offsetHeight;
-                }
-
                 super.InnerRefresh();
-
-                //this.Dom.style.fontWeight = this._fontWeight;
-                //this.Dom.style.fontSize = this._fontSize;
-                //this.Dom.style.fontFamily = this._fontFamily;
 
                 this.SetStyles({
                     fontWeight: this._fontWeight,
@@ -126,6 +115,22 @@ namespace Fw.Views {
                 });
 
                 this.Elem.text(this._text);
+            } catch (e) {
+                Dump.ErrorLog(e);
+            }
+        }
+
+        public CalcLayout(): void {
+            try {
+                this.SuppressLayout();
+
+                if (this._autoSize) {
+                    this.Size.Width = this._hiddenSpan.offsetWidth + 10;
+                    this.Size.Height = this._hiddenSpan.offsetHeight;
+                }
+
+                super.CalcLayout();
+
             } catch (e) {
                 Dump.ErrorLog(e);
             } finally {

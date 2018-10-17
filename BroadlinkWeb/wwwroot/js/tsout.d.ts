@@ -117,6 +117,7 @@ declare namespace Fw.Views {
         Add(view: IView): void;
         Remove(view: IView): void;
         Refresh(): void;
+        CalcLayout(): void;
         SetStyle(name: string, value: string): void;
         SetStyles(styles: {
             [name: string]: string;
@@ -348,6 +349,7 @@ declare namespace Fw.Views {
         Remove(view: IView): void;
         Refresh(): void;
         protected InnerRefresh(): void;
+        CalcLayout(): void;
         private _lastApplyTimer;
         private _lastAppliedTime;
         private _innerApplyCount;
@@ -516,6 +518,18 @@ declare namespace App.Controllers {
         constructor();
     }
 }
+declare namespace Fw.Events {
+    class ButtonViewEventsClass extends ControlViewEventsClass {
+    }
+    const ButtonViewEvents: ButtonViewEventsClass;
+}
+declare namespace App.Events.Controls {
+    class ControlButtonViewEventsClass extends Fw.Events.ButtonViewEventsClass {
+        readonly EditOrdered: string;
+        readonly ExecOrdered: string;
+    }
+    const ControlButtonViewEvents: ControlButtonViewEventsClass;
+}
 declare namespace Fw.Views {
     class ControlView extends BoxView {
         private _label;
@@ -538,7 +552,7 @@ declare namespace Fw.Views {
          */
         HoverColor: string;
         constructor();
-        protected InnerRefresh(): void;
+        CalcLayout(): void;
         Dispose(): void;
     }
 }
@@ -570,20 +584,9 @@ declare namespace Fw.Views {
         private DelayedResume;
         SetRelocatable(relocatable: boolean): void;
         protected InnerRefresh(): void;
+        CalcLayout(): void;
         Dispose(): void;
     }
-}
-declare namespace Fw.Events {
-    class ButtonViewEventsClass extends ControlViewEventsClass {
-    }
-    const ButtonViewEvents: ButtonViewEventsClass;
-}
-declare namespace App.Events.Controls {
-    class ControlButtonViewEventsClass extends Fw.Events.ButtonViewEventsClass {
-        readonly EditOrdered: string;
-        readonly ExecOrdered: string;
-    }
-    const ControlButtonViewEvents: ControlButtonViewEventsClass;
 }
 declare namespace App.Views.Controls {
     import Views = Fw.Views;
@@ -666,6 +669,14 @@ declare namespace App.Views.Pages {
 declare namespace App {
     class Main {
         static StartUp(): void;
+    }
+}
+declare namespace Fw.Events {
+    class EventObject {
+        readonly Sender: Fw.IObject;
+        readonly EventName: string;
+        readonly Params: any;
+        constructor(sender: Fw.IObject, eventName: string, params?: any);
     }
 }
 declare namespace Fw.Events {
@@ -844,6 +855,7 @@ declare namespace Fw.Views {
         private _hiddenSpan;
         constructor();
         protected InnerRefresh(): void;
+        CalcLayout(): void;
         Dispose(): void;
     }
 }
@@ -856,6 +868,7 @@ declare namespace Fw.Views {
         BackgroundColor: string;
         constructor(direction: Property.Direction);
         protected InnerRefresh(): void;
+        CalcLayout(): void;
         Dispose(): void;
     }
 }
@@ -883,6 +896,7 @@ declare namespace Fw.Views {
         Add(view: IView): void;
         Remove(view: IView): void;
         protected InnerRefresh(): void;
+        CalcLayout(): void;
         Dispose(): void;
     }
 }
@@ -945,6 +959,7 @@ declare namespace Fw.Views {
         private SetDummyView;
         private RestoreDummyView;
         protected InnerRefresh(): void;
+        CalcLayout(): void;
         private InnerRefreshLeftTop;
         private InnerRefreshRightTop;
         private InnerRefreshLeftBottom;
@@ -963,7 +978,7 @@ declare namespace Fw.Views {
         private _notch;
         private _maskOn;
         constructor();
-        protected InnerRefresh(): void;
+        CalcLayout(): void;
         Dispose(): void;
     }
 }
@@ -999,13 +1014,5 @@ declare namespace Fw {
 declare namespace Fw {
     class Startup {
         static Init(): void;
-    }
-}
-declare namespace Fw.Events {
-    class EventObject {
-        readonly Sender: Fw.IObject;
-        readonly EventName: string;
-        readonly Params: any;
-        constructor(sender: Fw.IObject, eventName: string, params?: any);
     }
 }

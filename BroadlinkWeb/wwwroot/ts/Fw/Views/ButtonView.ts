@@ -51,18 +51,21 @@ namespace Fw.Views {
             });
         }
 
-        protected InnerRefresh(): void {
+        public CalcLayout(): void {
             try {
                 this.SuppressLayout();
+                this._imageView.SuppressLayout();
+
 
                 this._imageView.Size.Width = this.Size.Width;
                 this._imageView.Size.Height = this.Size.Height;
-                super.InnerRefresh()
+                super.CalcLayout();
 
             } catch (e) {
                 Dump.ErrorLog(e);
             } finally {
                 this.ResumeLayout();
+                this._imageView.ResumeLayout();
             }
         }
 

@@ -39,6 +39,7 @@ namespace Fw.Views {
         Remove(view: IView): void;
 
         Refresh(): void;
+        CalcLayout(): void;
         SetStyle(name: string, value: string): void;
         SetStyles(styles: { [name: string]: string }): void;
 

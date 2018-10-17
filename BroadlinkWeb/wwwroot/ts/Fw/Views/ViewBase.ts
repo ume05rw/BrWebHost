@@ -366,25 +366,85 @@ namespace Fw.Views {
         }
 
         protected InnerRefresh(): void {
+            //Dump.Log(`${this.ClassName}.InnerRefresh`);
+            const parent = $(this.Elem.parent());
+
+            if (parent.length <= 0)
+                return;
+
+            if (!this._page && !(this instanceof PageView))
+                this.InitPage();
+
+            this.CalcLayout();
+
+            const parentWidth = (this.Parent)
+                ? this.Parent.Size.Width
+                : parent.width();
+            const parentHeight = (this.Parent)
+                ? this.Parent.Size.Height
+                : parent.height();
+
+            const pHalfWidth = (parentWidth / 2);
+            const pHalfHeight = (parentHeight / 2);
+
+            const myHalfWidth = this.Size.Width / 2;
+            const myHalfHeight = this.Size.Height / 2;
+
+            let elemLeft = pHalfWidth - myHalfWidth + this.Position.X;
+            let elemTop = pHalfHeight - myHalfHeight + this.Position.Y;
+
+            if (this.Page) {
+                if (!this.Anchor.HasAnchorX)
+                    elemLeft += this.Page.DraggedPosition.X;
+                if (!this.Anchor.HasAnchorY)
+                    elemTop += this.Page.DraggedPosition.Y;
+            }
+
+            //Dump.Log({
+            //    left: this.Position.Left,
+            //    pHalfWidth: pHalfWidth,
+            //    myHalfWidth: myHalfWidth,
+            //    positionX: this.Position.X,
+            //    elemLeft: elemLeft
+            //});
+
+            this.SetStyles({
+                left: `${elemLeft}px`,
+                top: `${elemTop}px`,
+                width: `${this.Size.Width}px`,
+                height: `${this.Size.Height}px`,
+                zIndex: `${this.ZIndex}`,
+                color: `${this._color}`,
+                backgroundColor: `${this._backgroundColor}`,
+                opacity: `${this.Opacity}`,
+                display: (this._isVisible)
+                    ? 'block'
+                    : 'none'
+            });
+            _.defer(() => {
+                this.ApplyStyles();
+            });
+
+            this._lastRefreshedTime = new Date();
+
+        }
+
+        public CalcLayout(): void {
+            const parent = $(this.Elem.parent());
+
+            if (parent.length <= 0)
+                return;
+
+            const isSuppressSizeChanged = this.IsSuppressedEvent(Events.SizeChanged);
+            const isSuppressPositionChanged = this.IsSuppressedEvent(Events.PositionChanged);
+
             try {
-                //Dump.Log(`${this.ClassName}.InnerRefresh`);
-                const parent = $(this.Elem.parent());
+                if (!isSuppressSizeChanged)
+                    this.SuppressEvent(Events.SizeChanged);
+                if (!isSuppressPositionChanged)
+                    this.SuppressEvent(Events.PositionChanged);
 
-                if (parent.length <= 0)
-                    return;
-
-                if (!this._page && !(this instanceof PageView))
-                    this.InitPage();
-
-                this.SuppressEvent(Events.SizeChanged);
-                this.SuppressEvent(Events.PositionChanged);
                 this.SuppressLayout();
-
-                //// 最初の描画開始直前を初期化終了とする。
-                //if (!this._initialized) {
-                //    this.DispatchEvent(Events.Initialized);
-                //    this._initialized = true;
-                //}
 
                 const parentWidth = (this.Parent)
                     ? this.Parent.Size.Width
@@ -395,9 +455,6 @@ namespace Fw.Views {
 
                 const pHalfWidth = (parentWidth / 2);
                 const pHalfHeight = (parentHeight / 2);
-
-                //let isAnchoredX: boolean = false;
-                //let isAnchoredY: boolean = false;
 
                 if (this.Anchor.IsAnchoredLeft && this.Anchor.IsAnchoredRight) {
                     this.Size.Width = parentWidth - this.Anchor.MarginLeft - this.Anchor.MarginRight;
@@ -430,62 +487,13 @@ namespace Fw.Views {
                         this.Position.Y = top - pHalfHeight + (this.Size.Height / 2);
                     }
                 }
-
-                const myHalfWidth = this.Size.Width / 2;
-                const myHalfHeight = this.Size.Height / 2;
-                let elemLeft = pHalfWidth - myHalfWidth + this.Position.X;
-                let elemTop = pHalfHeight - myHalfHeight + this.Position.Y;
-
-                if (this.Page) {
-                    if (!this.Anchor.HasAnchorX)
-                        elemLeft += this.Page.DraggedPosition.X;
-                    if (!this.Anchor.HasAnchorY)
-                        elemTop += this.Page.DraggedPosition.Y;
-                }
-
-                //Dump.Log({
-                //    left: this.Position.Left,
-                //    pHalfWidth: pHalfWidth,
-                //    myHalfWidth: myHalfWidth,
-                //    positionX: this.Position.X,
-                //    elemLeft: elemLeft
-                //});
-
-                this.SetStyles({
-                    left: `${elemLeft}px`,
-                    top: `${elemTop}px`,
-                    width: `${this.Size.Width}px`,
-                    height: `${this.Size.Height}px`,
-                    zIndex: `${this.ZIndex}`,
-                    color: `${this._color}`,
-                    backgroundColor: `${this._backgroundColor}`,
-                    opacity: `${this.Opacity}`,
-                    display: (this._isVisible)
-                        ? 'block'
-                        : 'none'
-                });
-                _.defer(() => {
-                    this.ApplyStyles();
-                });
-
-                //this.Dom.style.left = `${elemLeft}px`;
-                //this.Dom.style.top = `${elemTop}px`;
-                //this.Dom.style.width = `${this.Size.Width}px`;
-                //this.Dom.style.height = `${this.Size.Height}px`;
-                //this.Dom.style.zIndex = `${this.ZIndex}`;
-                //this.Dom.style.color = `${this._color}`;
-                //this.Dom.style.backgroundColor = `${this._backgroundColor}`;
-                //this.Dom.style.opacity = `${this.Opacity}`;
-                //this.Dom.style.display = (this._isVisible)
-                //    ? 'block'
-                //    : 'none';
-
-                this._lastRefreshedTime = new Date();
             } catch (e) {
                 Dump.ErrorLog(e);
             } finally {
-                this.ResumeEvent(Events.SizeChanged);
-                this.ResumeEvent(Events.PositionChanged);
+                if (!isSuppressSizeChanged)
+                    this.ResumeEvent(Events.SizeChanged);
+                if (!isSuppressPositionChanged)
+                    this.ResumeEvent(Events.PositionChanged);
                 this.ResumeLayout();
             }
         }
