@@ -1965,6 +1965,9 @@ var Fw;
                     _this.Size.Width = Fw.Root.Instance.Size.Width;
                     _this.Size.Height = Fw.Root.Instance.Size.Height;
                     _this.Refresh();
+                    _.delay(function () {
+                        _this.Refresh();
+                    }, 100);
                 });
                 // マスクをクリックしたとき、戻る。
                 Fw.Root.Instance.AddEventListener(Fw.Events.RootEvents.MaskClicked, function () {
@@ -7115,9 +7118,6 @@ var Fw;
             $window.on('resize', function () {
                 _this.Refresh();
                 _this.DispatchEvent(Events.Resized);
-                _.delay(function () {
-                    _this.Refresh();
-                }, 100);
             });
             // Root.Init()の終了後にViewBaseからFw.Root.Instanceを呼び出す。
             _.defer(function () {

@@ -54,9 +54,6 @@ namespace Fw {
             $window.on('resize', () => {
                 this.Refresh();
                 this.DispatchEvent(Events.Resized);
-                _.delay(() => {
-                    this.Refresh();
-                }, 100);
             });
 
             // Root.Init()の終了後にViewBaseからFw.Root.Instanceを呼び出す。

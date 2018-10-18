@@ -56,6 +56,9 @@ namespace Fw.Views {
                 this.Size.Width = Fw.Root.Instance.Size.Width;
                 this.Size.Height = Fw.Root.Instance.Size.Height;
                 this.Refresh();
+                _.delay(() => {
+                    this.Refresh();
+                }, 100);
             });
 
             // マスクをクリックしたとき、戻る。
