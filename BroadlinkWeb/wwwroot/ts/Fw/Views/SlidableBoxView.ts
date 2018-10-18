@@ -106,12 +106,12 @@ namespace Fw.Views {
                 this._isDragging = true;
 
                 const ml = MouseLocation.Create(e);
-                this._dragStartMousePosition.X = ml.ClientX;
-                this._dragStartMousePosition.Y = ml.ClientY;
+                this._dragStartMousePosition.X = ml.PageX;
+                this._dragStartMousePosition.Y = ml.PageY;
 
-                this._dragStartViewPosition.X = this._innerBox.Position.X;
-                this._dragStartViewPosition.Y = this._innerBox.Position.Y;
-                //Fw.Root.Instance.SetTextSelection(false);
+                this._dragStartViewPosition.X = this._innerBox.Position.Left;
+                this._dragStartViewPosition.Y = this._innerBox.Position.Top;
+                Fw.Root.Instance.SetTextSelection(false);
             });
             this._innerBox.Elem.on('touchmove mousemove', (e) => {
                 if (!this._isDragging || this._spcvMouseSuppressor)
@@ -126,13 +126,32 @@ namespace Fw.Views {
                 const ml = MouseLocation.Create(e);
                 const addX = ml.ClientX - this._dragStartMousePosition.X;
                 const addY = ml.ClientY - this._dragStartMousePosition.Y;
-
+                
                 if (this._direction === Property.Direction.Horizontal) {
                     // 横方向
-                    this._innerBox.Position.X = this._dragStartViewPosition.X + addX;
+                    //this._innerBox.Position.Left = this._dragStartViewPosition.X + addX;
+                    let left = this._dragStartViewPosition.X + addX;
+                    const margin = this.Size.Width - this.InnerLength;
+
+                    if (left < margin)
+                        left = margin;
+                    else if (0 < left)
+                        left = 0;
+
+                    this._innerBox.Position.Left = left;
+
                 } else {
                     // 縦方向
-                    this._innerBox.Position.Y = this._dragStartViewPosition.Y + addY;
+                    //this._innerBox.Position.Top = this._dragStartViewPosition.Y + addY;
+                    let top = this._dragStartViewPosition.Y + addY;
+                    const margin = this.Size.Height - this.InnerLength;
+
+                    if (top < margin)
+                        top = margin;
+                    else if (0 < top)
+                        top = 0;
+
+                    this._innerBox.Position.Top = top;
                 }
                 this.Refresh();
             });
@@ -144,10 +163,7 @@ namespace Fw.Views {
                 e.preventDefault();
 
                 this._isDragging = false;
-                //Fw.Root.Instance.SetTextSelection(true);
-                _.delay(() => {
-                    this.AdjustSlidePosition();
-                }, 200);
+                Fw.Root.Instance.SetTextSelection(true);
             });
         }
 
@@ -187,59 +203,6 @@ namespace Fw.Views {
             }
         }
 
-        private AdjustSlidePosition() {
-            const unitWidth = this.Size.Width / 2;
-            const unitHeight = this.Size.Height / 2;
-            const maxLeft = 0;
-            const maxTop = 0;
-            const minLeft = this.Size.Width - this._innerBox.Size.Width;
-            const minTop = this.Size.Height - this._innerBox.Size.Height;
-            const left = this._innerBox.Position.Left;
-            const top = this._innerBox.Position.Top;
-
-            // 座標値がマイナスのため、floorでなくceilで切り捨てる。
-            let toLeft = Math.ceil(left / unitWidth) * unitWidth;
-            let toTop = Math.ceil(top / unitHeight) * unitHeight;
-
-            if (toLeft < minLeft) {
-                toLeft = minLeft;
-            } else if (maxLeft < toLeft) {
-                toLeft = maxLeft;
-            } else {
-                const remainderLeft = Math.abs(left % unitWidth);
-                if (remainderLeft > (unitWidth / 2))
-                    toLeft -= unitWidth;
-            }
-
-            if (toTop < minTop) {
-                toTop = minTop;
-            } else if (maxTop < toTop) {
-                toTop = maxTop;
-            } else {
-                const remainderTop = Math.abs(top % unitHeight);
-                if (remainderTop > (unitHeight / 2))
-                    toTop -= unitHeight;
-            }
-
-            const animator = new Anim.Animator(this._innerBox);
-            if (this.Direction === Property.Direction.Horizontal) {
-                animator.ToParams.X = (toLeft - left);
-            } else {
-                animator.ToParams.Y = (toTop - top);
-            }
-            animator.OnComplete = () => {
-                if (this.Direction === Property.Direction.Horizontal) {
-                    this._innerBox.SetLeftTop(toLeft, null, false);
-                } else {
-                    this._innerBox.SetLeftTop(null, toTop, false);
-                }
-                this._spcvMouseSuppressor = false;
-            }
-
-            this._spcvMouseSuppressor = true;
-            animator.Invoke(500);
-        }
-
         public Add(view: IView): void {
             this._innerBox.Add(view);
         }
@@ -253,7 +216,7 @@ namespace Fw.Views {
                 this.SuppressLayout();
 
                 this._innerBox.BackgroundColor = this._innerBackgroundColor;
-                
+
                 super.InnerRefresh();
 
                 this.SetStyles({
@@ -284,6 +247,12 @@ namespace Fw.Views {
                     if (this.InnerLength < maxInnerLength)
                         this.InnerLength = maxInnerLength;
 
+                    const margin = this.Size.Width - this.InnerLength;
+                    if (this._innerBox.Position.Left < margin)
+                        this._innerBox.Position.Left = margin;
+                    else if (0 < this._innerBox.Position.Left)
+                        this._innerBox.Position.Left = 0;
+
                     this._innerBox.Size.Width = this.InnerLength;
                     this._innerBox.Size.Height = this.Size.Height;
 
@@ -304,6 +273,14 @@ namespace Fw.Views {
                         = this._positionBarMax.Length - this._positionBarCurrent.Length;
                     this._positionBarCurrent.Position.Left = this._barMargin - (leftLength * posRate);
 
+                    if (this.InnerLength <= this.Size.Width) {
+                        this._positionBarMax.Hide();
+                        this._positionBarCurrent.Hide();
+                    } else {
+                        this._positionBarMax.Show();
+                        this._positionBarCurrent.Show();
+                    }
+                        
                     //Dump.Log({
                     //    max_Length: this._positionBarMax.Length,
                     //    current_Length: this._positionBarCurrent.Length,
@@ -322,6 +299,12 @@ namespace Fw.Views {
                     const maxInnerLength = this.GetMaxInnerLength();
                     if (this.InnerLength < maxInnerLength)
                         this.InnerLength = maxInnerLength;
+
+                    const margin = this.Size.Height - this.InnerLength;
+                    if (this._innerBox.Position.Top < margin)
+                        this._innerBox.Position.Top = margin;
+                    else if (0 < this._innerBox.Position.Top)
+                        this._innerBox.Position.Top = 0;
 
                     this._innerBox.Size.Height = this.InnerLength;
                     this._innerBox.Size.Width = this.Size.Width;
@@ -342,6 +325,14 @@ namespace Fw.Views {
                     const topLength
                         = this._positionBarMax.Length - this._positionBarCurrent.Length;
                     this._positionBarCurrent.Position.Top = this._barMargin - (topLength * posRate);
+
+                    if (this.InnerLength <= this.Size.Height) {
+                        this._positionBarMax.Hide();
+                        this._positionBarCurrent.Hide();
+                    } else {
+                        this._positionBarMax.Show();
+                        this._positionBarCurrent.Show();
+                    }
                 }
 
                 super.CalcLayout();

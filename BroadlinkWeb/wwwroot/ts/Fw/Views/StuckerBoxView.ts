@@ -780,6 +780,14 @@ namespace Fw.Views {
                 = this._positionBarMax.Length - this._positionBarCurrent.Length;
 
             this._positionBarCurrent.Position.Top = this._margin - (topLength * posRate);
+
+            if (this._innerBox.Size.Height <= this.Size.Height) {
+                this._positionBarMax.Hide();
+                this._positionBarCurrent.Hide();
+            } else {
+                this._positionBarMax.Show();
+                this._positionBarCurrent.Show();
+            }
         }
 
         public Dispose(): void {

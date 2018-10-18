@@ -127,16 +127,24 @@ namespace App.Views.Pages {
             this.BtnLearn.Text = 'Learn Code';
             this.InputPanel.Add(this.BtnLearn);
 
+            const lbl5 = new Views.LabelView();
+            lbl5.Text = 'Toggle Assigns';
+            lbl5.TextAlign = Property.TextAlign.Left;
+            lbl5.AutoSize = true;
+            lbl5.SetAnchor(null, 5, null, null);
+            lbl5.Size.Height = 21;
+            this.InputPanel.Add(lbl5);
+
             this.ChkToggleOn.SetAnchor(null, 5, 15, null);
             this.ChkToggleOn.Size.Height = 30;
             this.ChkToggleOn.Name = 'AssignToggleOn';
-            this.ChkToggleOn.Text = 'メインパネル トグルボタン[On]';
+            this.ChkToggleOn.Text = 'Main-Panel Toggle ON';
             this.InputPanel.Add(this.ChkToggleOn);
 
             this.ChkToggleOff.SetAnchor(null, 5, 15, null);
             this.ChkToggleOff.Size.Height = 30;
             this.ChkToggleOff.Name = 'AssignToggleOff';
-            this.ChkToggleOff.Text = 'メインパネル トグルボタン[Off]';
+            this.ChkToggleOff.Text = 'Main-Panel Toggle OFF';
             this.InputPanel.Add(this.ChkToggleOff);
 
             this.DeleteButton.SetAnchor(null, 5, 15, null);

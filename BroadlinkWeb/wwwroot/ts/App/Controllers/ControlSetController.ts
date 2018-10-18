@@ -38,7 +38,7 @@ namespace App.Controllers {
 
             this._page.HeaderBar.RightButton.AddEventListener(Events.ButtonViewEvents.SingleClick, () => {
                 const btn = new Controls.ControlButtonView();
-                btn.SetLeftTop(185, this._page.Size.Height - 90 - 70);
+                btn.SetLeftTop(185, this._page.Size.Height - 90 - 75);
                 btn.AddEventListener(App.Events.Controls.ControlButtonViewEvents.EditOrdered, (e, p) => {
                     Dump.Log(p);
                     const ctr = this.Manager.Get('ControlProperty') as ControlPropertyController;

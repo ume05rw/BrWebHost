@@ -362,7 +362,7 @@ namespace Fw.Views {
                 const now = new Date();
                 const elapsed = (now.getTime() - this._lastRefreshedTime.getTime());
 
-                // 描画抑止中でも、100msに一度は描画する。
+                // 描画抑止中でも、一定時間に一度は描画する。
                 if (elapsed > Root.Instance.ViewRefreshInterval) {
                     this.InnerRefresh();
                     return;
@@ -401,13 +401,6 @@ namespace Fw.Views {
 
             let elemLeft = pHalfWidth - myHalfWidth + this.Position.X;
             let elemTop = pHalfHeight - myHalfHeight + this.Position.Y;
-
-            if (this.Page) {
-                if (!this.Anchor.HasAnchorX)
-                    elemLeft += this.Page.DraggedPosition.X;
-                if (!this.Anchor.HasAnchorY)
-                    elemTop += this.Page.DraggedPosition.Y;
-            }
 
             //Dump.Log({
             //    left: this.Position.Left,
@@ -534,7 +527,7 @@ namespace Fw.Views {
                 const now = new Date();
                 const elapsed = (now.getTime() - this._lastAppliedTime.getTime());
 
-                // 描画抑止中でも、100msに一度はDom適用する。
+                // 描画抑止中でも、一定時間に一度はDom適用する。
                 if (elapsed > Root.Instance.ViewRefreshInterval) {
                     //Dump.Log(`${this.ClassName}.ApplyStyles: ${elapsed} > ${Root.Instance.ViewRefreshInterval}`);
                     this.InnerApplyStyles();

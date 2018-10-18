@@ -54,6 +54,9 @@ namespace Fw {
             $window.on('resize', () => {
                 this.Refresh();
                 this.DispatchEvent(Events.Resized);
+                _.delay(() => {
+                    this.Refresh();
+                }, 100);
             });
 
             // Root.Init()の終了後にViewBaseからFw.Root.Instanceを呼び出す。
@@ -96,7 +99,7 @@ namespace Fw {
                 this.Elem.addClass('TextUnselect');
         }
 
-        private _viewRefreshInterval: number = 100;
+        private _viewRefreshInterval: number = 30;
         public get ViewRefreshInterval(): number {
             return this._viewRefreshInterval;
         }
