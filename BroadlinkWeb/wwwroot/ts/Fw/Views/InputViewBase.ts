@@ -46,7 +46,7 @@ namespace Fw.Views {
             this.BackgroundColor = '#FFFFFF';
 
             this.Elem.on('propertychange change keyup paste input', () => {
-                //Dump.Log('InputViewBase.Changed');
+                Dump.Log('InputViewBase.Changed');
                 this.DispatchEvent(Events.Changed, this.Value);
             });
 

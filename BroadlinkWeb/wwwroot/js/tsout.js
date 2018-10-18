@@ -2456,7 +2456,6 @@ var App;
         Color.HeaderButtonHover = '#e0e0e0';
         Color.ReverseMain = '#FFFFFF';
         Color.ButtonColors = [
-            '#fff796',
             '#9d9e9e',
             '#84bde8',
             '#81c03b',
@@ -2465,6 +2464,16 @@ var App;
             '#F92068',
             '#6545C6',
             '#B5743B',
+        ];
+        Color.ButtonHoverColors = [
+            '#b4b4b4',
+            '#8fcfff',
+            '#9bde50',
+            '#ebff4a',
+            '#ffd856',
+            '#ff3f7f',
+            '#8463e6',
+            '#d88e4e'
         ];
         return Color;
     }());
@@ -2672,22 +2681,47 @@ var App;
                 _this.SetPageView(new Pages.ControlPropertyPageView());
                 _this._page = _this.View;
                 _this._page.TxtName.AddEventListener(Events.InputViewEvents.Changed, function (je, eo) {
+                    if (!_this._currentButton)
+                        return;
                     Dump.Log('ControlPropertyController.TxtName.Changed');
+                    _this._currentButton.Name = _this._page.TxtName.Value;
+                    _this._currentButton.Refresh();
                 });
                 _this._page.SboIcon.AddEventListener(Events.InputViewEvents.Changed, function (je, eo) {
+                    if (!_this._currentButton)
+                        return;
                     Dump.Log('ControlPropertyController.SboIcon.Changed');
+                    _this._currentButton.SetImage(_this._page.SboIcon.Value);
+                    _this._currentButton.Refresh();
                 });
                 _this._page.SboColor.AddEventListener(Events.InputViewEvents.Changed, function (je, eo) {
+                    if (!_this._currentButton)
+                        return;
                     Dump.Log('ControlPropertyController.SboColor.Changed');
+                    _this._currentButton.SetColor(_this._page.SboColor.Value);
+                    _this._currentButton.Refresh();
                 });
                 _this._page.TarCode.AddEventListener(Events.InputViewEvents.Changed, function (je, eo) {
+                    if (!_this._currentButton)
+                        return;
                     Dump.Log('ControlPropertyController.TarCode.Changed');
+                    _this._currentButton.Code = _this._page.TarCode.Value;
+                    _this._currentButton.Refresh();
                 });
                 _this._page.DeleteButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
+                    if (!_this._currentButton)
+                        return;
                     Dump.Log('Delete this Control!');
                 });
                 return _this;
             }
+            ControlPropertyController.prototype.SetControlButton = function (view) {
+                this._currentButton = view;
+                this._page.TxtName.Value = this._currentButton.Name;
+                this._page.SboIcon.Value = this._currentButton.ImageSrc;
+                this._page.SboColor.Value = this._currentButton.Color;
+                this._page.TarCode.Value = this._currentButton.Code;
+            };
             return ControlPropertyController;
         }(Fw.Controllers.ControllerBase));
         Controllers.ControlPropertyController = ControlPropertyController;
@@ -2728,7 +2762,9 @@ var App;
                     btn.SetLeftTop(185, _this._page.Size.Height - 90 - 70);
                     btn.AddEventListener(App.Events.Controls.ControlButtonViewEvents.EditOrdered, function (e, p) {
                         Dump.Log(p);
-                        _this.Manager.Get('ControlProperty').SetModal();
+                        var ctr = _this.Manager.Get('ControlProperty');
+                        ctr.SetControlButton(p.Sender);
+                        ctr.SetModal();
                     }, _this);
                     btn.AddEventListener(App.Events.Controls.ControlButtonViewEvents.ExecOrdered, function (e, p) {
                         Dump.Log(p);
@@ -2852,6 +2888,66 @@ var App;
             return MainController;
         }(Fw.Controllers.ControllerBase));
         Controllers.MainController = MainController;
+    })(Controllers = App.Controllers || (App.Controllers = {}));
+})(App || (App = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Fw/Controllers/ControllerBase.ts" />
+/// <reference path="../../Fw/Controllers/Manager.ts" />
+/// <reference path="../../Fw/Util/Dump.ts" />
+/// <reference path="../../Fw/Events/ControlViewEvents.ts" />
+/// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
+/// <reference path="../Views/Pages/MainPageView.ts" />
+var App;
+(function (App) {
+    var Controllers;
+    (function (Controllers) {
+        var Dump = Fw.Util.Dump;
+        var Events = Fw.Events;
+        var Controls = App.Views.Controls;
+        var MouseEventsController = /** @class */ (function (_super) {
+            __extends(MouseEventsController, _super);
+            function MouseEventsController() {
+                var _this = _super.call(this, 'MouseEvents') || this;
+                _this.HeaderBar = new Controls.HeaderBarView();
+                _this.SetClassName('ControlSetController');
+                _this.SetPageView(new Fw.Views.PageView());
+                _this.HeaderBar.Text = 'Remote Control';
+                _this.HeaderBar.RightButton.Hide(0);
+                _this.View.Add(_this.HeaderBar);
+                _this.HeaderBar.LeftButton.Hide(0);
+                _this.HeaderBar.LeftButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
+                    _this.SwitchTo("Main");
+                });
+                _this.View.Elem.on('click', function (e) {
+                    Dump.Log('click');
+                });
+                _this.View.Elem.on('mousedown', function (e) {
+                    Dump.Log('mousedown');
+                });
+                _this.View.Elem.on('mousemove', function (e) {
+                    Dump.Log('mousemove');
+                });
+                _this.View.Elem.on('mouseup', function (e) {
+                    Dump.Log('mouseup');
+                });
+                _this.View.Elem.on('mouseout', function (e) {
+                    Dump.Log('mouseout');
+                });
+                _this.View.Elem.on('touchstart', function (e) {
+                    Dump.Log('touchstart');
+                });
+                _this.View.Elem.on('touchmove', function (e) {
+                    Dump.Log('touchmove');
+                });
+                _this.View.Elem.on('touchend', function (e) {
+                    Dump.Log('touchend');
+                });
+                return _this;
+            }
+            return MouseEventsController;
+        }(Fw.Controllers.ControllerBase));
+        Controllers.MouseEventsController = MouseEventsController;
     })(Controllers = App.Controllers || (App.Controllers = {}));
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
@@ -3439,7 +3535,8 @@ var Fw;
                 _this.Elem.addClass(_this.ClassName);
                 _this.BackgroundColor = '#add8e6';
                 _this.HoverColor = '#6495ed';
-                _this._imageView.Src = null;
+                _this._imageView.Src = '';
+                _this._imageView.FitPolicy = Views.Property.FitPolicy.Contain;
                 _this.Add(_this._imageView);
                 _this.Elem.hover(function () {
                     //Dump.Log(`${this.ClassName}.hover: color = ${this.HoverColor}`);
@@ -3981,14 +4078,28 @@ var App;
                     _this.HasBorder = true;
                     _this.BorderRadius = 50;
                     _this.BackgroundColor = Color.MainBackground;
-                    _this.HoverColor = Color.MainHover;
-                    _this.Color = Color.MainHover;
+                    _this.HoverColor = Color.ButtonHoverColors[0];
+                    _this.Color = Color.ButtonColors[0];
                     _this.Code = '';
+                    _this._name = '';
                     _this.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, function (e) {
                         _this.OnSingleClicked(e);
                     });
                     return _this;
                 }
+                Object.defineProperty(ControlButtonView.prototype, "Name", {
+                    get: function () {
+                        return this._name;
+                    },
+                    set: function (value) {
+                        this._name = value;
+                        Dump.Log(this.ImageSrc);
+                        if (this.ImageSrc === '')
+                            this.Text = value;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
                 ControlButtonView.prototype.OnSingleClicked = function (e) {
                     if (this.IsRelocatable) {
                         // 編集モードのとき
@@ -4000,6 +4111,30 @@ var App;
                         Dump.Log('Exec');
                         this.DispatchEvent(Events.ExecOrdered, this.Code);
                     }
+                };
+                ControlButtonView.prototype.SetImage = function (value) {
+                    if (value === undefined || value === null || value === '') {
+                        this.ImageSrc = '';
+                        this.Text = this.Name;
+                    }
+                    else {
+                        this.Text = '';
+                        this.ImageSrc = value;
+                    }
+                };
+                ControlButtonView.prototype.SetColor = function (value) {
+                    var idx = Color.ButtonColors.indexOf(value);
+                    if (idx === -1) {
+                        // 色が見つからないとき、デフォルト
+                        this.Color = Color.MainHover;
+                        this.HoverColor = Color.MainHover;
+                    }
+                    else {
+                        // 色が定義済みのとき、ホバー色とともにセット
+                        this.Color = value;
+                        this.HoverColor = Color.ButtonHoverColors[idx];
+                    }
+                    this.Refresh();
                 };
                 return ControlButtonView;
             }(Views.RelocatableButtonView));
@@ -4157,6 +4292,10 @@ var App;
                     _this.SboIcon.SetAnchor(null, 5, 15, null);
                     _this.SboIcon.Size.Height = 30;
                     _this.SboIcon.Name = 'Icon';
+                    _.each(App.Icon.Names, function (iconName) {
+                        var dispName = iconName.substr(0, iconName.indexOf('.')).replace('_', ' ');
+                        _this.SboIcon.AddItem(dispName, "images/icons/" + iconName);
+                    });
                     _this.InputPanel.Add(_this.SboIcon);
                     var lbl3 = new Views.LabelView();
                     lbl3.Text = 'Color';
@@ -4168,6 +4307,9 @@ var App;
                     _this.SboColor.SetAnchor(null, 5, 15, null);
                     _this.SboColor.Size.Height = 30;
                     _this.SboColor.Name = 'Color';
+                    _.each(App.Color.ButtonColors, function (color) {
+                        _this.SboColor.AddItem("<span style=\"color: " + color + ";\">" + color + "</span>", color);
+                    });
                     _this.InputPanel.Add(_this.SboColor);
                     var lbl4 = new Views.LabelView();
                     lbl4.Text = 'Code';
@@ -4182,7 +4324,7 @@ var App;
                     _this.InputPanel.Add(_this.TarCode);
                     _this.BtnLearn.SetAnchor(null, 5, 15, null);
                     _this.BtnLearn.Size.Height = 30;
-                    _this.BtnLearn.Text = 'Learn Signal';
+                    _this.BtnLearn.Text = 'Learn Code';
                     _this.InputPanel.Add(_this.BtnLearn);
                     _this.ChkToggleOn.SetAnchor(null, 5, 15, null);
                     _this.ChkToggleOn.Size.Height = 30;
@@ -5423,6 +5565,7 @@ var Fw;
 (function (Fw) {
     var Views;
     (function (Views) {
+        var Dump = Fw.Util.Dump;
         var Events = Fw.Events.InputViewEvents;
         var InputViewBase = /** @class */ (function (_super) {
             __extends(InputViewBase, _super);
@@ -5434,7 +5577,7 @@ var Fw;
                 _this._value = '';
                 _this.BackgroundColor = '#FFFFFF';
                 _this.Elem.on('propertychange change keyup paste input', function () {
-                    //Dump.Log('InputViewBase.Changed');
+                    Dump.Log('InputViewBase.Changed');
                     _this.DispatchEvent(Events.Changed, _this.Value);
                 });
                 _this.Elem.on('focus', function () {
@@ -5755,6 +5898,8 @@ var Fw;
                 return _this;
             }
             SelectBoxInputView.prototype.AddItem = function (name, value) {
+                //Dump.Log('name: ' + name);
+                //Dump.Log(`<option value="${value}">${name}</option>`);
                 this.Elem.append("<option value=\"" + value + "\">" + name + "</option>");
             };
             return SelectBoxInputView;
@@ -7177,64 +7322,66 @@ var Fw;
     }());
     Fw.Startup = Startup;
 })(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../../Fw/Controllers/ControllerBase.ts" />
-/// <reference path="../../Fw/Controllers/Manager.ts" />
-/// <reference path="../../Fw/Util/Dump.ts" />
-/// <reference path="../../Fw/Events/ControlViewEvents.ts" />
-/// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
-/// <reference path="../Views/Pages/MainPageView.ts" />
+/// <reference path="../../lib/jquery/index.d.ts" />
+/// <reference path="../../lib/underscore/index.d.ts" />
+/// <reference path="../Fw/Util/Dump.ts" />
+/// <reference path="../Fw/Controllers/Manager.ts" />
 var App;
 (function (App) {
-    var Controllers;
-    (function (Controllers) {
-        var Dump = Fw.Util.Dump;
-        var Events = Fw.Events;
-        var Controls = App.Views.Controls;
-        var MouseEventsController = /** @class */ (function (_super) {
-            __extends(MouseEventsController, _super);
-            function MouseEventsController() {
-                var _this = _super.call(this, 'MouseEvents') || this;
-                _this.HeaderBar = new Controls.HeaderBarView();
-                _this.SetClassName('ControlSetController');
-                _this.SetPageView(new Fw.Views.PageView());
-                _this.HeaderBar.Text = 'Remote Control';
-                _this.HeaderBar.RightButton.Hide(0);
-                _this.View.Add(_this.HeaderBar);
-                _this.HeaderBar.LeftButton.Hide(0);
-                _this.HeaderBar.LeftButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
-                    _this.SwitchTo("Main");
-                });
-                _this.View.Elem.on('click', function (e) {
-                    Dump.Log('click');
-                });
-                _this.View.Elem.on('mousedown', function (e) {
-                    Dump.Log('mousedown');
-                });
-                _this.View.Elem.on('mousemove', function (e) {
-                    Dump.Log('mousemove');
-                });
-                _this.View.Elem.on('mouseup', function (e) {
-                    Dump.Log('mouseup');
-                });
-                _this.View.Elem.on('mouseout', function (e) {
-                    Dump.Log('mouseout');
-                });
-                _this.View.Elem.on('touchstart', function (e) {
-                    Dump.Log('touchstart');
-                });
-                _this.View.Elem.on('touchmove', function (e) {
-                    Dump.Log('touchmove');
-                });
-                _this.View.Elem.on('touchend', function (e) {
-                    Dump.Log('touchend');
-                });
-                return _this;
-            }
-            return MouseEventsController;
-        }(Fw.Controllers.ControllerBase));
-        Controllers.MouseEventsController = MouseEventsController;
-    })(Controllers = App.Controllers || (App.Controllers = {}));
+    var Icon = /** @class */ (function () {
+        function Icon() {
+        }
+        Icon.Names = [
+            'arrow1_down.png',
+            'arrow1_left.png',
+            'arrow1_right.png',
+            'arrow1_up.png',
+            'arrow2_down.png',
+            'arrow2_left.png',
+            'arrow2_right.png',
+            'arrow2_up.png',
+            'bluetooth.png',
+            'circle_check.png',
+            'circle_cross.png',
+            'circle_info.png',
+            'circle_minus.png',
+            'circle_pause.png',
+            'circle_play.png',
+            'circle_plus.png',
+            'circle_prohibition.png',
+            'clock.png',
+            'darrow_left.png',
+            'darrow_right.png',
+            'dustbox.png',
+            'edit.png',
+            'favorite.png',
+            'headphones.png',
+            'heart.png',
+            'home.png',
+            'layer.png',
+            'layout.png',
+            'lightning.png',
+            'menu.png',
+            'mic.png',
+            'monitor.png',
+            'moon.png',
+            'photo_camera.png',
+            'pin.png',
+            'power.png',
+            'profile.png',
+            'refresh.png',
+            'rocket.png',
+            'settings1.png',
+            'settings2.png',
+            'sound.png',
+            'speech.png',
+            'sun.png',
+            'target.png',
+            'video_camera.png',
+            'video_film.png',
+        ];
+        return Icon;
+    }());
+    App.Icon = Icon;
 })(App || (App = {}));
 //# sourceMappingURL=tsout.js.map

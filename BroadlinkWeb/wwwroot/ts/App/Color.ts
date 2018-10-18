@@ -24,7 +24,6 @@ namespace App {
         public static ReverseMain: string = '#FFFFFF';
 
         public static ButtonColors: Array<string> = [
-            '#fff796',
             '#9d9e9e',
             '#84bde8',
             '#81c03b',
@@ -33,6 +32,17 @@ namespace App {
             '#F92068',
             '#6545C6',
             '#B5743B',
+        ];
+
+        public static ButtonHoverColors: Array<string> = [
+            '#b4b4b4',
+            '#8fcfff',
+            '#9bde50',
+            '#ebff4a',
+            '#ffd856',
+            '#ff3f7f',
+            '#8463e6',
+            '#d88e4e'
         ];
     }
 }

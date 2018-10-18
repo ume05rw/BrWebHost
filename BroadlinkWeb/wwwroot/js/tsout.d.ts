@@ -435,6 +435,7 @@ declare namespace App {
         static HeaderButtonHover: string;
         static ReverseMain: string;
         static ButtonColors: Array<string>;
+        static ButtonHoverColors: Array<string>;
     }
 }
 declare namespace App.Views.Controls {
@@ -461,9 +462,12 @@ declare namespace App.Views.Pages {
     }
 }
 declare namespace App.Controllers {
+    import Controls = App.Views.Controls;
     class ControlPropertyController extends Fw.Controllers.ControllerBase {
         private _page;
+        private _currentButton;
         constructor();
+        SetControlButton(view: Controls.ControlButtonView): void;
     }
 }
 declare namespace App.Controllers {
@@ -480,6 +484,13 @@ declare namespace App.Controllers {
 }
 declare namespace App.Controllers {
     class MainController extends Fw.Controllers.ControllerBase {
+        constructor();
+    }
+}
+declare namespace App.Controllers {
+    import Controls = App.Views.Controls;
+    class MouseEventsController extends Fw.Controllers.ControllerBase {
+        HeaderBar: Controls.HeaderBarView;
         constructor();
     }
 }
@@ -640,9 +651,13 @@ declare namespace App.Views.Controls {
 declare namespace App.Views.Controls {
     import Views = Fw.Views;
     class ControlButtonView extends Views.RelocatableButtonView {
+        private _name;
+        Name: string;
         Code: string;
         constructor();
         private OnSingleClicked;
+        SetImage(value: string): void;
+        SetColor(value: string): void;
     }
 }
 declare namespace App.Views.Controls {
@@ -1156,10 +1171,8 @@ declare namespace Fw {
         static Init(): void;
     }
 }
-declare namespace App.Controllers {
-    import Controls = App.Views.Controls;
-    class MouseEventsController extends Fw.Controllers.ControllerBase {
-        HeaderBar: Controls.HeaderBarView;
-        constructor();
+declare namespace App {
+    class Icon {
+        static Names: Array<string>;
     }
 }

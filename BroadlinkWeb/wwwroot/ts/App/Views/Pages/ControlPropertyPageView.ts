@@ -85,6 +85,10 @@ namespace App.Views.Pages {
             this.SboIcon.SetAnchor(null, 5, 15, null);
             this.SboIcon.Size.Height = 30;
             this.SboIcon.Name = 'Icon';
+            _.each(App.Icon.Names, (iconName) => {
+                const dispName = iconName.substr(0, iconName.indexOf('.')).replace('_', ' ');
+                this.SboIcon.AddItem(dispName, `images/icons/${iconName}`);
+            });
             this.InputPanel.Add(this.SboIcon);
 
             const lbl3 = new Views.LabelView();
@@ -93,11 +97,15 @@ namespace App.Views.Pages {
             lbl3.AutoSize = true;
             lbl3.SetAnchor(null, 5, null, null);
             lbl3.Size.Height = 21;
+            
             this.InputPanel.Add(lbl3);
 
             this.SboColor.SetAnchor(null, 5, 15, null);
             this.SboColor.Size.Height = 30;
             this.SboColor.Name = 'Color';
+            _.each(App.Color.ButtonColors, (color) => {
+                this.SboColor.AddItem(`<span style="color: ${color};">${color}</span>`, color);
+            });
             this.InputPanel.Add(this.SboColor);
 
             const lbl4 = new Views.LabelView();
@@ -115,7 +123,7 @@ namespace App.Views.Pages {
 
             this.BtnLearn.SetAnchor(null, 5, 15, null);
             this.BtnLearn.Size.Height = 30;
-            this.BtnLearn.Text = 'Learn Signal';
+            this.BtnLearn.Text = 'Learn Code';
             this.InputPanel.Add(this.BtnLearn);
 
             this.ChkToggleOn.SetAnchor(null, 5, 15, null);

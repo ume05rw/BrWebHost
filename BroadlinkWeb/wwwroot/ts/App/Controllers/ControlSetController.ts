@@ -41,7 +41,9 @@ namespace App.Controllers {
                 btn.SetLeftTop(185, this._page.Size.Height - 90 - 70);
                 btn.AddEventListener(App.Events.Controls.ControlButtonViewEvents.EditOrdered, (e, p) => {
                     Dump.Log(p);
-                    this.Manager.Get('ControlProperty').SetModal();
+                    const ctr = this.Manager.Get('ControlProperty') as ControlPropertyController;
+                    ctr.SetControlButton(p.Sender as Controls.ControlButtonView);
+                    ctr.SetModal();
                 }, this);
                 btn.AddEventListener(App.Events.Controls.ControlButtonViewEvents.ExecOrdered, (e, p) => {
                     Dump.Log(p);
