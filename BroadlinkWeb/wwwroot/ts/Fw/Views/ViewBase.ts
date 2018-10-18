@@ -516,7 +516,7 @@ namespace Fw.Views {
         public SetStyles(styles: { [name: string]: string }): void {
             _.extend(this._newStyles, styles);
         }
-        protected ApplyStyles(): void {
+        public ApplyStyles(): void {
             if (this._lastApplyTimer != null) {
                 clearTimeout(this._lastApplyTimer);
                 this._lastApplyTimer = null;

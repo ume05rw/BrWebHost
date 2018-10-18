@@ -42,6 +42,7 @@ namespace Fw.Views {
         CalcLayout(): void;
         SetStyle(name: string, value: string): void;
         SetStyles(styles: { [name: string]: string }): void;
+        ApplyStyles(): void;
 
         SuppressLayout(): void;
         IsSuppressedLayout(): boolean;

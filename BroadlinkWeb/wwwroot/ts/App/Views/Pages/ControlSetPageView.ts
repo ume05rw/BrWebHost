@@ -54,6 +54,29 @@ namespace App.Views.Pages {
             this.ButtonPanel.SetAnchor(70, null, null, 10);
             this.SetOperateMode();
             this.Add(this.ButtonPanel);
+
+            this.HeaderBar.Elem.hover(() => {
+                if (this.EditButton.IsVisible) {
+                    this.HeaderBar.SetStyles({
+                        backgroundColor: Color.MainBackground,
+                        cursor: 'normal'
+                    });
+                    this.HeaderBar.ApplyStyles();
+                    return;
+                }
+
+                this.HeaderBar.SetStyles({
+                    backgroundColor: Color.MainHover,
+                    cursor: 'pointer'
+                });
+                this.HeaderBar.ApplyStyles();
+            }, () => {
+                this.HeaderBar.SetStyles({
+                    backgroundColor: Color.MainBackground,
+                    cursor: 'normal'
+                });
+                this.HeaderBar.ApplyStyles();
+            });
         }
 
         // 以下、Controllerにあるべき？Viewの制御なのでViewに書くのでよいか？

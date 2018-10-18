@@ -53,6 +53,15 @@ namespace App.Controllers {
                 // 再配置可能指示はパネルにaddした後で。
                 btn.SetRelocatable(true);
             });
+
+            this._page.HeaderBar.Elem.on('click', (e) => {
+                if (e.eventPhase !== 2)
+                    return;
+                if (this._page.EditButton.IsVisible)
+                    return;
+
+                alert('Show Header Property');
+            });
         }
     }
 }

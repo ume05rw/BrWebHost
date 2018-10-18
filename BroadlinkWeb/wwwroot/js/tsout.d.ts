@@ -135,6 +135,7 @@ declare namespace Fw.Views {
         SetStyles(styles: {
             [name: string]: string;
         }): void;
+        ApplyStyles(): void;
         SuppressLayout(): void;
         IsSuppressedLayout(): boolean;
         ResumeLayout(): void;
@@ -372,7 +373,7 @@ declare namespace Fw.Views {
         SetStyles(styles: {
             [name: string]: string;
         }): void;
-        protected ApplyStyles(): void;
+        ApplyStyles(): void;
         protected InnerApplyStyles(): void;
         SuppressLayout(): void;
         IsSuppressedLayout(): boolean;

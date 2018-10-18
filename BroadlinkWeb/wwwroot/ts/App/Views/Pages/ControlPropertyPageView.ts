@@ -50,10 +50,17 @@ namespace App.Views.Pages {
             background.Src = 'images/Pages/ControlProperty/background.jpg';
             this.Add(background);
 
-            this.HeaderBar.Text = 'Control';
+            this.HeaderBar.Text = '';
             this.HeaderBar.LeftButton.Hide(0);
             this.HeaderBar.RightButton.Hide(0);
             this.Add(this.HeaderBar);
+
+            const label = new Views.LabelView();
+            label.FontSize = Property.FontSize.Large;
+            label.Color = Color.Main;
+            label.SetAnchor(null, 5, null, null);
+            label.Text = 'Property';
+            this.HeaderBar.Add(label);
 
             this.InputPanel.Position.Policy = Property.PositionPolicy.LeftTop;
             this.InputPanel.ReferencePoint = Property.ReferencePoint.LeftTop;

@@ -2634,6 +2634,13 @@ var App;
                     // 再配置可能指示はパネルにaddした後で。
                     btn.SetRelocatable(true);
                 });
+                _this._page.HeaderBar.Elem.on('click', function (e) {
+                    if (e.eventPhase !== 2)
+                        return;
+                    if (_this._page.EditButton.IsVisible)
+                        return;
+                    alert('Show Header Property');
+                });
                 return _this;
             }
             return ControlSetController;
@@ -4135,10 +4142,16 @@ var App;
                     background.FitPolicy = Property.FitPolicy.Cover;
                     background.Src = 'images/Pages/ControlProperty/background.jpg';
                     _this.Add(background);
-                    _this.HeaderBar.Text = 'Control';
+                    _this.HeaderBar.Text = '';
                     _this.HeaderBar.LeftButton.Hide(0);
                     _this.HeaderBar.RightButton.Hide(0);
                     _this.Add(_this.HeaderBar);
+                    var label = new Views.LabelView();
+                    label.FontSize = Property.FontSize.Large;
+                    label.Color = App.Color.Main;
+                    label.SetAnchor(null, 5, null, null);
+                    label.Text = 'Property';
+                    _this.HeaderBar.Add(label);
                     _this.InputPanel.Position.Policy = Property.PositionPolicy.LeftTop;
                     _this.InputPanel.ReferencePoint = Property.ReferencePoint.LeftTop;
                     _this.InputPanel.Size.Width = 280;
@@ -4273,6 +4286,27 @@ var App;
                     _this.ButtonPanel.SetAnchor(70, null, null, 10);
                     _this.SetOperateMode();
                     _this.Add(_this.ButtonPanel);
+                    _this.HeaderBar.Elem.hover(function () {
+                        if (_this.EditButton.IsVisible) {
+                            _this.HeaderBar.SetStyles({
+                                backgroundColor: App.Color.MainBackground,
+                                cursor: 'normal'
+                            });
+                            _this.HeaderBar.ApplyStyles();
+                            return;
+                        }
+                        _this.HeaderBar.SetStyles({
+                            backgroundColor: App.Color.MainHover,
+                            cursor: 'pointer'
+                        });
+                        _this.HeaderBar.ApplyStyles();
+                    }, function () {
+                        _this.HeaderBar.SetStyles({
+                            backgroundColor: App.Color.MainBackground,
+                            cursor: 'normal'
+                        });
+                        _this.HeaderBar.ApplyStyles();
+                    });
                     return _this;
                 }
                 // 以下、Controllerにあるべき？Viewの制御なのでViewに書くのでよいか？
