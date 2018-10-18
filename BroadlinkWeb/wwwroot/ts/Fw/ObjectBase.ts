@@ -46,7 +46,7 @@ namespace Fw {
         public AddEventListener(
             name: string,
             handler: (je: JQueryEventObject, eo: Fw.Events.EventObject) => void,
-            bindObject: IObject = null
+            bindObject: any = null
         ): void {
             if (!bindObject)
                 bindObject = this;

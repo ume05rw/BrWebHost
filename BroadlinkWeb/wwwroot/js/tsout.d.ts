@@ -29,7 +29,7 @@ declare namespace Fw {
     interface IObject {
         readonly Elem: JQuery;
         readonly ClassName: string;
-        AddEventListener(name: string, handler: (je: JQueryEventObject, eo: Fw.Events.EventObject) => void, bindObject?: IObject): void;
+        AddEventListener(name: string, handler: (je: JQueryEventObject, eo: Fw.Events.EventObject) => void, bindObject?: any): void;
         RemoveEventListener(name: string, handler?: (je: JQueryEventObject, eo: Fw.Events.EventObject) => void): void;
         DispatchEvent(name: string, value?: Object): void;
         SuppressEvent(name: string): void;
@@ -292,7 +292,7 @@ declare namespace Fw {
         constructor();
         protected SetClassName(name: string): void;
         protected SetElem(jqueryElem: JQuery): void;
-        AddEventListener(name: string, handler: (je: JQueryEventObject, eo: Fw.Events.EventObject) => void, bindObject?: IObject): void;
+        AddEventListener(name: string, handler: (je: JQueryEventObject, eo: Fw.Events.EventObject) => void, bindObject?: any): void;
         RemoveEventListener(name: string, handler?: (je: JQueryEventObject, eo: Fw.Events.EventObject) => void): void;
         DispatchEvent(name: string, params?: Object): void;
         SuppressEvent(name: string): void;
@@ -826,6 +826,27 @@ declare namespace Fw.Views.Property {
         RightBottom = 4
     }
 }
+declare namespace Fw.Views.Property {
+    enum TextAlign {
+        Left = "left",
+        Center = "center",
+        Right = "right",
+        JustifyAll = "justify-all"
+    }
+}
+declare namespace Fw.Views {
+    class CheckBoxView extends ViewBase {
+        private _text;
+        Text: string;
+        private _name;
+        Name: string;
+        private _value;
+        Value: string;
+        private _input;
+        private _label;
+        constructor();
+    }
+}
 declare namespace Fw.Views {
     import FitPolicy = Fw.Views.Property.FitPolicy;
     class ImageView extends ViewBase {
@@ -1047,24 +1068,24 @@ declare namespace Fw {
         static Init(): void;
     }
 }
-declare namespace Fw.Views {
-    class CheckBoxView extends ViewBase {
-        private _text;
-        Text: string;
-        private _name;
-        Name: string;
-        private _value;
-        Value: string;
-        private _input;
-        private _label;
+declare namespace App.Views.Pages {
+    import Views = Fw.Views;
+    import Controls = App.Views.Controls;
+    class ControlPropertyPageView extends Fw.Views.PageView {
+        HeaderBar: Controls.HeaderBarView;
+        DeleteButton: Controls.ButtonView;
+        InputPanel: Views.StuckerBoxView;
+        TxtName: Views.TextBoxView;
+        SboIcon: Views.SelectBoxView;
+        SboColor: Views.SelectBoxView;
+        TarCode: Views.TextAreaView;
+        BtnLearn: Controls.ButtonView;
         constructor();
     }
 }
-declare namespace Fw.Views.Property {
-    enum TextAlign {
-        Left = "left",
-        Center = "center",
-        Right = "right",
-        JustifyAll = "justify-all"
+declare namespace App.Controllers {
+    class ControlPropertyController extends Fw.Controllers.ControllerBase {
+        private _page;
+        constructor();
     }
 }

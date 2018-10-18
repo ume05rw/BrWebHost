@@ -13,6 +13,7 @@ namespace App.Controllers {
     import Manager = Fw.Controllers.Manager;
     import Property = Fw.Views.Property;
     import Pages = App.Views.Pages;
+    import Controls = App.Views.Controls;
 
     export class ControlSetController extends Fw.Controllers.ControllerBase {
 
@@ -33,6 +34,22 @@ namespace App.Controllers {
 
             this._page.EditButton.AddEventListener(Events.ButtonViewEvents.SingleClick, () => {
                 this.SetUnmodal();
+            });
+
+            this._page.HeaderBar.RightButton.AddEventListener(Events.ButtonViewEvents.SingleClick, () => {
+                const btn = new Controls.ControlButtonView();
+                btn.SetLeftTop(185, this._page.Size.Height - 90 - 70);
+                btn.AddEventListener(App.Events.Controls.ControlButtonViewEvents.EditOrdered, (e, p) => {
+                    Dump.Log(p);
+                    this.Manager.Get('ControlProperty').SetModal();
+                }, this);
+                btn.AddEventListener(App.Events.Controls.ControlButtonViewEvents.ExecOrdered, (e, p) => {
+                    Dump.Log(p);
+                }, this);
+                this._page.ButtonPanel.Add(btn);
+
+                // 再配置可能指示はパネルにaddした後で。
+                btn.SetRelocatable(true);
             });
         }
     }

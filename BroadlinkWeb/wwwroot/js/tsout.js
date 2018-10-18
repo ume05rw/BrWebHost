@@ -2379,8 +2379,10 @@ var App;
 (function (App) {
     var Controllers;
     (function (Controllers) {
+        var Dump = Fw.Util.Dump;
         var Events = Fw.Events;
         var Pages = App.Views.Pages;
+        var Controls = App.Views.Controls;
         var ControlSetController = /** @class */ (function (_super) {
             __extends(ControlSetController, _super);
             function ControlSetController() {
@@ -2394,6 +2396,20 @@ var App;
                 });
                 _this._page.EditButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
                     _this.SetUnmodal();
+                });
+                _this._page.HeaderBar.RightButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
+                    var btn = new Controls.ControlButtonView();
+                    btn.SetLeftTop(185, _this._page.Size.Height - 90 - 70);
+                    btn.AddEventListener(App.Events.Controls.ControlButtonViewEvents.EditOrdered, function (e, p) {
+                        Dump.Log(p);
+                        _this.Manager.Get('ControlProperty').SetModal();
+                    }, _this);
+                    btn.AddEventListener(App.Events.Controls.ControlButtonViewEvents.ExecOrdered, function (e, p) {
+                        Dump.Log(p);
+                    }, _this);
+                    _this._page.ButtonPanel.Add(btn);
+                    // 再配置可能指示はパネルにaddした後で。
+                    btn.SetRelocatable(true);
                 });
                 return _this;
             }
@@ -2484,6 +2500,7 @@ var App;
                 _this.SetClassName('MainController');
                 var sub3Ctr = new Controllers.Sub3Controller();
                 var controlSetCtr = new Controllers.ControlSetController();
+                var controlPropertyCtr = new Controllers.ControlPropertyController();
                 _this.SetPageView(new Pages.MainPageView());
                 var page = _this.View;
                 page.HeaderBar.RightButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
@@ -3686,8 +3703,6 @@ var App;
     (function (Views_8) {
         var Pages;
         (function (Pages) {
-            var Dump = Fw.Util.Dump;
-            var Events = Fw.Events;
             var Views = Fw.Views;
             var Property = Fw.Views.Property;
             var Controls = App.Views.Controls;
@@ -3719,21 +3734,9 @@ var App;
                     _this.ButtonPanel.SetAnchor(70, null, null, 10);
                     _this.SetOperateMode();
                     _this.Add(_this.ButtonPanel);
-                    _this.HeaderBar.RightButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
-                        var btn = new Controls.ControlButtonView();
-                        btn.SetLeftTop(185, _this.Size.Height - 90 - 70);
-                        btn.AddEventListener(App.Events.Controls.ControlButtonViewEvents.EditOrdered, function (e, p) {
-                            Dump.Log(p);
-                        }, _this);
-                        btn.AddEventListener(App.Events.Controls.ControlButtonViewEvents.ExecOrdered, function (e, p) {
-                            Dump.Log(p);
-                        }, _this);
-                        _this.ButtonPanel.Add(btn);
-                        // 再配置可能指示はパネルにaddした後で。
-                        btn.SetRelocatable(true);
-                    });
                     return _this;
                 }
+                // 以下、Controllerにあるべき？Viewの制御なのでViewに書くのでよいか？
                 ControlSetPageView.prototype.SetEditMode = function () {
                     var left = (this.Size.Width / 2) - (this.ButtonPanel.Size.Width / 2);
                     this.ButtonPanel.Position.Left = left;
@@ -3749,7 +3752,6 @@ var App;
                     var left = 10;
                     this.ButtonPanel.Position.Left = left;
                     this.HeaderBar.LeftButton.Hide(0);
-                    this.HeaderBar.RightButton.Hide(0);
                     this.HeaderBar.RightButton.Hide(0);
                     this.EditButton.Show(0);
                     _.each(this.ButtonPanel.Children, function (v) {
@@ -4573,6 +4575,94 @@ var Fw;
                 ReferencePoint[ReferencePoint["RightBottom"] = 4] = "RightBottom";
             })(ReferencePoint = Property.ReferencePoint || (Property.ReferencePoint = {}));
         })(Property = Views.Property || (Views.Property = {}));
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Util/Dump.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Property;
+        (function (Property) {
+            var TextAlign;
+            (function (TextAlign) {
+                TextAlign["Left"] = "left";
+                TextAlign["Center"] = "center";
+                TextAlign["Right"] = "right";
+                TextAlign["JustifyAll"] = "justify-all";
+            })(TextAlign = Property.TextAlign || (Property.TextAlign = {}));
+        })(Property = Views.Property || (Views.Property = {}));
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Events/ViewEvents.ts" />
+/// <reference path="../Util/Dump.ts" />
+/// <reference path="../Util/Number.ts" />
+/// <reference path="ViewBase.ts" />
+/// <reference path="Property/FitPolicy.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var CheckBoxView = /** @class */ (function (_super) {
+            __extends(CheckBoxView, _super);
+            function CheckBoxView() {
+                var _this = _super.call(this, $('<div></div>')) || this;
+                _this.SetClassName('CheckBoxView');
+                _this.Elem.addClass(_this.ClassName);
+                _this._input = $('<input type="checkbox" class="CheckBoxViewProperty"></input>');
+                _this._label = $('<label class="CheckBoxViewProperty"></label >');
+                _this.Elem.append(_this._input);
+                _this.Elem.append(_this._label);
+                _this._text = '';
+                _this._value = '';
+                _this.BackgroundColor = 'transparent';
+                _this.SetStyle('borderWidth', '0');
+                return _this;
+            }
+            Object.defineProperty(CheckBoxView.prototype, "Text", {
+                get: function () {
+                    return this._text;
+                },
+                set: function (value) {
+                    this._text = value;
+                    this._label.text(this._text);
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(CheckBoxView.prototype, "Name", {
+                get: function () {
+                    return this._name;
+                },
+                set: function (value) {
+                    this._name = value;
+                    this._input.attr('name', this._name);
+                    this._input.attr('id', this._name + "_" + this._value);
+                    this._label.attr('for', this._name + "_" + this._value);
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(CheckBoxView.prototype, "Value", {
+                get: function () {
+                    return this._value;
+                },
+                set: function (value) {
+                    this._value = value;
+                    this._input.attr('value', this._value);
+                    this._input.attr('id', this._name + "_" + this._value);
+                    this._label.attr('for', this._name + "_" + this._value);
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return CheckBoxView;
+        }(Views.ViewBase));
+        Views.CheckBoxView = CheckBoxView;
     })(Views = Fw.Views || (Fw.Views = {}));
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
@@ -6355,92 +6445,139 @@ var Fw;
     }());
     Fw.Startup = Startup;
 })(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../Events/ViewEvents.ts" />
-/// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
-/// <reference path="ViewBase.ts" />
-/// <reference path="Property/FitPolicy.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var CheckBoxView = /** @class */ (function (_super) {
-            __extends(CheckBoxView, _super);
-            function CheckBoxView() {
-                var _this = _super.call(this, $('<div></div>')) || this;
-                _this.SetClassName('CheckBoxView');
-                _this.Elem.addClass(_this.ClassName);
-                _this._input = $('<input type="checkbox" class="CheckBoxViewProperty"></input>');
-                _this._label = $('<label class="CheckBoxViewProperty"></label >');
-                _this.Elem.append(_this._input);
-                _this.Elem.append(_this._label);
-                _this._text = '';
-                _this._value = '';
-                _this.BackgroundColor = 'transparent';
-                _this.SetStyle('borderWidth', '0');
-                return _this;
-            }
-            Object.defineProperty(CheckBoxView.prototype, "Text", {
-                get: function () {
-                    return this._text;
-                },
-                set: function (value) {
-                    this._text = value;
-                    this._label.text(this._text);
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(CheckBoxView.prototype, "Name", {
-                get: function () {
-                    return this._name;
-                },
-                set: function (value) {
-                    this._name = value;
-                    this._input.attr('name', this._name);
-                    this._input.attr('id', this._name + "_" + this._value);
-                    this._label.attr('for', this._name + "_" + this._value);
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(CheckBoxView.prototype, "Value", {
-                get: function () {
-                    return this._value;
-                },
-                set: function (value) {
-                    this._value = value;
-                    this._input.attr('value', this._value);
-                    this._input.attr('id', this._name + "_" + this._value);
-                    this._label.attr('for', this._name + "_" + this._value);
-                },
-                enumerable: true,
-                configurable: true
-            });
-            return CheckBoxView;
-        }(Views.ViewBase));
-        Views.CheckBoxView = CheckBoxView;
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../Util/Dump.ts" />
-var Fw;
-(function (Fw) {
+/// <reference path="../../../Fw/Views/PageView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Events/PageViewEvents.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../Controls/HeaderBarView.ts" />
+var App;
+(function (App) {
     var Views;
-    (function (Views) {
-        var Property;
-        (function (Property) {
-            var TextAlign;
-            (function (TextAlign) {
-                TextAlign["Left"] = "left";
-                TextAlign["Center"] = "center";
-                TextAlign["Right"] = "right";
-                TextAlign["JustifyAll"] = "justify-all";
-            })(TextAlign = Property.TextAlign || (Property.TextAlign = {}));
-        })(Property = Views.Property || (Views.Property = {}));
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
+    (function (Views_11) {
+        var Pages;
+        (function (Pages) {
+            var Views = Fw.Views;
+            var Property = Fw.Views.Property;
+            var Controls = App.Views.Controls;
+            var ControlPropertyPageView = /** @class */ (function (_super) {
+                __extends(ControlPropertyPageView, _super);
+                function ControlPropertyPageView() {
+                    var _this = _super.call(this, $("")) || this;
+                    _this.HeaderBar = new Controls.HeaderBarView();
+                    _this.DeleteButton = new Controls.ButtonView();
+                    _this.InputPanel = new Views.StuckerBoxView();
+                    _this.TxtName = new Views.TextBoxView();
+                    _this.SboIcon = new Views.SelectBoxView();
+                    _this.SboColor = new Views.SelectBoxView();
+                    _this.TarCode = new Views.TextAreaView();
+                    _this.BtnLearn = new Controls.ButtonView();
+                    _this.SetClassName('ControlPropertyPageView');
+                    var background = new Views.ImageView();
+                    background.SetAnchor(0, 0, 0, 0);
+                    background.FitPolicy = Property.FitPolicy.Cover;
+                    background.Src = 'images/Pages/ControlProperty/background.jpg';
+                    _this.Add(background);
+                    _this.HeaderBar.Text = 'Control';
+                    _this.HeaderBar.LeftButton.Hide(0);
+                    _this.HeaderBar.RightButton.Hide(0);
+                    _this.Add(_this.HeaderBar);
+                    _this.InputPanel.Position.Policy = Property.PositionPolicy.LeftTop;
+                    _this.InputPanel.ReferencePoint = Property.ReferencePoint.LeftTop;
+                    _this.InputPanel.Size.Width = 280;
+                    _this.InputPanel.SetAnchor(70, 10, null, 10);
+                    _this.Add(_this.InputPanel);
+                    var lbl1 = new Views.LabelView();
+                    lbl1.Text = 'Name';
+                    lbl1.TextAlign = Property.TextAlign.Left;
+                    lbl1.AutoSize = false;
+                    lbl1.SetAnchor(null, 5, 15, null);
+                    lbl1.Size.Height = 21;
+                    _this.InputPanel.Add(lbl1);
+                    _this.TxtName.SetAnchor(null, 5, 15, null);
+                    _this.TxtName.Size.Height = 30;
+                    _this.TxtName.Name = 'Name';
+                    _this.InputPanel.Add(_this.TxtName);
+                    var lbl2 = new Views.LabelView();
+                    lbl2.Text = 'Icon';
+                    lbl2.TextAlign = Property.TextAlign.Left;
+                    lbl2.AutoSize = false;
+                    lbl2.SetAnchor(null, 5, 15, null);
+                    lbl2.Size.Height = 21;
+                    _this.InputPanel.Add(lbl2);
+                    _this.SboIcon.SetAnchor(null, 5, 15, null);
+                    _this.SboIcon.Size.Height = 30;
+                    _this.SboIcon.Name = 'Icon';
+                    _this.InputPanel.Add(_this.SboIcon);
+                    var lbl3 = new Views.LabelView();
+                    lbl3.Text = 'Color';
+                    lbl3.TextAlign = Property.TextAlign.Left;
+                    lbl3.AutoSize = false;
+                    lbl3.SetAnchor(null, 5, 15, null);
+                    lbl3.Size.Height = 21;
+                    _this.InputPanel.Add(lbl3);
+                    _this.SboColor.SetAnchor(null, 5, 15, null);
+                    _this.SboColor.Size.Height = 30;
+                    _this.SboColor.Name = 'Color';
+                    _this.InputPanel.Add(_this.SboColor);
+                    var lbl4 = new Views.LabelView();
+                    lbl4.Text = 'Code';
+                    lbl4.TextAlign = Property.TextAlign.Left;
+                    lbl4.AutoSize = false;
+                    lbl4.SetAnchor(null, 5, 15, null);
+                    lbl4.Size.Height = 21;
+                    _this.InputPanel.Add(lbl4);
+                    _this.TarCode.SetAnchor(null, 5, 15, null);
+                    _this.TarCode.Size.Height = 90;
+                    _this.TarCode.Name = 'Code';
+                    _this.InputPanel.Add(_this.TarCode);
+                    _this.BtnLearn.SetAnchor(null, 5, 15, null);
+                    _this.BtnLearn.Size.Height = 30;
+                    _this.BtnLearn.Text = 'Learn Signal';
+                    _this.InputPanel.Add(_this.BtnLearn);
+                    _this.DeleteButton.SetAnchor(null, 5, 15, null);
+                    _this.DeleteButton.Size.Height = 30;
+                    _this.DeleteButton.Text = '*Delete*';
+                    _this.InputPanel.Add(_this.DeleteButton);
+                    return _this;
+                }
+                return ControlPropertyPageView;
+            }(Fw.Views.PageView));
+            Pages.ControlPropertyPageView = ControlPropertyPageView;
+        })(Pages = Views_11.Pages || (Views_11.Pages = {}));
+    })(Views = App.Views || (App.Views = {}));
+})(App || (App = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Fw/Controllers/ControllerBase.ts" />
+/// <reference path="../../Fw/Controllers/Manager.ts" />
+/// <reference path="../../Fw/Util/Dump.ts" />
+/// <reference path="../../Fw/Events/ControlViewEvents.ts" />
+/// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
+/// <reference path="../Views/Pages/MainPageView.ts" />
+var App;
+(function (App) {
+    var Controllers;
+    (function (Controllers) {
+        var Dump = Fw.Util.Dump;
+        var Events = Fw.Events;
+        var Pages = App.Views.Pages;
+        var ControlPropertyController = /** @class */ (function (_super) {
+            __extends(ControlPropertyController, _super);
+            function ControlPropertyController() {
+                var _this = _super.call(this, 'ControlProperty') || this;
+                _this.SetClassName('ControlPropertyController');
+                _this.SetPageView(new Pages.ControlPropertyPageView());
+                _this._page = _this.View;
+                _this._page.DeleteButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
+                    Dump.Log('Delete this Control!');
+                });
+                return _this;
+            }
+            return ControlPropertyController;
+        }(Fw.Controllers.ControllerBase));
+        Controllers.ControlPropertyController = ControlPropertyController;
+    })(Controllers = App.Controllers || (App.Controllers = {}));
+})(App || (App = {}));
 //# sourceMappingURL=tsout.js.map

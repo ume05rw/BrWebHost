@@ -54,22 +54,9 @@ namespace App.Views.Pages {
             this.ButtonPanel.SetAnchor(70, null, null, 10);
             this.SetOperateMode();
             this.Add(this.ButtonPanel);
-
-            this.HeaderBar.RightButton.AddEventListener(Events.ButtonViewEvents.SingleClick, () => {
-                const btn = new Controls.ControlButtonView();
-                btn.SetLeftTop(185, this.Size.Height - 90 - 70);
-                btn.AddEventListener(App.Events.Controls.ControlButtonViewEvents.EditOrdered, (e, p) => {
-                    Dump.Log(p);
-                }, this);
-                btn.AddEventListener(App.Events.Controls.ControlButtonViewEvents.ExecOrdered, (e, p) => {
-                    Dump.Log(p);
-                }, this);
-                this.ButtonPanel.Add(btn);
-
-                // 再配置可能指示はパネルにaddした後で。
-                btn.SetRelocatable(true);
-            });
         }
+
+        // 以下、Controllerにあるべき？Viewの制御なのでViewに書くのでよいか？
 
         public SetEditMode(): void {
             const left = (this.Size.Width / 2) - (this.ButtonPanel.Size.Width / 2);
@@ -88,7 +75,6 @@ namespace App.Views.Pages {
             const left = 10;
             this.ButtonPanel.Position.Left = left;
             this.HeaderBar.LeftButton.Hide(0);
-            this.HeaderBar.RightButton.Hide(0);
             this.HeaderBar.RightButton.Hide(0);
             this.EditButton.Show(0);
 

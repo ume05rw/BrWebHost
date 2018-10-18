@@ -23,6 +23,7 @@ namespace App.Controllers {
 
             const sub3Ctr = new Sub3Controller();
             const controlSetCtr = new ControlSetController();
+            const controlPropertyCtr = new ControlPropertyController();
 
             this.SetPageView(new Pages.MainPageView());
             const page = this.View as Pages.MainPageView;
