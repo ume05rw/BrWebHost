@@ -14,15 +14,15 @@ namespace App.Views.Controls {
 
     export class ControlSetButtonView extends LabeledButtonView {
 
-        private _toggle: Views.ToggleButtonView;
-        public get Toggle(): Views.ToggleButtonView {
+        private _toggle: Views.ToggleButtonInputView;
+        public get Toggle(): Views.ToggleButtonInputView {
             return this._toggle;
         }
 
         constructor() {
             super()
 
-            this._toggle = new Views.ToggleButtonView();
+            this._toggle = new Views.ToggleButtonInputView();
 
             this.SetSize(150, 170);
 

@@ -27,6 +27,22 @@ namespace App.Controllers {
             this.SetPageView(new Pages.ControlPropertyPageView());
             this._page = this.View as Pages.ControlPropertyPageView;
 
+            this._page.TxtName.AddEventListener(Events.InputViewEvents.Changed, (je, eo) => {
+                Dump.Log('ControlPropertyController.TxtName.Changed');
+            });
+
+            this._page.SboIcon.AddEventListener(Events.InputViewEvents.Changed, (je, eo) => {
+                Dump.Log('ControlPropertyController.SboIcon.Changed');
+            });
+
+            this._page.SboColor.AddEventListener(Events.InputViewEvents.Changed, (je, eo) => {
+                Dump.Log('ControlPropertyController.SboColor.Changed');
+            });
+
+            this._page.TarCode.AddEventListener(Events.InputViewEvents.Changed, (je, eo) => {
+                Dump.Log('ControlPropertyController.TarCode.Changed');
+            });
+
             this._page.DeleteButton.AddEventListener(Events.ButtonViewEvents.SingleClick, () => {
                 Dump.Log('Delete this Control!');
             });

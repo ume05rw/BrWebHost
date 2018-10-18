@@ -19,10 +19,10 @@ namespace App.Views.Pages {
         public HeaderBar: Controls.HeaderBarView;
         public DeleteButton: Controls.ButtonView;
         public InputPanel: Views.StuckerBoxView;
-        public TxtName: Views.TextBoxView;
-        public SboIcon: Views.SelectBoxView;
-        public SboColor: Views.SelectBoxView;
-        public TarCode: Views.TextAreaView;
+        public TxtName: Views.TextBoxInputView;
+        public SboIcon: Views.SelectBoxInputView;
+        public SboColor: Views.SelectBoxInputView;
+        public TarCode: Views.TextAreaInputView;
         public BtnLearn: Controls.ButtonView;
 
         constructor() {
@@ -31,10 +31,10 @@ namespace App.Views.Pages {
             this.HeaderBar = new Controls.HeaderBarView();
             this.DeleteButton = new Controls.ButtonView();
             this.InputPanel = new Views.StuckerBoxView();
-            this.TxtName = new Views.TextBoxView();
-            this.SboIcon = new Views.SelectBoxView();
-            this.SboColor = new Views.SelectBoxView();
-            this.TarCode = new Views.TextAreaView();
+            this.TxtName = new Views.TextBoxInputView();
+            this.SboIcon = new Views.SelectBoxInputView();
+            this.SboColor = new Views.SelectBoxInputView();
+            this.TarCode = new Views.TextAreaInputView();
             this.BtnLearn = new Controls.ButtonView();
 
 

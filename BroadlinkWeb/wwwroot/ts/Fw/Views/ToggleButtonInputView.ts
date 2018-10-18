@@ -1,27 +1,50 @@
 ﻿/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../Events/ControlViewEvents.ts" />
+/// <reference path="../Events/ToggleButtonInputViewEvents.ts" />
 /// <reference path="../Util/Dump.ts" />
 /// <reference path="../Util/Number.ts" />
 /// <reference path="ControlView.ts" />
+/// <reference path="IInputView.ts" />
 
 namespace Fw.Views {
     import Dump = Fw.Util.Dump;
-    import Events = Fw.Events.ControlViewEvents;
+    import Events = Fw.Events.ToggleButtonInputViewEvents;
 
-    export class ToggleButtonView extends ControlView {
+    export class ToggleButtonInputView extends ControlView implements IInputView {
 
         public HoverColor: string = '';
 
-        private _value: boolean = false;
-        public get Value(): boolean {
-            return this._value;
+        private _name: string;
+        public get Name(): string {
+            return this._name;
         }
-        public set Value(value: boolean) {
-            const changed = (this._value !== value);
+        public set Name(value: string) {
+            this._name = value;
+        }
 
-            if (changed)
-                this._value = !this._value;
+        private _boolValue: boolean;
+        public get BoolValue(): boolean {
+            return (this._boolValue === true);
+        }
+        public set BoolValue(value: boolean) {
+            const changed = (this._boolValue !== (value === true));
+            this._boolValue = (value === true);
+
+            if (changed) {
+                Dump.Log('ToggleButtonInputView.Changed');
+                this.DispatchEvent(Events.Changed, this.Value);
+            }
+        }
+
+        public get Value(): string {
+            return (this.BoolValue)
+                ? 'true'
+                : 'false';
+        }
+        public set Value(value: string) {
+            this.BoolValue = (value === 'true')
+                ? true
+                : false;
         }
 
         private _overMargin: number;
@@ -36,7 +59,7 @@ namespace Fw.Views {
             this._notch = new BoxView();
             this._maskOn = new BoxView();
 
-            this._value = false;
+            this._boolValue = false;
             this._overMargin = 5;
 
             this.SetClassName('ToggleButtonView');
@@ -84,7 +107,7 @@ namespace Fw.Views {
             });
 
             this.AddEventListener(Events.SingleClick, () => {
-                this._value = !this._value;
+                this.BoolValue = !this.BoolValue;
                 this.Refresh();
             });
         }
@@ -102,11 +125,11 @@ namespace Fw.Views {
                 this._maskOn.Size.Height = this.Size.Height - this._overMargin;
                 this._notch.SetSize(this.Size.Height, this.Size.Height);
 
-                this._notch.Position.X = (this.Value)
+                this._notch.Position.X = (this.BoolValue)
                     ? (this.Size.Width / 2) - (this.Size.Height / 2)
                     : - (this.Size.Width / 2) + (this.Size.Height / 2);
 
-                this._maskOn.Position.X = (this.Value)
+                this._maskOn.Position.X = (this.BoolValue)
                     ? 0
                     : - (this.Size.Width - this._overMargin);
 

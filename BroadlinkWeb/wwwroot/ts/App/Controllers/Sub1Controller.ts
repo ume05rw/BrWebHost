@@ -57,19 +57,19 @@ namespace App.Controllers {
             slider.InnerLength = 1000;
             this.View.Add(slider);
 
-            const textbox = new Fw.Views.TextBoxView();
+            const textbox = new Fw.Views.TextBoxInputView();
             textbox.SetSize(60, 30);
             textbox.SetLeftTop(10, 10);
             textbox.Name = 'textbox';
             slider.Add(textbox);
 
-            const textarea = new Fw.Views.TextAreaView();
+            const textarea = new Fw.Views.TextAreaInputView();
             textarea.SetSize(100, 50);
             textarea.SetLeftTop(10, 50);
             textarea.Name = 'textarea';
             slider.Add(textarea);
 
-            const selectbox = new Fw.Views.SelectBoxView();
+            const selectbox = new Fw.Views.SelectBoxInputView();
             selectbox.SetSize(100, 30);
             selectbox.SetLeftTop(10, 110);
             selectbox.Name = 'selectbox';
@@ -78,7 +78,7 @@ namespace App.Controllers {
             selectbox.AddItem('さんばん', '3');
             slider.Add(selectbox);
 
-            const checkbox1 = new Fw.Views.CheckBoxView();
+            const checkbox1 = new Fw.Views.CheckBoxInputView();
             checkbox1.SetSize(100, 30);
             checkbox1.SetLeftTop(10, 150);
             checkbox1.Name = 'toggle_on';
@@ -86,7 +86,7 @@ namespace App.Controllers {
             checkbox1.Text = 'トグルOn';
             slider.Add(checkbox1);
 
-            const checkbox2 = new Fw.Views.CheckBoxView();
+            const checkbox2 = new Fw.Views.CheckBoxInputView();
             checkbox2.SetSize(100, 30);
             checkbox2.SetLeftTop(10, 190);
             checkbox2.Name = 'toggle_off';

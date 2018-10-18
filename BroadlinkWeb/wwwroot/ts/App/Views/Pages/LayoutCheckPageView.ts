@@ -18,7 +18,7 @@ namespace App.Views.Pages {
         public BtnGoSub2: Views.ButtonView;
         public CenterControl: Views.ControlView;
         public TmpCtl: Views.ControlView;
-        public Toggle: Views.ToggleButtonView;
+        public Toggle: Views.ToggleButtonInputView;
         public AncCtl1: Views.ButtonView;
         public AncCtl2: Views.ButtonView;
         public AncCtl3: Views.ButtonView;
@@ -38,7 +38,7 @@ namespace App.Views.Pages {
             this.AncCtl1 = new Fw.Views.ButtonView();
             this.AncCtl2 = new Fw.Views.ButtonView();
             this.AncCtl3 = new Fw.Views.ButtonView();
-            this.Toggle = new Fw.Views.ToggleButtonView();
+            this.Toggle = new Fw.Views.ToggleButtonInputView();
             this.AncCtl4 = new Fw.Views.ButtonView();
 
             this.SetClassName('MainPageView');

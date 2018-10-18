@@ -102,8 +102,8 @@ div.IController .ControlView.ToggleButtonView .BoxView {
     transition: all 0.3s ease-in-out;
 }
 
-div.IController .TextBoxView,
-div.IController .SelectBoxView {
+div.IController .TextBoxInputView,
+div.IController .SelectBoxInputView {
     position: absolute;
     /* border: none; */
     display: block;
@@ -114,7 +114,7 @@ div.IController .SelectBoxView {
     width: 99%;
 }
 
-div.IController .TextAreaView {
+div.IController .TextAreaInputView {
     position: absolute;
     /* border: none; */
     display: block;
@@ -127,17 +127,17 @@ div.IController .TextAreaView {
     height: 99%;
 }
 
-div.IController .CheckBoxView > .CheckBoxViewProperty {
+div.IController .CheckBoxView > .CheckBoxInputViewProperty {
     position: absolute;
     /* border: none; */
     display: block;
     box-shadow: none;
     font-size: 100%;
 }
-div.IController .CheckBoxView > input.CheckBoxViewProperty {
+div.IController .CheckBoxView > input.CheckBoxInputViewProperty {
     left: 5px;
 }
-div.IController .CheckBoxView > label.CheckBoxViewProperty {
+div.IController .CheckBoxView > label.CheckBoxInputViewProperty {
     left: 20px;
     font-weight: normal;
 }

@@ -30,18 +30,23 @@
     <Content Remove="wwwroot\ts\Fw\Config.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\BoxViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\ButtonViewEvents.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\CheckBoxInputViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\ControlViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\EventObject.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\EventReference.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\ImageViewEvents.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\InputViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\LabelViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\LineViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\PageViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\RelocatableButtonViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\RootEvents.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\SelectBoxInputViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\SlidableBoxViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\StuckerBoxViewEvents.ts" />
-    <Content Remove="wwwroot\ts\Fw\Events\ToggleButtonViewEvents.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\TextAreaInputViewEvents.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\TextBoxInputViewEvents.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\ToggleButtonInputViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\ViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\IObject.ts" />
     <Content Remove="wwwroot\ts\Fw\Models\Entities\EntityBase.ts" />
@@ -64,7 +69,9 @@
     <Content Remove="wwwroot\ts\Fw\Views\ButtonView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\CheckBoxView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\ControlView.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\IInputView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\ImageView.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\InputViewBase.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\IView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\LabelView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\LineView.ts" />
@@ -79,13 +86,13 @@
     <Content Remove="wwwroot\ts\Fw\Views\Property\TextAlign.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\RelocatableButtonView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\Root.ts" />
-    <Content Remove="wwwroot\ts\Fw\Views\SelectBoxView.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\SelectBoxInputView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\Size.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\SlidableBoxView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\StuckerBoxView.ts" />
-    <Content Remove="wwwroot\ts\Fw\Views\TextAreaView.ts" />
-    <Content Remove="wwwroot\ts\Fw\Views\TextBoxView.ts" />
-    <Content Remove="wwwroot\ts\Fw\Views\ToggleButtonView.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\TextAreaInputView.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\TextBoxInputView.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\ToggleButtonInputView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\ViewBase.ts" />
     <Content Remove="wwwroot\ts\PageManager.ts" />
   </ItemGroup>
@@ -134,7 +141,10 @@
     <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\Manager.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\BoxViewEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\ButtonViewEvents.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\CheckBoxInputViewEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\EventObject.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\InputViewEvents.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\SelectBoxInputViewEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\StuckerBoxViewEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\ControlViewEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\EventReference.ts" />
@@ -145,7 +155,9 @@
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\RelocatableButtonViewEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\RootEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\SlidableBoxViewEvents.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\ToggleButtonViewEvents.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\TextAreaInputViewEvents.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\TextBoxInputViewEvents.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\ToggleButtonInputViewEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\ViewEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\IObject.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Models\Entities\EntityBase.ts" />
@@ -164,9 +176,11 @@
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\BoxView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ButtonView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\CheckBoxView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\IInputView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\InputViewBase.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\TextAlign.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\ReferencePoint.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\SelectBoxView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\SelectBoxInputView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\StuckerBoxView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ImageView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\LineView.ts" />
@@ -187,9 +201,9 @@
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\Size.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Root.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\SlidableBoxView.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\TextAreaView.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\TextBoxView.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ToggleButtonView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\TextAreaInputView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\TextBoxInputView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ToggleButtonInputView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ViewBase.ts" />
   </ItemGroup>
 
