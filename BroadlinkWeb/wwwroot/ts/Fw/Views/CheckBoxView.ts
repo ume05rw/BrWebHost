@@ -80,7 +80,7 @@ namespace Fw.Views {
             this.Elem.addClass(this.ClassName);
 
             this._input = $('<input type="checkbox" class="CheckBoxInputViewProperty"></input>');
-            this._label = $('<label class="CCheckBoxInputViewProperty"></label >');
+            this._label = $('<label class="CheckBoxInputViewProperty"></label >');
             this.Elem.append(this._input);
             this.Elem.append(this._label);
 

@@ -127,17 +127,17 @@ div.IController .TextAreaInputView {
     height: 99%;
 }
 
-div.IController .CheckBoxView > .CheckBoxInputViewProperty {
+div.IController .CheckBoxInputView > .CheckBoxInputViewProperty {
     position: absolute;
     /* border: none; */
     display: block;
     box-shadow: none;
     font-size: 100%;
 }
-div.IController .CheckBoxView > input.CheckBoxInputViewProperty {
+div.IController .CheckBoxInputView > input.CheckBoxInputViewProperty {
     left: 5px;
 }
-div.IController .CheckBoxView > label.CheckBoxInputViewProperty {
+div.IController .CheckBoxInputView > label.CheckBoxInputViewProperty {
     left: 20px;
     font-weight: normal;
 }

@@ -25,42 +25,6 @@ declare namespace Fw {
         static DefaultPageAttribute: string;
     }
 }
-declare namespace Fw.Controllers {
-    class Factory {
-        static Create(id: string, elem: JQuery): IController;
-    }
-}
-declare namespace Fw.Controllers {
-    class Manager {
-        private static _instance;
-        static readonly Instance: Manager;
-        static Init(): void;
-        private _controllers;
-        private constructor();
-        InitControllersByTemplates(): void;
-        Add(controller: IController): void;
-        Get(id: string): IController;
-        Remove(id: string): void;
-        private Reset;
-        Set(id: string): void;
-        SetController(controller: IController): void;
-        SetModal(id: string): void;
-        HideModal(id: string): void;
-        SetUnmodal(id: string): void;
-    }
-}
-declare namespace App {
-    class Color {
-        static Transparent: string;
-        static Main: string;
-        static MainBackground: string;
-        static MainHover: string;
-        static HeaderButtonBackground: string;
-        static HeaderButtonHover: string;
-        static ReverseMain: string;
-        static ButtonColors: Array<string>;
-    }
-}
 declare namespace Fw {
     interface IObject {
         readonly Elem: JQuery;
@@ -181,6 +145,30 @@ declare namespace Fw.Controllers {
         HideModal(): void;
         SetUnmodal(): void;
         Dispose(): void;
+    }
+}
+declare namespace Fw.Controllers {
+    class Factory {
+        static Create(id: string, elem: JQuery): IController;
+    }
+}
+declare namespace Fw.Controllers {
+    class Manager {
+        private static _instance;
+        static readonly Instance: Manager;
+        static Init(): void;
+        private _controllers;
+        private constructor();
+        InitControllersByTemplates(): void;
+        Add(controller: IController): void;
+        Get(id: string): IController;
+        Remove(id: string): void;
+        private Reset;
+        Set(id: string): void;
+        SetController(controller: IController): void;
+        SetModal(id: string): void;
+        HideModal(id: string): void;
+        SetUnmodal(id: string): void;
     }
 }
 declare namespace Fw.Controllers {
@@ -424,6 +412,18 @@ declare namespace Fw.Views {
         Dispose(): void;
     }
 }
+declare namespace App {
+    class Color {
+        static Transparent: string;
+        static Main: string;
+        static MainBackground: string;
+        static MainHover: string;
+        static HeaderButtonBackground: string;
+        static HeaderButtonHover: string;
+        static ReverseMain: string;
+        static ButtonColors: Array<string>;
+    }
+}
 declare namespace App.Views.Controls {
     class HeaderBarView extends Fw.Views.BoxView {
         Text: string;
@@ -448,12 +448,6 @@ declare namespace App.Views.Pages {
     }
 }
 declare namespace App.Controllers {
-    class ControlPropertyController extends Fw.Controllers.ControllerBase {
-        private _page;
-        constructor();
-    }
-}
-declare namespace App.Controllers {
     class ControlSetController extends Fw.Controllers.ControllerBase {
         private _page;
         constructor();
@@ -463,28 +457,6 @@ declare namespace App.Controllers {
     class LayoutCheckController extends Fw.Controllers.ControllerBase {
         constructor(id: string);
         private Init;
-    }
-}
-declare namespace App.Controllers {
-    class Sub3Controller extends Fw.Controllers.ControllerBase {
-        constructor();
-    }
-}
-declare namespace Fw.Events {
-    class ButtonViewEventsClass extends ControlViewEventsClass {
-    }
-    const ButtonViewEvents: ButtonViewEventsClass;
-}
-declare namespace App.Events.Controls {
-    class ControlButtonViewEventsClass extends Fw.Events.ButtonViewEventsClass {
-        readonly EditOrdered: string;
-        readonly ExecOrdered: string;
-    }
-    const ControlButtonViewEvents: ControlButtonViewEventsClass;
-}
-declare namespace App {
-    class Main {
-        static StartUp(): void;
     }
 }
 declare namespace App.Controllers {
@@ -540,6 +512,23 @@ declare namespace App.Controllers {
     class Sub2Controller extends Fw.Controllers.ControllerBase {
         constructor(id: string, jqueryElem: JQuery);
     }
+}
+declare namespace App.Controllers {
+    class Sub3Controller extends Fw.Controllers.ControllerBase {
+        constructor();
+    }
+}
+declare namespace Fw.Events {
+    class ButtonViewEventsClass extends ControlViewEventsClass {
+    }
+    const ButtonViewEvents: ButtonViewEventsClass;
+}
+declare namespace App.Events.Controls {
+    class ControlButtonViewEventsClass extends Fw.Events.ButtonViewEventsClass {
+        readonly EditOrdered: string;
+        readonly ExecOrdered: string;
+    }
+    const ControlButtonViewEvents: ControlButtonViewEventsClass;
 }
 declare namespace Fw.Views {
     class ControlView extends BoxView {
@@ -640,21 +629,6 @@ declare namespace App.Views.Controls {
 declare namespace App.Views.Pages {
     import Views = Fw.Views;
     import Controls = App.Views.Controls;
-    class ControlPropertyPageView extends Fw.Views.PageView {
-        HeaderBar: Controls.HeaderBarView;
-        DeleteButton: Controls.ButtonView;
-        InputPanel: Views.StuckerBoxView;
-        TxtName: Views.TextBoxInputView;
-        SboIcon: Views.SelectBoxInputView;
-        SboColor: Views.SelectBoxInputView;
-        TarCode: Views.TextAreaInputView;
-        BtnLearn: Controls.ButtonView;
-        constructor();
-    }
-}
-declare namespace App.Views.Pages {
-    import Views = Fw.Views;
-    import Controls = App.Views.Controls;
     class ControlSetPageView extends Fw.Views.PageView {
         HeaderBar: Controls.HeaderBarView;
         EditButton: Controls.ButtonView;
@@ -665,14 +639,6 @@ declare namespace App.Views.Pages {
         ShowModal(duration?: number, width?: number): void;
         SetUnmodal(duration?: number): void;
         Show(duration?: number): void;
-    }
-}
-declare namespace App.Views.Pages {
-    import Views = Fw.Views;
-    class Sub3PageView extends Fw.Views.PageView {
-        HeaderBar: Controls.HeaderBarView;
-        Stucker: Views.StuckerBoxView;
-        constructor();
     }
 }
 declare namespace App.Views.Pages {
@@ -692,18 +658,18 @@ declare namespace App.Views.Pages {
         constructor();
     }
 }
-declare namespace Fw.Events {
-    class InputViewEventsClass extends ViewEventsClass {
-        readonly Changed: string;
-        readonly Focused: string;
-        readonly Blurred: string;
+declare namespace App.Views.Pages {
+    import Views = Fw.Views;
+    class Sub3PageView extends Fw.Views.PageView {
+        HeaderBar: Controls.HeaderBarView;
+        Stucker: Views.StuckerBoxView;
+        constructor();
     }
-    const InputViewEvents: InputViewEventsClass;
 }
-declare namespace Fw.Events {
-    class CheckBoxInputViewEventsClass extends InputViewEventsClass {
+declare namespace App {
+    class Main {
+        static StartUp(): void;
     }
-    const CheckBoxInputViewEvents: CheckBoxInputViewEventsClass;
 }
 declare namespace Fw.Events {
     class EventObject {
@@ -712,16 +678,6 @@ declare namespace Fw.Events {
         readonly Params: any;
         constructor(sender: Fw.IObject, eventName: string, params?: any);
     }
-}
-declare namespace Fw.Events {
-    class SelectBoxInputViewEventsClass extends InputViewEventsClass {
-    }
-    const SelectBoxInputViewEvents: SelectBoxInputViewEventsClass;
-}
-declare namespace Fw.Events {
-    class StuckerBoxViewEventsClass extends BoxViewEventsClass {
-    }
-    const StuckerBoxViewEvents: StuckerBoxViewEventsClass;
 }
 declare namespace Fw.Events {
     class ImageViewEventsClass extends ViewEventsClass {
@@ -756,30 +712,9 @@ declare namespace Fw.Events {
     const SlidableBoxViewEvents: SlidableBoxViewEventsClass;
 }
 declare namespace Fw.Events {
-    class TextAreaInputViewEventsClass extends InputViewEventsClass {
+    class StuckerBoxViewEventsClass extends BoxViewEventsClass {
     }
-    const TextAreaInputViewEvents: TextAreaInputViewEventsClass;
-}
-declare namespace Fw.Events {
-    class TextBoxInputViewEventsClass extends InputViewEventsClass {
-    }
-    const TextBoxInputViewEvents: TextBoxInputViewEventsClass;
-}
-declare namespace Fw.Events {
-    class ToggleButtonInputViewEventsClass extends ControlViewEventsClass {
-        readonly Switched: string;
-        readonly ToOn: string;
-        readonly ToOff: string;
-        readonly Changed: string;
-        readonly Focused: string;
-        readonly Blurred: string;
-    }
-    const ToggleButtonInputViewEvents: ToggleButtonInputViewEventsClass;
-}
-declare namespace Fw {
-    class Startup {
-        static Init(): void;
-    }
+    const StuckerBoxViewEvents: StuckerBoxViewEventsClass;
 }
 declare namespace Fw.Util.Xhr {
     enum MethodType {
@@ -808,6 +743,102 @@ declare namespace Fw.Util.Xhr {
         constructor(succeeded: boolean, values: any, errors: any);
     }
 }
+declare namespace Fw.Views.Property {
+    enum Direction {
+        Horizontal = 0,
+        Vertical = 1
+    }
+}
+declare namespace Fw.Views.Property {
+    /**
+     * @description font-size
+     */
+    enum FontSize {
+        XxSmall = "xx-small",
+        XSmall = "x-small",
+        Small = "small",
+        Medium = "medium",
+        Large = "large",
+        XLarge = "x-large",
+        XxLarge = "xx-large"
+    }
+}
+declare namespace Fw.Views.Property {
+    /**
+     * @description font-weight
+     */
+    enum FontWeight {
+        Lighter = "lighter",
+        Normal = "normal",
+        Bold = "bold",
+        Bolder = "bolder"
+    }
+}
+declare namespace Fw.Views.Property {
+    /**
+     * @description 配置基準
+     */
+    enum PositionPolicy {
+        /**
+         * 中央ポリシー：親Viewの中心位置からの差分を X, Y で表現する。
+         */
+        Centering = 1,
+        /**
+         * 左上ポリシー：親Viewの左上からの差分を、Left, Top で表現する。
+         */
+        LeftTop = 2
+    }
+}
+declare namespace Fw.Views.Property {
+    class Position {
+        private _view;
+        private _policy;
+        Policy: PositionPolicy;
+        private _x;
+        X: number;
+        private _y;
+        Y: number;
+        private _left;
+        Left: number;
+        private _top;
+        Top: number;
+        constructor(view?: IView);
+        private GetSizeSet;
+        Dispose(): void;
+    }
+}
+declare namespace Fw.Views.Property {
+    /**
+     * @description 基点、スタッキング時の基準点
+     */
+    enum ReferencePoint {
+        LeftTop = 1,
+        RightTop = 2,
+        LeftBottom = 3,
+        RightBottom = 4
+    }
+}
+declare namespace Fw.Views.Property {
+    enum TextAlign {
+        Left = "left",
+        Center = "center",
+        Right = "right",
+        JustifyAll = "justify-all"
+    }
+}
+declare namespace Fw.Events {
+    class InputViewEventsClass extends ViewEventsClass {
+        readonly Changed: string;
+        readonly Focused: string;
+        readonly Blurred: string;
+    }
+    const InputViewEvents: InputViewEventsClass;
+}
+declare namespace Fw.Events {
+    class CheckBoxInputViewEventsClass extends InputViewEventsClass {
+    }
+    const CheckBoxInputViewEvents: CheckBoxInputViewEventsClass;
+}
 declare namespace Fw.Views {
     interface IInputView extends IView {
         Value: string;
@@ -829,37 +860,80 @@ declare namespace Fw.Views {
     }
 }
 declare namespace Fw.Views {
-    abstract class InputViewBase extends ViewBase implements IInputView {
-        private _value;
-        Value: string;
-        private _name;
-        Name: string;
-        constructor(jqueryElem: JQuery);
-    }
-}
-declare namespace Fw.Views.Property {
-    enum TextAlign {
-        Left = "left",
-        Center = "center",
-        Right = "right",
-        JustifyAll = "justify-all"
-    }
-}
-declare namespace Fw.Views.Property {
-    /**
-     * @description 基点、スタッキング時の基準点
-     */
-    enum ReferencePoint {
-        LeftTop = 1,
-        RightTop = 2,
-        LeftBottom = 3,
-        RightBottom = 4
+    import FitPolicy = Fw.Views.Property.FitPolicy;
+    class ImageView extends ViewBase {
+        private _image;
+        private _src;
+        Src: string;
+        private _firPolicy;
+        FitPolicy: FitPolicy;
+        constructor();
+        protected InnerRefresh(): void;
+        Dispose(): void;
     }
 }
 declare namespace Fw.Views {
-    class SelectBoxInputView extends InputViewBase {
+    import Property = Fw.Views.Property;
+    class LabelView extends ViewBase {
+        private _text;
+        Text: string;
+        private _fontWeight;
+        FontWeight: Property.FontWeight;
+        private _fontSize;
+        FontSize: Property.FontSize;
+        private _fontFamily;
+        FontFamily: string;
+        private _textAlign;
+        TextAlign: Property.TextAlign;
+        private _autoSize;
+        AutoSize: boolean;
+        private _hiddenSpan;
         constructor();
-        AddItem(name: string, value: string): void;
+        protected InnerRefresh(): void;
+        CalcLayout(): void;
+        Dispose(): void;
+    }
+}
+declare namespace Fw.Views {
+    class LineView extends ViewBase {
+        private _direction;
+        readonly Direction: Property.Direction;
+        private _length;
+        Length: number;
+        BackgroundColor: string;
+        constructor(direction: Property.Direction);
+        protected InnerRefresh(): void;
+        CalcLayout(): void;
+        Dispose(): void;
+    }
+}
+declare namespace Fw.Views {
+    import Property = Fw.Views.Property;
+    class SlidableBoxView extends BoxView {
+        readonly Children: Array<IView>;
+        private _direction;
+        readonly Direction: Property.Direction;
+        private _innerBackgroundColor;
+        InnerBackgroundColor: string;
+        private _innerLength;
+        InnerLength: number;
+        private _innerBox;
+        private _positionBarMax;
+        private _positionBarCurrent;
+        private _barMargin;
+        private _isDragging;
+        private _spcvMouseSuppressor;
+        private _dragStartMousePosition;
+        private _dragStartViewPosition;
+        constructor(direction: Property.Direction);
+        private InitView;
+        private AdjustSlidePosition;
+        Add(view: IView): void;
+        Remove(view: IView): void;
+        protected InnerRefresh(): void;
+        CalcLayout(): void;
+        private GetMaxInnerLength;
+        Dispose(): void;
     }
 }
 declare namespace Fw.Views {
@@ -930,118 +1004,6 @@ declare namespace Fw.Views {
         Dispose(): void;
     }
 }
-declare namespace Fw.Views {
-    import FitPolicy = Fw.Views.Property.FitPolicy;
-    class ImageView extends ViewBase {
-        private _image;
-        private _src;
-        Src: string;
-        private _firPolicy;
-        FitPolicy: FitPolicy;
-        constructor();
-        protected InnerRefresh(): void;
-        Dispose(): void;
-    }
-}
-declare namespace Fw.Views {
-    class LineView extends ViewBase {
-        private _direction;
-        readonly Direction: Property.Direction;
-        private _length;
-        Length: number;
-        BackgroundColor: string;
-        constructor(direction: Property.Direction);
-        protected InnerRefresh(): void;
-        CalcLayout(): void;
-        Dispose(): void;
-    }
-}
-declare namespace Fw.Views.Property {
-    /**
-     * @description font-weight
-     */
-    enum FontWeight {
-        Lighter = "lighter",
-        Normal = "normal",
-        Bold = "bold",
-        Bolder = "bolder"
-    }
-}
-declare namespace Fw.Views {
-    import Property = Fw.Views.Property;
-    class LabelView extends ViewBase {
-        private _text;
-        Text: string;
-        private _fontWeight;
-        FontWeight: Property.FontWeight;
-        private _fontSize;
-        FontSize: Property.FontSize;
-        private _fontFamily;
-        FontFamily: string;
-        private _textAlign;
-        TextAlign: Property.TextAlign;
-        private _autoSize;
-        AutoSize: boolean;
-        private _hiddenSpan;
-        constructor();
-        protected InnerRefresh(): void;
-        CalcLayout(): void;
-        Dispose(): void;
-    }
-}
-declare namespace Fw.Views.Property {
-    enum Direction {
-        Horizontal = 0,
-        Vertical = 1
-    }
-}
-declare namespace Fw.Views.Property {
-    /**
-     * @description font-size
-     */
-    enum FontSize {
-        XxSmall = "xx-small",
-        XSmall = "x-small",
-        Small = "small",
-        Medium = "medium",
-        Large = "large",
-        XLarge = "x-large",
-        XxLarge = "xx-large"
-    }
-}
-declare namespace Fw.Views.Property {
-    /**
-     * @description 配置基準
-     */
-    enum PositionPolicy {
-        /**
-         * 中央ポリシー：親Viewの中心位置からの差分を X, Y で表現する。
-         */
-        Centering = 1,
-        /**
-         * 左上ポリシー：親Viewの左上からの差分を、Left, Top で表現する。
-         */
-        LeftTop = 2
-    }
-}
-declare namespace Fw.Views.Property {
-    class Position {
-        private _view;
-        private _policy;
-        Policy: PositionPolicy;
-        private _x;
-        X: number;
-        private _y;
-        Y: number;
-        private _left;
-        Left: number;
-        private _top;
-        Top: number;
-        constructor(view?: IView);
-        private GetSizeSet;
-        Dispose(): void;
-    }
-}
 declare namespace Fw {
     import Property = Fw.Views.Property;
     class Root extends ObjectBase {
@@ -1071,33 +1033,46 @@ declare namespace Fw {
         Dispose(): void;
     }
 }
+declare namespace Fw {
+    class Startup {
+        static Init(): void;
+    }
+}
+declare namespace App.Views.Pages {
+    import Views = Fw.Views;
+    import Controls = App.Views.Controls;
+    class ControlPropertyPageView extends Fw.Views.PageView {
+        HeaderBar: Controls.HeaderBarView;
+        InputPanel: Views.StuckerBoxView;
+        TxtName: Views.TextBoxInputView;
+        SboIcon: Views.SelectBoxInputView;
+        SboColor: Views.SelectBoxInputView;
+        TarCode: Views.TextAreaInputView;
+        BtnLearn: Controls.ButtonView;
+        ChkToggleOn: Views.CheckBoxInputView;
+        ChkToggleOff: Views.CheckBoxInputView;
+        DeleteButton: Controls.ButtonView;
+        constructor();
+    }
+}
+declare namespace App.Controllers {
+    class ControlPropertyController extends Fw.Controllers.ControllerBase {
+        private _page;
+        constructor();
+    }
+}
 declare namespace Fw.Views {
-    import Property = Fw.Views.Property;
-    class SlidableBoxView extends BoxView {
-        readonly Children: Array<IView>;
-        private _direction;
-        readonly Direction: Property.Direction;
-        private _innerBackgroundColor;
-        InnerBackgroundColor: string;
-        private _innerLength;
-        InnerLength: number;
-        private _innerBox;
-        private _positionBarMax;
-        private _positionBarCurrent;
-        private _barMargin;
-        private _isDragging;
-        private _spcvMouseSuppressor;
-        private _dragStartMousePosition;
-        private _dragStartViewPosition;
-        constructor(direction: Property.Direction);
-        private InitView;
-        private AdjustSlidePosition;
-        Add(view: IView): void;
-        Remove(view: IView): void;
-        protected InnerRefresh(): void;
-        CalcLayout(): void;
-        private GetMaxInnerLength;
-        Dispose(): void;
+    abstract class InputViewBase extends ViewBase implements IInputView {
+        private _value;
+        Value: string;
+        private _name;
+        Name: string;
+        constructor(jqueryElem: JQuery);
+    }
+}
+declare namespace Fw.Views {
+    class TextBoxInputView extends InputViewBase {
+        constructor();
     }
 }
 declare namespace Fw.Views {
@@ -1106,9 +1081,36 @@ declare namespace Fw.Views {
     }
 }
 declare namespace Fw.Views {
-    class TextBoxInputView extends InputViewBase {
+    class SelectBoxInputView extends InputViewBase {
         constructor();
+        AddItem(name: string, value: string): void;
     }
+}
+declare namespace Fw.Events {
+    class TextBoxInputViewEventsClass extends InputViewEventsClass {
+    }
+    const TextBoxInputViewEvents: TextBoxInputViewEventsClass;
+}
+declare namespace Fw.Events {
+    class TextAreaInputViewEventsClass extends InputViewEventsClass {
+    }
+    const TextAreaInputViewEvents: TextAreaInputViewEventsClass;
+}
+declare namespace Fw.Events {
+    class SelectBoxInputViewEventsClass extends InputViewEventsClass {
+    }
+    const SelectBoxInputViewEvents: SelectBoxInputViewEventsClass;
+}
+declare namespace Fw.Events {
+    class ToggleButtonInputViewEventsClass extends ControlViewEventsClass {
+        readonly Switched: string;
+        readonly ToOn: string;
+        readonly ToOff: string;
+        readonly Changed: string;
+        readonly Focused: string;
+        readonly Blurred: string;
+    }
+    const ToggleButtonInputViewEvents: ToggleButtonInputViewEventsClass;
 }
 declare namespace Fw.Views {
     class ToggleButtonInputView extends ControlView implements IInputView {

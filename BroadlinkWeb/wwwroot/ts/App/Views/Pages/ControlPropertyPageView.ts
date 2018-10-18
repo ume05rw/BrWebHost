@@ -17,26 +17,30 @@ namespace App.Views.Pages {
     export class ControlPropertyPageView extends Fw.Views.PageView {
 
         public HeaderBar: Controls.HeaderBarView;
-        public DeleteButton: Controls.ButtonView;
         public InputPanel: Views.StuckerBoxView;
         public TxtName: Views.TextBoxInputView;
         public SboIcon: Views.SelectBoxInputView;
         public SboColor: Views.SelectBoxInputView;
         public TarCode: Views.TextAreaInputView;
         public BtnLearn: Controls.ButtonView;
+        public ChkToggleOn: Views.CheckBoxInputView;
+        public ChkToggleOff: Views.CheckBoxInputView;
+        public DeleteButton: Controls.ButtonView;
 
         constructor() {
             super($(""));
 
             this.HeaderBar = new Controls.HeaderBarView();
-            this.DeleteButton = new Controls.ButtonView();
             this.InputPanel = new Views.StuckerBoxView();
             this.TxtName = new Views.TextBoxInputView();
             this.SboIcon = new Views.SelectBoxInputView();
             this.SboColor = new Views.SelectBoxInputView();
             this.TarCode = new Views.TextAreaInputView();
             this.BtnLearn = new Controls.ButtonView();
+            this.ChkToggleOn = new Views.CheckBoxInputView();
+            this.ChkToggleOff = new Views.CheckBoxInputView();
 
+            this.DeleteButton = new Controls.ButtonView();
 
             this.SetClassName('ControlPropertyPageView');
 
@@ -60,8 +64,8 @@ namespace App.Views.Pages {
             const lbl1 = new Views.LabelView();
             lbl1.Text = 'Name';
             lbl1.TextAlign = Property.TextAlign.Left;
-            lbl1.AutoSize = false;
-            lbl1.SetAnchor(null, 5, 15, null);
+            lbl1.AutoSize = true;
+            lbl1.SetAnchor(null, 5, null, null);
             lbl1.Size.Height = 21;
             this.InputPanel.Add(lbl1);
 
@@ -73,8 +77,8 @@ namespace App.Views.Pages {
             const lbl2 = new Views.LabelView();
             lbl2.Text = 'Icon';
             lbl2.TextAlign = Property.TextAlign.Left;
-            lbl2.AutoSize = false;
-            lbl2.SetAnchor(null, 5, 15, null);
+            lbl2.AutoSize = true;
+            lbl2.SetAnchor(null, 5, null, null);
             lbl2.Size.Height = 21;
             this.InputPanel.Add(lbl2);
 
@@ -86,8 +90,8 @@ namespace App.Views.Pages {
             const lbl3 = new Views.LabelView();
             lbl3.Text = 'Color';
             lbl3.TextAlign = Property.TextAlign.Left;
-            lbl3.AutoSize = false;
-            lbl3.SetAnchor(null, 5, 15, null);
+            lbl3.AutoSize = true;
+            lbl3.SetAnchor(null, 5, null, null);
             lbl3.Size.Height = 21;
             this.InputPanel.Add(lbl3);
 
@@ -99,8 +103,8 @@ namespace App.Views.Pages {
             const lbl4 = new Views.LabelView();
             lbl4.Text = 'Code';
             lbl4.TextAlign = Property.TextAlign.Left;
-            lbl4.AutoSize = false;
-            lbl4.SetAnchor(null, 5, 15, null);
+            lbl4.AutoSize = true;
+            lbl4.SetAnchor(null, 5, null, null);
             lbl4.Size.Height = 21;
             this.InputPanel.Add(lbl4);
 
@@ -113,6 +117,18 @@ namespace App.Views.Pages {
             this.BtnLearn.Size.Height = 30;
             this.BtnLearn.Text = 'Learn Signal';
             this.InputPanel.Add(this.BtnLearn);
+
+            this.ChkToggleOn.SetAnchor(null, 5, 15, null);
+            this.ChkToggleOn.Size.Height = 30;
+            this.ChkToggleOn.Name = 'AssignToggleOn';
+            this.ChkToggleOn.Text = 'メインパネル トグルボタン[On]';
+            this.InputPanel.Add(this.ChkToggleOn);
+
+            this.ChkToggleOff.SetAnchor(null, 5, 15, null);
+            this.ChkToggleOff.Size.Height = 30;
+            this.ChkToggleOff.Name = 'AssignToggleOff';
+            this.ChkToggleOff.Text = 'メインパネル トグルボタン[Off]';
+            this.InputPanel.Add(this.ChkToggleOff);
 
             this.DeleteButton.SetAnchor(null, 5, 15, null);
             this.DeleteButton.Size.Height = 30;
