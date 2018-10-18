@@ -28,8 +28,10 @@ namespace App {
             'circle_plus.png',
             'circle_prohibition.png',
             'clock.png',
+            'darrow_down.png',
             'darrow_left.png',
             'darrow_right.png',
+            'darrow_up.png',
 
             'dustbox.png',
             'edit.png',
@@ -60,6 +62,22 @@ namespace App {
             'target.png',
             'video_camera.png',
             'video_film.png',
+
+            'num_0.png',
+            'num_1.png',
+            'num_2.png',
+            'num_3.png',
+            'num_4.png',
+            'num_5.png',
+            'num_6.png',
+            'num_7.png',
+            'num_8.png',
+            'num_9.png',
+            'num_10.png',
+            'num_11.png',
+            'num_12.png',
+            'num_aster.png',
+            'num_sharp.png',
         ];
     }
 }

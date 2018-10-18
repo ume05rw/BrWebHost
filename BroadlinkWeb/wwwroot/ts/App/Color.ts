@@ -23,6 +23,7 @@ namespace App {
         public static HeaderButtonHover: string = '#e0e0e0';
         public static ReverseMain: string = '#FFFFFF';
 
+
         public static ButtonColors: Array<string> = [
             '#9d9e9e',
             '#84bde8',
@@ -32,6 +33,16 @@ namespace App {
             '#F92068',
             '#6545C6',
             '#B5743B',
+        ];
+        public static ButtonColorNames: Array<string> = [
+            'gray',
+            'light blue',
+            'green',
+            'light green',
+            'orange',
+            'red',
+            'purple',
+            'brown'
         ];
 
         public static ButtonHoverColors: Array<string> = [

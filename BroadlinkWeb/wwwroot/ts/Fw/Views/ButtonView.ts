@@ -20,6 +20,14 @@ namespace Fw.Views {
             this._imageView.Src = value;
         }
 
+        public get ImageFitPolicy(): Property.FitPolicy {
+            return this._imageView.FitPolicy;
+        }
+        public set ImageFitPolicy(value: Property.FitPolicy) {
+            this._imageView.FitPolicy = value;
+            this.Refresh();
+        }
+
         /**
          * @see publicプロパティの初期化タイミングに注意。コンストラクタ実行後に値がセットされる。
          */

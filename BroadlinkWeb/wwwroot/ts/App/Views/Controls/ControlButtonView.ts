@@ -38,10 +38,11 @@ namespace App.Views.Controls {
             this.Margin = 5;
             this.Position.Policy = Property.PositionPolicy.LeftTop;
             this.HasBorder = true;
-            this.BorderRadius = 50;
+            this.BorderRadius = 10;
             this.BackgroundColor = Color.MainBackground;
             this.HoverColor = Color.ButtonHoverColors[0];
             this.Color = Color.ButtonColors[0];
+            this.ImageFitPolicy = Property.FitPolicy.Auto;
             this.Code = '';
             this._name = '';
 

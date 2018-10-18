@@ -25,7 +25,9 @@ namespace Fw.Views {
         public AddItem(name: string, value: string): void {
             //Dump.Log('name: ' + name);
             //Dump.Log(`<option value="${value}">${name}</option>`);
-            this.Elem.append(`<option value="${value}">${name}</option>`);
+            const option = $(`<option value="${value}"></option>`);
+            option.html(name);
+            this.Elem.append(option);
         }
     }
 }

@@ -103,8 +103,9 @@ namespace App.Views.Pages {
             this.SboColor.SetAnchor(null, 5, 15, null);
             this.SboColor.Size.Height = 30;
             this.SboColor.Name = 'Color';
-            _.each(App.Color.ButtonColors, (color) => {
-                this.SboColor.AddItem(`<span style="color: ${color};">${color}</span>`, color);
+            _.each(App.Color.ButtonColors, (color, idx) => {
+                const name = App.Color.ButtonColorNames[idx];
+                this.SboColor.AddItem(`<label style="background-color: ${color};">${name}</label>`, color);
             });
             this.InputPanel.Add(this.SboColor);
 
