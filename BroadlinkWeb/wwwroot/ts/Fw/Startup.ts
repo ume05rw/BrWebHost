@@ -16,6 +16,18 @@ namespace Fw {
                 + ':' + location.port
                 + '/';
 
+            // iOSの全体スクロール対策
+            $(window).on('touchmove', function (e) {
+                e.preventDefault();
+            });
+            $(document.body).on('touchmove', function (e) {
+                e.preventDefault();
+            });
+            $('div.body-content').on('touchmove', function (e) {
+                e.preventDefault();
+            });
+
+
             // 画面全体のコンテナを初期化
             Fw.Root.Init('div.body-content');
 

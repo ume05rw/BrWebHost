@@ -17,25 +17,62 @@ var Fw;
 (function (Fw) {
     var Util;
     (function (Util) {
+        var LogMode;
+        (function (LogMode) {
+            LogMode[LogMode["Console"] = 1] = "Console";
+            LogMode[LogMode["Window"] = 2] = "Window";
+        })(LogMode = Util.LogMode || (Util.LogMode = {}));
         var Dump = /** @class */ (function () {
             function Dump() {
             }
+            Object.defineProperty(Dump, "LogMode", {
+                get: function () {
+                    return Dump._logMode;
+                },
+                set: function (value) {
+                    var changed = (Dump._logMode !== value);
+                    Dump._logMode = value;
+                    if (changed) {
+                        if (Dump._logMode === LogMode.Window) {
+                            if (!Dump._logParams.isLogWindowReady)
+                                Dump.InitLogWindow();
+                            Dump.ShowLogWindow();
+                        }
+                        else {
+                            Dump.HideLogWindow();
+                        }
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
             Dump.Log = function (value) {
-                try {
-                    console.log(Dump.GetTimestamp() + " :: " + Dump.GetDumpedString(value));
+                if (Dump._logMode === LogMode.Console) {
+                    try {
+                        console.log(Dump.GetTimestamp() + " :: " + Dump.GetDumpedString(value));
+                    }
+                    catch (e) {
+                        // 引数の循環参照など
+                        console.log(Dump.GetTimestamp() + " ::");
+                        console.log(value);
+                    }
                 }
-                catch (e) {
-                    // 引数の循環参照など
-                    console.log(Dump.GetTimestamp() + " ::");
-                    console.log(value);
+                else {
+                    Dump.WriteObjectToLogWindow(value);
                 }
             };
             Dump.ErrorLog = function (value, message) {
-                console.log('');
-                console.log('########################################');
-                console.log('########################################');
-                console.log(Dump.GetTimestamp() + " :: ERROR!! " + (message ? '[ ' + message + ' ]' : ''));
-                console.log(value);
+                if (Dump._logMode === LogMode.Console) {
+                    console.log('');
+                    console.log('########################################');
+                    console.log('########################################');
+                    console.log(Dump.GetTimestamp() + " :: ERROR!! " + (message ? '[ ' + message + ' ]' : ''));
+                    console.log(value);
+                }
+                else {
+                    Dump.WriteObjectToLogWindow("ERROR!! " + (message ? '[ ' + message + ' ]' : ''));
+                    Dump.WriteObjectToLogWindow(value);
+                }
                 // なぜか、Firefoxで例外オブジェクトがシリアライズ出来ず、例外も出ない。
                 //try {
                 //    console.log(Dump.GetDumpedString(value));
@@ -51,6 +88,244 @@ var Fw;
                 return _.isObject(value)
                     ? '\n' + JSON.stringify(value, null, "\t")
                     : String(value);
+            };
+            Dump.InitLogWindow = function () {
+                var me = this, elmLogWindow = document.getElementById("DOBES_LOG"), body, parent, title;
+                if (!elmLogWindow) {
+                    //Bodyが取得できないことはあり得ない想定。
+                    body = document.getElementsByTagName("body");
+                    try {
+                        elmLogWindow = document.createElement("div");
+                        elmLogWindow.id = "DOBES_LOG";
+                        parent = document.createElement("div");
+                        title = document.createElement("div");
+                        parent.style.zIndex = 99999999;
+                        parent.id = "DOBES_LOG_WINDOW";
+                        title.innerHTML =
+                            "<div>"
+                                + "<div style='float:left; width: 100px; text-align: left;'>"
+                                + "<strong>LOG</strong>"
+                                + "</div>"
+                                + "<div style='float:left;'>"
+                                + "</div>"
+                                + "<div style='clear:both;'></div>"
+                                + "</div>";
+                        title.style.border = "2px solid #000000";
+                        title.style.textAlign = "center";
+                        title.style.padding = "4px";
+                        title.style.backgroundColor = "#eeeeee";
+                        var getMousePosition_1 = function (e) {
+                            return (e ?
+                                {
+                                    x: e.pageX,
+                                    y: e.pageY
+                                }
+                                : {
+                                    x: 0,
+                                    y: 0
+                                });
+                        };
+                        title.onmousedown = function (e) {
+                            var objPos = getMousePosition_1(e);
+                            me._logParams.windowX = parseInt(parent.style.left.replace("px"), 10);
+                            me._logParams.windowY = parseInt(parent.style.top.replace("px"), 10);
+                            me._logParams.pointerX = objPos.x;
+                            me._logParams.pointerY = objPos.y;
+                            me._logParams.isLogWindowDraging = true;
+                        };
+                        title.ondblclick = function () {
+                            me.HideLogWindow();
+                        };
+                        title.onmouseup = function () {
+                            me._logParams.isLogWindowDraging = false;
+                        };
+                        body[0].onmousemove = function (e) {
+                            if (!me._logParams.isLogWindowDraging) {
+                                return;
+                            }
+                            var objPos = getMousePosition_1(e);
+                            var addX = (objPos.x - me._logParams.pointerX);
+                            var addY = (objPos.y - me._logParams.pointerY);
+                            parent.style.left = (me._logParams.windowX + addX) + "px";
+                            parent.style.top = (me._logParams.windowY + addY) + "px";
+                        };
+                        parent.appendChild(title);
+                        parent.appendChild(elmLogWindow);
+                        parent.style.position = "absolute";
+                        parent.style.top = "5px";
+                        parent.style.left = "5px";
+                        body[0].insertBefore(parent, body[0].firstChild);
+                    }
+                    catch (e) {
+                        alert("Log Window Create Fail. e:" + e.message);
+                        return;
+                    }
+                }
+                //旧IE対応めんどいのでTry-Catch
+                try {
+                    //表示位置・サイズセット
+                    elmLogWindow.style.zIndex = "100";
+                    elmLogWindow.style.border = "1px solid #000000";
+                    elmLogWindow.style.width = "300px";
+                    elmLogWindow.style.height = "700px";
+                    elmLogWindow.style.fontSize = "9pt";
+                    elmLogWindow.style.overflow = "scroll";
+                    elmLogWindow.style.backgroundColor = "#ffffff";
+                }
+                catch (ex) {
+                    console.log(ex);
+                }
+                Dump._logParams.isLogWindowReady = true;
+            };
+            Dump.ShowLogWindow = function () {
+                var elmLogWindow = document.getElementById("DOBES_LOG");
+                if (!elmLogWindow)
+                    throw new Error('Log-Window not initialized.');
+                try {
+                    elmLogWindow = document.getElementById("DOBES_LOG_WINDOW");
+                    elmLogWindow.style.visibility = "visible";
+                    elmLogWindow.style.display = "block";
+                }
+                catch (ex) {
+                    console.log(ex);
+                }
+            };
+            Dump.HideLogWindow = function () {
+                var elmLogWindow = document.getElementById("DOBES_LOG");
+                if (!elmLogWindow)
+                    return;
+                try {
+                    elmLogWindow = document.getElementById("DOBES_LOG_WINDOW");
+                    elmLogWindow.style.visibility = "hidden";
+                    elmLogWindow.style.display = "none";
+                }
+                catch (ex) {
+                    console.log(ex);
+                }
+            };
+            Dump.WriteToLogWindow = function (message) {
+                var me = this;
+                if (!Dump._logParams.isEnableLog)
+                    return;
+                if (!Dump._logParams.isLogWindowReady)
+                    Dump.InitLogWindow();
+                var date = new Date();
+                try {
+                    var objLog = document.getElementById("DOBES_LOG");
+                    message = String(message);
+                    var txtNode = document.createTextNode((Dump._logParams.isEnableTimeStamp ?
+                        date.getHours()
+                            + ":" + date.getMinutes()
+                            + ":" + date.getSeconds()
+                            + "." + date.getMilliseconds()
+                            + " :: "
+                        : "")
+                        + message);
+                    var br = document.createElement("br");
+                    if (objLog.childNodes.length != 0) {
+                        objLog.insertBefore(br, objLog.childNodes[0]);
+                    }
+                    else {
+                        objLog.appendChild(br);
+                    }
+                    objLog.insertBefore(txtNode, objLog.childNodes[0]);
+                }
+                catch (e) {
+                    console.log(e);
+                }
+            };
+            Dump.WriteObjectToLogWindow = function (obj) {
+                Dump.WriteToLogWindow(Dump.BuildJson(obj));
+            };
+            Dump.BuildJson = function (obj, opts) {
+                if (opts === void 0) { opts = null; }
+                var _opts = {
+                    maxDepth: 3
+                };
+                //渡し値のオプション値で、デフォルトオプション定義を上書きする。
+                for (var key in opts)
+                    _opts[key] = opts[key];
+                //階層指定範囲を、1～100までに限定する。
+                var depth = parseInt(String(_opts.maxDepth));
+                _opts.maxDepth = (depth > 0)
+                    ? ((depth < 100)
+                        ? depth
+                        : 100)
+                    : 1;
+                //特定の文字を置換する。
+                var aryTargetStrings = [[/\\/g, "\\\\"], [/\n/g, "\\n"], [/\r/g, "\\r"], [/\t/g, "\\t"], [/(")/g, "\\$1"]];
+                var formatString = function (value) {
+                    for (var i = 0; i < aryTargetStrings.length; i++) {
+                        value = value.replace.apply(value, aryTargetStrings[i]);
+                    }
+                    return value;
+                };
+                //渡し値の型によって戻り値の内容表現を変える。(含再帰処理)
+                var makeDump = function (value, currentDepth) {
+                    //console.log("makeDump value= " + value);
+                    //console.log("makeDump typeof= " + (typeof value));
+                    if (currentDepth >= _opts.maxDepth)
+                        return "*over*";
+                    if (value === null)
+                        return 'null';
+                    switch (typeof value) {
+                        case 'undefined':
+                            return '"undefined"';
+                        case 'boolean':
+                            return value ? 'true' : 'false';
+                        case 'function':
+                            return '"function()"'; //value.toSource()
+                        case 'string':
+                            return '"' + formatString(value) + '"';
+                        case 'number':
+                            return formatString(String(value));
+                        case 'object':
+                            //HTMLElementか否かを判定
+                            if (value instanceof HTMLElement)
+                                return '"HTML-Element"';
+                            var aryResult = [];
+                            var aryKey = [];
+                            if (value instanceof Array) {
+                                //渡し値が配列のとき
+                                if ((currentDepth + 1) >= _opts.maxDepth)
+                                    return "[\"*depth-over*\"]";
+                                for (var key in value)
+                                    aryKey.push(key);
+                                for (var i = 0; i < aryKey.length; i++) {
+                                    aryResult.push(makeDump(value[aryKey[i]], currentDepth + 1));
+                                }
+                                return '[' + aryResult.join(', ') + ']';
+                            }
+                            else {
+                                //渡し値がオブジェクトのとき
+                                if ((currentDepth + 1) >= _opts.maxDepth)
+                                    return "{\"*depth-over*\": \"*depth-over*\"}";
+                                for (var key in value)
+                                    aryKey.push(key);
+                                for (var i = 0; i < aryKey.length; i++) {
+                                    aryResult.push(makeDump(aryKey[i], currentDepth + 1)
+                                        + ':'
+                                        + makeDump(value[aryKey[i]], currentDepth + 1));
+                                }
+                                return '{' + aryResult.join(', ') + '}';
+                            }
+                        default:
+                            return formatString(String(value));
+                    }
+                };
+                //ダンプ文字列を生成する。
+                return makeDump(obj, 0);
+            };
+            Dump._logMode = LogMode.Console;
+            Dump._logParams = {
+                isLogWindowDraging: false,
+                pointerX: null,
+                pointerY: null,
+                windowX: null,
+                windowY: null,
+                isEnableLog: true,
+                isEnableTimeStamp: true,
+                isLogWindowReady: false
             };
             return Dump;
         }());
@@ -1076,46 +1351,53 @@ var Fw;
                 _this._latestStyles = {};
                 _this._newStyles = {};
                 _this.SetElem(jqueryElem);
+                _this.SetClassName('ViewBase');
                 _this._children = new Array();
                 _this._size = new Property.Size(_this);
                 _this._position = new Property.Position(_this);
                 _this._anchor = new Property.Anchor(_this);
-                _this.SetClassName('ViewBase');
-                _this.Elem.addClass('IView TransAnimation');
                 _this._page = null;
                 _this._parent = null;
                 _this._color = '#000000';
-                _this._size.Width = _this.Elem.width();
-                _this._size.Height = _this.Elem.height();
-                _this.AddEventListener(Events.SizeChanged, function () {
-                    _this.Refresh();
-                });
-                _this.AddEventListener(Events.PositionChanged, function () {
-                    _this.Refresh();
-                });
-                _this.AddEventListener(Events.AnchorChanged, function () {
-                    _this.Refresh();
-                });
-                _this.AddEventListener(Events.Attached, function () {
-                    _this.InitPage();
-                    _this.InitHasAnchor();
-                });
-                _this.AddEventListener(Events.Detached, function () {
-                    _this._page = null;
-                    _this.InitHasAnchor();
-                });
-                _this.AddEventListener(Events.Initialized, function () {
-                    _this.InitPage();
-                    _this.InitHasAnchor();
-                });
-                //this.IsVisible
-                //    ? this.DispatchEvent(Events.Shown)
-                //    : this.DispatchEvent(Events.Hidden);
+                if (_this.Elem) {
+                    _this._size.Width = _this.Elem.width();
+                    _this._size.Height = _this.Elem.height();
+                }
+                else {
+                    _this._size.Width = 0;
+                    _this._size.Height = 0;
+                }
                 // 画面リサイズ時に再描画
                 Fw.Root.Instance.AddEventListener(Fw.Events.RootEvents.Resized, function () {
                     _this.Refresh();
                 });
                 _.defer(function () {
+                    _this.Elem.addClass('IView TransAnimation');
+                    if (_this._size.Width === 0)
+                        _this._size.Width = _this.Elem.width();
+                    if (_this._size.Height === 0)
+                        _this._size.Height = _this.Elem.height();
+                    _this.AddEventListener(Events.SizeChanged, function () {
+                        _this.Refresh();
+                    });
+                    _this.AddEventListener(Events.PositionChanged, function () {
+                        _this.Refresh();
+                    });
+                    _this.AddEventListener(Events.AnchorChanged, function () {
+                        _this.Refresh();
+                    });
+                    _this.AddEventListener(Events.Attached, function () {
+                        _this.InitPage();
+                        _this.InitHasAnchor();
+                    });
+                    _this.AddEventListener(Events.Detached, function () {
+                        _this._page = null;
+                        _this.InitHasAnchor();
+                    });
+                    _this.AddEventListener(Events.Initialized, function () {
+                        _this.InitPage();
+                        _this.InitHasAnchor();
+                    });
                     // 初期化終了イベント
                     if (!_this._isInitialized) {
                         _this._isInitialized = true;
@@ -2382,6 +2664,50 @@ var App;
         var Dump = Fw.Util.Dump;
         var Events = Fw.Events;
         var Pages = App.Views.Pages;
+        var ControlPropertyController = /** @class */ (function (_super) {
+            __extends(ControlPropertyController, _super);
+            function ControlPropertyController() {
+                var _this = _super.call(this, 'ControlProperty') || this;
+                _this.SetClassName('ControlPropertyController');
+                _this.SetPageView(new Pages.ControlPropertyPageView());
+                _this._page = _this.View;
+                _this._page.TxtName.AddEventListener(Events.InputViewEvents.Changed, function (je, eo) {
+                    Dump.Log('ControlPropertyController.TxtName.Changed');
+                });
+                _this._page.SboIcon.AddEventListener(Events.InputViewEvents.Changed, function (je, eo) {
+                    Dump.Log('ControlPropertyController.SboIcon.Changed');
+                });
+                _this._page.SboColor.AddEventListener(Events.InputViewEvents.Changed, function (je, eo) {
+                    Dump.Log('ControlPropertyController.SboColor.Changed');
+                });
+                _this._page.TarCode.AddEventListener(Events.InputViewEvents.Changed, function (je, eo) {
+                    Dump.Log('ControlPropertyController.TarCode.Changed');
+                });
+                _this._page.DeleteButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
+                    Dump.Log('Delete this Control!');
+                });
+                return _this;
+            }
+            return ControlPropertyController;
+        }(Fw.Controllers.ControllerBase));
+        Controllers.ControlPropertyController = ControlPropertyController;
+    })(Controllers = App.Controllers || (App.Controllers = {}));
+})(App || (App = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Fw/Controllers/ControllerBase.ts" />
+/// <reference path="../../Fw/Controllers/Manager.ts" />
+/// <reference path="../../Fw/Util/Dump.ts" />
+/// <reference path="../../Fw/Events/ControlViewEvents.ts" />
+/// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
+/// <reference path="../Views/Pages/MainPageView.ts" />
+var App;
+(function (App) {
+    var Controllers;
+    (function (Controllers) {
+        var Dump = Fw.Util.Dump;
+        var Events = Fw.Events;
+        var Pages = App.Views.Pages;
         var Controls = App.Views.Controls;
         var ControlSetController = /** @class */ (function (_super) {
             __extends(ControlSetController, _super);
@@ -3008,7 +3334,9 @@ var Fw;
                 _this.HasBorder = true;
                 _this.BorderRadius = 5;
                 _this.Elem.append(_this._label);
-                _this.Elem.on('touchstart mousedown', function (e) {
+                // touch系イベントはmouse系と重複して発生するため、リッスンしない。
+                _this.Elem.on('mousedown', function (e) {
+                    //Dump.Log(`${this.ClassName}.mousedown`);
                     if (_this._clickEventTimer != null)
                         clearTimeout(_this._clickEventTimer);
                     _this._clickEventTimer = setTimeout(function () {
@@ -3021,7 +3349,8 @@ var Fw;
                         _this.DispatchEvent(Events.LongClick);
                     }, 1000);
                 });
-                _this.Elem.on('touchend mouseup', function (e) {
+                _this.Elem.on('mouseup', function (e) {
+                    //Dump.Log(`${this.ClassName}.mouseup`);
                     if (_this._clickEventTimer != null) {
                         // ロングタップ検出中のとき
                         clearTimeout(_this._clickEventTimer);
@@ -3189,17 +3518,80 @@ var App;
         })(Controls = Views_3.Controls || (Views_3.Controls = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Events/ViewEvents.ts" />
+/// <reference path="../../Util/Dump.ts" />
+/// <reference path="../../Util/Number.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Property;
+        (function (Property) {
+            var MouseLocation = /** @class */ (function () {
+                function MouseLocation(e) {
+                    if (e.pageX === undefined) {
+                        // イベントパラメータから取得できないとき
+                        // タッチイベントの座標取得を試みる。
+                        try {
+                            var ct = event.changedTouches[0];
+                            this.PageX = ct.pageX;
+                            this.PageY = ct.pageY;
+                            this.ClientX = ct.clientX;
+                            this.ClientY = ct.clientY;
+                            this.OffsetX = ct.offsetX;
+                            this.OffsetY = ct.offsetY;
+                            this.ScreenX = ct.screenX;
+                            this.ScreenY = ct.screenY;
+                        }
+                        catch (e) {
+                            // イベント引数もタッチイベントもダメなとき、例外 //全てnull
+                            throw new Error('Cannot find location');
+                            //this.PageX = null;
+                            //this.PageY = null;
+                            //this.ClientX = null;
+                            //this.ClientY = null;
+                            //this.OffsetX = null;
+                            //this.OffsetY = null;
+                            //this.ScreenX = null;
+                            //this.ScreenY = null;
+                        }
+                    }
+                    else {
+                        // イベントパラメータから取得できたとき
+                        this.PageX = e.pageX;
+                        this.PageY = e.pageY;
+                        this.ClientX = e.clientX;
+                        this.ClientY = e.clientY;
+                        this.OffsetX = e.offsetX;
+                        this.OffsetY = e.offsetY;
+                        this.ScreenX = e.screenX;
+                        this.ScreenY = e.screenY;
+                    }
+                }
+                MouseLocation.Create = function (e) {
+                    return new MouseLocation(e);
+                };
+                return MouseLocation;
+            }());
+            Property.MouseLocation = MouseLocation;
+        })(Property = Views.Property || (Views.Property = {}));
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Util/Dump.ts" />
 /// <reference path="../Events/ControlViewEvents.ts" />
 /// <reference path="ButtonView.ts" />
+/// <reference path="Property/MouseLocation.ts" />
 var Fw;
 (function (Fw) {
     var Views;
     (function (Views) {
         var Dump = Fw.Util.Dump;
         var Events = Fw.Events.ControlViewEvents;
+        var MouseLocation = Fw.Views.Property.MouseLocation;
         var RelocatableButtonView = /** @class */ (function (_super) {
             __extends(RelocatableButtonView, _super);
             function RelocatableButtonView() {
@@ -3223,14 +3615,17 @@ var Fw;
                     if (!_this._isRelocatable)
                         _this.SetRelocatable(true);
                 });
-                _this.Elem.on('touchstart mousedown', function (e) {
+                _this.Elem.on('mousedown touchstart', function (e) {
+                    //Dump.Log('RelocatableButtonView.mousedown');
+                    e.preventDefault();
                     if (!_this._isRelocatable) {
                         _this._isDragging = false;
                     }
                     else {
                         _this._isDragging = true;
-                        _this._dragStartMousePosition.X = e.pageX;
-                        _this._dragStartMousePosition.Y = e.pageY;
+                        var ml = MouseLocation.Create(e);
+                        _this._dragStartMousePosition.X = ml.PageX;
+                        _this._dragStartMousePosition.Y = ml.PageY;
                         _this._mouseDownTime = new Date();
                         if (_this.Position.Policy === Views.Property.PositionPolicy.Centering) {
                             _this._dragStartViewPosition.X = _this.Position.X;
@@ -3244,7 +3639,9 @@ var Fw;
                     }
                 });
                 // ↓mouseoutイベントは捕捉しない。途切れまくるので。
-                _this.Elem.on('touchend mouseup', function (e) {
+                _this.Elem.on('mouseup touchend', function (e) {
+                    //Dump.Log('RelocatableButtonView.mouseup');
+                    e.preventDefault();
                     if (!_this._isRelocatable) {
                         _this._isDragging = false;
                     }
@@ -3261,8 +3658,9 @@ var Fw;
                         // SingleClick判定
                         if (_this._mouseDownTime) {
                             var elapsed = ((new Date()).getTime() - _this._mouseDownTime.getTime());
-                            var addX = e.pageX - _this._dragStartMousePosition.X;
-                            var addY = e.pageY - _this._dragStartMousePosition.Y;
+                            var ml = MouseLocation.Create(e);
+                            var addX = ml.PageX - _this._dragStartMousePosition.X;
+                            var addY = ml.PageY - _this._dragStartMousePosition.Y;
                             //Dump.Log({
                             //    name: 'RelButton.SlickDetection',
                             //    _mouseDownTime: this._mouseDownTime,
@@ -3329,9 +3727,12 @@ var Fw;
                 configurable: true
             });
             RelocatableButtonView.prototype.OnMouseMove = function (e) {
+                //Dump.Log('RelocatableButtonView.OnMouseMove');
+                e.preventDefault();
                 if (this._isRelocatable && this._isDragging) {
-                    var addX = e.pageX - this._dragStartMousePosition.X;
-                    var addY = e.pageY - this._dragStartMousePosition.Y;
+                    var ml = MouseLocation.Create(e);
+                    var addX = ml.PageX - this._dragStartMousePosition.X;
+                    var addY = ml.PageY - this._dragStartMousePosition.Y;
                     if (this.Position.Policy === Views.Property.PositionPolicy.Centering) {
                         this.Position.X = this._dragStartViewPosition.X + addX;
                         this.Position.Y = this._dragStartViewPosition.Y + addY;
@@ -3706,6 +4107,121 @@ var App;
             var Views = Fw.Views;
             var Property = Fw.Views.Property;
             var Controls = App.Views.Controls;
+            var ControlPropertyPageView = /** @class */ (function (_super) {
+                __extends(ControlPropertyPageView, _super);
+                function ControlPropertyPageView() {
+                    var _this = _super.call(this, $("")) || this;
+                    _this.HeaderBar = new Controls.HeaderBarView();
+                    _this.InputPanel = new Views.StuckerBoxView();
+                    _this.TxtName = new Views.TextBoxInputView();
+                    _this.SboIcon = new Views.SelectBoxInputView();
+                    _this.SboColor = new Views.SelectBoxInputView();
+                    _this.TarCode = new Views.TextAreaInputView();
+                    _this.BtnLearn = new Controls.ButtonView();
+                    _this.ChkToggleOn = new Views.CheckBoxInputView();
+                    _this.ChkToggleOff = new Views.CheckBoxInputView();
+                    _this.DeleteButton = new Controls.ButtonView();
+                    _this.SetClassName('ControlPropertyPageView');
+                    var background = new Views.ImageView();
+                    background.SetAnchor(0, 0, 0, 0);
+                    background.FitPolicy = Property.FitPolicy.Cover;
+                    background.Src = 'images/Pages/ControlProperty/background.jpg';
+                    _this.Add(background);
+                    _this.HeaderBar.Text = 'Control';
+                    _this.HeaderBar.LeftButton.Hide(0);
+                    _this.HeaderBar.RightButton.Hide(0);
+                    _this.Add(_this.HeaderBar);
+                    _this.InputPanel.Position.Policy = Property.PositionPolicy.LeftTop;
+                    _this.InputPanel.ReferencePoint = Property.ReferencePoint.LeftTop;
+                    _this.InputPanel.Size.Width = 280;
+                    _this.InputPanel.SetAnchor(70, 10, null, 10);
+                    _this.Add(_this.InputPanel);
+                    var lbl1 = new Views.LabelView();
+                    lbl1.Text = 'Name';
+                    lbl1.TextAlign = Property.TextAlign.Left;
+                    lbl1.AutoSize = true;
+                    lbl1.SetAnchor(null, 5, null, null);
+                    lbl1.Size.Height = 21;
+                    _this.InputPanel.Add(lbl1);
+                    _this.TxtName.SetAnchor(null, 5, 15, null);
+                    _this.TxtName.Size.Height = 30;
+                    _this.TxtName.Name = 'Name';
+                    _this.InputPanel.Add(_this.TxtName);
+                    var lbl2 = new Views.LabelView();
+                    lbl2.Text = 'Icon';
+                    lbl2.TextAlign = Property.TextAlign.Left;
+                    lbl2.AutoSize = true;
+                    lbl2.SetAnchor(null, 5, null, null);
+                    lbl2.Size.Height = 21;
+                    _this.InputPanel.Add(lbl2);
+                    _this.SboIcon.SetAnchor(null, 5, 15, null);
+                    _this.SboIcon.Size.Height = 30;
+                    _this.SboIcon.Name = 'Icon';
+                    _this.InputPanel.Add(_this.SboIcon);
+                    var lbl3 = new Views.LabelView();
+                    lbl3.Text = 'Color';
+                    lbl3.TextAlign = Property.TextAlign.Left;
+                    lbl3.AutoSize = true;
+                    lbl3.SetAnchor(null, 5, null, null);
+                    lbl3.Size.Height = 21;
+                    _this.InputPanel.Add(lbl3);
+                    _this.SboColor.SetAnchor(null, 5, 15, null);
+                    _this.SboColor.Size.Height = 30;
+                    _this.SboColor.Name = 'Color';
+                    _this.InputPanel.Add(_this.SboColor);
+                    var lbl4 = new Views.LabelView();
+                    lbl4.Text = 'Code';
+                    lbl4.TextAlign = Property.TextAlign.Left;
+                    lbl4.AutoSize = true;
+                    lbl4.SetAnchor(null, 5, null, null);
+                    lbl4.Size.Height = 21;
+                    _this.InputPanel.Add(lbl4);
+                    _this.TarCode.SetAnchor(null, 5, 15, null);
+                    _this.TarCode.Size.Height = 90;
+                    _this.TarCode.Name = 'Code';
+                    _this.InputPanel.Add(_this.TarCode);
+                    _this.BtnLearn.SetAnchor(null, 5, 15, null);
+                    _this.BtnLearn.Size.Height = 30;
+                    _this.BtnLearn.Text = 'Learn Signal';
+                    _this.InputPanel.Add(_this.BtnLearn);
+                    _this.ChkToggleOn.SetAnchor(null, 5, 15, null);
+                    _this.ChkToggleOn.Size.Height = 30;
+                    _this.ChkToggleOn.Name = 'AssignToggleOn';
+                    _this.ChkToggleOn.Text = 'メインパネル トグルボタン[On]';
+                    _this.InputPanel.Add(_this.ChkToggleOn);
+                    _this.ChkToggleOff.SetAnchor(null, 5, 15, null);
+                    _this.ChkToggleOff.Size.Height = 30;
+                    _this.ChkToggleOff.Name = 'AssignToggleOff';
+                    _this.ChkToggleOff.Text = 'メインパネル トグルボタン[Off]';
+                    _this.InputPanel.Add(_this.ChkToggleOff);
+                    _this.DeleteButton.SetAnchor(null, 5, 15, null);
+                    _this.DeleteButton.Size.Height = 30;
+                    _this.DeleteButton.Text = '*Delete*';
+                    _this.InputPanel.Add(_this.DeleteButton);
+                    return _this;
+                }
+                return ControlPropertyPageView;
+            }(Fw.Views.PageView));
+            Pages.ControlPropertyPageView = ControlPropertyPageView;
+        })(Pages = Views_8.Pages || (Views_8.Pages = {}));
+    })(Views = App.Views || (App.Views = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Views/PageView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Events/PageViewEvents.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../Controls/HeaderBarView.ts" />
+var App;
+(function (App) {
+    var Views;
+    (function (Views_9) {
+        var Pages;
+        (function (Pages) {
+            var Views = Fw.Views;
+            var Property = Fw.Views.Property;
+            var Controls = App.Views.Controls;
             var ControlSetPageView = /** @class */ (function (_super) {
                 __extends(ControlSetPageView, _super);
                 function ControlSetPageView() {
@@ -3778,7 +4294,7 @@ var App;
                 return ControlSetPageView;
             }(Fw.Views.PageView));
             Pages.ControlSetPageView = ControlSetPageView;
-        })(Pages = Views_8.Pages || (Views_8.Pages = {}));
+        })(Pages = Views_9.Pages || (Views_9.Pages = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
@@ -3790,7 +4306,7 @@ var App;
 var App;
 (function (App) {
     var Views;
-    (function (Views_9) {
+    (function (Views_10) {
         var Pages;
         (function (Pages) {
             var Property = Fw.Views.Property;
@@ -3871,7 +4387,7 @@ var App;
                 return LayoutCheckPageView;
             }(Fw.Views.PageView));
             Pages.LayoutCheckPageView = LayoutCheckPageView;
-        })(Pages = Views_9.Pages || (Views_9.Pages = {}));
+        })(Pages = Views_10.Pages || (Views_10.Pages = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
@@ -3883,7 +4399,7 @@ var App;
 var App;
 (function (App) {
     var Views;
-    (function (Views_10) {
+    (function (Views_11) {
         var Pages;
         (function (Pages) {
             var Views = Fw.Views;
@@ -3894,7 +4410,7 @@ var App;
                     var _this = this;
                     var jqueryElem = $("");
                     _this = _super.call(this, jqueryElem) || this;
-                    _this.HeaderBar = new Views_10.Controls.HeaderBarView();
+                    _this.HeaderBar = new Views_11.Controls.HeaderBarView();
                     _this.Stucker = new Views.StuckerBoxView();
                     _this.SetClassName('Sub3PageView');
                     _this.HeaderBar.Text = 'Sub 3 Page';
@@ -3945,7 +4461,7 @@ var App;
                 return Sub3PageView;
             }(Fw.Views.PageView));
             Pages.Sub3PageView = Sub3PageView;
-        })(Pages = Views_10.Pages || (Views_10.Pages = {}));
+        })(Pages = Views_11.Pages || (Views_11.Pages = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../lib/jquery/index.d.ts" />
@@ -3962,15 +4478,19 @@ var App;
         Main.StartUp = function () {
             // フレームワーク初期化
             Fw.Startup.Init();
+            // ログ出力をウインドウ表示するとき。
+            //Fw.Util.Dump.LogMode = Fw.Util.LogMode.Window;
             // API仕様に応じて、クエリ先URLの土台を作っておく。
             var proto = location.protocol;
             var host = location.hostname;
             var port = location.port;
             Fw.Config.XhrBaseUrl = proto + '//' + host + ':' + port + '/api/';
-            Dump.Log('StartUp - 1');
+            Dump.Log('StartUp');
             var main = new App.Controllers.MainController();
-            Dump.Log('StartUp - 2');
             Manager.Instance.SetController(main);
+            //Dump.Log('StartUp - 2');
+            //const mevents = new App.Controllers.MouseEventsController();
+            //Manager.Instance.SetController(mevents);
             Dump.Log('Show');
         };
         return Main;
@@ -3983,6 +4503,46 @@ $(function () {
     Fw.Util.Dump.Log('Start');
     App.Main.StartUp();
 });
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="ViewEvents.ts" />
+var Fw;
+(function (Fw) {
+    var Events;
+    (function (Events) {
+        var InputViewEventsClass = /** @class */ (function (_super) {
+            __extends(InputViewEventsClass, _super);
+            function InputViewEventsClass() {
+                var _this = _super !== null && _super.apply(this, arguments) || this;
+                _this.Changed = 'Changed';
+                _this.Focused = 'Focused';
+                _this.Blurred = 'Blurred';
+                return _this;
+            }
+            return InputViewEventsClass;
+        }(Events.ViewEventsClass));
+        Events.InputViewEventsClass = InputViewEventsClass;
+        Events.InputViewEvents = new InputViewEventsClass();
+    })(Events = Fw.Events || (Fw.Events = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="InputViewEvents.ts" />
+var Fw;
+(function (Fw) {
+    var Events;
+    (function (Events) {
+        var CheckBoxInputViewEventsClass = /** @class */ (function (_super) {
+            __extends(CheckBoxInputViewEventsClass, _super);
+            function CheckBoxInputViewEventsClass() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            return CheckBoxInputViewEventsClass;
+        }(Events.InputViewEventsClass));
+        Events.CheckBoxInputViewEventsClass = CheckBoxInputViewEventsClass;
+        Events.CheckBoxInputViewEvents = new CheckBoxInputViewEventsClass();
+    })(Events = Fw.Events || (Fw.Events = {}));
+})(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 var Fw;
@@ -4091,6 +4651,24 @@ var Fw;
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="InputViewEvents.ts" />
+var Fw;
+(function (Fw) {
+    var Events;
+    (function (Events) {
+        var SelectBoxInputViewEventsClass = /** @class */ (function (_super) {
+            __extends(SelectBoxInputViewEventsClass, _super);
+            function SelectBoxInputViewEventsClass() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            return SelectBoxInputViewEventsClass;
+        }(Events.InputViewEventsClass));
+        Events.SelectBoxInputViewEventsClass = SelectBoxInputViewEventsClass;
+        Events.SelectBoxInputViewEvents = new SelectBoxInputViewEventsClass();
+    })(Events = Fw.Events || (Fw.Events = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="BoxViewEvents.ts" />
 var Fw;
 (function (Fw) {
@@ -4123,6 +4701,67 @@ var Fw;
         }(Events.BoxViewEventsClass));
         Events.StuckerBoxViewEventsClass = StuckerBoxViewEventsClass;
         Events.StuckerBoxViewEvents = new StuckerBoxViewEventsClass();
+    })(Events = Fw.Events || (Fw.Events = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="InputViewEvents.ts" />
+var Fw;
+(function (Fw) {
+    var Events;
+    (function (Events) {
+        var TextAreaInputViewEventsClass = /** @class */ (function (_super) {
+            __extends(TextAreaInputViewEventsClass, _super);
+            function TextAreaInputViewEventsClass() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            return TextAreaInputViewEventsClass;
+        }(Events.InputViewEventsClass));
+        Events.TextAreaInputViewEventsClass = TextAreaInputViewEventsClass;
+        Events.TextAreaInputViewEvents = new TextAreaInputViewEventsClass();
+    })(Events = Fw.Events || (Fw.Events = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="InputViewEvents.ts" />
+var Fw;
+(function (Fw) {
+    var Events;
+    (function (Events) {
+        var TextBoxInputViewEventsClass = /** @class */ (function (_super) {
+            __extends(TextBoxInputViewEventsClass, _super);
+            function TextBoxInputViewEventsClass() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            return TextBoxInputViewEventsClass;
+        }(Events.InputViewEventsClass));
+        Events.TextBoxInputViewEventsClass = TextBoxInputViewEventsClass;
+        Events.TextBoxInputViewEvents = new TextBoxInputViewEventsClass();
+    })(Events = Fw.Events || (Fw.Events = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="ControlViewEvents.ts" />
+var Fw;
+(function (Fw) {
+    var Events;
+    (function (Events) {
+        var ToggleButtonInputViewEventsClass = /** @class */ (function (_super) {
+            __extends(ToggleButtonInputViewEventsClass, _super);
+            function ToggleButtonInputViewEventsClass() {
+                var _this = _super !== null && _super.apply(this, arguments) || this;
+                _this.Switched = 'Switched';
+                _this.ToOn = 'ToOn';
+                _this.ToOff = 'ToOff';
+                _this.Changed = 'Changed';
+                _this.Focused = 'Focused';
+                _this.Blurred = 'Blurred';
+                return _this;
+            }
+            return ToggleButtonInputViewEventsClass;
+        }(Events.ControlViewEventsClass));
+        Events.ToggleButtonInputViewEventsClass = ToggleButtonInputViewEventsClass;
+        Events.ToggleButtonInputViewEvents = new ToggleButtonInputViewEventsClass();
     })(Events = Fw.Events || (Fw.Events = {}));
 })(Fw || (Fw = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
@@ -4576,46 +5215,6 @@ var Fw;
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="ViewEvents.ts" />
-var Fw;
-(function (Fw) {
-    var Events;
-    (function (Events) {
-        var InputViewEventsClass = /** @class */ (function (_super) {
-            __extends(InputViewEventsClass, _super);
-            function InputViewEventsClass() {
-                var _this = _super !== null && _super.apply(this, arguments) || this;
-                _this.Changed = 'Changed';
-                _this.Focused = 'Focused';
-                _this.Blurred = 'Blurred';
-                return _this;
-            }
-            return InputViewEventsClass;
-        }(Events.ViewEventsClass));
-        Events.InputViewEventsClass = InputViewEventsClass;
-        Events.InputViewEvents = new InputViewEventsClass();
-    })(Events = Fw.Events || (Fw.Events = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="InputViewEvents.ts" />
-var Fw;
-(function (Fw) {
-    var Events;
-    (function (Events) {
-        var CheckBoxInputViewEventsClass = /** @class */ (function (_super) {
-            __extends(CheckBoxInputViewEventsClass, _super);
-            function CheckBoxInputViewEventsClass() {
-                return _super !== null && _super.apply(this, arguments) || this;
-            }
-            return CheckBoxInputViewEventsClass;
-        }(Events.InputViewEventsClass));
-        Events.CheckBoxInputViewEventsClass = CheckBoxInputViewEventsClass;
-        Events.CheckBoxInputViewEvents = new CheckBoxInputViewEventsClass();
-    })(Events = Fw.Events || (Fw.Events = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="IView.ts" />
 /// <reference path="Property/Anchor.ts" />
 /// <reference path="../../../lib/jquery/index.d.ts" />
@@ -4630,7 +5229,6 @@ var Fw;
 (function (Fw) {
     var Views;
     (function (Views) {
-        var Dump = Fw.Util.Dump;
         var Events = Fw.Events.CheckBoxInputViewEvents;
         var CheckBoxInputView = /** @class */ (function (_super) {
             __extends(CheckBoxInputView, _super);
@@ -4653,11 +5251,11 @@ var Fw;
                     _this.BoolValue = _this._input.prop('checked');
                 });
                 _this._input.on('focus', function () {
-                    Dump.Log('CheckBoxInputView.Focused');
+                    //Dump.Log('CheckBoxInputView.Focused');
                     _this.DispatchEvent(Events.Focused);
                 });
                 _this._input.on('blur', function () {
-                    Dump.Log('CheckBoxInputView.Blurred');
+                    //Dump.Log('CheckBoxInputView.Blurred');
                     _this.DispatchEvent(Events.Blurred);
                 });
                 return _this;
@@ -4702,7 +5300,7 @@ var Fw;
                     this._input.attr('id', id);
                     this._label.attr('for', id);
                     if (changed) {
-                        Dump.Log('CheckBoxInputView.Changed');
+                        //Dump.Log('CheckBoxInputView.Changed');
                         this.DispatchEvent(Events.Changed, this.Value);
                     }
                 },
@@ -4811,6 +5409,71 @@ var Fw;
             return ImageView;
         }(Views.ViewBase));
         Views.ImageView = ImageView;
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Events/InputViewEvents.ts" />
+/// <reference path="../Util/Dump.ts" />
+/// <reference path="../Util/Number.ts" />
+/// <reference path="ViewBase.ts" />
+/// <reference path="IInputView.ts" />
+/// <reference path="Property/FitPolicy.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Events = Fw.Events.InputViewEvents;
+        var InputViewBase = /** @class */ (function (_super) {
+            __extends(InputViewBase, _super);
+            function InputViewBase(jqueryElem) {
+                var _this = _super.call(this, jqueryElem) || this;
+                _this.SetClassName('InputView');
+                _this.Elem.addClass(_this.ClassName);
+                _this._name = '';
+                _this._value = '';
+                _this.BackgroundColor = '#FFFFFF';
+                _this.Elem.on('propertychange change keyup paste input', function () {
+                    //Dump.Log('InputViewBase.Changed');
+                    _this.DispatchEvent(Events.Changed, _this.Value);
+                });
+                _this.Elem.on('focus', function () {
+                    //Dump.Log('InputViewBase.Focused');
+                    _this.DispatchEvent(Events.Focused);
+                });
+                _this.Elem.on('blur', function () {
+                    //Dump.Log('InputViewBase.Blurred');
+                    _this.DispatchEvent(Events.Blurred);
+                });
+                return _this;
+            }
+            Object.defineProperty(InputViewBase.prototype, "Value", {
+                get: function () {
+                    this._value = this.Elem.val();
+                    return this._value;
+                },
+                set: function (value) {
+                    this.Elem.val(value);
+                    this._value = this.Elem.val();
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(InputViewBase.prototype, "Name", {
+                get: function () {
+                    return this._name;
+                },
+                set: function (value) {
+                    this._name = value;
+                    this.Elem.attr('name', this._name);
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return InputViewBase;
+        }(Views.ViewBase));
+        Views.InputViewBase = InputViewBase;
     })(Views = Fw.Views || (Fw.Views = {}));
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
@@ -5073,12 +5736,41 @@ var Fw;
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Events/ViewEvents.ts" />
+/// <reference path="../Util/Dump.ts" />
+/// <reference path="../Util/Number.ts" />
+/// <reference path="InputViewBase.ts" />
+/// <reference path="Property/FitPolicy.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var SelectBoxInputView = /** @class */ (function (_super) {
+            __extends(SelectBoxInputView, _super);
+            function SelectBoxInputView() {
+                var _this = _super.call(this, $('<select></select>')) || this;
+                _this.SetClassName('SelectBoxInputView');
+                _this.Elem.addClass(_this.ClassName);
+                _this.AddItem('', '');
+                return _this;
+            }
+            SelectBoxInputView.prototype.AddItem = function (name, value) {
+                this.Elem.append("<option value=\"" + value + "\">" + name + "</option>");
+            };
+            return SelectBoxInputView;
+        }(Views.InputViewBase));
+        Views.SelectBoxInputView = SelectBoxInputView;
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Util/Dump.ts" />
 /// <reference path="../Events/SlidableBoxViewEvents.ts" />
 /// <reference path="Animation/Animator.ts" />
 /// <reference path="Animation/Params.ts" />
 /// <reference path="BoxView.ts" />
 /// <reference path="Property/Size.ts" />
+/// <reference path="Property/MouseLocation.ts" />
 var Fw;
 (function (Fw) {
     var Views;
@@ -5087,6 +5779,7 @@ var Fw;
         var Property = Fw.Views.Property;
         var Anim = Fw.Views.Animation;
         var Events = Fw.Events.SlidableBoxViewEvents;
+        var MouseLocation = Fw.Views.Property.MouseLocation;
         var SlidableBoxView = /** @class */ (function (_super) {
             __extends(SlidableBoxView, _super);
             function SlidableBoxView(direction) {
@@ -5117,20 +5810,25 @@ var Fw;
                 // コンストラクタ引数で取得したDirectionがセットされていないため。
                 _this._positionBarMax.Position.Policy = Property.PositionPolicy.LeftTop;
                 _this._positionBarMax.SetTransAnimation(false);
-                _this._positionBarMax.Color = '#888888';
+                _this._positionBarMax.Color = '#EEEEEE';
                 _super.prototype.Add.call(_this, _this._positionBarMax);
                 _this._positionBarCurrent.Position.Policy = Property.PositionPolicy.LeftTop;
                 _this._positionBarCurrent.SetTransAnimation(false);
-                _this._positionBarCurrent.Color = '#EEEEEE';
+                _this._positionBarCurrent.Color = '#888888';
                 _super.prototype.Add.call(_this, _this._positionBarCurrent);
                 _this.AddEventListener(Events.Initialized, function () {
                     _this.InitView();
                 });
                 _this._innerBox.Elem.addClass('SlidablePanelInnerView');
                 _this._innerBox.Elem.on('touchstart mousedown', function (e) {
+                    // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
+                    if (e.eventPhase !== 2)
+                        return;
+                    e.preventDefault();
                     _this._isDragging = true;
-                    _this._dragStartMousePosition.X = e.clientX;
-                    _this._dragStartMousePosition.Y = e.clientY;
+                    var ml = MouseLocation.Create(e);
+                    _this._dragStartMousePosition.X = ml.ClientX;
+                    _this._dragStartMousePosition.Y = ml.ClientY;
                     _this._dragStartViewPosition.X = _this._innerBox.Position.X;
                     _this._dragStartViewPosition.Y = _this._innerBox.Position.Y;
                     //Fw.Root.Instance.SetTextSelection(false);
@@ -5141,8 +5839,10 @@ var Fw;
                     // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
                     if (e.eventPhase !== 2)
                         return;
-                    var addX = e.clientX - _this._dragStartMousePosition.X;
-                    var addY = e.clientY - _this._dragStartMousePosition.Y;
+                    e.preventDefault();
+                    var ml = MouseLocation.Create(e);
+                    var addX = ml.ClientX - _this._dragStartMousePosition.X;
+                    var addY = ml.ClientY - _this._dragStartMousePosition.Y;
                     if (_this._direction === Property.Direction.Horizontal) {
                         // 横方向
                         _this._innerBox.Position.X = _this._dragStartViewPosition.X + addX;
@@ -5153,7 +5853,11 @@ var Fw;
                     }
                     _this.Refresh();
                 });
-                _this._innerBox.Elem.on('touchend mouseup mouseout', function () {
+                _this._innerBox.Elem.on('touchend mouseup mouseout', function (e) {
+                    // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
+                    if (e.eventPhase !== 2)
+                        return;
+                    e.preventDefault();
                     _this._isDragging = false;
                     //Fw.Root.Instance.SetTextSelection(true);
                     _.delay(function () {
@@ -5426,6 +6130,7 @@ var Fw;
 /// <reference path="Animation/Params.ts" />
 /// <reference path="BoxView.ts" />
 /// <reference path="Property/Size.ts" />
+/// <reference path="Property/MouseLocation.ts" />
 var Fw;
 (function (Fw) {
     var Views;
@@ -5433,6 +6138,7 @@ var Fw;
         var Dump = Fw.Util.Dump;
         var Property = Fw.Views.Property;
         var ControlViewEvents = Fw.Events.ControlViewEvents;
+        var MouseLocation = Fw.Views.Property.MouseLocation;
         var StuckerBoxView = /** @class */ (function (_super) {
             __extends(StuckerBoxView, _super);
             function StuckerBoxView() {
@@ -5461,12 +6167,12 @@ var Fw;
                 //super.Add(this._innerBox); // Addメソッドでthis.Childrenを呼ぶため循環参照になる。
                 _this._positionBarMax.Position.Policy = Property.PositionPolicy.LeftTop;
                 _this._positionBarMax.SetTransAnimation(false);
-                _this._positionBarMax.Color = '#888888';
+                _this._positionBarMax.Color = '#EEEEEE';
                 _this._positionBarMax.SetParent(_this);
                 _this.Elem.append(_this._positionBarMax.Elem);
                 _this._positionBarCurrent.Position.Policy = Property.PositionPolicy.LeftTop;
                 _this._positionBarCurrent.SetTransAnimation(false);
-                _this._positionBarCurrent.Color = '#EEEEEE';
+                _this._positionBarCurrent.Color = '#888888';
                 _this._positionBarCurrent.SetParent(_this);
                 _this.Elem.append(_this._positionBarCurrent.Elem);
                 _this._backupView = null;
@@ -5532,23 +6238,33 @@ var Fw;
             };
             // #region "上下スクロール"
             StuckerBoxView.prototype.OnInnerMouseDown = function (e) {
+                // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
+                if (e.eventPhase !== 2)
+                    return;
                 //Dump.Log(`${this.ClassName}.OnInnerMouseDown`);
+                e.preventDefault();
                 if (this._isChildRelocation)
                     return;
                 this._isInnerDragging = true;
-                this._dragStartMousePosition.X = e.clientX;
-                this._dragStartMousePosition.Y = e.clientY;
+                var ml = MouseLocation.Create(e);
+                this._dragStartMousePosition.X = ml.ClientX;
+                this._dragStartMousePosition.Y = ml.ClientY;
                 this._dragStartViewPosition.X = this._innerBox.Position.Left;
                 this._dragStartViewPosition.Y = this._innerBox.Position.Top;
                 Fw.Root.Instance.SetTextSelection(false);
             };
             StuckerBoxView.prototype.OnInnerMouseMove = function (e) {
+                // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
+                if (e.eventPhase !== 2)
+                    return;
+                e.preventDefault();
                 if (this._isChildRelocation || !this._isInnerDragging || this._scrollMargin === 0)
                     return;
                 // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
                 if (e.eventPhase !== 2)
                     return;
-                var addY = e.clientY - this._dragStartMousePosition.Y;
+                var ml = MouseLocation.Create(e);
+                var addY = ml.ClientY - this._dragStartMousePosition.Y;
                 var top = this._dragStartViewPosition.Y + addY;
                 var margin = this._scrollMargin * -1;
                 if (top < margin)
@@ -5558,6 +6274,10 @@ var Fw;
                 this._innerBox.Position.Top = top;
             };
             StuckerBoxView.prototype.OnInnerMouseUp = function (e) {
+                // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
+                if (e.eventPhase !== 2)
+                    return;
+                e.preventDefault();
                 //Dump.Log(`${this.ClassName}.OnInnerMouseUp`);
                 if (this._isChildRelocation)
                     return;
@@ -5620,19 +6340,24 @@ var Fw;
              * @param e
              */
             StuckerBoxView.prototype.OnChildMouseDown = function (e) {
+                // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
+                if (e.eventPhase !== 2)
+                    return;
                 //Dump.Log(`${this.ClassName}.OnChildMouseDown`);
                 if (!this._isChildRelocation)
                     return;
+                e.preventDefault();
                 var rect = this.Dom.getBoundingClientRect();
-                var innerLeft = e.pageX - rect.left;
-                var innerTop = e.pageY - rect.top + (this._innerBox.Position.Top * -1);
+                var ml = MouseLocation.Create(e);
+                var innerLeft = ml.PageX - rect.left;
+                var innerTop = ml.PageY - rect.top + (this._innerBox.Position.Top * -1);
                 var view = this.GetNearestByPosition(innerLeft, innerTop);
                 if (view) {
                     //Dump.Log('OnChildMouseDown - view found: ' + (view as ButtonView).Label);
                     this._isChildDragging = true;
                     this._relocationTargetView = view;
-                    this._dragStartMousePosition.X = e.pageX;
-                    this._dragStartMousePosition.Y = e.pageY;
+                    this._dragStartMousePosition.X = ml.PageX;
+                    this._dragStartMousePosition.Y = ml.PageY;
                     this._dragStartViewPosition.X = view.Position.Left;
                     this._dragStartViewPosition.Y = view.Position.Top;
                     this.SetDummyView(view);
@@ -5644,12 +6369,17 @@ var Fw;
              * @param e1
              */
             StuckerBoxView.prototype.OnChildMouseMove = function (e) {
+                // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
+                if (e.eventPhase !== 2)
+                    return;
                 if (!this._isChildRelocation || !this._isChildDragging)
                     return;
+                e.preventDefault();
                 //Dump.Log(`${this.ClassName}.OnChildMouseMove`);
                 var view = this._relocationTargetView;
-                var addX = e.pageX - this._dragStartMousePosition.X;
-                var addY = e.pageY - this._dragStartMousePosition.Y;
+                var ml = MouseLocation.Create(e);
+                var addX = ml.PageX - this._dragStartMousePosition.X;
+                var addY = ml.PageY - this._dragStartMousePosition.Y;
                 view.Position.Left = this._dragStartViewPosition.X + addX;
                 view.Position.Top = this._dragStartViewPosition.Y + addY;
                 var replaceView = this.GetNearestByView(view);
@@ -5662,11 +6392,15 @@ var Fw;
              * @param e
              */
             StuckerBoxView.prototype.OnChildMouseUp = function (e) {
+                // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
+                if (e.eventPhase !== 2)
+                    return;
                 //Dump.Log(`${this.ClassName}.OnChildMouseUp`);
                 if (!this._isChildRelocation) {
                     this._isChildDragging = false;
                 }
                 else {
+                    e.preventDefault();
                     this._isChildDragging = false;
                     if (this._relocationTargetView) {
                         this._relocationTargetView.SetTransAnimation(true);
@@ -6063,6 +6797,199 @@ var Fw;
         Views.StuckerBoxView = StuckerBoxView;
     })(Views = Fw.Views || (Fw.Views = {}));
 })(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Events/ViewEvents.ts" />
+/// <reference path="../Util/Dump.ts" />
+/// <reference path="../Util/Number.ts" />
+/// <reference path="InputViewBase.ts" />
+/// <reference path="Property/FitPolicy.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var TextAreaInputView = /** @class */ (function (_super) {
+            __extends(TextAreaInputView, _super);
+            function TextAreaInputView() {
+                var _this = _super.call(this, $('<textarea></textarea>')) || this;
+                _this.SetClassName('TextAreaInputView');
+                _this.Elem.addClass(_this.ClassName);
+                return _this;
+            }
+            return TextAreaInputView;
+        }(Views.InputViewBase));
+        Views.TextAreaInputView = TextAreaInputView;
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Events/ViewEvents.ts" />
+/// <reference path="../Util/Dump.ts" />
+/// <reference path="../Util/Number.ts" />
+/// <reference path="InputViewBase.ts" />
+/// <reference path="Property/FitPolicy.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var TextBoxInputView = /** @class */ (function (_super) {
+            __extends(TextBoxInputView, _super);
+            function TextBoxInputView() {
+                var _this = _super.call(this, $('<input type="text"></input>')) || this;
+                _this.SetClassName('TextBoxInputView');
+                _this.Elem.addClass(_this.ClassName);
+                return _this;
+            }
+            return TextBoxInputView;
+        }(Views.InputViewBase));
+        Views.TextBoxInputView = TextBoxInputView;
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Events/ToggleButtonInputViewEvents.ts" />
+/// <reference path="../Util/Dump.ts" />
+/// <reference path="../Util/Number.ts" />
+/// <reference path="ControlView.ts" />
+/// <reference path="IInputView.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Dump = Fw.Util.Dump;
+        var Events = Fw.Events.ToggleButtonInputViewEvents;
+        var ToggleButtonInputView = /** @class */ (function (_super) {
+            __extends(ToggleButtonInputView, _super);
+            function ToggleButtonInputView() {
+                var _this = _super.call(this) || this;
+                _this.HoverColor = '';
+                _this._sliderBox = new Views.BoxView();
+                _this._notch = new Views.BoxView();
+                _this._maskOn = new Views.BoxView();
+                _this._boolValue = false;
+                _this._overMargin = 5;
+                _this.SetClassName('ToggleButtonView');
+                _this.Elem.addClass(_this.ClassName);
+                // 標準サイズ：50 x 20
+                var width = 50;
+                var height = 20;
+                _this.HasBorder = false;
+                _this.SetSize(width, height);
+                _this._sliderBox.Size.Width = _this.Size.Width - _this._overMargin;
+                _this._sliderBox.Size.Height = _this.Size.Height - _this._overMargin;
+                _this._sliderBox.HasBorder = true;
+                _this._sliderBox.BorderRadius = 15;
+                _this._sliderBox.Color = '#e5e5e5';
+                _this._sliderBox.BackgroundColor = '#FFFFFF';
+                _this._sliderBox.Dom.style.overflow = 'hidden';
+                _this.Add(_this._sliderBox);
+                _this._maskOn.Size.Width = _this.Size.Width - _this._overMargin;
+                _this._maskOn.Size.Height = _this.Size.Height - _this._overMargin;
+                _this._maskOn.HasBorder = false;
+                _this._maskOn.BorderRadius = 15;
+                _this._maskOn.BackgroundColor = '#4e748b';
+                _this._maskOn.Position.X = -(_this.Size.Width - _this._overMargin);
+                _this._sliderBox.Add(_this._maskOn);
+                _this._notch.SetSize(_this.Size.Height, _this.Size.Height);
+                _this._notch.HasBorder = true;
+                _this._notch.BorderRadius = 50;
+                _this._notch.Color = '#e5e5e5';
+                _this._notch.BackgroundColor = '#cfcfcf';
+                _this._notch.Position.X = -(_this.Size.Width / 2) + (_this.Size.Height / 2);
+                _this.Add(_this._notch);
+                _this.Elem.hover(function () {
+                    //this.Dom.style.backgroundColor = this.HoverColor;
+                    _this.SetStyle('backgroundColor', _this.HoverColor);
+                    _this.Refresh();
+                }, function () {
+                    //this.Dom.style.backgroundColor = this.BackgroundColor;
+                    _this.SetStyle('backgroundColor', _this.BackgroundColor);
+                    _this.Refresh();
+                });
+                _this.AddEventListener(Events.SingleClick, function () {
+                    //Dump.Log(`${this.ClassName}.SingleClick`);
+                    _this.BoolValue = !_this.BoolValue;
+                    _this.Refresh();
+                });
+                return _this;
+            }
+            Object.defineProperty(ToggleButtonInputView.prototype, "Name", {
+                get: function () {
+                    return this._name;
+                },
+                set: function (value) {
+                    this._name = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(ToggleButtonInputView.prototype, "BoolValue", {
+                get: function () {
+                    return (this._boolValue === true);
+                },
+                set: function (value) {
+                    var changed = (this._boolValue !== (value === true));
+                    this._boolValue = (value === true);
+                    if (changed) {
+                        //Dump.Log('ToggleButtonInputView.Changed');
+                        this.DispatchEvent(Events.Changed, this.Value);
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(ToggleButtonInputView.prototype, "Value", {
+                get: function () {
+                    return (this.BoolValue)
+                        ? 'true'
+                        : 'false';
+                },
+                set: function (value) {
+                    this.BoolValue = (value === 'true')
+                        ? true
+                        : false;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            ToggleButtonInputView.prototype.CalcLayout = function () {
+                try {
+                    this.SuppressLayout();
+                    this._sliderBox.SuppressLayout();
+                    this._maskOn.SuppressLayout();
+                    this._notch.SuppressLayout();
+                    this._sliderBox.Size.Width = this.Size.Width - this._overMargin;
+                    this._sliderBox.Size.Height = this.Size.Height - this._overMargin;
+                    this._maskOn.Size.Width = this.Size.Width - this._overMargin;
+                    this._maskOn.Size.Height = this.Size.Height - this._overMargin;
+                    this._notch.SetSize(this.Size.Height, this.Size.Height);
+                    this._notch.Position.X = (this.BoolValue)
+                        ? (this.Size.Width / 2) - (this.Size.Height / 2)
+                        : -(this.Size.Width / 2) + (this.Size.Height / 2);
+                    this._maskOn.Position.X = (this.BoolValue)
+                        ? 0
+                        : -(this.Size.Width - this._overMargin);
+                    _super.prototype.CalcLayout.call(this);
+                }
+                catch (e) {
+                    Dump.ErrorLog(e);
+                }
+                finally {
+                    this.ResumeLayout();
+                    this._sliderBox.ResumeLayout();
+                    this._maskOn.ResumeLayout();
+                    this._notch.ResumeLayout();
+                }
+            };
+            ToggleButtonInputView.prototype.Dispose = function () {
+                _super.prototype.Dispose.call(this);
+                this.HoverColor = null;
+            };
+            return ToggleButtonInputView;
+        }(Views.ControlView));
+        Views.ToggleButtonInputView = ToggleButtonInputView;
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
 /// <reference path="../../lib/jquery/index.d.ts" />
 /// <reference path="../../lib/underscore/index.d.ts" />
 /// <reference path="Events/RootEvents.ts" />
@@ -6230,6 +7157,16 @@ var Fw;
                     + '//' + location.hostname
                     + ':' + location.port
                     + '/';
+            // iOSの全体スクロール対策
+            $(window).on('touchmove', function (e) {
+                e.preventDefault();
+            });
+            $(document.body).on('touchmove', function (e) {
+                e.preventDefault();
+            });
+            $('div.body-content').on('touchmove', function (e) {
+                e.preventDefault();
+            });
             // 画面全体のコンテナを初期化
             Fw.Root.Init('div.body-content');
             // Controllers.Managerの初期化
@@ -6240,121 +7177,6 @@ var Fw;
     }());
     Fw.Startup = Startup;
 })(Fw || (Fw = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Views/PageView.ts" />
-/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
-/// <reference path="../../../Fw/Events/PageViewEvents.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-/// <reference path="../Controls/HeaderBarView.ts" />
-var App;
-(function (App) {
-    var Views;
-    (function (Views_11) {
-        var Pages;
-        (function (Pages) {
-            var Views = Fw.Views;
-            var Property = Fw.Views.Property;
-            var Controls = App.Views.Controls;
-            var ControlPropertyPageView = /** @class */ (function (_super) {
-                __extends(ControlPropertyPageView, _super);
-                function ControlPropertyPageView() {
-                    var _this = _super.call(this, $("")) || this;
-                    _this.HeaderBar = new Controls.HeaderBarView();
-                    _this.InputPanel = new Views.StuckerBoxView();
-                    _this.TxtName = new Views.TextBoxInputView();
-                    _this.SboIcon = new Views.SelectBoxInputView();
-                    _this.SboColor = new Views.SelectBoxInputView();
-                    _this.TarCode = new Views.TextAreaInputView();
-                    _this.BtnLearn = new Controls.ButtonView();
-                    _this.ChkToggleOn = new Views.CheckBoxInputView();
-                    _this.ChkToggleOff = new Views.CheckBoxInputView();
-                    _this.DeleteButton = new Controls.ButtonView();
-                    _this.SetClassName('ControlPropertyPageView');
-                    var background = new Views.ImageView();
-                    background.SetAnchor(0, 0, 0, 0);
-                    background.FitPolicy = Property.FitPolicy.Cover;
-                    background.Src = 'images/Pages/ControlProperty/background.jpg';
-                    _this.Add(background);
-                    _this.HeaderBar.Text = 'Control';
-                    _this.HeaderBar.LeftButton.Hide(0);
-                    _this.HeaderBar.RightButton.Hide(0);
-                    _this.Add(_this.HeaderBar);
-                    _this.InputPanel.Position.Policy = Property.PositionPolicy.LeftTop;
-                    _this.InputPanel.ReferencePoint = Property.ReferencePoint.LeftTop;
-                    _this.InputPanel.Size.Width = 280;
-                    _this.InputPanel.SetAnchor(70, 10, null, 10);
-                    _this.Add(_this.InputPanel);
-                    var lbl1 = new Views.LabelView();
-                    lbl1.Text = 'Name';
-                    lbl1.TextAlign = Property.TextAlign.Left;
-                    lbl1.AutoSize = true;
-                    lbl1.SetAnchor(null, 5, null, null);
-                    lbl1.Size.Height = 21;
-                    _this.InputPanel.Add(lbl1);
-                    _this.TxtName.SetAnchor(null, 5, 15, null);
-                    _this.TxtName.Size.Height = 30;
-                    _this.TxtName.Name = 'Name';
-                    _this.InputPanel.Add(_this.TxtName);
-                    var lbl2 = new Views.LabelView();
-                    lbl2.Text = 'Icon';
-                    lbl2.TextAlign = Property.TextAlign.Left;
-                    lbl2.AutoSize = true;
-                    lbl2.SetAnchor(null, 5, null, null);
-                    lbl2.Size.Height = 21;
-                    _this.InputPanel.Add(lbl2);
-                    _this.SboIcon.SetAnchor(null, 5, 15, null);
-                    _this.SboIcon.Size.Height = 30;
-                    _this.SboIcon.Name = 'Icon';
-                    _this.InputPanel.Add(_this.SboIcon);
-                    var lbl3 = new Views.LabelView();
-                    lbl3.Text = 'Color';
-                    lbl3.TextAlign = Property.TextAlign.Left;
-                    lbl3.AutoSize = true;
-                    lbl3.SetAnchor(null, 5, null, null);
-                    lbl3.Size.Height = 21;
-                    _this.InputPanel.Add(lbl3);
-                    _this.SboColor.SetAnchor(null, 5, 15, null);
-                    _this.SboColor.Size.Height = 30;
-                    _this.SboColor.Name = 'Color';
-                    _this.InputPanel.Add(_this.SboColor);
-                    var lbl4 = new Views.LabelView();
-                    lbl4.Text = 'Code';
-                    lbl4.TextAlign = Property.TextAlign.Left;
-                    lbl4.AutoSize = true;
-                    lbl4.SetAnchor(null, 5, null, null);
-                    lbl4.Size.Height = 21;
-                    _this.InputPanel.Add(lbl4);
-                    _this.TarCode.SetAnchor(null, 5, 15, null);
-                    _this.TarCode.Size.Height = 90;
-                    _this.TarCode.Name = 'Code';
-                    _this.InputPanel.Add(_this.TarCode);
-                    _this.BtnLearn.SetAnchor(null, 5, 15, null);
-                    _this.BtnLearn.Size.Height = 30;
-                    _this.BtnLearn.Text = 'Learn Signal';
-                    _this.InputPanel.Add(_this.BtnLearn);
-                    _this.ChkToggleOn.SetAnchor(null, 5, 15, null);
-                    _this.ChkToggleOn.Size.Height = 30;
-                    _this.ChkToggleOn.Name = 'AssignToggleOn';
-                    _this.ChkToggleOn.Text = 'メインパネル トグルボタン[On]';
-                    _this.InputPanel.Add(_this.ChkToggleOn);
-                    _this.ChkToggleOff.SetAnchor(null, 5, 15, null);
-                    _this.ChkToggleOff.Size.Height = 30;
-                    _this.ChkToggleOff.Name = 'AssignToggleOff';
-                    _this.ChkToggleOff.Text = 'メインパネル トグルボタン[Off]';
-                    _this.InputPanel.Add(_this.ChkToggleOff);
-                    _this.DeleteButton.SetAnchor(null, 5, 15, null);
-                    _this.DeleteButton.Size.Height = 30;
-                    _this.DeleteButton.Text = '*Delete*';
-                    _this.InputPanel.Add(_this.DeleteButton);
-                    return _this;
-                }
-                return ControlPropertyPageView;
-            }(Fw.Views.PageView));
-            Pages.ControlPropertyPageView = ControlPropertyPageView;
-        })(Pages = Views_11.Pages || (Views_11.Pages = {}));
-    })(Views = App.Views || (App.Views = {}));
-})(App || (App = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Fw/Controllers/ControllerBase.ts" />
@@ -6369,399 +7191,50 @@ var App;
     (function (Controllers) {
         var Dump = Fw.Util.Dump;
         var Events = Fw.Events;
-        var Pages = App.Views.Pages;
-        var ControlPropertyController = /** @class */ (function (_super) {
-            __extends(ControlPropertyController, _super);
-            function ControlPropertyController() {
-                var _this = _super.call(this, 'ControlProperty') || this;
-                _this.SetClassName('ControlPropertyController');
-                _this.SetPageView(new Pages.ControlPropertyPageView());
-                _this._page = _this.View;
-                _this._page.TxtName.AddEventListener(Events.InputViewEvents.Changed, function (je, eo) {
-                    Dump.Log('ControlPropertyController.TxtName.Changed');
+        var Controls = App.Views.Controls;
+        var MouseEventsController = /** @class */ (function (_super) {
+            __extends(MouseEventsController, _super);
+            function MouseEventsController() {
+                var _this = _super.call(this, 'MouseEvents') || this;
+                _this.HeaderBar = new Controls.HeaderBarView();
+                _this.SetClassName('ControlSetController');
+                _this.SetPageView(new Fw.Views.PageView());
+                _this.HeaderBar.Text = 'Remote Control';
+                _this.HeaderBar.RightButton.Hide(0);
+                _this.View.Add(_this.HeaderBar);
+                _this.HeaderBar.LeftButton.Hide(0);
+                _this.HeaderBar.LeftButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
+                    _this.SwitchTo("Main");
                 });
-                _this._page.SboIcon.AddEventListener(Events.InputViewEvents.Changed, function (je, eo) {
-                    Dump.Log('ControlPropertyController.SboIcon.Changed');
+                _this.View.Elem.on('click', function (e) {
+                    Dump.Log('click');
                 });
-                _this._page.SboColor.AddEventListener(Events.InputViewEvents.Changed, function (je, eo) {
-                    Dump.Log('ControlPropertyController.SboColor.Changed');
+                _this.View.Elem.on('mousedown', function (e) {
+                    Dump.Log('mousedown');
                 });
-                _this._page.TarCode.AddEventListener(Events.InputViewEvents.Changed, function (je, eo) {
-                    Dump.Log('ControlPropertyController.TarCode.Changed');
+                _this.View.Elem.on('mousemove', function (e) {
+                    Dump.Log('mousemove');
                 });
-                _this._page.DeleteButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
-                    Dump.Log('Delete this Control!');
+                _this.View.Elem.on('mouseup', function (e) {
+                    Dump.Log('mouseup');
+                });
+                _this.View.Elem.on('mouseout', function (e) {
+                    Dump.Log('mouseout');
+                });
+                _this.View.Elem.on('touchstart', function (e) {
+                    Dump.Log('touchstart');
+                });
+                _this.View.Elem.on('touchmove', function (e) {
+                    Dump.Log('touchmove');
+                });
+                _this.View.Elem.on('touchend', function (e) {
+                    Dump.Log('touchend');
                 });
                 return _this;
             }
-            return ControlPropertyController;
+            return MouseEventsController;
         }(Fw.Controllers.ControllerBase));
-        Controllers.ControlPropertyController = ControlPropertyController;
+        Controllers.MouseEventsController = MouseEventsController;
     })(Controllers = App.Controllers || (App.Controllers = {}));
 })(App || (App = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../Events/InputViewEvents.ts" />
-/// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
-/// <reference path="ViewBase.ts" />
-/// <reference path="IInputView.ts" />
-/// <reference path="Property/FitPolicy.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var Dump = Fw.Util.Dump;
-        var Events = Fw.Events.InputViewEvents;
-        var InputViewBase = /** @class */ (function (_super) {
-            __extends(InputViewBase, _super);
-            function InputViewBase(jqueryElem) {
-                var _this = _super.call(this, jqueryElem) || this;
-                _this.SetClassName('InputView');
-                _this.Elem.addClass(_this.ClassName);
-                _this._name = '';
-                _this._value = '';
-                _this.BackgroundColor = '#FFFFFF';
-                _this.Elem.on('propertychange change keyup paste input', function () {
-                    Dump.Log('InputViewBase.Changed');
-                    _this.DispatchEvent(Events.Changed, _this.Value);
-                });
-                _this.Elem.on('focus', function () {
-                    Dump.Log('InputViewBase.Focused');
-                    _this.DispatchEvent(Events.Focused);
-                });
-                _this.Elem.on('blur', function () {
-                    Dump.Log('InputViewBase.Blurred');
-                    _this.DispatchEvent(Events.Blurred);
-                });
-                return _this;
-            }
-            Object.defineProperty(InputViewBase.prototype, "Value", {
-                get: function () {
-                    this._value = this.Elem.val();
-                    return this._value;
-                },
-                set: function (value) {
-                    this.Elem.val(value);
-                    this._value = this.Elem.val();
-                    this.Refresh();
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(InputViewBase.prototype, "Name", {
-                get: function () {
-                    return this._name;
-                },
-                set: function (value) {
-                    this._name = value;
-                    this.Elem.attr('name', this._name);
-                },
-                enumerable: true,
-                configurable: true
-            });
-            return InputViewBase;
-        }(Views.ViewBase));
-        Views.InputViewBase = InputViewBase;
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../Events/ViewEvents.ts" />
-/// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
-/// <reference path="InputViewBase.ts" />
-/// <reference path="Property/FitPolicy.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var TextBoxInputView = /** @class */ (function (_super) {
-            __extends(TextBoxInputView, _super);
-            function TextBoxInputView() {
-                var _this = _super.call(this, $('<input type="text"></input>')) || this;
-                _this.SetClassName('TextBoxInputView');
-                _this.Elem.addClass(_this.ClassName);
-                return _this;
-            }
-            return TextBoxInputView;
-        }(Views.InputViewBase));
-        Views.TextBoxInputView = TextBoxInputView;
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../Events/ViewEvents.ts" />
-/// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
-/// <reference path="InputViewBase.ts" />
-/// <reference path="Property/FitPolicy.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var TextAreaInputView = /** @class */ (function (_super) {
-            __extends(TextAreaInputView, _super);
-            function TextAreaInputView() {
-                var _this = _super.call(this, $('<textarea></textarea>')) || this;
-                _this.SetClassName('TextAreaInputView');
-                _this.Elem.addClass(_this.ClassName);
-                return _this;
-            }
-            return TextAreaInputView;
-        }(Views.InputViewBase));
-        Views.TextAreaInputView = TextAreaInputView;
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../Events/ViewEvents.ts" />
-/// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
-/// <reference path="InputViewBase.ts" />
-/// <reference path="Property/FitPolicy.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var SelectBoxInputView = /** @class */ (function (_super) {
-            __extends(SelectBoxInputView, _super);
-            function SelectBoxInputView() {
-                var _this = _super.call(this, $('<select></select>')) || this;
-                _this.SetClassName('SelectBoxInputView');
-                _this.Elem.addClass(_this.ClassName);
-                _this.AddItem('', '');
-                return _this;
-            }
-            SelectBoxInputView.prototype.AddItem = function (name, value) {
-                this.Elem.append("<option value=\"" + value + "\">" + name + "</option>");
-            };
-            return SelectBoxInputView;
-        }(Views.InputViewBase));
-        Views.SelectBoxInputView = SelectBoxInputView;
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="InputViewEvents.ts" />
-var Fw;
-(function (Fw) {
-    var Events;
-    (function (Events) {
-        var TextBoxInputViewEventsClass = /** @class */ (function (_super) {
-            __extends(TextBoxInputViewEventsClass, _super);
-            function TextBoxInputViewEventsClass() {
-                return _super !== null && _super.apply(this, arguments) || this;
-            }
-            return TextBoxInputViewEventsClass;
-        }(Events.InputViewEventsClass));
-        Events.TextBoxInputViewEventsClass = TextBoxInputViewEventsClass;
-        Events.TextBoxInputViewEvents = new TextBoxInputViewEventsClass();
-    })(Events = Fw.Events || (Fw.Events = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="InputViewEvents.ts" />
-var Fw;
-(function (Fw) {
-    var Events;
-    (function (Events) {
-        var TextAreaInputViewEventsClass = /** @class */ (function (_super) {
-            __extends(TextAreaInputViewEventsClass, _super);
-            function TextAreaInputViewEventsClass() {
-                return _super !== null && _super.apply(this, arguments) || this;
-            }
-            return TextAreaInputViewEventsClass;
-        }(Events.InputViewEventsClass));
-        Events.TextAreaInputViewEventsClass = TextAreaInputViewEventsClass;
-        Events.TextAreaInputViewEvents = new TextAreaInputViewEventsClass();
-    })(Events = Fw.Events || (Fw.Events = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="InputViewEvents.ts" />
-var Fw;
-(function (Fw) {
-    var Events;
-    (function (Events) {
-        var SelectBoxInputViewEventsClass = /** @class */ (function (_super) {
-            __extends(SelectBoxInputViewEventsClass, _super);
-            function SelectBoxInputViewEventsClass() {
-                return _super !== null && _super.apply(this, arguments) || this;
-            }
-            return SelectBoxInputViewEventsClass;
-        }(Events.InputViewEventsClass));
-        Events.SelectBoxInputViewEventsClass = SelectBoxInputViewEventsClass;
-        Events.SelectBoxInputViewEvents = new SelectBoxInputViewEventsClass();
-    })(Events = Fw.Events || (Fw.Events = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="ControlViewEvents.ts" />
-var Fw;
-(function (Fw) {
-    var Events;
-    (function (Events) {
-        var ToggleButtonInputViewEventsClass = /** @class */ (function (_super) {
-            __extends(ToggleButtonInputViewEventsClass, _super);
-            function ToggleButtonInputViewEventsClass() {
-                var _this = _super !== null && _super.apply(this, arguments) || this;
-                _this.Switched = 'Switched';
-                _this.ToOn = 'ToOn';
-                _this.ToOff = 'ToOff';
-                _this.Changed = 'Changed';
-                _this.Focused = 'Focused';
-                _this.Blurred = 'Blurred';
-                return _this;
-            }
-            return ToggleButtonInputViewEventsClass;
-        }(Events.ControlViewEventsClass));
-        Events.ToggleButtonInputViewEventsClass = ToggleButtonInputViewEventsClass;
-        Events.ToggleButtonInputViewEvents = new ToggleButtonInputViewEventsClass();
-    })(Events = Fw.Events || (Fw.Events = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../Events/ToggleButtonInputViewEvents.ts" />
-/// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
-/// <reference path="ControlView.ts" />
-/// <reference path="IInputView.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var Dump = Fw.Util.Dump;
-        var Events = Fw.Events.ToggleButtonInputViewEvents;
-        var ToggleButtonInputView = /** @class */ (function (_super) {
-            __extends(ToggleButtonInputView, _super);
-            function ToggleButtonInputView() {
-                var _this = _super.call(this) || this;
-                _this.HoverColor = '';
-                _this._sliderBox = new Views.BoxView();
-                _this._notch = new Views.BoxView();
-                _this._maskOn = new Views.BoxView();
-                _this._boolValue = false;
-                _this._overMargin = 5;
-                _this.SetClassName('ToggleButtonView');
-                _this.Elem.addClass(_this.ClassName);
-                // 標準サイズ：50 x 20
-                var width = 50;
-                var height = 20;
-                _this.HasBorder = false;
-                _this.SetSize(width, height);
-                _this._sliderBox.Size.Width = _this.Size.Width - _this._overMargin;
-                _this._sliderBox.Size.Height = _this.Size.Height - _this._overMargin;
-                _this._sliderBox.HasBorder = true;
-                _this._sliderBox.BorderRadius = 15;
-                _this._sliderBox.Color = '#e5e5e5';
-                _this._sliderBox.BackgroundColor = '#FFFFFF';
-                _this._sliderBox.Dom.style.overflow = 'hidden';
-                _this.Add(_this._sliderBox);
-                _this._maskOn.Size.Width = _this.Size.Width - _this._overMargin;
-                _this._maskOn.Size.Height = _this.Size.Height - _this._overMargin;
-                _this._maskOn.HasBorder = false;
-                _this._maskOn.BorderRadius = 15;
-                _this._maskOn.BackgroundColor = '#4e748b';
-                _this._maskOn.Position.X = -(_this.Size.Width - _this._overMargin);
-                _this._sliderBox.Add(_this._maskOn);
-                _this._notch.SetSize(_this.Size.Height, _this.Size.Height);
-                _this._notch.HasBorder = true;
-                _this._notch.BorderRadius = 50;
-                _this._notch.Color = '#e5e5e5';
-                _this._notch.BackgroundColor = '#cfcfcf';
-                _this._notch.Position.X = -(_this.Size.Width / 2) + (_this.Size.Height / 2);
-                _this.Add(_this._notch);
-                _this.Elem.hover(function () {
-                    //this.Dom.style.backgroundColor = this.HoverColor;
-                    _this.SetStyle('backgroundColor', _this.HoverColor);
-                    _this.Refresh();
-                }, function () {
-                    //this.Dom.style.backgroundColor = this.BackgroundColor;
-                    _this.SetStyle('backgroundColor', _this.BackgroundColor);
-                    _this.Refresh();
-                });
-                _this.AddEventListener(Events.SingleClick, function () {
-                    _this.BoolValue = !_this.BoolValue;
-                    _this.Refresh();
-                });
-                return _this;
-            }
-            Object.defineProperty(ToggleButtonInputView.prototype, "Name", {
-                get: function () {
-                    return this._name;
-                },
-                set: function (value) {
-                    this._name = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(ToggleButtonInputView.prototype, "BoolValue", {
-                get: function () {
-                    return (this._boolValue === true);
-                },
-                set: function (value) {
-                    var changed = (this._boolValue !== (value === true));
-                    this._boolValue = (value === true);
-                    if (changed) {
-                        Dump.Log('ToggleButtonInputView.Changed');
-                        this.DispatchEvent(Events.Changed, this.Value);
-                    }
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(ToggleButtonInputView.prototype, "Value", {
-                get: function () {
-                    return (this.BoolValue)
-                        ? 'true'
-                        : 'false';
-                },
-                set: function (value) {
-                    this.BoolValue = (value === 'true')
-                        ? true
-                        : false;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            ToggleButtonInputView.prototype.CalcLayout = function () {
-                try {
-                    this.SuppressLayout();
-                    this._sliderBox.SuppressLayout();
-                    this._maskOn.SuppressLayout();
-                    this._notch.SuppressLayout();
-                    this._sliderBox.Size.Width = this.Size.Width - this._overMargin;
-                    this._sliderBox.Size.Height = this.Size.Height - this._overMargin;
-                    this._maskOn.Size.Width = this.Size.Width - this._overMargin;
-                    this._maskOn.Size.Height = this.Size.Height - this._overMargin;
-                    this._notch.SetSize(this.Size.Height, this.Size.Height);
-                    this._notch.Position.X = (this.BoolValue)
-                        ? (this.Size.Width / 2) - (this.Size.Height / 2)
-                        : -(this.Size.Width / 2) + (this.Size.Height / 2);
-                    this._maskOn.Position.X = (this.BoolValue)
-                        ? 0
-                        : -(this.Size.Width - this._overMargin);
-                    _super.prototype.CalcLayout.call(this);
-                }
-                catch (e) {
-                    Dump.ErrorLog(e);
-                }
-                finally {
-                    this.ResumeLayout();
-                    this._sliderBox.ResumeLayout();
-                    this._maskOn.ResumeLayout();
-                    this._notch.ResumeLayout();
-                }
-            };
-            ToggleButtonInputView.prototype.Dispose = function () {
-                _super.prototype.Dispose.call(this);
-                this.HoverColor = null;
-            };
-            return ToggleButtonInputView;
-        }(Views.ControlView));
-        Views.ToggleButtonInputView = ToggleButtonInputView;
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
 //# sourceMappingURL=tsout.js.map

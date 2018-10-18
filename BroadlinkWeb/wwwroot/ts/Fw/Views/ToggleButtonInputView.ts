@@ -31,7 +31,7 @@ namespace Fw.Views {
             this._boolValue = (value === true);
 
             if (changed) {
-                Dump.Log('ToggleButtonInputView.Changed');
+                //Dump.Log('ToggleButtonInputView.Changed');
                 this.DispatchEvent(Events.Changed, this.Value);
             }
         }
@@ -107,6 +107,7 @@ namespace Fw.Views {
             });
 
             this.AddEventListener(Events.SingleClick, () => {
+                //Dump.Log(`${this.ClassName}.SingleClick`);
                 this.BoolValue = !this.BoolValue;
                 this.Refresh();
             });

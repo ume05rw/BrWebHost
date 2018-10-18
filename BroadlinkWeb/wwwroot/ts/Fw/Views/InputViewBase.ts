@@ -46,17 +46,17 @@ namespace Fw.Views {
             this.BackgroundColor = '#FFFFFF';
 
             this.Elem.on('propertychange change keyup paste input', () => {
-                Dump.Log('InputViewBase.Changed');
+                //Dump.Log('InputViewBase.Changed');
                 this.DispatchEvent(Events.Changed, this.Value);
             });
 
             this.Elem.on('focus', () => {
-                Dump.Log('InputViewBase.Focused');
+                //Dump.Log('InputViewBase.Focused');
                 this.DispatchEvent(Events.Focused);
             });
 
             this.Elem.on('blur', () => {
-                Dump.Log('InputViewBase.Blurred');
+                //Dump.Log('InputViewBase.Blurred');
                 this.DispatchEvent(Events.Blurred);
             });
         }

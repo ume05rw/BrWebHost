@@ -6,12 +6,14 @@
 /// <reference path="Animation/Params.ts" />
 /// <reference path="BoxView.ts" />
 /// <reference path="Property/Size.ts" />
+/// <reference path="Property/MouseLocation.ts" />
 
 namespace Fw.Views {
     import Dump = Fw.Util.Dump;
     import Property = Fw.Views.Property;
     import Anim = Fw.Views.Animation;
     import Events = Fw.Events.SlidableBoxViewEvents;
+    import MouseLocation = Fw.Views.Property.MouseLocation;
 
     export class SlidableBoxView extends BoxView {
 
@@ -81,11 +83,11 @@ namespace Fw.Views {
             // コンストラクタ引数で取得したDirectionがセットされていないため。
             this._positionBarMax.Position.Policy = Property.PositionPolicy.LeftTop;
             this._positionBarMax.SetTransAnimation(false);
-            this._positionBarMax.Color = '#888888';
+            this._positionBarMax.Color = '#EEEEEE';
             super.Add(this._positionBarMax);
             this._positionBarCurrent.Position.Policy = Property.PositionPolicy.LeftTop;
             this._positionBarCurrent.SetTransAnimation(false);
-            this._positionBarCurrent.Color = '#EEEEEE';
+            this._positionBarCurrent.Color = '#888888';
             super.Add(this._positionBarCurrent);
 
             this.AddEventListener(Events.Initialized, () => {
@@ -95,9 +97,18 @@ namespace Fw.Views {
             this._innerBox.Elem.addClass('SlidablePanelInnerView');
 
             this._innerBox.Elem.on('touchstart mousedown', (e) => {
+                // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
+                if (e.eventPhase !== 2)
+                    return;
+
+                e.preventDefault();
+
                 this._isDragging = true;
-                this._dragStartMousePosition.X = e.clientX;
-                this._dragStartMousePosition.Y = e.clientY;
+
+                const ml = MouseLocation.Create(e);
+                this._dragStartMousePosition.X = ml.ClientX;
+                this._dragStartMousePosition.Y = ml.ClientY;
+
                 this._dragStartViewPosition.X = this._innerBox.Position.X;
                 this._dragStartViewPosition.Y = this._innerBox.Position.Y;
                 //Fw.Root.Instance.SetTextSelection(false);
@@ -110,8 +121,11 @@ namespace Fw.Views {
                 if (e.eventPhase !== 2)
                     return;
 
-                const addX = e.clientX - this._dragStartMousePosition.X;
-                const addY = e.clientY - this._dragStartMousePosition.Y;
+                e.preventDefault();
+
+                const ml = MouseLocation.Create(e);
+                const addX = ml.ClientX - this._dragStartMousePosition.X;
+                const addY = ml.ClientY - this._dragStartMousePosition.Y;
 
                 if (this._direction === Property.Direction.Horizontal) {
                     // 横方向
@@ -122,7 +136,13 @@ namespace Fw.Views {
                 }
                 this.Refresh();
             });
-            this._innerBox.Elem.on('touchend mouseup mouseout', () => {
+            this._innerBox.Elem.on('touchend mouseup mouseout', (e) => {
+                // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
+                if (e.eventPhase !== 2)
+                    return;
+
+                e.preventDefault();
+
                 this._isDragging = false;
                 //Fw.Root.Instance.SetTextSelection(true);
                 _.delay(() => {

@@ -54,7 +54,7 @@ namespace Fw.Views {
             this._label.attr('for', id);
 
             if (changed) {
-                Dump.Log('CheckBoxInputView.Changed');
+                //Dump.Log('CheckBoxInputView.Changed');
                 this.DispatchEvent(Events.Changed, this.Value);
             }
         }
@@ -97,12 +97,12 @@ namespace Fw.Views {
             });
 
             this._input.on('focus', () => {
-                Dump.Log('CheckBoxInputView.Focused');
+                //Dump.Log('CheckBoxInputView.Focused');
                 this.DispatchEvent(Events.Focused);
             });
 
             this._input.on('blur', () => {
-                Dump.Log('CheckBoxInputView.Blurred');
+                //Dump.Log('CheckBoxInputView.Blurred');
                 this.DispatchEvent(Events.Blurred);
             });
         }

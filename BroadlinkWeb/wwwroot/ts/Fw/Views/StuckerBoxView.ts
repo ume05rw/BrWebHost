@@ -7,6 +7,7 @@
 /// <reference path="Animation/Params.ts" />
 /// <reference path="BoxView.ts" />
 /// <reference path="Property/Size.ts" />
+/// <reference path="Property/MouseLocation.ts" />
 
 namespace Fw.Views {
     import Dump = Fw.Util.Dump;
@@ -14,6 +15,7 @@ namespace Fw.Views {
     import Anim = Fw.Views.Animation;
     import Events = Fw.Events.StuckerBoxViewEvents;
     import ControlViewEvents = Fw.Events.ControlViewEvents;
+    import MouseLocation = Fw.Views.Property.MouseLocation;
 
     export class StuckerBoxView extends BoxView {
 
@@ -77,13 +79,13 @@ namespace Fw.Views {
 
             this._positionBarMax.Position.Policy = Property.PositionPolicy.LeftTop;
             this._positionBarMax.SetTransAnimation(false);
-            this._positionBarMax.Color = '#888888';
+            this._positionBarMax.Color = '#EEEEEE';
             this._positionBarMax.SetParent(this);
             this.Elem.append(this._positionBarMax.Elem);
 
             this._positionBarCurrent.Position.Policy = Property.PositionPolicy.LeftTop;
             this._positionBarCurrent.SetTransAnimation(false);
-            this._positionBarCurrent.Color = '#EEEEEE';
+            this._positionBarCurrent.Color = '#888888';
             this._positionBarCurrent.SetParent(this);
             this.Elem.append(this._positionBarCurrent.Elem);
 
@@ -129,19 +131,34 @@ namespace Fw.Views {
 // #region "上下スクロール"
 
         private OnInnerMouseDown(e: JQueryEventObject): void {
+            // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
+            if (e.eventPhase !== 2)
+                return;
+
             //Dump.Log(`${this.ClassName}.OnInnerMouseDown`);
+            e.preventDefault();
+
             if (this._isChildRelocation)
                 return;
 
             this._isInnerDragging = true;
-            this._dragStartMousePosition.X = e.clientX;
-            this._dragStartMousePosition.Y = e.clientY;
+
+            const ml = MouseLocation.Create(e);
+            this._dragStartMousePosition.X = ml.ClientX;
+            this._dragStartMousePosition.Y = ml.ClientY;
+
             this._dragStartViewPosition.X = this._innerBox.Position.Left;
             this._dragStartViewPosition.Y = this._innerBox.Position.Top;
             Fw.Root.Instance.SetTextSelection(false);
         }
 
         private OnInnerMouseMove(e: JQueryEventObject): void {
+            // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
+            if (e.eventPhase !== 2)
+                return;
+
+            e.preventDefault();
+
             if (this._isChildRelocation || !this._isInnerDragging || this._scrollMargin === 0)
                 return;
 
@@ -149,7 +166,8 @@ namespace Fw.Views {
             if (e.eventPhase !== 2)
                 return;
 
-            const addY = e.clientY - this._dragStartMousePosition.Y;
+            const ml = MouseLocation.Create(e);
+            const addY = ml.ClientY - this._dragStartMousePosition.Y;
             let top = this._dragStartViewPosition.Y + addY;
 
             const margin = this._scrollMargin * -1;
@@ -162,6 +180,12 @@ namespace Fw.Views {
         }
 
         private OnInnerMouseUp(e: JQueryEventObject): void {
+            // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
+            if (e.eventPhase !== 2)
+                return;
+
+            e.preventDefault();
+
             //Dump.Log(`${this.ClassName}.OnInnerMouseUp`);
             if (this._isChildRelocation)
                 return;
@@ -238,20 +262,28 @@ namespace Fw.Views {
          * @param e
          */
         private OnChildMouseDown(e: JQueryEventObject): void {
+            // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
+            if (e.eventPhase !== 2)
+                return;
+
             //Dump.Log(`${this.ClassName}.OnChildMouseDown`);
             if (!this._isChildRelocation)
                 return;
 
+            e.preventDefault();
+
             const rect = this.Dom.getBoundingClientRect();
-            const innerLeft = e.pageX - rect.left;
-            const innerTop = e.pageY - rect.top + (this._innerBox.Position.Top * -1);
+
+            const ml = MouseLocation.Create(e);
+            const innerLeft = ml.PageX - rect.left;
+            const innerTop = ml.PageY - rect.top + (this._innerBox.Position.Top * -1);
             const view = this.GetNearestByPosition(innerLeft, innerTop);
             if (view) {
                 //Dump.Log('OnChildMouseDown - view found: ' + (view as ButtonView).Label);
                 this._isChildDragging = true;
                 this._relocationTargetView = view;
-                this._dragStartMousePosition.X = e.pageX;
-                this._dragStartMousePosition.Y = e.pageY;
+                this._dragStartMousePosition.X = ml.PageX;
+                this._dragStartMousePosition.Y = ml.PageY;
                 this._dragStartViewPosition.X = view.Position.Left;
                 this._dragStartViewPosition.Y = view.Position.Top;
                 this.SetDummyView(view);
@@ -264,14 +296,22 @@ namespace Fw.Views {
          * @param e1
          */
         private OnChildMouseMove(e: JQueryEventObject): void {
+            // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
+            if (e.eventPhase !== 2)
+                return;
+
             if (!this._isChildRelocation || !this._isChildDragging)
                 return;
+
+            e.preventDefault();
 
             //Dump.Log(`${this.ClassName}.OnChildMouseMove`);
 
             const view = this._relocationTargetView;
-            const addX = e.pageX - this._dragStartMousePosition.X;
-            const addY = e.pageY - this._dragStartMousePosition.Y;
+
+            const ml = MouseLocation.Create(e);
+            const addX = ml.PageX - this._dragStartMousePosition.X;
+            const addY = ml.PageY - this._dragStartMousePosition.Y;
 
             view.Position.Left = this._dragStartViewPosition.X + addX;
             view.Position.Top = this._dragStartViewPosition.Y + addY;
@@ -287,10 +327,16 @@ namespace Fw.Views {
          * @param e
          */
         private OnChildMouseUp(e: JQueryEventObject): void {
+            // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
+            if (e.eventPhase !== 2)
+                return;
+
             //Dump.Log(`${this.ClassName}.OnChildMouseUp`);
             if (!this._isChildRelocation) {
                 this._isChildDragging = false;
             } else {
+                e.preventDefault();
+
                 this._isChildDragging = false;
 
                 if (this._relocationTargetView) {

@@ -113,45 +113,24 @@ namespace Fw.Views {
 
             this.SetElem(jqueryElem);
 
+            this.SetClassName('ViewBase');
+
             this._children = new Array<IView>();
             this._size = new Property.Size(this);
             this._position = new Property.Position(this);
             this._anchor = new Property.Anchor(this);
 
-            this.SetClassName('ViewBase');
-            this.Elem.addClass('IView TransAnimation');
-
             this._page = null;
             this._parent = null;
             this._color = '#000000';
-            this._size.Width = this.Elem.width();
-            this._size.Height = this.Elem.height();
 
-            this.AddEventListener(Events.SizeChanged, () => {
-                this.Refresh();
-            });
-            this.AddEventListener(Events.PositionChanged, () => {
-                this.Refresh();
-            });
-            this.AddEventListener(Events.AnchorChanged, () => {
-                this.Refresh();
-            });
-            this.AddEventListener(Events.Attached, () => {
-                this.InitPage();
-                this.InitHasAnchor();
-            });
-            this.AddEventListener(Events.Detached, () => {
-                this._page = null;
-                this.InitHasAnchor();
-            });
-            this.AddEventListener(Events.Initialized, () => {
-                this.InitPage();
-                this.InitHasAnchor();
-            });
-
-            //this.IsVisible
-            //    ? this.DispatchEvent(Events.Shown)
-            //    : this.DispatchEvent(Events.Hidden);
+            if (this.Elem) {
+                this._size.Width = this.Elem.width();
+                this._size.Height = this.Elem.height();
+            } else {
+                this._size.Width = 0;
+                this._size.Height = 0;
+            }
 
             // 画面リサイズ時に再描画
             Fw.Root.Instance.AddEventListener(Fw.Events.RootEvents.Resized, () => {
@@ -159,6 +138,36 @@ namespace Fw.Views {
             });
 
             _.defer(() => {
+                this.Elem.addClass('IView TransAnimation');
+
+                if (this._size.Width === 0)
+                    this._size.Width = this.Elem.width();
+
+                if (this._size.Height === 0)
+                    this._size.Height = this.Elem.height();
+
+                this.AddEventListener(Events.SizeChanged, () => {
+                    this.Refresh();
+                });
+                this.AddEventListener(Events.PositionChanged, () => {
+                    this.Refresh();
+                });
+                this.AddEventListener(Events.AnchorChanged, () => {
+                    this.Refresh();
+                });
+                this.AddEventListener(Events.Attached, () => {
+                    this.InitPage();
+                    this.InitHasAnchor();
+                });
+                this.AddEventListener(Events.Detached, () => {
+                    this._page = null;
+                    this.InitHasAnchor();
+                });
+                this.AddEventListener(Events.Initialized, () => {
+                    this.InitPage();
+                    this.InitHasAnchor();
+                });
+
                 // 初期化終了イベント
                 if (!this._isInitialized) {
                     this._isInitialized = true;
@@ -289,7 +298,7 @@ namespace Fw.Views {
             return this.Elem.hasClass('TransAnimation');
         }
 
-        private InitHasAnchor(): void {
+        protected InitHasAnchor(): void {
             let hasAnchorX: boolean = (this.Anchor.IsAnchoredLeft || this.Anchor.IsAnchoredRight);
             let hasAnchorY: boolean = (this.Anchor.IsAnchoredTop || this.Anchor.IsAnchoredBottom);
 

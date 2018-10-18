@@ -12,16 +12,26 @@ namespace App {
             // フレームワーク初期化
             Fw.Startup.Init();
 
+            // ログ出力をウインドウ表示するとき。
+            //Fw.Util.Dump.LogMode = Fw.Util.LogMode.Window;
+
             // API仕様に応じて、クエリ先URLの土台を作っておく。
             const proto = location.protocol;
             const host = location.hostname;
             const port = location.port;
             Fw.Config.XhrBaseUrl = proto + '//' + host + ':' + port + '/api/';
 
-            Dump.Log('StartUp - 1');
+            Dump.Log('StartUp');
+
             const main = new App.Controllers.MainController();
-            Dump.Log('StartUp - 2');
             Manager.Instance.SetController(main);
+
+            //Dump.Log('StartUp - 2');
+
+            //const mevents = new App.Controllers.MouseEventsController();
+            //Manager.Instance.SetController(mevents);
+
+
             Dump.Log('Show');
         }
     }

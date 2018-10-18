@@ -38,7 +38,9 @@ namespace Fw.Views {
             this.BorderRadius = 5;
             this.Elem.append(this._label);
 
-            this.Elem.on('touchstart mousedown', (e) => {
+            // touch系イベントはmouse系と重複して発生するため、リッスンしない。
+            this.Elem.on('mousedown', (e) => {
+                //Dump.Log(`${this.ClassName}.mousedown`);
                 if (this._clickEventTimer != null)
                     clearTimeout(this._clickEventTimer);
 
@@ -54,7 +56,9 @@ namespace Fw.Views {
                     this.DispatchEvent(Events.LongClick);
                 }, 1000);
             });
-            this.Elem.on('touchend mouseup', (e) => {
+
+            this.Elem.on('mouseup', (e) => {
+                //Dump.Log(`${this.ClassName}.mouseup`);
                 if (this._clickEventTimer != null) {
                     // ロングタップ検出中のとき
                     clearTimeout(this._clickEventTimer);
@@ -70,6 +74,7 @@ namespace Fw.Views {
                 } else {
                 }
             });
+
             this.Elem.on('mouseout', (e) => {
                 if (this._clickEventTimer != null) {
                     // ロングタップ検出中のとき

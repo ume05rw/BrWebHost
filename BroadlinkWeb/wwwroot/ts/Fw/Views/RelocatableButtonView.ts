@@ -3,10 +3,12 @@
 /// <reference path="../Util/Dump.ts" />
 /// <reference path="../Events/ControlViewEvents.ts" />
 /// <reference path="ButtonView.ts" />
+/// <reference path="Property/MouseLocation.ts" />
 
 namespace Fw.Views {
     import Dump = Fw.Util.Dump;
     import Events = Fw.Events.ControlViewEvents;
+    import MouseLocation = Fw.Views.Property.MouseLocation;
 
     export class RelocatableButtonView extends ButtonView {
 
@@ -58,13 +60,19 @@ namespace Fw.Views {
                     this.SetRelocatable(true);
             });
 
-            this.Elem.on('touchstart mousedown', (e) => {
+            this.Elem.on('mousedown touchstart', (e) => {
+                //Dump.Log('RelocatableButtonView.mousedown');
+                e.preventDefault();
+
                 if (!this._isRelocatable) {
                     this._isDragging = false;
                 } else {
                     this._isDragging = true;
-                    this._dragStartMousePosition.X = e.pageX;
-                    this._dragStartMousePosition.Y = e.pageY;
+
+                    const ml = MouseLocation.Create(e);
+                    this._dragStartMousePosition.X = ml.PageX;
+                    this._dragStartMousePosition.Y = ml.PageY;
+
                     this._mouseDownTime = new Date();
 
                     if (this.Position.Policy === Property.PositionPolicy.Centering) {
@@ -80,7 +88,10 @@ namespace Fw.Views {
             });
 
             // ↓mouseoutイベントは捕捉しない。途切れまくるので。
-            this.Elem.on('touchend mouseup', (e) => {
+            this.Elem.on('mouseup touchend', (e) => {
+                //Dump.Log('RelocatableButtonView.mouseup');
+                e.preventDefault();
+
                 if (!this._isRelocatable) {
                     this._isDragging = false;
                 } else {
@@ -97,8 +108,10 @@ namespace Fw.Views {
                     // SingleClick判定
                     if (this._mouseDownTime) {
                         const elapsed = ((new Date()).getTime() - this._mouseDownTime.getTime());
-                        const addX = e.pageX - this._dragStartMousePosition.X;
-                        const addY = e.pageY - this._dragStartMousePosition.Y;
+
+                        const ml = MouseLocation.Create(e);
+                        const addX = ml.PageX - this._dragStartMousePosition.X;
+                        const addY = ml.PageY - this._dragStartMousePosition.Y;
 
                         //Dump.Log({
                         //    name: 'RelButton.SlickDetection',
@@ -145,10 +158,12 @@ namespace Fw.Views {
         }
 
         private OnMouseMove(e: JQueryEventObject): void {
+            //Dump.Log('RelocatableButtonView.OnMouseMove');
+            e.preventDefault();
             if (this._isRelocatable && this._isDragging) {
-
-                const addX = e.pageX - this._dragStartMousePosition.X;
-                const addY = e.pageY - this._dragStartMousePosition.Y;
+                const ml = MouseLocation.Create(e);
+                const addX = ml.PageX - this._dragStartMousePosition.X;
+                const addY = ml.PageY - this._dragStartMousePosition.Y;
 
                 if (this.Position.Policy === Property.PositionPolicy.Centering) {
                     this.Position.X = this._dragStartViewPosition.X + addX;
