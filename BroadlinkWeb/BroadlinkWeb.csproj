@@ -31,6 +31,8 @@
     <Content Remove="wwwroot\ts\App\Views\Pages\LayoutCheckPageView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Pages\MainPageView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Pages\Sub3PageView.ts" />
+    <Content Remove="wwwroot\ts\App\Views\Popup\Confirm.ts" />
+    <Content Remove="wwwroot\ts\App\Views\Popup\PopupBase.ts" />
     <Content Remove="wwwroot\ts\Fw\Config.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\BoxViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\ButtonViewEvents.ts" />
@@ -143,6 +145,8 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\Sub3PageView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\MainPageView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\LayoutCheckPageView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Views\Popup\Confirm.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Views\Popup\PopupBase.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Config.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\Factory.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\IController.ts" />
