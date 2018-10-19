@@ -2399,6 +2399,13 @@ var App;
                     enumerable: true,
                     configurable: true
                 });
+                Object.defineProperty(HeaderBarView.prototype, "Label", {
+                    get: function () {
+                        return this._label;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
                 Object.defineProperty(HeaderBarView.prototype, "LeftButton", {
                     get: function () {
                         return this._btnLeft;
@@ -2618,31 +2625,64 @@ var App;
                 _this._page.EditButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
                     _this.SetUnmodal();
                 });
-                _this._page.HeaderBar.RightButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
-                    var btn = new Controls.ControlButtonView();
-                    btn.SetLeftTop(185, _this._page.Size.Height - 90 - 75);
-                    btn.AddEventListener(App.Events.Controls.ControlButtonViewEvents.EditOrdered, function (e, p) {
-                        Dump.Log(p);
-                        var ctr = _this.Manager.Get('ControlProperty');
-                        ctr.SetControlButton(p.Sender);
-                        ctr.SetModal();
-                    }, _this);
-                    btn.AddEventListener(App.Events.Controls.ControlButtonViewEvents.ExecOrdered, function (e, p) {
-                        Dump.Log(p);
-                    }, _this);
-                    _this._page.ButtonPanel.Add(btn);
-                    // 再配置可能指示はパネルにaddした後で。
-                    btn.SetRelocatable(true);
+                _this._page.HeaderBar.RightButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function (e) {
+                    _this.OnOrderedNewControl(e);
+                    //const btn = new Controls.ControlButtonView();
+                    //btn.SetLeftTop(185, this._page.Size.Height - 90 - 75);
+                    //btn.AddEventListener(App.Events.Controls.ControlButtonViewEvents.EditOrdered, (e, p) => {
+                    //    Dump.Log(p);
+                    //    const ctr = this.Manager.Get('ControlProperty') as ControlPropertyController;
+                    //    ctr.SetControlButton(p.Sender as Controls.ControlButtonView);
+                    //    ctr.SetModal();
+                    //}, this);
+                    //btn.AddEventListener(App.Events.Controls.ControlButtonViewEvents.ExecOrdered, (e, p) => {
+                    //    Dump.Log(p);
+                    //}, this);
+                    //this._page.ButtonPanel.Add(btn);
+                    //// 再配置可能指示はパネルにaddした後で。
+                    //btn.SetRelocatable(true);
                 });
                 _this._page.HeaderBar.Elem.on('click', function (e) {
-                    if (e.eventPhase !== 2)
-                        return;
-                    if (_this._page.EditButton.IsVisible)
-                        return;
-                    alert('Show Header Property');
+                    _this.OnOrderedHeader(e);
+                    //if (e.eventPhase !== 2)
+                    //    return;
+                    //if (this._page.EditButton.IsVisible)
+                    //    return;
+                    //Dump.Log('Show Header Property');
+                    //const ctr = this.Manager.Get('ControlHeaderProperty');
+                    //ctr.SetModal();
+                });
+                _this._page.HeaderBar.Label.Elem.on('click', function (e) {
+                    _this.OnOrderedHeader(e);
                 });
                 return _this;
             }
+            ControlSetController.prototype.OnOrderedNewControl = function (e) {
+                var _this = this;
+                var btn = new Controls.ControlButtonView();
+                btn.SetLeftTop(185, this._page.Size.Height - 90 - 75);
+                btn.AddEventListener(App.Events.Controls.ControlButtonViewEvents.EditOrdered, function (e, p) {
+                    Dump.Log(p);
+                    var ctr = _this.Manager.Get('ControlProperty');
+                    ctr.SetControlButton(p.Sender);
+                    ctr.SetModal();
+                }, this);
+                btn.AddEventListener(App.Events.Controls.ControlButtonViewEvents.ExecOrdered, function (e, p) {
+                    Dump.Log(p);
+                }, this);
+                this._page.ButtonPanel.Add(btn);
+                // 再配置可能指示はパネルにaddした後で。
+                btn.SetRelocatable(true);
+            };
+            ControlSetController.prototype.OnOrderedHeader = function (e) {
+                if (e.eventPhase !== 2)
+                    return;
+                if (this._page.EditButton.IsVisible)
+                    return;
+                Dump.Log('Show Header Property');
+                var ctr = this.Manager.Get('ControlHeaderProperty');
+                ctr.SetModal();
+            };
             return ControlSetController;
         }(Fw.Controllers.ControllerBase));
         Controllers.ControlSetController = ControlSetController;
@@ -2731,6 +2771,7 @@ var App;
                 var sub3Ctr = new Controllers.Sub3Controller();
                 var controlSetCtr = new Controllers.ControlSetController();
                 var controlPropertyCtr = new Controllers.ControlPropertyController();
+                var controlHeaderPropertyCtr = new Controllers.ControlHeaderPropertyController();
                 _this.SetPageView(new Pages.MainPageView());
                 var page = _this.View;
                 page.HeaderBar.RightButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
@@ -4156,6 +4197,7 @@ var App;
                     _this.InputPanel.ReferencePoint = Property.ReferencePoint.LeftTop;
                     _this.InputPanel.Size.Width = 280;
                     _this.InputPanel.SetAnchor(70, 10, null, 10);
+                    _this.InputPanel.Color = App.Color.Main;
                     _this.Add(_this.InputPanel);
                     var lbl1 = new Views.LabelView();
                     lbl1.Text = 'Name';
@@ -7308,4 +7350,116 @@ var Fw;
     }());
     Fw.Startup = Startup;
 })(Fw || (Fw = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Views/PageView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Events/PageViewEvents.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../Controls/HeaderBarView.ts" />
+var App;
+(function (App) {
+    var Views;
+    (function (Views_12) {
+        var Pages;
+        (function (Pages) {
+            var Views = Fw.Views;
+            var Property = Fw.Views.Property;
+            var Controls = App.Views.Controls;
+            var ControlHeaderPropertyPageView = /** @class */ (function (_super) {
+                __extends(ControlHeaderPropertyPageView, _super);
+                function ControlHeaderPropertyPageView() {
+                    var _this = _super.call(this, $("")) || this;
+                    _this.HeaderBar = new Controls.HeaderBarView();
+                    _this.InputPanel = new Views.StuckerBoxView();
+                    _this.TxtName = new Views.TextBoxInputView();
+                    _this.SboRm = new Views.SelectBoxInputView();
+                    _this.DeleteButton = new Controls.ButtonView();
+                    _this.SetClassName('ControlHeaderPropertyPageView');
+                    var background = new Views.ImageView();
+                    background.SetAnchor(0, 0, 0, 0);
+                    background.FitPolicy = Property.FitPolicy.Cover;
+                    background.Src = 'images/Pages/ControlProperty/background.jpg';
+                    _this.Add(background);
+                    _this.HeaderBar.Text = '';
+                    _this.HeaderBar.LeftButton.Hide(0);
+                    _this.HeaderBar.RightButton.Hide(0);
+                    _this.Add(_this.HeaderBar);
+                    var label = new Views.LabelView();
+                    label.FontSize = Property.FontSize.Large;
+                    label.Color = App.Color.Main;
+                    label.SetAnchor(null, 5, null, null);
+                    label.Text = 'Remote Control';
+                    _this.HeaderBar.Add(label);
+                    _this.InputPanel.Position.Policy = Property.PositionPolicy.LeftTop;
+                    _this.InputPanel.ReferencePoint = Property.ReferencePoint.LeftTop;
+                    _this.InputPanel.Size.Width = 280;
+                    _this.InputPanel.SetAnchor(70, 10, null, 10);
+                    _this.InputPanel.Color = App.Color.Main;
+                    _this.Add(_this.InputPanel);
+                    var lbl1 = new Views.LabelView();
+                    lbl1.Text = 'Name';
+                    lbl1.TextAlign = Property.TextAlign.Left;
+                    lbl1.AutoSize = true;
+                    lbl1.SetAnchor(null, 5, null, null);
+                    lbl1.Size.Height = 21;
+                    _this.InputPanel.Add(lbl1);
+                    _this.TxtName.SetAnchor(null, 5, 15, null);
+                    _this.TxtName.Size.Height = 30;
+                    _this.TxtName.Name = 'Name';
+                    _this.InputPanel.Add(_this.TxtName);
+                    var lbl2 = new Views.LabelView();
+                    lbl2.Text = 'Target';
+                    lbl2.TextAlign = Property.TextAlign.Left;
+                    lbl2.AutoSize = true;
+                    lbl2.SetAnchor(null, 5, null, null);
+                    lbl2.Size.Height = 21;
+                    _this.InputPanel.Add(lbl2);
+                    _this.SboRm.SetAnchor(null, 5, 15, null);
+                    _this.SboRm.Size.Height = 30;
+                    _this.SboRm.Name = 'Icon';
+                    _.each(App.Icon.Names, function (iconName) {
+                        var dispName = iconName.substr(0, iconName.indexOf('.')).replace('_', ' ');
+                        _this.SboRm.AddItem(dispName, "images/icons/" + iconName);
+                    });
+                    _this.InputPanel.Add(_this.SboRm);
+                    _this.DeleteButton.SetAnchor(null, 5, 15, null);
+                    _this.DeleteButton.Size.Height = 30;
+                    _this.DeleteButton.Text = '*Delete*';
+                    _this.InputPanel.Add(_this.DeleteButton);
+                    return _this;
+                }
+                return ControlHeaderPropertyPageView;
+            }(Fw.Views.PageView));
+            Pages.ControlHeaderPropertyPageView = ControlHeaderPropertyPageView;
+        })(Pages = Views_12.Pages || (Views_12.Pages = {}));
+    })(Views = App.Views || (App.Views = {}));
+})(App || (App = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Fw/Controllers/ControllerBase.ts" />
+/// <reference path="../../Fw/Controllers/Manager.ts" />
+/// <reference path="../../Fw/Util/Dump.ts" />
+/// <reference path="../../Fw/Events/ControlViewEvents.ts" />
+/// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
+/// <reference path="../Views/Pages/MainPageView.ts" />
+var App;
+(function (App) {
+    var Controllers;
+    (function (Controllers) {
+        var Pages = App.Views.Pages;
+        var ControlHeaderPropertyController = /** @class */ (function (_super) {
+            __extends(ControlHeaderPropertyController, _super);
+            function ControlHeaderPropertyController() {
+                var _this = _super.call(this, 'ControlHeaderProperty') || this;
+                _this.SetClassName('ControlHeaderPropertyController');
+                _this.SetPageView(new Pages.ControlHeaderPropertyPageView());
+                _this._page = _this.View;
+                return _this;
+            }
+            return ControlHeaderPropertyController;
+        }(Fw.Controllers.ControllerBase));
+        Controllers.ControlHeaderPropertyController = ControlHeaderPropertyController;
+    })(Controllers = App.Controllers || (App.Controllers = {}));
+})(App || (App = {}));
 //# sourceMappingURL=tsout.js.map

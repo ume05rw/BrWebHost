@@ -39,7 +39,6 @@ namespace App.Views.Pages {
             this.BtnLearn = new Controls.ButtonView();
             this.ChkToggleOn = new Views.CheckBoxInputView();
             this.ChkToggleOff = new Views.CheckBoxInputView();
-
             this.DeleteButton = new Controls.ButtonView();
 
             this.SetClassName('ControlPropertyPageView');
@@ -66,6 +65,7 @@ namespace App.Views.Pages {
             this.InputPanel.ReferencePoint = Property.ReferencePoint.LeftTop;
             this.InputPanel.Size.Width = 280;
             this.InputPanel.SetAnchor(70, 10, null, 10);
+            this.InputPanel.Color = Color.Main;
             this.Add(this.InputPanel);
 
             const lbl1 = new Views.LabelView();

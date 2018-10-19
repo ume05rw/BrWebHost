@@ -427,9 +427,11 @@ declare namespace App {
     }
 }
 declare namespace App.Views.Controls {
+    import Views = Fw.Views;
     class HeaderBarView extends Fw.Views.BoxView {
         Text: string;
         private _label;
+        readonly Label: Views.LabelView;
         private _btnLeft;
         readonly LeftButton: App.Views.Controls.ButtonView;
         private _btnRight;
@@ -462,6 +464,8 @@ declare namespace App.Controllers {
     class ControlSetController extends Fw.Controllers.ControllerBase {
         private _page;
         constructor();
+        private OnOrderedNewControl;
+        private OnOrderedHeader;
     }
 }
 declare namespace App.Controllers {
@@ -1162,5 +1166,23 @@ declare namespace Fw {
 declare namespace Fw {
     class Startup {
         static Init(): void;
+    }
+}
+declare namespace App.Views.Pages {
+    import Views = Fw.Views;
+    import Controls = App.Views.Controls;
+    class ControlHeaderPropertyPageView extends Fw.Views.PageView {
+        HeaderBar: Controls.HeaderBarView;
+        InputPanel: Views.StuckerBoxView;
+        TxtName: Views.TextBoxInputView;
+        SboRm: Views.SelectBoxInputView;
+        DeleteButton: Controls.ButtonView;
+        constructor();
+    }
+}
+declare namespace App.Controllers {
+    class ControlHeaderPropertyController extends Fw.Controllers.ControllerBase {
+        private _page;
+        constructor();
     }
 }

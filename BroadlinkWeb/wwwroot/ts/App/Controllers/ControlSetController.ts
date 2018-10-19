@@ -36,32 +36,68 @@ namespace App.Controllers {
                 this.SetUnmodal();
             });
 
-            this._page.HeaderBar.RightButton.AddEventListener(Events.ButtonViewEvents.SingleClick, () => {
-                const btn = new Controls.ControlButtonView();
-                btn.SetLeftTop(185, this._page.Size.Height - 90 - 75);
-                btn.AddEventListener(App.Events.Controls.ControlButtonViewEvents.EditOrdered, (e, p) => {
-                    Dump.Log(p);
-                    const ctr = this.Manager.Get('ControlProperty') as ControlPropertyController;
-                    ctr.SetControlButton(p.Sender as Controls.ControlButtonView);
-                    ctr.SetModal();
-                }, this);
-                btn.AddEventListener(App.Events.Controls.ControlButtonViewEvents.ExecOrdered, (e, p) => {
-                    Dump.Log(p);
-                }, this);
-                this._page.ButtonPanel.Add(btn);
+            this._page.HeaderBar.RightButton.AddEventListener(Events.ButtonViewEvents.SingleClick, (e) => {
+                this.OnOrderedNewControl(e);
+                //const btn = new Controls.ControlButtonView();
+                //btn.SetLeftTop(185, this._page.Size.Height - 90 - 75);
+                //btn.AddEventListener(App.Events.Controls.ControlButtonViewEvents.EditOrdered, (e, p) => {
+                //    Dump.Log(p);
+                //    const ctr = this.Manager.Get('ControlProperty') as ControlPropertyController;
+                //    ctr.SetControlButton(p.Sender as Controls.ControlButtonView);
+                //    ctr.SetModal();
+                //}, this);
+                //btn.AddEventListener(App.Events.Controls.ControlButtonViewEvents.ExecOrdered, (e, p) => {
+                //    Dump.Log(p);
+                //}, this);
+                //this._page.ButtonPanel.Add(btn);
 
-                // 再配置可能指示はパネルにaddした後で。
-                btn.SetRelocatable(true);
+                //// 再配置可能指示はパネルにaddした後で。
+                //btn.SetRelocatable(true);
             });
 
             this._page.HeaderBar.Elem.on('click', (e) => {
-                if (e.eventPhase !== 2)
-                    return;
-                if (this._page.EditButton.IsVisible)
-                    return;
+                this.OnOrderedHeader(e);
+                //if (e.eventPhase !== 2)
+                //    return;
+                //if (this._page.EditButton.IsVisible)
+                //    return;
 
-                alert('Show Header Property');
+                //Dump.Log('Show Header Property');
+                //const ctr = this.Manager.Get('ControlHeaderProperty');
+                //ctr.SetModal();
             });
+            this._page.HeaderBar.Label.Elem.on('click', (e) => {
+                this.OnOrderedHeader(e);
+            });
+        }
+
+        private OnOrderedNewControl(e: JQueryEventObject): void {
+            const btn = new Controls.ControlButtonView();
+            btn.SetLeftTop(185, this._page.Size.Height - 90 - 75);
+            btn.AddEventListener(App.Events.Controls.ControlButtonViewEvents.EditOrdered, (e, p) => {
+                Dump.Log(p);
+                const ctr = this.Manager.Get('ControlProperty') as ControlPropertyController;
+                ctr.SetControlButton(p.Sender as Controls.ControlButtonView);
+                ctr.SetModal();
+            }, this);
+            btn.AddEventListener(App.Events.Controls.ControlButtonViewEvents.ExecOrdered, (e, p) => {
+                Dump.Log(p);
+            }, this);
+            this._page.ButtonPanel.Add(btn);
+
+            // 再配置可能指示はパネルにaddした後で。
+            btn.SetRelocatable(true);
+        }
+
+        private OnOrderedHeader(e: JQueryEventObject): void {
+            if (e.eventPhase !== 2)
+                return;
+            if (this._page.EditButton.IsVisible)
+                return;
+
+            Dump.Log('Show Header Property');
+            const ctr = this.Manager.Get('ControlHeaderProperty');
+            ctr.SetModal();
         }
     }
 }

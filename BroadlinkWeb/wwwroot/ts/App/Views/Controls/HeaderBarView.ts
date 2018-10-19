@@ -22,6 +22,9 @@ namespace App.Views.Controls {
         }
 
         private _label: Views.LabelView;
+        public get Label(): Views.LabelView {
+            return this._label;
+        }
 
         private _btnLeft: App.Views.Controls.ButtonView;
         public get LeftButton(): App.Views.Controls.ButtonView {

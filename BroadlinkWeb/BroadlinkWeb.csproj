@@ -8,6 +8,7 @@
   <ItemGroup>
     <Content Remove="wwwroot\js\Page.ts" />
     <Content Remove="wwwroot\ts\App\Color.ts" />
+    <Content Remove="wwwroot\ts\App\Controllers\ControlHeaderPropertyController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\ControlPropertyController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\ControlSetController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\LayoutCheckController.ts" />
@@ -24,6 +25,7 @@
     <Content Remove="wwwroot\ts\App\Views\Controls\HeaderBarView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Controls\LabeledButtonView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Controls\SceneButtonView.ts" />
+    <Content Remove="wwwroot\ts\App\Views\Pages\ControlHeaderPropertyPageView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Pages\ControlPropertyPageView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Pages\ControlSetPageView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Pages\LayoutCheckPageView.ts" />
@@ -115,6 +117,7 @@
 
   <ItemGroup>
     <TypeScriptCompile Include="wwwroot\ts\App\Color.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ControlHeaderPropertyController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ControlPropertyController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ControlSetController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\LayoutCheckController.ts" />
@@ -134,6 +137,7 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\LabeledButtonView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\ControlSetButtonView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\SceneButtonView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\ControlHeaderPropertyPageView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\ControlPropertyPageView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\ControlSetPageView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\Sub3PageView.ts" />
