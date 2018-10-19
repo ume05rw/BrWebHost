@@ -6,6 +6,7 @@
 /// <reference path="../../Fw/Events/ControlViewEvents.ts" />
 /// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
 /// <reference path="../Views/Pages/MainPageView.ts" />
+/// <reference path="../Views/Popup/AlertPopup.ts" />
 
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
@@ -14,6 +15,7 @@ namespace App.Controllers {
     import Property = Fw.Views.Property;
     import Pages = App.Views.Pages;
     import Controls = App.Views.Controls;
+    import Popup = App.Views.Popup;
 
     export class ControlPropertyController extends Fw.Controllers.ControllerBase {
 
@@ -70,6 +72,12 @@ namespace App.Controllers {
                     return;
 
                 Dump.Log('Delete this Control!');
+                Popup.Confirm.Open({
+                    Message: 'Button will be removed.<br/>Are you ok?',
+                    CallbackOk: () => {
+                        Dump.Log('OK. this ref is OK?: ' + this.ClassName);
+                    }
+                });
             });
         }
 

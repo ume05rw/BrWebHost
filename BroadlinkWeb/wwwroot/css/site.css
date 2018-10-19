@@ -141,3 +141,47 @@ div.IController .CheckBoxInputView > label.CheckBoxInputViewProperty {
     left: 20px;
     font-weight: normal;
 }
+
+div.PopupArea {
+    display: block;
+    color: #000000;
+    background-color: #ffffff;
+    margin-left: 50px;
+    margin-right: 50px;
+    padding: 20px;
+    border-radius: 10px;
+    border-style: solid;
+    border-width: 2px;
+    border-color: #808080;
+}
+div.PopupArea > .MessageArea {
+    text-align: center;
+}
+div.PopupArea > .ButtonArea {
+    margin-top: 20px;
+    text-align: center;
+}
+div.PopupArea > .ButtonArea > .Button {
+    display: inline-block;
+    width: 100px;
+    text-align: center;
+    border-radius: 10px;
+    color: #ffffff;
+    margin-left: 10px;
+    margin-right: 10px;
+    padding: 5px;
+    text-decoration: none;
+    font-weight: bold;
+}
+div.PopupArea > .ButtonArea > .Button.ButtonOk {
+    background-color: #ccdc4b;
+}
+div.PopupArea > .ButtonArea > .Button.ButtonOk:hover {
+    background-color: #dcec5e;
+}
+div.PopupArea > .ButtonArea > .Button.ButtonCancel {
+    background-color: #F92068;
+}
+div.PopupArea > .ButtonArea > .Button.ButtonCancel:hover {
+    background-color: #ff538c;
+}

@@ -49,9 +49,9 @@ namespace App {
             '#b4b4b4',
             '#8fcfff',
             '#9bde50',
-            '#ebff4a',
+            '#dcec5e',
             '#ffd856',
-            '#ff3f7f',
+            '#ff538c',
             '#8463e6',
             '#d88e4e'
         ];

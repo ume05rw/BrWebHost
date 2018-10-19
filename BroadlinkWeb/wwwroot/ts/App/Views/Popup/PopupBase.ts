@@ -14,10 +14,11 @@ namespace App.Views.Popup {
 
     export abstract class PopupBase {
 
-        public Src: string | JQuery;
+        public Elem: JQuery;
+        protected MsgElem: JQuery;
         public CloseOnContentClick: boolean;
-        public ShowCloseBtn: boolean;
         public CloseOnBgClick: boolean;
+        public ShowCloseBtn: boolean;
         public EnableEscapeKey: boolean;
 
         private _isOpen: boolean;
@@ -30,17 +31,27 @@ namespace App.Views.Popup {
          * @see ポップアップは重複しないため、Singleton実装を強制する。
          * @param src
          */
-        protected constructor(src?: string | JQuery) {
-            this.Src = (src)
-                ? src
-                : null;
+        protected constructor(jqueryElem?: JQuery) {
+            this.Elem = null;
+            this.MsgElem = null;
 
             this._isOpen = false;
             this.CloseOnContentClick = false;
-            this.ShowCloseBtn = true;
             this.CloseOnBgClick = true;
+            this.ShowCloseBtn = true;
             this.EnableEscapeKey = true;
+
+            this.SetElem(jqueryElem);
         }
+
+        protected SetElem(jqueryElem: JQuery) {
+            if (!jqueryElem)
+                return;
+
+            this.Elem = jqueryElem;
+            this.MsgElem = this.Elem.find('.Message');
+        }
+
 
         public Open(params?: any): void {
             // クラスに組み込み済みのプロパティは引数から拾っておく。
@@ -55,14 +66,21 @@ namespace App.Views.Popup {
                     if (key === 'enableEscapeKey')
                         this.EnableEscapeKey = (val !== false);
 
-                    if (key === 'items' && val && val.src)
-                        this.Src = val.src;
+                    if (key === 'items' && val && val.src) {
+                        if (val.src instanceof jQuery)
+                            this.Elem = val.src;
+                        else
+                            this.Elem = $(val.src);
+                    }
+
+                    if (key === 'Message')
+                        this.MsgElem.html(val);
                 });
             }
 
             const _params = {
                 items: {
-                    src: this.Src,
+                    src: this.Elem,
                 },
                 type: 'inline',
                 closeOnContentClick: this.CloseOnContentClick,

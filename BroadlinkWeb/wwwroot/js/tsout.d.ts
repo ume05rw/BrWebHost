@@ -39,44 +39,6 @@ declare namespace Fw {
         static DefaultPageAttribute: string;
     }
 }
-declare namespace Fw.Controllers {
-    class Factory {
-        static Create(id: string, elem: JQuery): IController;
-    }
-}
-declare namespace Fw.Controllers {
-    class Manager {
-        private static _instance;
-        static readonly Instance: Manager;
-        static Init(): void;
-        private _controllers;
-        private constructor();
-        InitControllersByTemplates(): void;
-        Add(controller: IController): void;
-        Get(id: string): IController;
-        Remove(id: string): void;
-        private Reset;
-        Set(id: string): void;
-        SetController(controller: IController): void;
-        SetModal(id: string): void;
-        HideModal(id: string): void;
-        SetUnmodal(id: string): void;
-    }
-}
-declare namespace App {
-    class Color {
-        static Transparent: string;
-        static Main: string;
-        static MainBackground: string;
-        static MainHover: string;
-        static HeaderButtonBackground: string;
-        static HeaderButtonHover: string;
-        static ReverseMain: string;
-        static ButtonColors: Array<string>;
-        static ButtonColorNames: Array<string>;
-        static ButtonHoverColors: Array<string>;
-    }
-}
 declare namespace Fw {
     interface IObject {
         readonly Elem: JQuery;
@@ -198,6 +160,30 @@ declare namespace Fw.Controllers {
         HideModal(): void;
         SetUnmodal(): void;
         Dispose(): void;
+    }
+}
+declare namespace Fw.Controllers {
+    class Factory {
+        static Create(id: string, elem: JQuery): IController;
+    }
+}
+declare namespace Fw.Controllers {
+    class Manager {
+        private static _instance;
+        static readonly Instance: Manager;
+        static Init(): void;
+        private _controllers;
+        private constructor();
+        InitControllersByTemplates(): void;
+        Add(controller: IController): void;
+        Get(id: string): IController;
+        Remove(id: string): void;
+        private Reset;
+        Set(id: string): void;
+        SetController(controller: IController): void;
+        SetModal(id: string): void;
+        HideModal(id: string): void;
+        SetUnmodal(id: string): void;
     }
 }
 declare namespace Fw.Controllers {
@@ -427,6 +413,20 @@ declare namespace Fw.Views {
         Dispose(): void;
     }
 }
+declare namespace App {
+    class Color {
+        static Transparent: string;
+        static Main: string;
+        static MainBackground: string;
+        static MainHover: string;
+        static HeaderButtonBackground: string;
+        static HeaderButtonHover: string;
+        static ReverseMain: string;
+        static ButtonColors: Array<string>;
+        static ButtonColorNames: Array<string>;
+        static ButtonHoverColors: Array<string>;
+    }
+}
 declare namespace App.Views.Controls {
     import Views = Fw.Views;
     class HeaderBarView extends Fw.Views.BoxView {
@@ -458,6 +458,62 @@ declare namespace App.Controllers {
         constructor();
     }
 }
+declare namespace Fw.Views {
+    class ControlView extends BoxView {
+        private _label;
+        private _clickEventTimer;
+        private _cvMouseSuppressor;
+        private _cvDelayedResumeEventsTimer;
+        Text: string;
+        constructor();
+        protected InitPage(): void;
+        private OnPageDragging;
+        Dispose(): void;
+    }
+}
+declare namespace Fw.Views {
+    class ButtonView extends ControlView {
+        private _imageView;
+        ImageSrc: string;
+        ImageFitPolicy: Property.FitPolicy;
+        /**
+         * @see publicプロパティの初期化タイミングに注意。コンストラクタ実行後に値がセットされる。
+         */
+        HoverColor: string;
+        constructor();
+        CalcLayout(): void;
+        Dispose(): void;
+    }
+}
+declare namespace App.Views.Popup {
+    abstract class PopupBase {
+        Elem: JQuery;
+        protected MsgElem: JQuery;
+        CloseOnContentClick: boolean;
+        CloseOnBgClick: boolean;
+        ShowCloseBtn: boolean;
+        EnableEscapeKey: boolean;
+        private _isOpen;
+        readonly IsOpen: boolean;
+        /**
+         * @description コンストラクタ
+         * @see ポップアップは重複しないため、Singleton実装を強制する。
+         * @param src
+         */
+        protected constructor(jqueryElem?: JQuery);
+        protected SetElem(jqueryElem: JQuery): void;
+        Open(params?: any): void;
+        Close(): void;
+    }
+}
+declare namespace App.Views.Popup {
+    class AlertPopup extends PopupBase {
+        private static _instance;
+        static readonly Instance: AlertPopup;
+        protected constructor();
+    }
+    const Alert: AlertPopup;
+}
 declare namespace App.Controllers {
     import Controls = App.Views.Controls;
     class ControlPropertyController extends Fw.Controllers.ControllerBase {
@@ -482,41 +538,14 @@ declare namespace App.Controllers {
     }
 }
 declare namespace App.Controllers {
+    class MainController extends Fw.Controllers.ControllerBase {
+        constructor();
+    }
+}
+declare namespace App.Controllers {
     import Controls = App.Views.Controls;
     class MouseEventsController extends Fw.Controllers.ControllerBase {
         HeaderBar: Controls.HeaderBarView;
-        constructor();
-    }
-}
-declare namespace App.Controllers {
-    class Sub3Controller extends Fw.Controllers.ControllerBase {
-        constructor();
-    }
-}
-declare namespace Fw.Events {
-    class ButtonViewEventsClass extends ControlViewEventsClass {
-    }
-    const ButtonViewEvents: ButtonViewEventsClass;
-}
-declare namespace App.Events.Controls {
-    class ControlButtonViewEventsClass extends Fw.Events.ButtonViewEventsClass {
-        readonly EditOrdered: string;
-        readonly ExecOrdered: string;
-    }
-    const ControlButtonViewEvents: ControlButtonViewEventsClass;
-}
-declare namespace App {
-    class Icon {
-        static Names: Array<string>;
-    }
-}
-declare namespace App {
-    class Main {
-        static StartUp(): void;
-    }
-}
-declare namespace App.Controllers {
-    class MainController extends Fw.Controllers.ControllerBase {
         constructor();
     }
 }
@@ -569,32 +598,22 @@ declare namespace App.Controllers {
         constructor(id: string, jqueryElem: JQuery);
     }
 }
-declare namespace Fw.Views {
-    class ControlView extends BoxView {
-        private _label;
-        private _clickEventTimer;
-        private _cvMouseSuppressor;
-        private _cvDelayedResumeEventsTimer;
-        Text: string;
+declare namespace App.Controllers {
+    class Sub3Controller extends Fw.Controllers.ControllerBase {
         constructor();
-        protected InitPage(): void;
-        private OnPageDragging;
-        Dispose(): void;
     }
 }
-declare namespace Fw.Views {
-    class ButtonView extends ControlView {
-        private _imageView;
-        ImageSrc: string;
-        ImageFitPolicy: Property.FitPolicy;
-        /**
-         * @see publicプロパティの初期化タイミングに注意。コンストラクタ実行後に値がセットされる。
-         */
-        HoverColor: string;
-        constructor();
-        CalcLayout(): void;
-        Dispose(): void;
+declare namespace Fw.Events {
+    class ButtonViewEventsClass extends ControlViewEventsClass {
     }
+    const ButtonViewEvents: ButtonViewEventsClass;
+}
+declare namespace App.Events.Controls {
+    class ControlButtonViewEventsClass extends Fw.Events.ButtonViewEventsClass {
+        readonly EditOrdered: string;
+        readonly ExecOrdered: string;
+    }
+    const ControlButtonViewEvents: ControlButtonViewEventsClass;
 }
 declare namespace App.Views.Controls {
     class ButtonView extends Fw.Views.ButtonView {
@@ -730,14 +749,6 @@ declare namespace App.Views.Pages {
 }
 declare namespace App.Views.Pages {
     import Views = Fw.Views;
-    class Sub3PageView extends Fw.Views.PageView {
-        HeaderBar: Controls.HeaderBarView;
-        Stucker: Views.StuckerBoxView;
-        constructor();
-    }
-}
-declare namespace App.Views.Pages {
-    import Views = Fw.Views;
     class LayoutCheckPageView extends Fw.Views.PageView {
         BtnGoSub1: Views.ButtonView;
         BtnGoSub2: Views.ButtonView;
@@ -753,30 +764,22 @@ declare namespace App.Views.Pages {
         constructor();
     }
 }
-declare namespace App.Views.Popup {
-    abstract class PopupBase {
-        Src: string | JQuery;
-        CloseOnContentClick: boolean;
-        ShowCloseBtn: boolean;
-        CloseOnBgClick: boolean;
-        EnableEscapeKey: boolean;
-        private _isOpen;
-        readonly IsOpen: boolean;
-        /**
-         * @description コンストラクタ
-         * @see ポップアップは重複しないため、Singleton実装を強制する。
-         * @param src
-         */
-        protected constructor(src?: string | JQuery);
-        Open(params?: any): void;
-        Close(): void;
+declare namespace App.Views.Pages {
+    import Views = Fw.Views;
+    class Sub3PageView extends Fw.Views.PageView {
+        HeaderBar: Controls.HeaderBarView;
+        Stucker: Views.StuckerBoxView;
+        constructor();
     }
 }
-declare namespace App.Views.Popup {
-    class Confirm extends PopupBase {
-        private static _instance;
-        static readonly Instance: Confirm;
-        protected constructor();
+declare namespace App {
+    class Icon {
+        static Names: Array<string>;
+    }
+}
+declare namespace App {
+    class Main {
+        static StartUp(): void;
     }
 }
 declare namespace Fw.Events {
@@ -799,16 +802,6 @@ declare namespace Fw.Events {
         readonly Params: any;
         constructor(sender: Fw.IObject, eventName: string, params?: any);
     }
-}
-declare namespace Fw.Events {
-    class SelectBoxInputViewEventsClass extends InputViewEventsClass {
-    }
-    const SelectBoxInputViewEvents: SelectBoxInputViewEventsClass;
-}
-declare namespace Fw.Events {
-    class StuckerBoxViewEventsClass extends BoxViewEventsClass {
-    }
-    const StuckerBoxViewEvents: StuckerBoxViewEventsClass;
 }
 declare namespace Fw.Events {
     class ImageViewEventsClass extends ViewEventsClass {
@@ -838,9 +831,19 @@ declare namespace Fw.Events {
     const RootEvents: RootEventsClass;
 }
 declare namespace Fw.Events {
+    class SelectBoxInputViewEventsClass extends InputViewEventsClass {
+    }
+    const SelectBoxInputViewEvents: SelectBoxInputViewEventsClass;
+}
+declare namespace Fw.Events {
     class SlidableBoxViewEventsClass extends BoxViewEventsClass {
     }
     const SlidableBoxViewEvents: SlidableBoxViewEventsClass;
+}
+declare namespace Fw.Events {
+    class StuckerBoxViewEventsClass extends BoxViewEventsClass {
+    }
+    const StuckerBoxViewEvents: StuckerBoxViewEventsClass;
 }
 declare namespace Fw.Events {
     class TextAreaInputViewEventsClass extends InputViewEventsClass {
@@ -862,11 +865,6 @@ declare namespace Fw.Events {
         readonly Blurred: string;
     }
     const ToggleButtonInputViewEvents: ToggleButtonInputViewEventsClass;
-}
-declare namespace Fw {
-    class Startup {
-        static Init(): void;
-    }
 }
 declare namespace Fw.Util.Xhr {
     enum MethodType {
@@ -895,6 +893,89 @@ declare namespace Fw.Util.Xhr {
         constructor(succeeded: boolean, values: any, errors: any);
     }
 }
+declare namespace Fw.Views.Property {
+    enum Direction {
+        Horizontal = 0,
+        Vertical = 1
+    }
+}
+declare namespace Fw.Views.Property {
+    /**
+     * @description font-size
+     */
+    enum FontSize {
+        XxSmall = "xx-small",
+        XSmall = "x-small",
+        Small = "small",
+        Medium = "medium",
+        Large = "large",
+        XLarge = "x-large",
+        XxLarge = "xx-large"
+    }
+}
+declare namespace Fw.Views.Property {
+    /**
+     * @description font-weight
+     */
+    enum FontWeight {
+        Lighter = "lighter",
+        Normal = "normal",
+        Bold = "bold",
+        Bolder = "bolder"
+    }
+}
+declare namespace Fw.Views.Property {
+    /**
+     * @description 配置基準
+     */
+    enum PositionPolicy {
+        /**
+         * 中央ポリシー：親Viewの中心位置からの差分を X, Y で表現する。
+         */
+        Centering = 1,
+        /**
+         * 左上ポリシー：親Viewの左上からの差分を、Left, Top で表現する。
+         */
+        LeftTop = 2
+    }
+}
+declare namespace Fw.Views.Property {
+    class Position {
+        private _view;
+        private _policy;
+        Policy: PositionPolicy;
+        private _x;
+        X: number;
+        private _y;
+        Y: number;
+        private _left;
+        Left: number;
+        private _top;
+        Top: number;
+        constructor(view?: IView);
+        private GetSizeSet;
+        Dispose(): void;
+    }
+}
+declare namespace Fw.Views.Property {
+    /**
+     * @description 基点、スタッキング時の基準点
+     */
+    enum ReferencePoint {
+        LeftTop = 1,
+        RightTop = 2,
+        LeftBottom = 3,
+        RightBottom = 4
+    }
+}
+declare namespace Fw.Views.Property {
+    enum TextAlign {
+        Left = "left",
+        Center = "center",
+        Right = "right",
+        JustifyAll = "justify-all"
+    }
+}
 declare namespace Fw.Views {
     interface IInputView extends IView {
         Value: string;
@@ -916,6 +997,19 @@ declare namespace Fw.Views {
     }
 }
 declare namespace Fw.Views {
+    import FitPolicy = Fw.Views.Property.FitPolicy;
+    class ImageView extends ViewBase {
+        private _image;
+        private _src;
+        Src: string;
+        private _firPolicy;
+        FitPolicy: FitPolicy;
+        constructor();
+        protected InnerRefresh(): void;
+        Dispose(): void;
+    }
+}
+declare namespace Fw.Views {
     abstract class InputViewBase extends ViewBase implements IInputView {
         private _value;
         Value: string;
@@ -924,29 +1018,73 @@ declare namespace Fw.Views {
         constructor(jqueryElem: JQuery);
     }
 }
-declare namespace Fw.Views.Property {
-    enum TextAlign {
-        Left = "left",
-        Center = "center",
-        Right = "right",
-        JustifyAll = "justify-all"
+declare namespace Fw.Views {
+    import Property = Fw.Views.Property;
+    class LabelView extends ViewBase {
+        private _text;
+        Text: string;
+        private _fontWeight;
+        FontWeight: Property.FontWeight;
+        private _fontSize;
+        FontSize: Property.FontSize;
+        private _fontFamily;
+        FontFamily: string;
+        private _textAlign;
+        TextAlign: Property.TextAlign;
+        private _autoSize;
+        AutoSize: boolean;
+        private _hiddenSpan;
+        constructor();
+        protected InnerRefresh(): void;
+        CalcLayout(): void;
+        Dispose(): void;
     }
 }
-declare namespace Fw.Views.Property {
-    /**
-     * @description 基点、スタッキング時の基準点
-     */
-    enum ReferencePoint {
-        LeftTop = 1,
-        RightTop = 2,
-        LeftBottom = 3,
-        RightBottom = 4
+declare namespace Fw.Views {
+    class LineView extends ViewBase {
+        private _direction;
+        readonly Direction: Property.Direction;
+        private _length;
+        Length: number;
+        BackgroundColor: string;
+        constructor(direction: Property.Direction);
+        protected InnerRefresh(): void;
+        CalcLayout(): void;
+        Dispose(): void;
     }
 }
 declare namespace Fw.Views {
     class SelectBoxInputView extends InputViewBase {
         constructor();
         AddItem(name: string, value: string): void;
+    }
+}
+declare namespace Fw.Views {
+    import Property = Fw.Views.Property;
+    class SlidableBoxView extends BoxView {
+        readonly Children: Array<IView>;
+        private _direction;
+        readonly Direction: Property.Direction;
+        private _innerBackgroundColor;
+        InnerBackgroundColor: string;
+        private _innerLength;
+        InnerLength: number;
+        private _innerBox;
+        private _positionBarMax;
+        private _positionBarCurrent;
+        private _barMargin;
+        private _isDragging;
+        private _spcvMouseSuppressor;
+        private _dragStartMousePosition;
+        private _dragStartViewPosition;
+        constructor(direction: Property.Direction);
+        private InitView;
+        Add(view: IView): void;
+        Remove(view: IView): void;
+        protected InnerRefresh(): void;
+        CalcLayout(): void;
+        private GetMaxInnerLength;
+        Dispose(): void;
     }
 }
 declare namespace Fw.Views {
@@ -1018,114 +1156,29 @@ declare namespace Fw.Views {
     }
 }
 declare namespace Fw.Views {
-    import FitPolicy = Fw.Views.Property.FitPolicy;
-    class ImageView extends ViewBase {
-        private _image;
-        private _src;
-        Src: string;
-        private _firPolicy;
-        FitPolicy: FitPolicy;
+    class TextAreaInputView extends InputViewBase {
         constructor();
-        protected InnerRefresh(): void;
-        Dispose(): void;
     }
 }
 declare namespace Fw.Views {
-    class LineView extends ViewBase {
-        private _direction;
-        readonly Direction: Property.Direction;
-        private _length;
-        Length: number;
-        BackgroundColor: string;
-        constructor(direction: Property.Direction);
-        protected InnerRefresh(): void;
-        CalcLayout(): void;
-        Dispose(): void;
-    }
-}
-declare namespace Fw.Views.Property {
-    /**
-     * @description font-weight
-     */
-    enum FontWeight {
-        Lighter = "lighter",
-        Normal = "normal",
-        Bold = "bold",
-        Bolder = "bolder"
+    class TextBoxInputView extends InputViewBase {
+        constructor();
     }
 }
 declare namespace Fw.Views {
-    import Property = Fw.Views.Property;
-    class LabelView extends ViewBase {
-        private _text;
-        Text: string;
-        private _fontWeight;
-        FontWeight: Property.FontWeight;
-        private _fontSize;
-        FontSize: Property.FontSize;
-        private _fontFamily;
-        FontFamily: string;
-        private _textAlign;
-        TextAlign: Property.TextAlign;
-        private _autoSize;
-        AutoSize: boolean;
-        private _hiddenSpan;
+    class ToggleButtonInputView extends ControlView implements IInputView {
+        HoverColor: string;
+        private _name;
+        Name: string;
+        private _boolValue;
+        BoolValue: boolean;
+        Value: string;
+        private _overMargin;
+        private _sliderBox;
+        private _notch;
+        private _maskOn;
         constructor();
-        protected InnerRefresh(): void;
         CalcLayout(): void;
-        Dispose(): void;
-    }
-}
-declare namespace Fw.Views.Property {
-    enum Direction {
-        Horizontal = 0,
-        Vertical = 1
-    }
-}
-declare namespace Fw.Views.Property {
-    /**
-     * @description font-size
-     */
-    enum FontSize {
-        XxSmall = "xx-small",
-        XSmall = "x-small",
-        Small = "small",
-        Medium = "medium",
-        Large = "large",
-        XLarge = "x-large",
-        XxLarge = "xx-large"
-    }
-}
-declare namespace Fw.Views.Property {
-    /**
-     * @description 配置基準
-     */
-    enum PositionPolicy {
-        /**
-         * 中央ポリシー：親Viewの中心位置からの差分を X, Y で表現する。
-         */
-        Centering = 1,
-        /**
-         * 左上ポリシー：親Viewの左上からの差分を、Left, Top で表現する。
-         */
-        LeftTop = 2
-    }
-}
-declare namespace Fw.Views.Property {
-    class Position {
-        private _view;
-        private _policy;
-        Policy: PositionPolicy;
-        private _x;
-        X: number;
-        private _y;
-        Y: number;
-        private _left;
-        Left: number;
-        private _top;
-        Top: number;
-        constructor(view?: IView);
-        private GetSizeSet;
         Dispose(): void;
     }
 }
@@ -1158,58 +1211,19 @@ declare namespace Fw {
         Dispose(): void;
     }
 }
-declare namespace Fw.Views {
-    import Property = Fw.Views.Property;
-    class SlidableBoxView extends BoxView {
-        readonly Children: Array<IView>;
-        private _direction;
-        readonly Direction: Property.Direction;
-        private _innerBackgroundColor;
-        InnerBackgroundColor: string;
-        private _innerLength;
-        InnerLength: number;
-        private _innerBox;
-        private _positionBarMax;
-        private _positionBarCurrent;
-        private _barMargin;
-        private _isDragging;
-        private _spcvMouseSuppressor;
-        private _dragStartMousePosition;
-        private _dragStartViewPosition;
-        constructor(direction: Property.Direction);
-        private InitView;
-        Add(view: IView): void;
-        Remove(view: IView): void;
-        protected InnerRefresh(): void;
-        CalcLayout(): void;
-        private GetMaxInnerLength;
-        Dispose(): void;
+declare namespace Fw {
+    class Startup {
+        static Init(): void;
     }
 }
-declare namespace Fw.Views {
-    class TextAreaInputView extends InputViewBase {
-        constructor();
+declare namespace App.Views.Popup {
+    class ConfirmPopup extends PopupBase {
+        private static _instance;
+        static readonly Instance: ConfirmPopup;
+        private _callbackOk;
+        private _callbackCancel;
+        protected constructor();
+        Open(params?: any): void;
     }
-}
-declare namespace Fw.Views {
-    class TextBoxInputView extends InputViewBase {
-        constructor();
-    }
-}
-declare namespace Fw.Views {
-    class ToggleButtonInputView extends ControlView implements IInputView {
-        HoverColor: string;
-        private _name;
-        Name: string;
-        private _boolValue;
-        BoolValue: boolean;
-        Value: string;
-        private _overMargin;
-        private _sliderBox;
-        private _notch;
-        private _maskOn;
-        constructor();
-        CalcLayout(): void;
-        Dispose(): void;
-    }
+    const Confirm: ConfirmPopup;
 }
