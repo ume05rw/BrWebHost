@@ -262,9 +262,9 @@ namespace Fw.Views {
          * @param e
          */
         private OnChildMouseDown(e: JQueryEventObject): void {
-            // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
-            if (e.eventPhase !== 2)
-                return;
+            //// 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
+            //if (e.eventPhase !== 2)
+            //    return;
 
             //Dump.Log(`${this.ClassName}.OnChildMouseDown`);
             if (!this._isChildRelocation)
@@ -296,9 +296,9 @@ namespace Fw.Views {
          * @param e1
          */
         private OnChildMouseMove(e: JQueryEventObject): void {
-            // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
-            if (e.eventPhase !== 2)
-                return;
+            //// 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
+            //if (e.eventPhase !== 2)
+            //    return;
 
             if (!this._isChildRelocation || !this._isChildDragging)
                 return;
@@ -327,9 +327,9 @@ namespace Fw.Views {
          * @param e
          */
         private OnChildMouseUp(e: JQueryEventObject): void {
-            // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
-            if (e.eventPhase !== 2)
-                return;
+            //// 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
+            //if (e.eventPhase !== 2)
+            //    return;
 
             //Dump.Log(`${this.ClassName}.OnChildMouseUp`);
             if (!this._isChildRelocation) {

@@ -2538,6 +2538,33 @@ var App;
 (function (App) {
     var Controllers;
     (function (Controllers) {
+        var Pages = App.Views.Pages;
+        var ControlHeaderPropertyController = /** @class */ (function (_super) {
+            __extends(ControlHeaderPropertyController, _super);
+            function ControlHeaderPropertyController() {
+                var _this = _super.call(this, 'ControlHeaderProperty') || this;
+                _this.SetClassName('ControlHeaderPropertyController');
+                _this.SetPageView(new Pages.ControlHeaderPropertyPageView());
+                _this._page = _this.View;
+                return _this;
+            }
+            return ControlHeaderPropertyController;
+        }(Fw.Controllers.ControllerBase));
+        Controllers.ControlHeaderPropertyController = ControlHeaderPropertyController;
+    })(Controllers = App.Controllers || (App.Controllers = {}));
+})(App || (App = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Fw/Controllers/ControllerBase.ts" />
+/// <reference path="../../Fw/Controllers/Manager.ts" />
+/// <reference path="../../Fw/Util/Dump.ts" />
+/// <reference path="../../Fw/Events/ControlViewEvents.ts" />
+/// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
+/// <reference path="../Views/Pages/MainPageView.ts" />
+var App;
+(function (App) {
+    var Controllers;
+    (function (Controllers) {
         var Dump = Fw.Util.Dump;
         var Events = Fw.Events;
         var Pages = App.Views.Pages;
@@ -4163,6 +4190,91 @@ var App;
             var Views = Fw.Views;
             var Property = Fw.Views.Property;
             var Controls = App.Views.Controls;
+            var ControlHeaderPropertyPageView = /** @class */ (function (_super) {
+                __extends(ControlHeaderPropertyPageView, _super);
+                function ControlHeaderPropertyPageView() {
+                    var _this = _super.call(this, $("")) || this;
+                    _this.HeaderBar = new Controls.HeaderBarView();
+                    _this.InputPanel = new Views.StuckerBoxView();
+                    _this.TxtName = new Views.TextBoxInputView();
+                    _this.SboRm = new Views.SelectBoxInputView();
+                    _this.DeleteButton = new Controls.ButtonView();
+                    _this.SetClassName('ControlHeaderPropertyPageView');
+                    var background = new Views.ImageView();
+                    background.SetAnchor(0, 0, 0, 0);
+                    background.FitPolicy = Property.FitPolicy.Cover;
+                    background.Src = 'images/Pages/ControlProperty/background.jpg';
+                    _this.Add(background);
+                    _this.HeaderBar.Text = '';
+                    _this.HeaderBar.LeftButton.Hide(0);
+                    _this.HeaderBar.RightButton.Hide(0);
+                    _this.Add(_this.HeaderBar);
+                    var label = new Views.LabelView();
+                    label.FontSize = Property.FontSize.Large;
+                    label.Color = App.Color.Main;
+                    label.SetAnchor(null, 5, null, null);
+                    label.Text = 'Remote Control';
+                    _this.HeaderBar.Add(label);
+                    _this.InputPanel.Position.Policy = Property.PositionPolicy.LeftTop;
+                    _this.InputPanel.ReferencePoint = Property.ReferencePoint.LeftTop;
+                    _this.InputPanel.Size.Width = 280;
+                    _this.InputPanel.SetAnchor(70, 10, null, 10);
+                    _this.InputPanel.Color = App.Color.Main;
+                    _this.Add(_this.InputPanel);
+                    var lbl1 = new Views.LabelView();
+                    lbl1.Text = 'Name';
+                    lbl1.TextAlign = Property.TextAlign.Left;
+                    lbl1.AutoSize = true;
+                    lbl1.SetAnchor(null, 5, null, null);
+                    lbl1.Size.Height = 21;
+                    _this.InputPanel.Add(lbl1);
+                    _this.TxtName.SetAnchor(null, 5, 15, null);
+                    _this.TxtName.Size.Height = 30;
+                    _this.TxtName.Name = 'Name';
+                    _this.InputPanel.Add(_this.TxtName);
+                    var lbl2 = new Views.LabelView();
+                    lbl2.Text = 'Target';
+                    lbl2.TextAlign = Property.TextAlign.Left;
+                    lbl2.AutoSize = true;
+                    lbl2.SetAnchor(null, 5, null, null);
+                    lbl2.Size.Height = 21;
+                    _this.InputPanel.Add(lbl2);
+                    _this.SboRm.SetAnchor(null, 5, 15, null);
+                    _this.SboRm.Size.Height = 30;
+                    _this.SboRm.Name = 'Icon';
+                    _.each(App.Icon.Names, function (iconName) {
+                        var dispName = iconName.substr(0, iconName.indexOf('.')).replace('_', ' ');
+                        _this.SboRm.AddItem(dispName, "images/icons/" + iconName);
+                    });
+                    _this.InputPanel.Add(_this.SboRm);
+                    _this.DeleteButton.SetAnchor(null, 5, 15, null);
+                    _this.DeleteButton.Size.Height = 30;
+                    _this.DeleteButton.Text = '*Delete*';
+                    _this.InputPanel.Add(_this.DeleteButton);
+                    return _this;
+                }
+                return ControlHeaderPropertyPageView;
+            }(Fw.Views.PageView));
+            Pages.ControlHeaderPropertyPageView = ControlHeaderPropertyPageView;
+        })(Pages = Views_8.Pages || (Views_8.Pages = {}));
+    })(Views = App.Views || (App.Views = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Views/PageView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Events/PageViewEvents.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../Controls/HeaderBarView.ts" />
+var App;
+(function (App) {
+    var Views;
+    (function (Views_9) {
+        var Pages;
+        (function (Pages) {
+            var Views = Fw.Views;
+            var Property = Fw.Views.Property;
+            var Controls = App.Views.Controls;
             var ControlPropertyPageView = /** @class */ (function (_super) {
                 __extends(ControlPropertyPageView, _super);
                 function ControlPropertyPageView() {
@@ -4281,7 +4393,7 @@ var App;
                 return ControlPropertyPageView;
             }(Fw.Views.PageView));
             Pages.ControlPropertyPageView = ControlPropertyPageView;
-        })(Pages = Views_8.Pages || (Views_8.Pages = {}));
+        })(Pages = Views_9.Pages || (Views_9.Pages = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
@@ -4294,7 +4406,7 @@ var App;
 var App;
 (function (App) {
     var Views;
-    (function (Views_9) {
+    (function (Views_10) {
         var Pages;
         (function (Pages) {
             var Views = Fw.Views;
@@ -4393,7 +4505,7 @@ var App;
                 return ControlSetPageView;
             }(Fw.Views.PageView));
             Pages.ControlSetPageView = ControlSetPageView;
-        })(Pages = Views_9.Pages || (Views_9.Pages = {}));
+        })(Pages = Views_10.Pages || (Views_10.Pages = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
@@ -4405,7 +4517,7 @@ var App;
 var App;
 (function (App) {
     var Views;
-    (function (Views_10) {
+    (function (Views_11) {
         var Pages;
         (function (Pages) {
             var Property = Fw.Views.Property;
@@ -4486,7 +4598,7 @@ var App;
                 return LayoutCheckPageView;
             }(Fw.Views.PageView));
             Pages.LayoutCheckPageView = LayoutCheckPageView;
-        })(Pages = Views_10.Pages || (Views_10.Pages = {}));
+        })(Pages = Views_11.Pages || (Views_11.Pages = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
@@ -4498,7 +4610,7 @@ var App;
 var App;
 (function (App) {
     var Views;
-    (function (Views_11) {
+    (function (Views_12) {
         var Pages;
         (function (Pages) {
             var Views = Fw.Views;
@@ -4509,7 +4621,7 @@ var App;
                     var _this = this;
                     var jqueryElem = $("");
                     _this = _super.call(this, jqueryElem) || this;
-                    _this.HeaderBar = new Views_11.Controls.HeaderBarView();
+                    _this.HeaderBar = new Views_12.Controls.HeaderBarView();
                     _this.Stucker = new Views.StuckerBoxView();
                     _this.SetClassName('Sub3PageView');
                     _this.HeaderBar.Text = 'Sub 3 Page';
@@ -4560,7 +4672,7 @@ var App;
                 return Sub3PageView;
             }(Fw.Views.PageView));
             Pages.Sub3PageView = Sub3PageView;
-        })(Pages = Views_11.Pages || (Views_11.Pages = {}));
+        })(Pages = Views_12.Pages || (Views_12.Pages = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../lib/jquery/index.d.ts" />
@@ -5982,6 +6094,7 @@ var Fw;
                 _this.Elem.addClass(_this.ClassName);
                 _this._dragStartMousePosition = new Property.Position();
                 _this._dragStartViewPosition = new Property.Position();
+                _this.Position.Policy = Property.PositionPolicy.LeftTop;
                 _this.HasBorder = false;
                 _this.BorderRadius = 0;
                 _this._innerBox.HasBorder = false;
@@ -6505,9 +6618,9 @@ var Fw;
              * @param e
              */
             StuckerBoxView.prototype.OnChildMouseDown = function (e) {
-                // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
-                if (e.eventPhase !== 2)
-                    return;
+                //// 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
+                //if (e.eventPhase !== 2)
+                //    return;
                 //Dump.Log(`${this.ClassName}.OnChildMouseDown`);
                 if (!this._isChildRelocation)
                     return;
@@ -6534,9 +6647,9 @@ var Fw;
              * @param e1
              */
             StuckerBoxView.prototype.OnChildMouseMove = function (e) {
-                // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
-                if (e.eventPhase !== 2)
-                    return;
+                //// 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
+                //if (e.eventPhase !== 2)
+                //    return;
                 if (!this._isChildRelocation || !this._isChildDragging)
                     return;
                 e.preventDefault();
@@ -6557,9 +6670,9 @@ var Fw;
              * @param e
              */
             StuckerBoxView.prototype.OnChildMouseUp = function (e) {
-                // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
-                if (e.eventPhase !== 2)
-                    return;
+                //// 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
+                //if (e.eventPhase !== 2)
+                //    return;
                 //Dump.Log(`${this.ClassName}.OnChildMouseUp`);
                 if (!this._isChildRelocation) {
                     this._isChildDragging = false;
@@ -7350,116 +7463,4 @@ var Fw;
     }());
     Fw.Startup = Startup;
 })(Fw || (Fw = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Views/PageView.ts" />
-/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
-/// <reference path="../../../Fw/Events/PageViewEvents.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-/// <reference path="../Controls/HeaderBarView.ts" />
-var App;
-(function (App) {
-    var Views;
-    (function (Views_12) {
-        var Pages;
-        (function (Pages) {
-            var Views = Fw.Views;
-            var Property = Fw.Views.Property;
-            var Controls = App.Views.Controls;
-            var ControlHeaderPropertyPageView = /** @class */ (function (_super) {
-                __extends(ControlHeaderPropertyPageView, _super);
-                function ControlHeaderPropertyPageView() {
-                    var _this = _super.call(this, $("")) || this;
-                    _this.HeaderBar = new Controls.HeaderBarView();
-                    _this.InputPanel = new Views.StuckerBoxView();
-                    _this.TxtName = new Views.TextBoxInputView();
-                    _this.SboRm = new Views.SelectBoxInputView();
-                    _this.DeleteButton = new Controls.ButtonView();
-                    _this.SetClassName('ControlHeaderPropertyPageView');
-                    var background = new Views.ImageView();
-                    background.SetAnchor(0, 0, 0, 0);
-                    background.FitPolicy = Property.FitPolicy.Cover;
-                    background.Src = 'images/Pages/ControlProperty/background.jpg';
-                    _this.Add(background);
-                    _this.HeaderBar.Text = '';
-                    _this.HeaderBar.LeftButton.Hide(0);
-                    _this.HeaderBar.RightButton.Hide(0);
-                    _this.Add(_this.HeaderBar);
-                    var label = new Views.LabelView();
-                    label.FontSize = Property.FontSize.Large;
-                    label.Color = App.Color.Main;
-                    label.SetAnchor(null, 5, null, null);
-                    label.Text = 'Remote Control';
-                    _this.HeaderBar.Add(label);
-                    _this.InputPanel.Position.Policy = Property.PositionPolicy.LeftTop;
-                    _this.InputPanel.ReferencePoint = Property.ReferencePoint.LeftTop;
-                    _this.InputPanel.Size.Width = 280;
-                    _this.InputPanel.SetAnchor(70, 10, null, 10);
-                    _this.InputPanel.Color = App.Color.Main;
-                    _this.Add(_this.InputPanel);
-                    var lbl1 = new Views.LabelView();
-                    lbl1.Text = 'Name';
-                    lbl1.TextAlign = Property.TextAlign.Left;
-                    lbl1.AutoSize = true;
-                    lbl1.SetAnchor(null, 5, null, null);
-                    lbl1.Size.Height = 21;
-                    _this.InputPanel.Add(lbl1);
-                    _this.TxtName.SetAnchor(null, 5, 15, null);
-                    _this.TxtName.Size.Height = 30;
-                    _this.TxtName.Name = 'Name';
-                    _this.InputPanel.Add(_this.TxtName);
-                    var lbl2 = new Views.LabelView();
-                    lbl2.Text = 'Target';
-                    lbl2.TextAlign = Property.TextAlign.Left;
-                    lbl2.AutoSize = true;
-                    lbl2.SetAnchor(null, 5, null, null);
-                    lbl2.Size.Height = 21;
-                    _this.InputPanel.Add(lbl2);
-                    _this.SboRm.SetAnchor(null, 5, 15, null);
-                    _this.SboRm.Size.Height = 30;
-                    _this.SboRm.Name = 'Icon';
-                    _.each(App.Icon.Names, function (iconName) {
-                        var dispName = iconName.substr(0, iconName.indexOf('.')).replace('_', ' ');
-                        _this.SboRm.AddItem(dispName, "images/icons/" + iconName);
-                    });
-                    _this.InputPanel.Add(_this.SboRm);
-                    _this.DeleteButton.SetAnchor(null, 5, 15, null);
-                    _this.DeleteButton.Size.Height = 30;
-                    _this.DeleteButton.Text = '*Delete*';
-                    _this.InputPanel.Add(_this.DeleteButton);
-                    return _this;
-                }
-                return ControlHeaderPropertyPageView;
-            }(Fw.Views.PageView));
-            Pages.ControlHeaderPropertyPageView = ControlHeaderPropertyPageView;
-        })(Pages = Views_12.Pages || (Views_12.Pages = {}));
-    })(Views = App.Views || (App.Views = {}));
-})(App || (App = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../../Fw/Controllers/ControllerBase.ts" />
-/// <reference path="../../Fw/Controllers/Manager.ts" />
-/// <reference path="../../Fw/Util/Dump.ts" />
-/// <reference path="../../Fw/Events/ControlViewEvents.ts" />
-/// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
-/// <reference path="../Views/Pages/MainPageView.ts" />
-var App;
-(function (App) {
-    var Controllers;
-    (function (Controllers) {
-        var Pages = App.Views.Pages;
-        var ControlHeaderPropertyController = /** @class */ (function (_super) {
-            __extends(ControlHeaderPropertyController, _super);
-            function ControlHeaderPropertyController() {
-                var _this = _super.call(this, 'ControlHeaderProperty') || this;
-                _this.SetClassName('ControlHeaderPropertyController');
-                _this.SetPageView(new Pages.ControlHeaderPropertyPageView());
-                _this._page = _this.View;
-                return _this;
-            }
-            return ControlHeaderPropertyController;
-        }(Fw.Controllers.ControllerBase));
-        Controllers.ControlHeaderPropertyController = ControlHeaderPropertyController;
-    })(Controllers = App.Controllers || (App.Controllers = {}));
-})(App || (App = {}));
 //# sourceMappingURL=tsout.js.map

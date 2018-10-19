@@ -452,6 +452,12 @@ declare namespace App.Views.Pages {
     }
 }
 declare namespace App.Controllers {
+    class ControlHeaderPropertyController extends Fw.Controllers.ControllerBase {
+        private _page;
+        constructor();
+    }
+}
+declare namespace App.Controllers {
     import Controls = App.Views.Controls;
     class ControlPropertyController extends Fw.Controllers.ControllerBase {
         private _page;
@@ -665,6 +671,18 @@ declare namespace App.Views.Controls {
     class SceneButtonView extends LabeledButtonView {
         constructor();
         protected InnerRefresh(): void;
+    }
+}
+declare namespace App.Views.Pages {
+    import Views = Fw.Views;
+    import Controls = App.Views.Controls;
+    class ControlHeaderPropertyPageView extends Fw.Views.PageView {
+        HeaderBar: Controls.HeaderBarView;
+        InputPanel: Views.StuckerBoxView;
+        TxtName: Views.TextBoxInputView;
+        SboRm: Views.SelectBoxInputView;
+        DeleteButton: Controls.ButtonView;
+        constructor();
     }
 }
 declare namespace App.Views.Pages {
@@ -1166,23 +1184,5 @@ declare namespace Fw {
 declare namespace Fw {
     class Startup {
         static Init(): void;
-    }
-}
-declare namespace App.Views.Pages {
-    import Views = Fw.Views;
-    import Controls = App.Views.Controls;
-    class ControlHeaderPropertyPageView extends Fw.Views.PageView {
-        HeaderBar: Controls.HeaderBarView;
-        InputPanel: Views.StuckerBoxView;
-        TxtName: Views.TextBoxInputView;
-        SboRm: Views.SelectBoxInputView;
-        DeleteButton: Controls.ButtonView;
-        constructor();
-    }
-}
-declare namespace App.Controllers {
-    class ControlHeaderPropertyController extends Fw.Controllers.ControllerBase {
-        private _page;
-        constructor();
     }
 }

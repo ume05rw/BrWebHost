@@ -71,6 +71,7 @@ namespace Fw.Views {
             this._dragStartMousePosition = new Property.Position();
             this._dragStartViewPosition = new Property.Position();
 
+            this.Position.Policy = Property.PositionPolicy.LeftTop;
             this.HasBorder = false;
             this.BorderRadius = 0;
 
