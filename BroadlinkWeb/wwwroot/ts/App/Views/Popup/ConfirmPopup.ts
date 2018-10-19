@@ -23,6 +23,7 @@ namespace App.Views.Popup {
             return ConfirmPopup._instance;
         }
 
+        private _id: string = Fw.Util.App.CreateId();
         private _callbackOk: Function;
         private _callbackCancel: Function;
 
@@ -36,14 +37,14 @@ namespace App.Views.Popup {
             this.Elem.find('.ButtonOk').on('click', () => {
                 this.Close();
 
-                if (_.isFunction(this._callbackOk))
+                if (this._callbackOk)
                     this._callbackOk();
             });
 
             this.Elem.find('.ButtonCancel').on('click', () => {
                 this.Close();
 
-                if (_.isFunction(this._callbackCancel))
+                if (this._callbackCancel)
                     this._callbackCancel();
             });
         }
@@ -61,6 +62,20 @@ namespace App.Views.Popup {
             }
 
             super.Open(params)
+        }
+
+        public async OpenAsync(params?: any): Promise<boolean> {
+            return new Promise<boolean>((resolve: (value: boolean) => void) => {
+                this._callbackOk = () => {
+                    resolve(true);
+                };
+                this._callbackCancel = () => {
+                    resolve(false);
+                };
+
+                // コールバックが上書きされないよう、thisでなくsuperのOpenを呼ぶ。
+                super.Open(params);
+            });
         }
     }
 

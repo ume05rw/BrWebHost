@@ -33,8 +33,24 @@ namespace App.Controllers {
             devices.SetSize(80, 30);
             devices.SetLeftTop(10, 70);
             devices.Text = 'デバイス走査';
-            devices.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
-                this.Discover();
+            devices.AddEventListener(Events.ControlViewEvents.SingleClick, async () => {
+                //this.Discover();
+
+                Dump.Log('Discover');
+                const store = new BrDeviceStore();
+                const devs = await store.Discover();
+                _.each(devs, (dev) => {
+                    Dump.Log({
+                        Id: dev.Id,
+                        Mac: dev.MacAddressString,
+                        Ip: dev.IpAddressString,
+                        Port: dev.Port,
+                        DevType: dev.DeviceType,
+                        DevTypeDetail: dev.DeviceTypeDetal,
+                        IsActive: dev.IsActive
+                    });
+                });
+
             });
             this.View.Add(devices);
 
@@ -89,21 +105,21 @@ namespace App.Controllers {
             slider.Add(label);
         }
 
-        private async Discover() {
-            Dump.Log('Discover');
-            const store = new BrDeviceStore();
-            const devs = await store.Discover();
-            _.each(devs, (dev) => {
-                Dump.Log({
-                    Id: dev.Id,
-                    Mac: dev.MacAddressString,
-                    Ip: dev.IpAddressString,
-                    Port: dev.Port,
-                    DevType: dev.DeviceType,
-                    DevTypeDetail: dev.DeviceTypeDetal,
-                    IsActive: dev.IsActive
-                });
-            });
-        }
+        //private async Discover() {
+        //    Dump.Log('Discover');
+        //    const store = new BrDeviceStore();
+        //    const devs = await store.Discover();
+        //    _.each(devs, (dev) => {
+        //        Dump.Log({
+        //            Id: dev.Id,
+        //            Mac: dev.MacAddressString,
+        //            Ip: dev.IpAddressString,
+        //            Port: dev.Port,
+        //            DevType: dev.DeviceType,
+        //            DevTypeDetail: dev.DeviceTypeDetal,
+        //            IsActive: dev.IsActive
+        //        });
+        //    });
+        //}
     }
 }

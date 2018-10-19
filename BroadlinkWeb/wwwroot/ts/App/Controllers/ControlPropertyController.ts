@@ -67,17 +67,17 @@ namespace App.Controllers {
                 this._currentButton.Refresh();
             });
 
-            this._page.DeleteButton.AddEventListener(Events.ButtonViewEvents.SingleClick, () => {
+            this._page.DeleteButton.AddEventListener(Events.ButtonViewEvents.SingleClick, async () => {
                 if (!this._currentButton)
                     return;
 
                 Dump.Log('Delete this Control!');
-                Popup.Confirm.Open({
-                    Message: 'Button will be removed.<br/>Are you ok?',
-                    CallbackOk: () => {
-                        Dump.Log('OK. this ref is OK?: ' + this.ClassName);
-                    }
+                const res = await Popup.Confirm.OpenAsync({
+                    Message: 'Button will be removed.<br/>Are you ok?'
                 });
+                Dump.Log('hello?');
+                Dump.Log(`result: ${res}`);
+                Dump.Log('OK. this ref is OK?: ' + this.ClassName);
             });
         }
 
