@@ -34,26 +34,13 @@ namespace App.Controllers {
             devices.SetLeftTop(10, 70);
             devices.Text = 'デバイス走査';
             devices.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
-                const store = new BrDeviceStore();
-                store.Discover((devices: BrDevice[]) => {
-                    _.each(devices, (dev) => {
-                        Dump.Log({
-                            Id: dev.Id,
-                            Mac: dev.MacAddressString,
-                            Ip: dev.IpAddressString,
-                            Port: dev.Port,
-                            DevType: dev.DeviceType,
-                            DevTypeDetail: dev.DeviceTypeDetal,
-                            IsActive: dev.IsActive
-                        });
-                    });
-                });
+                this.Discover();
             });
             this.View.Add(devices);
 
             const slider = new Fw.Views.SlidableBoxView(Fw.Views.Property.Direction.Horizontal);
             slider.SetSize(400, 200);
-            devices.SetLeftTop(10, 120);
+            slider.SetLeftTop(10, 120);
             slider.InnerLength = 1000;
             this.View.Add(slider);
 
@@ -100,6 +87,23 @@ namespace App.Controllers {
             label.Text = 'はろー？';
             label.SetLeftTop(80, 10);
             slider.Add(label);
+        }
+
+        private async Discover() {
+            Dump.Log('Discover');
+            const store = new BrDeviceStore();
+            const devs = await store.Discover();
+            _.each(devs, (dev) => {
+                Dump.Log({
+                    Id: dev.Id,
+                    Mac: dev.MacAddressString,
+                    Ip: dev.IpAddressString,
+                    Port: dev.Port,
+                    DevType: dev.DeviceType,
+                    DevTypeDetail: dev.DeviceTypeDetal,
+                    IsActive: dev.IsActive
+                });
+            });
         }
     }
 }

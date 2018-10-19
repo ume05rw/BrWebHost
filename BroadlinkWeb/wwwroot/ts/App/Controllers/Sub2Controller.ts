@@ -31,14 +31,7 @@ namespace App.Controllers {
             btnA1Value.SetSize(80, 30);
             btnA1Value.SetLeftTop(10, 70);
             btnA1Value.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
-                Dump.Log('btnA1Value.click');
-
-                var params = new Xhr.Params('BrDevices/GetA1SensorValues', Xhr.MethodType.Get);
-                params.Callback = (data) => {
-                    Dump.Log('GetA1SensorValues:');
-                    Dump.Log(data);
-                }
-                Xhr.Query.Invoke(params);
+                this.GetA1Value();
             });
             this.View.Add(btnA1Value);
 
@@ -65,6 +58,20 @@ namespace App.Controllers {
                     btnMove.SetRelocatable(false);
             });
             this.View.Add(btnReset);
+        }
+
+        private async GetA1Value() {
+            Dump.Log('btnA1Value.click');
+
+            var params = new Xhr.Params('BrDevices/GetA1SensorValues', Xhr.MethodType.Get);
+            // awaitな書き方。
+            //const sVal = await Xhr.Query.Invoke(params);
+            //Dump.Log(sVal);
+
+            // awaitでない書き方。
+            Xhr.Query.Invoke(params).then((value: Xhr.Result) => {
+                Dump.Log(value);
+            })
         }
     }
 }

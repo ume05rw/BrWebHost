@@ -9,6 +9,7 @@ using BroadlinkWeb.Models;
 using BroadlinkWeb.Models.Entities;
 using BroadlinkWeb.Models.Stores;
 using System.Net;
+using SharpBroadlink.Devices;
 
 namespace BroadlinkWeb.Areas.Api.Controllers
 {
@@ -28,18 +29,21 @@ namespace BroadlinkWeb.Areas.Api.Controllers
 
         // GET: api/BrDevices/Discover
         [HttpGet("Discover")]
-        public IEnumerable<BrDevice> Discover()
+        public XhrResult<BrDevice[]> Discover()
         {
+            //IEnumerable<BrDevice>
             var result = this._store.Refresh();
-            return result;
+            return XhrResult<BrDevice[]>.CreateSucceeded(result.ToArray());
         }
 
         // GET: api/BrDevices/5
         [HttpGet("GetA1SensorValues/{id?}")] // <- nullableのとき、ここにも?が必要。
-        public IActionResult GetA1SensorValues([FromRoute] int? id)
+        public XhrResult<A1.RawResult> GetA1SensorValues([FromRoute] int? id)
         {
             if (!this.ModelState.IsValid)
-                return this.BadRequest(ModelState);
+            {
+                return XhrResult<A1.RawResult>.CreateError("Bad Request");
+            }
 
             BrDevice entity;
             if (id == null)
@@ -48,59 +52,59 @@ namespace BroadlinkWeb.Areas.Api.Controllers
                 entity = this._store.List.FirstOrDefault(bd => bd.Id == id);
 
             if (entity == null)
-                return this.NotFound();
+                return XhrResult<A1.RawResult>.CreateError("Not Found");
             else if (!entity.IsActive)
-                return this.BadRequest("Device is not Active");
+                return XhrResult<A1.RawResult>.CreateError("Device is not Active");
             else if (entity.SbDevice.DeviceType != SharpBroadlink.Devices.DeviceType.A1)
-                return this.BadRequest("Device is not A1 Sensor");
+                return XhrResult<A1.RawResult>.CreateError("Device is not A1 Sensor");
 
-            var a1Dev = (SharpBroadlink.Devices.A1)entity.SbDevice;
+            var a1Dev = (A1)entity.SbDevice;
 
             var result = a1Dev.CheckSensorsRaw()
                 .GetAwaiter()
                 .GetResult();
 
-            return Ok(result);
+            return XhrResult<A1.RawResult>.CreateSucceeded(result);
         }
 
         // GET: api/BrDevices
         [HttpGet]
-        public IEnumerable<BrDevice> GetBrDevices()
+        public XhrResult<BrDevice[]> GetBrDevices()
         {
-            return _context.BrDevices;
+            return XhrResult<BrDevice[]>.CreateSucceeded(_context.BrDevices.ToArray());
         }
 
         // GET: api/BrDevices/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetBrDevice([FromRoute] int id)
+        public async Task<XhrResult<BrDevice>> GetBrDevice([FromRoute] int id)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return XhrResult<BrDevice>.CreateError("Bad Request");
             }
 
             var brDevice = await _context.BrDevices.SingleOrDefaultAsync(m => m.Id == id);
 
             if (brDevice == null)
             {
-                return NotFound();
+                return XhrResult<BrDevice>.CreateError("Not Found");
             }
 
-            return Ok(brDevice);
+            return XhrResult<BrDevice>.CreateSucceeded(brDevice);
         }
 
         // PUT: api/BrDevices/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBrDevice([FromRoute] int id, [FromBody] BrDevice brDevice)
+        public async Task<XhrResult<BrDevice>> PutBrDevice([FromRoute] int id, [FromBody] BrDevice brDevice)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return XhrResult<BrDevice>.CreateError("Bad Request");
             }
 
             if (id != brDevice.Id)
             {
-                return BadRequest();
+                return XhrResult<BrDevice>.CreateError("Bad Request");
             }
 
             _context.Entry(brDevice).State = EntityState.Modified;
@@ -113,51 +117,51 @@ namespace BroadlinkWeb.Areas.Api.Controllers
             {
                 if (!BrDeviceExists(id))
                 {
-                    return NotFound();
+                    return XhrResult<BrDevice>.CreateError("Not Found");
                 }
                 else
                 {
-                    throw;
+                    return XhrResult<BrDevice>.CreateError("Unexpected");
                 }
             }
 
-            return NoContent();
+            return XhrResult<BrDevice>.CreateSucceeded(brDevice);
         }
 
         // POST: api/BrDevices
         [HttpPost]
-        public async Task<IActionResult> PostBrDevice([FromBody] BrDevice brDevice)
+        public async Task<XhrResult<BrDevice>> PostBrDevice([FromBody] BrDevice brDevice)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return XhrResult<BrDevice>.CreateError("Bad Request");
             }
 
             _context.BrDevices.Add(brDevice);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetBrDevice", new { id = brDevice.Id }, brDevice);
+            return XhrResult<BrDevice>.CreateSucceeded(brDevice);
         }
 
         // DELETE: api/BrDevices/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBrDevice([FromRoute] int id)
+        public async Task<XhrResult<BrDevice>> DeleteBrDevice([FromRoute] int id)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return XhrResult<BrDevice>.CreateError("Bad Request");
             }
 
             var brDevice = await _context.BrDevices.SingleOrDefaultAsync(m => m.Id == id);
             if (brDevice == null)
             {
-                return NotFound();
+                return XhrResult<BrDevice>.CreateError("Not Found");
             }
 
             _context.BrDevices.Remove(brDevice);
             await _context.SaveChangesAsync();
 
-            return Ok(brDevice);
+            return XhrResult<BrDevice>.CreateSucceeded(null);
         }
 
         private bool BrDeviceExists(int id)

@@ -11,19 +11,39 @@ namespace App.Models.Stores {
     import Xhr = Fw.Util.Xhr;
 
     export class BrDeviceStore extends Fw.Models.Stores.StoreBase {
-        public Discover(callback: (brDevices: BrDevice[]) => void): void {
-            var params = new Xhr.Params('BrDevices/Discover', Xhr.MethodType.Get);
-            params.Callback = (data) => {
-                Dump.Log('Disover:');
+        public async Discover(): Promise<BrDevice[]> {
 
-                const rows: BrDevice[] = [];
-                _.each(data, (row) => {
-                    rows.push(row as BrDevice);
-                });
-                if (_.isFunction(callback))
-                    callback(rows);
+            var params = new Xhr.Params(
+                'BrDevices/Discover',
+                Xhr.MethodType.Get);
+
+            const res = await Xhr.Query.Invoke(params);
+
+            if (res.Succeeded) {
+                return res.Values as BrDevice[];
+            } else {
+                Dump.Log('Query Fail');
+                Dump.Log(res.Errors);
+                return null;
             }
-            Xhr.Query.Invoke(params);
         }
+
+
+        //public Discover(callback: (brDevices: BrDevice[]) => void): void {
+        //    var params = new Xhr.Params('BrDevices/Discover', Xhr.MethodType.Get);
+        //    params.Callback = (data) => {
+        //        Dump.Log('Disover:');
+
+        //        const rows: BrDevice[] = [];
+        //        _.each(data, (row) => {
+        //            rows.push(row as BrDevice);
+        //        });
+        //        if (_.isFunction(callback))
+        //            callback(rows);
+        //    }
+        //    Xhr.Query.Invoke(params);
+        //}
+
+
     }
 }
