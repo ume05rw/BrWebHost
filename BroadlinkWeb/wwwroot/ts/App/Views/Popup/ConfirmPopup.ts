@@ -23,7 +23,6 @@ namespace App.Views.Popup {
             return ConfirmPopup._instance;
         }
 
-        private _id: string = Fw.Util.App.CreateId();
         private _callbackOk: Function;
         private _callbackCancel: Function;
 
@@ -50,7 +49,6 @@ namespace App.Views.Popup {
         }
 
         public Open(params?: any): void {
-
             if (typeof params === 'object') {
                 this._callbackOk = _.isFunction(params.CallbackOk)
                     ? params.CallbackOk

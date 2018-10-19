@@ -4,6 +4,12 @@
 /// <reference path="IStore.ts" />
 
 namespace Fw.Models.Stores {
-    export abstract class StoreBase extends Fw.ObjectBase implements IStore {
+    export abstract class StoreBase<T> extends Fw.ObjectBase implements IStore {
+
+        private _list: Array<T> = new Array<T>();
+        public get List(): Array<T> {
+            return this._list;
+        }
+
     }
 }

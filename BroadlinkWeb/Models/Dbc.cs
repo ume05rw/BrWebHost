@@ -18,8 +18,6 @@ namespace BroadlinkWeb.Models
 
         public DbSet<Control> Controlls { get; set; }
 
-        public DbSet<Icon> Icons { get; set; }
-
         /// <summary>
         /// Constructor
         /// </summary>

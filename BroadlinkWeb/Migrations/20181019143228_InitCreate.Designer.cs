@@ -10,8 +10,8 @@ using System;
 namespace BroadlinkWeb.Migrations
 {
     [DbContext(typeof(Dbc))]
-    [Migration("20181002123307_AddControls")]
-    partial class AddControls
+    [Migration("20181019143228_InitCreate")]
+    partial class InitCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -41,7 +41,7 @@ namespace BroadlinkWeb.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BrDevices");
+                    b.ToTable("brdevices");
                 });
 
             modelBuilder.Entity("BroadlinkWeb.Models.Entities.Control", b =>
@@ -60,24 +60,28 @@ namespace BroadlinkWeb.Migrations
                     b.Property<int>("ControlSetId")
                         .HasColumnType("int(11)");
 
-                    b.Property<string>("IconId")
+                    b.Property<string>("HoverColor")
+                        .IsRequired()
+                        .HasColumnType("varchar(8)");
+
+                    b.Property<string>("IconUrl")
                         .HasColumnType("int(11)");
 
-                    b.Property<int?>("IconId1");
+                    b.Property<bool>("IsAssignToggleOff")
+                        .HasColumnType("tinyint(1)");
 
-                    b.Property<string>("Label")
+                    b.Property<bool>("IsAssignToggleOn")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("varchar(50)");
 
-                    b.Property<string>("PositionX")
+                    b.Property<string>("PositionLeft")
                         .IsRequired()
                         .HasColumnType("int(11)");
 
-                    b.Property<string>("PositionY")
-                        .IsRequired()
-                        .HasColumnType("int(11)");
-
-                    b.Property<string>("Size")
+                    b.Property<string>("PositionTop")
                         .IsRequired()
                         .HasColumnType("int(11)");
 
@@ -85,9 +89,7 @@ namespace BroadlinkWeb.Migrations
 
                     b.HasIndex("ControlSetId");
 
-                    b.HasIndex("IconId1");
-
-                    b.ToTable("Controlls");
+                    b.ToTable("controls");
                 });
 
             modelBuilder.Entity("BroadlinkWeb.Models.Entities.ControlSet", b =>
@@ -99,7 +101,7 @@ namespace BroadlinkWeb.Migrations
                     b.Property<int>("BrDeviceId")
                         .HasColumnType("int(11)");
 
-                    b.Property<string>("Label")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("varchar(50)");
 
@@ -107,22 +109,7 @@ namespace BroadlinkWeb.Migrations
 
                     b.HasIndex("BrDeviceId");
 
-                    b.ToTable("ControlSets");
-                });
-
-            modelBuilder.Entity("BroadlinkWeb.Models.Entities.Icon", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int(11)");
-
-                    b.Property<string>("Url")
-                        .IsRequired()
-                        .HasColumnType("varchar(256)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Icons");
+                    b.ToTable("controlsets");
                 });
 
             modelBuilder.Entity("BroadlinkWeb.Models.Entities.Control", b =>
@@ -131,10 +118,6 @@ namespace BroadlinkWeb.Migrations
                         .WithMany()
                         .HasForeignKey("ControlSetId")
                         .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("BroadlinkWeb.Models.Entities.Icon", "Icon")
-                        .WithMany()
-                        .HasForeignKey("IconId1");
                 });
 
             modelBuilder.Entity("BroadlinkWeb.Models.Entities.ControlSet", b =>

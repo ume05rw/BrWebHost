@@ -18,8 +18,8 @@ namespace BroadlinkWeb.Models.Entities
 
         [Required]
         [Column(Order = 1, TypeName = "varchar(50)")]
-        [Description("Control-Set Label")]
-        public string Label { get; set; }
+        [Description("Control-Set Name")]
+        public string Name { get; set; }
 
         [Required]
         [Column(Order = 1, TypeName = "int(11)")]

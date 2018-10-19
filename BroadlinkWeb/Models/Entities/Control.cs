@@ -23,39 +23,46 @@ namespace BroadlinkWeb.Models.Entities
 
         [Required]
         [Column(Order = 2, TypeName = "varchar(50)")]
-        [Description("Label")]
-        public string Label { get; set; }
+        [Description("Name")]
+        public string Name { get; set; }
 
         [Required]
         [Column(Order = 3, TypeName = "int(11)")]
-        [Description("Position X px")]
-        public string PositionX { get; set; }
+        [Description("Position Left px")]
+        public string PositionLeft { get; set; }
 
         [Required]
         [Column(Order = 4, TypeName = "int(11)")]
-        [Description("Position Y px")]
-        public string PositionY { get; set; }
+        [Description("Position Top px")]
+        public string PositionTop { get; set; }
 
         [Required]
-        [Column(Order = 5, TypeName = "int(11)")]
-        [Description("Size px")]
-        public string Size { get; set; }
+        [Column(Order = 5, TypeName = "varchar(8)")]
+        [Description("Color String")]
+        public string Color { get; set; }
 
         [Required]
         [Column(Order = 6, TypeName = "varchar(8)")]
-        [Description("Color Hex")]
-        public string Color { get; set; }
+        [Description("HoverColor String")]
+        public string HoverColor { get; set; }
 
         [Column(Order = 7, TypeName = "int(11)")]
-        [Description("Icon ID")]
-        public string IconId { get; set; }
+        [Description("Icon Url")]
+        public string IconUrl { get; set; }
 
-        [Column(Order = 7, TypeName = "text")]
+        [Column(Order = 8, TypeName = "text")]
         [Description("IR Code Byte String")]
         public string Code { get; set; }
 
-        public ControlSet ControlSet { get; set; }
+        [Column(Order = 9, TypeName = "tinyint(1)")]
+        [Description("Toggle assign On")]
+        public bool IsAssignToggleOn { get; set; }
 
-        public Icon Icon { get; set; }
+        [Column(Order = 10, TypeName = "tinyint(1)")]
+        [Description("Toggle assign Off")]
+        public bool IsAssignToggleOff { get; set; }
+
+
+        public ControlSet ControlSet { get; set; }
     }
 }

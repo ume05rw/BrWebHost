@@ -3441,8 +3441,17 @@ var Fw;
             var StoreBase = /** @class */ (function (_super) {
                 __extends(StoreBase, _super);
                 function StoreBase() {
-                    return _super !== null && _super.apply(this, arguments) || this;
+                    var _this = _super !== null && _super.apply(this, arguments) || this;
+                    _this._list = new Array();
+                    return _this;
                 }
+                Object.defineProperty(StoreBase.prototype, "List", {
+                    get: function () {
+                        return this._list;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
                 return StoreBase;
             }(Fw.ObjectBase));
             Stores.StoreBase = StoreBase;
@@ -3592,6 +3601,7 @@ var App;
                 BrDeviceStore.prototype.Discover = function () {
                     return __awaiter(this, void 0, void 0, function () {
                         var params, res;
+                        var _this = this;
                         return __generator(this, function (_a) {
                             switch (_a.label) {
                                 case 0:
@@ -3600,6 +3610,10 @@ var App;
                                 case 1:
                                     res = _a.sent();
                                     if (res.Succeeded) {
+                                        _.each(res.Values, function (row) {
+                                            if (_.findIndex(_this.List, { Id: row.Id }) === -1)
+                                                _this.List.push(row);
+                                        });
                                         return [2 /*return*/, res.Values];
                                     }
                                     else {
@@ -5032,7 +5046,6 @@ var App;
                 __extends(ConfirmPopup, _super);
                 function ConfirmPopup() {
                     var _this = _super.call(this, $('#PtplConfirm')) || this;
-                    _this._id = Fw.Util.App.CreateId();
                     _this.CloseOnBgClick = false;
                     _this.ShowCloseBtn = false;
                     _this.EnableEscapeKey = false;
@@ -7773,4 +7786,99 @@ var Fw;
         })(Property = Views.Property || (Views.Property = {}));
     })(Views = Fw.Views || (Fw.Views = {}));
 })(Fw || (Fw = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/Entities/EntityBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Entities;
+        (function (Entities) {
+            var ControlSet = /** @class */ (function (_super) {
+                __extends(ControlSet, _super);
+                function ControlSet() {
+                    return _super !== null && _super.apply(this, arguments) || this;
+                }
+                return ControlSet;
+            }(Fw.Models.Entities.EntityBase));
+            Entities.ControlSet = ControlSet;
+        })(Entities = Models.Entities || (Models.Entities = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/Entities/EntityBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Entities;
+        (function (Entities) {
+            var Control = /** @class */ (function (_super) {
+                __extends(Control, _super);
+                function Control() {
+                    return _super !== null && _super.apply(this, arguments) || this;
+                }
+                return Control;
+            }(Fw.Models.Entities.EntityBase));
+            Entities.Control = Control;
+        })(Entities = Models.Entities || (Models.Entities = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/Stores/StoreBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../../Fw/Util/Xhr/Query.ts" />
+/// <reference path="../Entities/ControlSet.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Stores;
+        (function (Stores) {
+            var Dump = Fw.Util.Dump;
+            var Xhr = Fw.Util.Xhr;
+            var ControlSetStore = /** @class */ (function (_super) {
+                __extends(ControlSetStore, _super);
+                function ControlSetStore() {
+                    return _super !== null && _super.apply(this, arguments) || this;
+                }
+                ControlSetStore.prototype.Write = function (ent) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var params, res;
+                        var _this = this;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    params = new Xhr.Params('ControlSet/Write', Xhr.MethodType.Post, ent);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        _.each(res.Values, function (row) {
+                                            if (_.findIndex(_this.List, { Id: row.Id }) === -1)
+                                                _this.List.push(row);
+                                        });
+                                        return [2 /*return*/, res.Values];
+                                    }
+                                    else {
+                                        Dump.Log('Query Fail');
+                                        Dump.Log(res.Errors);
+                                        return [2 /*return*/, null];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
+                return ControlSetStore;
+            }(Fw.Models.Stores.StoreBase));
+            Stores.ControlSetStore = ControlSetStore;
+        })(Stores = Models.Stores || (Models.Stores = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
 //# sourceMappingURL=tsout.js.map

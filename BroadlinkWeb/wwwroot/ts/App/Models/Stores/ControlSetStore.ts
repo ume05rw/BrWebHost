@@ -3,30 +3,31 @@
 /// <reference path="../../../Fw/Models/Stores/StoreBase.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../../../Fw/Util/Xhr/Query.ts" />
-/// <reference path="../Entities/BrDevice.ts" />
+/// <reference path="../Entities/ControlSet.ts" />
 
 namespace App.Models.Stores {
     import Dump = Fw.Util.Dump;
-    import BrDevice = App.Models.Entities.BrDevice;
+    import ControlSet = App.Models.Entities.ControlSet;
     import Xhr = Fw.Util.Xhr;
 
-    export class BrDeviceStore extends Fw.Models.Stores.StoreBase<BrDevice> {
+    export class ControlSetStore extends Fw.Models.Stores.StoreBase<ControlSet> {
 
-        public async Discover(): Promise<BrDevice[]> {
+        public async Write(ent: ControlSet): Promise<ControlSet> {
 
             const params = new Xhr.Params(
-                'BrDevices/Discover',
-                Xhr.MethodType.Get
+                'ControlSet/Write',
+                Xhr.MethodType.Post,
+                ent
             );
 
             const res = await Xhr.Query.Invoke(params);
             if (res.Succeeded) {
-                _.each(res.Values, (row: BrDevice) => {
+                _.each(res.Values, (row: ControlSet) => {
                     if (_.findIndex(this.List, { Id: row.Id }) === -1)
                         this.List.push(row);
                 });
 
-                return res.Values as BrDevice[];
+                return res.Values as ControlSet;
             } else {
                 Dump.Log('Query Fail');
                 Dump.Log(res.Errors);
