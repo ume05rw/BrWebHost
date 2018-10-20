@@ -108,6 +108,9 @@ namespace BroadlinkWeb.Migrations
                     b.Property<int?>("BrDeviceId")
                         .HasColumnType("int(11)");
 
+                    b.Property<bool>("IsTemplate")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("varchar(50)");

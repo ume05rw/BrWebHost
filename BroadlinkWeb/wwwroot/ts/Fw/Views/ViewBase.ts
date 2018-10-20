@@ -1,4 +1,4 @@
-﻿/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../ObjectBase.ts" />
 /// <reference path="../Util/Dump.ts" />
@@ -132,10 +132,9 @@ namespace Fw.Views {
                 this._size.Height = 0;
             }
 
+            // RemoveEventListenerが出来ない？
             // 画面リサイズ時に再描画
-            Fw.Root.Instance.AddEventListener(Fw.Events.RootEvents.Resized, () => {
-                this.Refresh();
-            });
+            //Fw.Root.Instance.AddEventListener(Fw.Events.RootEvents.Resized, this.Refresh, this);
 
             _.defer(() => {
                 this.Elem.addClass('IView TransAnimation');
@@ -332,11 +331,14 @@ namespace Fw.Views {
 
         public Remove(view: IView): void {
             const index = this.Children.indexOf(view);
-            if (index != -1) {
+            if (index !== -1) {
                 view.SetParent(null);
                 this.Children.splice(index, 1);
                 view.Elem.detach();
                 view.DispatchEvent(Events.Detached);
+            } else {
+                Dump.Log('削除できなかった。');
+                Dump.Log(view);
             }
         }
 
@@ -493,7 +495,7 @@ namespace Fw.Views {
                     }
                 }
             } catch (e) {
-                Dump.ErrorLog(e);
+                Dump.ErrorLog(e, this.ClassName);
             } finally {
                 if (!isSuppressLayout)
                     this.ResumeLayout();
@@ -612,12 +614,20 @@ namespace Fw.Views {
         }
 
         public Dispose(): void {
+            Dump.Log(`${this.ClassName}.Dispose`);
+
+            //Fw.Root.Instance.RemoveEventListener(Fw.Events.RootEvents.Resized, this.Refresh, this);
+
             super.Dispose();
 
-            _.each(this.Children, (view) => {
+            var ary = Util.Obj.Mirror(this.Children);
+            _.each(ary, (view: Fw.Views.IView) => {
+                this.Remove(view);
                 view.Dispose();
             });
             this._children = null;
+
+            this._parent = null;
 
             this._dom = null;
 

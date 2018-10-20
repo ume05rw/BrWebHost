@@ -7,9 +7,26 @@ namespace App.Models.Entities {
     import Dump = Fw.Util.Dump;
 
     export class ControlSet extends Fw.Models.EntityBase {
-        public BrDeviceId: number;
-        public Name: string;
 
+        /**
+         * BrDeviceID: null もセットしないでおく。
+         * 何もセットしないことで、インスタンスにプロパティが存在しない状態を維持する。
+         */
+        public BrDeviceId: number; 
+
+        /**
+         * リモコン名
+         */
+        public Name: string = '';
+
+        /**
+         * リモコン配置テンプレートか否か
+         */
+        public IsTemplate: boolean = true;
+
+        /**
+         * コントロールボタン配列
+         */
         public Controls: Array<Control> = [];
     }
 }

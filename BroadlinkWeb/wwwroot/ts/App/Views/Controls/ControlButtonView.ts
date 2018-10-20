@@ -1,4 +1,4 @@
-﻿/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../../Fw/Views/RelocatableButtonView.ts" />
 /// <reference path="../../../Fw/Views/Property/Anchor.ts" />
@@ -37,7 +37,7 @@ namespace App.Views.Controls {
         }
         public set Control(value: App.Models.Entities.Control) {
             if (this._control) {
-                this._control.RemoveEventListener(EntityEvents.Changed, this.ApplyFromEntity);
+                this._control.RemoveEventListener(EntityEvents.Changed, this.ApplyFromEntity, this);
             }
 
             this._control = value;
@@ -134,6 +134,18 @@ namespace App.Views.Controls {
                 }
             }
             this.Refresh();
+        }
+
+        public Dispose(): void {
+            if (this._control) {
+                this._control.RemoveEventListener(EntityEvents.Changed, this.ApplyFromEntity, this);
+            }
+            this._control = null;
+            this._name = null;
+            this.Code = null;
+
+
+            super.Dispose();
         }
     }
 }

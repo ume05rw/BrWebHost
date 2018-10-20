@@ -34,7 +34,7 @@ namespace App.Controllers {
                 // TODO: 仮実装-実際は、シーンorリモコン、リモコン種選択をさせたあと、リモコン編集画面に遷移。
 
                 const ctr = this.Manager.Get('ControlSet') as ControlSetController;
-                ctr.SetControlSet(new App.Models.Entities.ControlSet());
+                ctr.SetEntity(new App.Models.Entities.ControlSet());
                 ctr.SetModal();
                 //this.SwitchTo('ControlSet');
             });

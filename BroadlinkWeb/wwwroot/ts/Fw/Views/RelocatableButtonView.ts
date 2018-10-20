@@ -1,4 +1,4 @@
-﻿/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Util/Dump.ts" />
 /// <reference path="../Events/ControlViewEvents.ts" />
@@ -272,7 +272,9 @@ namespace Fw.Views {
                 }
 
             } catch (e) {
-                Dump.ErrorLog(e);
+                Dump.ErrorLog(e, this.ClassName);
+                Dump.Log('Parentは誰？');
+                Dump.Log(this.Parent);
             } finally {
                 this.ResumeLayout();
             }
@@ -295,7 +297,7 @@ namespace Fw.Views {
                 super.CalcLayout();
 
             } catch (e) {
-                Dump.ErrorLog(e);
+                Dump.ErrorLog(e, this.ClassName);
             } finally {
                 this.ResumeLayout();
             }

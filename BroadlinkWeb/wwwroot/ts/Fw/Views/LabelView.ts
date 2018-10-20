@@ -1,4 +1,4 @@
-﻿/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Events/ControlViewEvents.ts" />
 /// <reference path="../Util/Dump.ts" />
@@ -125,7 +125,7 @@ namespace Fw.Views {
 
                 this.Elem.text(this._text);
             } catch (e) {
-                Dump.ErrorLog(e);
+                Dump.ErrorLog(e, this.ClassName);
             }
         }
 
@@ -141,7 +141,7 @@ namespace Fw.Views {
                 super.CalcLayout();
 
             } catch (e) {
-                Dump.ErrorLog(e);
+                Dump.ErrorLog(e, this.ClassName);
             } finally {
                 this.ResumeLayout();
             }

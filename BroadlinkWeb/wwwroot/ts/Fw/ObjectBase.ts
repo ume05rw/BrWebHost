@@ -1,13 +1,16 @@
-﻿/// <reference path="../../lib/jquery/index.d.ts" />
+/// <reference path="../../lib/jquery/index.d.ts" />
 /// <reference path="../../lib/underscore/index.d.ts" />
 /// <reference path="Events/EventReference.ts" />
 /// <reference path="Util/Dump.ts" />
+/// <reference path="IObject.ts" />
+/// <reference path="Events/ObjectEvents.ts" />
 
 namespace Fw {
     import Dump = Fw.Util.Dump;
     import EventReference = Fw.Events.EventReference;
+    import Events = Fw.Events.ObjectEvents;
 
-    export abstract class ObjectBase implements Fw.IObject {
+    export abstract class ObjectBase implements IObject {
         // Properties
         private _elem: JQuery;
         public get Elem(): JQuery {
@@ -19,12 +22,23 @@ namespace Fw {
             return this._className;
         }
 
+        private _objectId: string;
+        public get ObjectId(): string {
+            return this._objectId;
+        }
+
+        private _isDisposed: boolean = false;
+        public get IsDisposed(): boolean {
+            return this._isDisposed;
+        }
+
         private _eventHandlers: Array<EventReference>;
         private _suppressedEvents: Array<string>;
 
 
         constructor() {
             this._elem = $(this);
+            this._objectId = Fw.Util.App.CreateId();
             this._suppressedEvents = new Array<string>();
             this._eventHandlers = new Array<EventReference>();
         }
@@ -55,6 +69,9 @@ namespace Fw {
             eRef.Name = name;
             eRef.Handler = handler;
             eRef.BindedHandler = handler.bind(bindObject);
+            eRef.BindObject = bindObject;
+
+            //Dump.Log(`AddEv: ${eRef.BindObject.ClassName}_${eRef.BindObject.ObjectId}.${name}`);
 
             this._eventHandlers.push(eRef);
             this.Elem.on(name, eRef.BindedHandler);
@@ -62,18 +79,29 @@ namespace Fw {
 
         public RemoveEventListener(
             name: string,
-            handler?: (je: JQueryEventObject, eo: Fw.Events.EventObject) => void
+            handler?: (je: JQueryEventObject, eo: Fw.Events.EventObject) => void,
+            bindObject: any = null
         ): void {
+            if (!bindObject)
+                bindObject = this;
+
             if (handler) {
                 let key: number;
                 const eRef = _.find(this._eventHandlers, (er, idx) => {
                     key = idx;
-                    return (er.Name === name && er.Handler === handler);
+                    // 関数は継承関係のプロトタイプ参照都合で同一オブジェクトになりやすいため、
+                    // 判定基準にならない。
+                    //return (er.Name === name && er.Handler === handler);
+
+                    //Dump.Log(`RemoveEv: ${er.BindObject.ClassName}_${er.BindObject.ObjectId}.${name} :: ${bindObject.ObjectId}` );
+
+                    return (er.Name === name
+                            && er.Handler === handler
+                            && er.BindObject === bindObject);
                 });
 
                 if (!eRef) {
-                    //throw new Error(`${this.ClassName}.${name} event not found.`);
-                    return;
+                    throw new Error(`${this.ClassName}.${name} event not found.`);
                 }
 
                 this.Elem.off(eRef.Name, eRef.BindedHandler);
@@ -122,13 +150,20 @@ namespace Fw {
         }
 
         public Dispose(): void {
-            _.each(this._eventHandlers, (eRef) => {
-                this.RemoveEventListener(eRef.Name, eRef.Handler);
-            });
+            // イベントバインドを全削除
+            this._elem.off();
 
-            this._elem.remove();
+            try {
+                this._elem.remove();
+            } catch (e) {
+                Dump.ErrorLog(e, this.ClassName);
+            }
+
+            this._isDisposed = true;
+            this._eventHandlers = null;
             this._elem = null;
-            this._className = null;
+            // TODO: あとで戻す。デバッグ用。
+            //this._className = null;
             this._suppressedEvents = null;
         }
     }

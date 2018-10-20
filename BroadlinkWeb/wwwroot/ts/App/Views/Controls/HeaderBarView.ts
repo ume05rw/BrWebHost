@@ -1,4 +1,4 @@
-﻿/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../../Fw/Views/BoxView.ts" />
 /// <reference path="../../../Fw/Views/Property/Anchor.ts" />
@@ -71,13 +71,11 @@ namespace App.Views.Controls {
             this._btnRight.SetAnchor(null, null, 5, null);
             this.Add(this._btnRight);
 
-            this.AddEventListener(Fw.Events.BoxViewEvents.Attached, () => {
-                this.Refresh();
-            });
+            this.AddEventListener(Fw.Events.BoxViewEvents.Attached, this.Refresh, this);
         }
 
         public Dispose(): void {
-            this.RemoveEventListener(Fw.Events.BoxViewEvents.Attached);
+            this.RemoveEventListener(Fw.Events.BoxViewEvents.Attached, this.Refresh, this);
             super.Dispose();
         }
     }

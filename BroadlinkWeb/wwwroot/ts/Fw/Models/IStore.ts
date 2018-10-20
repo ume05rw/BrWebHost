@@ -12,6 +12,7 @@ namespace Fw.Models {
 
         Write(entity: T): void;
 
+
         /**
          * 複数一括登録、欲しくなったら追加する。
          */

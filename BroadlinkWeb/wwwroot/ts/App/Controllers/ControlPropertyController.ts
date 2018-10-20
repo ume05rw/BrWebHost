@@ -1,4 +1,4 @@
-﻿/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Fw/Controllers/ControllerBase.ts" />
 /// <reference path="../../Fw/Controllers/Manager.ts" />
@@ -90,18 +90,23 @@ namespace App.Controllers {
                 if (!this._control)
                     return;
 
-                Dump.Log('Delete this Control!');
                 const res = await Popup.Confirm.OpenAsync({
                     Message: 'Button will be removed.<br/>Are you ok?'
                 });
-                Dump.Log('hello?');
-                Dump.Log(`result: ${res}`);
-                Dump.Log('OK. this ref is OK?: ' + this.ClassName);
+
+                if (res !== true)
+                    return;
+
+                const ctr = this.Manager.Get('ControlSet') as ControlSetController;
+                ctr.RemoveControl(this._control);
+
+                this._control = null;
+                this.HideModal();
             });
         }
 
-        public SetControl(entity: App.Models.Entities.Control): void {
-            this._control = entity;
+        public SetEntity(control: App.Models.Entities.Control): void {
+            this._control = control;
 
             this._page.TxtName.Value = this._control.Name;
             this._page.SboIcon.Value = this._control.IconUrl;

@@ -1,4 +1,4 @@
-﻿/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Util/Dump.ts" />
 /// <reference path="../Events/StuckerBoxViewEvents.ts" />
@@ -122,7 +122,7 @@ namespace Fw.Views {
         public Remove(view: IView): void {
             this._innerBox.Remove(view);
 
-            view.RemoveEventListener(ControlViewEvents.LongClick, this.OnChildLongClick);
+            view.RemoveEventListener(ControlViewEvents.LongClick, this.OnChildLongClick, this);
             view.Elem.off('touchstart mousedown', this.OnChildMouseDown);
             view.Elem.off('touchmove mousemove', this.OnChildMouseMove);
             view.Elem.off('touchend mouseup', this.OnChildMouseUp);
@@ -445,7 +445,7 @@ namespace Fw.Views {
                 super.InnerRefresh();
 
             } catch (e) {
-                Dump.ErrorLog(e);
+                Dump.ErrorLog(e, this.ClassName);
             } finally {
                 this.ResumeLayout();
                 this._innerBox.ResumeLayout();
@@ -528,7 +528,7 @@ namespace Fw.Views {
                 super.CalcLayout();
 
             } catch (e) {
-                Dump.ErrorLog(e);
+                Dump.ErrorLog(e, this.ClassName);
             } finally {
                 this.ResumeLayout();
                 this._innerBox.ResumeLayout();

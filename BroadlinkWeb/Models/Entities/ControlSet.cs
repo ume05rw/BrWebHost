@@ -24,10 +24,13 @@ namespace BroadlinkWeb.Models.Entities
         [Description("Control-Set Name")]
         public string Name { get; set; }
 
-        [Column(Order = 1, TypeName = "int(11)")]
+        [Column(Order = 2, TypeName = "int(11)")]
         [Description("Taget Broadlink Device ID")]
         public int? BrDeviceId { get; set; }
 
+        [Column(Order = 3, TypeName = "tinyint(1)")]
+        [Description("Taget Broadlink Device ID")]
+        public bool IsTemplate { get; set; }
 
         public List<Control> Controls { get; set; }
         public BrDevice BrDevice { get; set; }

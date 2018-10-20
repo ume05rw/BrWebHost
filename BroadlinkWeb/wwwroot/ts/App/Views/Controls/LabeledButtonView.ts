@@ -1,4 +1,4 @@
-﻿/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../../Fw/Views/ControlView.ts" />
 /// <reference path="../../../Fw/Views/Property/Anchor.ts" />
@@ -67,7 +67,7 @@ namespace App.Views.Controls {
                 //this.Dom.style.opacity = `${this.Opacity}`;
 
             } catch (e) {
-                Dump.ErrorLog(e);
+                Dump.ErrorLog(e, this.ClassName);
             } finally {
                 this.ResumeLayout();
             }

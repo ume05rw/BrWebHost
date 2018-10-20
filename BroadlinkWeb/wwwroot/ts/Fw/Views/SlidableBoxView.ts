@@ -1,4 +1,4 @@
-﻿/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Util/Dump.ts" />
 /// <reference path="../Events/SlidableBoxViewEvents.ts" />
@@ -35,7 +35,7 @@ namespace Fw.Views {
             this.Refresh();
         }
 
-        private _innerLength: number = 2;
+        private _innerLength: number = 10;
         public get InnerLength(): number {
             return this._innerLength;
         }
@@ -43,6 +43,10 @@ namespace Fw.Views {
             this._innerLength = value;
             this.Refresh();
         }
+
+        //public get InnerBox(): BoxView {
+        //    return this._innerBox;
+        //}
 
         private _innerBox: BoxView;
         private _positionBarMax: LineView;
@@ -77,19 +81,23 @@ namespace Fw.Views {
 
             this._innerBox.HasBorder = false;
             this._innerBox.SetTransAnimation(false);
+            this._innerBox.SetParent(this);
             this.Elem.append(this._innerBox.Elem);
-            //super.Add(this._innerBox); // Addメソッドでthis.Childrenを呼ぶため循環参照になる。
+
 
             // コンストラクタ完了後に実行。
             // コンストラクタ引数で取得したDirectionがセットされていないため。
             this._positionBarMax.Position.Policy = Property.PositionPolicy.LeftTop;
             this._positionBarMax.SetTransAnimation(false);
             this._positionBarMax.Color = '#EEEEEE';
-            super.Add(this._positionBarMax);
+            this._positionBarMax.SetParent(this);
+            this.Elem.append(this._positionBarMax.Elem);
+
             this._positionBarCurrent.Position.Policy = Property.PositionPolicy.LeftTop;
             this._positionBarCurrent.SetTransAnimation(false);
             this._positionBarCurrent.Color = '#888888';
-            super.Add(this._positionBarCurrent);
+            this._positionBarCurrent.SetParent(this);
+            this.Elem.append(this._positionBarCurrent.Elem);
 
             this.AddEventListener(Events.Initialized, () => {
                 this.InitView();
@@ -212,6 +220,16 @@ namespace Fw.Views {
             this._innerBox.Remove(view);
         }
 
+        public Refresh(): void {
+            if (!this.IsInitialized)
+                return;
+
+            super.Refresh();
+            this._innerBox.Refresh();
+            this._positionBarMax.Refresh();
+            this._positionBarCurrent.Refresh();
+        }
+
         protected InnerRefresh(): void {
             try {
                 this.SuppressLayout();
@@ -226,7 +244,7 @@ namespace Fw.Views {
                 });
 
             } catch (e) {
-                Dump.ErrorLog(e);
+                Dump.ErrorLog(e, this.ClassName);
             } finally {
                 this.ResumeLayout();
             }
@@ -339,7 +357,7 @@ namespace Fw.Views {
                 super.CalcLayout();
 
             } catch (e) {
-                Dump.ErrorLog(e);
+                Dump.ErrorLog(e, this.ClassName);
             } finally {
                 this.ResumeLayout();
                 this._innerBox.ResumeLayout();
@@ -368,16 +386,24 @@ namespace Fw.Views {
         }
 
         public Dispose(): void {
-            this._innerBox.Elem.off('touchstart mousedown');
-            this._innerBox.Elem.off('touchmove mousemove');
-            this._innerBox.Elem.off('touchend mouseup mouseout');
+            
+
+            this._innerBox.SetParent(null);
+            this._positionBarMax.SetTransAnimation(null);
+            this._positionBarCurrent.SetParent(null);
+            this._innerBox.Elem.remove();
+            this._positionBarMax.Elem.remove();
+            this._positionBarCurrent.Elem.remove();
 
             super.Dispose();
 
             this._innerBackgroundColor = null;
             this._innerLength = null;
+
+            this._innerBox.Elem.off();
             this._innerBox.Dispose();
             this._innerBox = null;
+
             this._isDragging = null;
             this._spcvMouseSuppressor = null;
             this._dragStartMousePosition.Dispose();

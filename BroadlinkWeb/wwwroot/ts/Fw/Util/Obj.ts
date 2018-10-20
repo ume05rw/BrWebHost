@@ -1,4 +1,4 @@
-﻿/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 
 namespace Fw.Util {
@@ -75,6 +75,43 @@ namespace Fw.Util {
                         return (exists)
                             ? obj
                             : undefined;
+                    }
+                default:
+                    Fw.Util.Dump.Log('想定外の渡し値');
+                    Fw.Util.Dump.Log(value);
+                    throw new Error('想定外の渡し値');
+            }
+        }
+
+        public static Mirror(value: any): any {
+            switch (typeof value) {
+                case 'boolean':
+                case 'number':
+                case 'string':
+                case 'undefined':
+                case 'function':
+                case 'symbol':
+                    // 配列orオブジェクト以外のとき、例外
+                    throw new Error('for Array/Object only');
+
+                case 'object':
+                    if (value === null) {
+                        // 値がnull のとき、例外
+                        throw new Error('for Array/Object only');
+
+                    } else if (value instanceof Array) {
+                        // 値が単純配列のとき
+
+                        const result = [];
+                        _.each(value, (v) => { result.push(v); });
+
+                        return result;
+                    } else {
+                        // 値がobjectのとき
+
+                        const result = {};
+                        _.each(value as any, (v, k: any) => { result[k] = v; });
+                        return result;
                     }
                 default:
                     Fw.Util.Dump.Log('想定外の渡し値');

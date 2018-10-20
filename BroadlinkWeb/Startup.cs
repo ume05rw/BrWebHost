@@ -23,8 +23,8 @@ namespace BroadlinkWeb
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
-        {
+public void ConfigureServices(IServiceCollection services)
+{
             // 追加済みのサービスの中から、ILoggerFactoryのインスタンスを取得する。
             var logService = services
                 .FirstOrDefault(s => s.ServiceType == typeof(ILoggerFactory));
@@ -52,13 +52,15 @@ namespace BroadlinkWeb
                 .AddMvc()
                 .AddJsonOptions(options =>
                 {
-                    // APIのJSON応答時、キャメル先頭を小文字で返す場合：
-                    //= new CamelCasePropertyNamesContractResolver();
-                    // キャメル先頭を大文字で返す場合
+                    // JSON生成時、キャメル先頭を大文字で返す。
                     options.SerializerSettings.ContractResolver
                         = new DefaultContractResolver();
+                    // 先頭を小文字で返す場合
+                    //= new CamelCasePropertyNamesContractResolver();
 
-                    // 無限ループ検出時の動作...?
+                    // 無限ループ検出時の動作。
+                    // シリアライズエラー時、デフォルトでは途中状態の文字列を返してしまう。
+                    // どんだけクソ仕様なんだ。
                     options.SerializerSettings.ReferenceLoopHandling
                         = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
                 });

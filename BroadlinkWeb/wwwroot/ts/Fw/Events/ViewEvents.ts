@@ -1,8 +1,9 @@
 ﻿/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="ObjectEvents.ts" />
 
 namespace Fw.Events {
-    export class ViewEventsClass {
+    export class ViewEventsClass extends ObjectEventsClass {
         public readonly Shown: string = 'Shown';
         public readonly Hidden: string = 'Hidden';
         public readonly Attached: string = 'Attached';

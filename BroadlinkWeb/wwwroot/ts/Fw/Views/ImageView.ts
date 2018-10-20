@@ -1,4 +1,4 @@
-﻿/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Events/ViewEvents.ts" />
 /// <reference path="../Util/Dump.ts" />
@@ -70,7 +70,7 @@ namespace Fw.Views {
                     backgroundImage: (this._src) ? `url(${this._src})` : null
                 });
             } catch (e) {
-                Dump.ErrorLog(e);
+                Dump.ErrorLog(e, this.ClassName);
             } finally {
                 this.ResumeLayout();
             }
