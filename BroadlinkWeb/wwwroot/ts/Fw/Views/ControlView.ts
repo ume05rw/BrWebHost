@@ -2,13 +2,12 @@
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Events/ControlViewEvents.ts" />
 /// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
+/// <reference path="../Util/Num.ts" />
 /// <reference path="./BoxView.ts" />
 
 namespace Fw.Views {
     import Dump = Fw.Util.Dump;
     import Events = Fw.Events.ControlViewEvents;
-    import Number = Fw.Util.Number;
 
     export class ControlView extends BoxView {
         // properties

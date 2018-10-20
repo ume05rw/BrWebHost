@@ -25,7 +25,7 @@ namespace App.Views.Controls {
         }
         public set Name(value: string) {
             this._name = value;
-            Dump.Log(this.ImageSrc);
+
             if (this.ImageSrc === '')
                 this.Text = value;
         }
@@ -67,6 +67,13 @@ namespace App.Views.Controls {
 
             this.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, (e) => {
                 this.OnSingleClicked(e);
+            });
+
+            this.AddEventListener(Events.PositionChanged, () => {
+                if (this._control) {
+                    this._control.PositionLeft = this.Position.Left;
+                    this._control.PositionTop = this.Position.Top;
+                }
             });
         }
 
@@ -110,10 +117,21 @@ namespace App.Views.Controls {
                 // 色が見つからないとき、デフォルト
                 this.Color = Color.MainHover;
                 this.HoverColor = Color.MainHover;
+
+                if (this._control) {
+                    this._control.Color = Color.MainHover;
+                    this._control.HoverColor = Color.MainHover;
+                }
+
             } else {
                 // 色が定義済みのとき、ホバー色とともにセット
                 this.Color = value;
                 this.HoverColor = Color.ButtonHoverColors[idx];
+
+                if (this._control) {
+                    this._control.Color = value;
+                    this._control.HoverColor = Color.ButtonHoverColors[idx];
+                }
             }
             this.Refresh();
         }

@@ -5,7 +5,7 @@
 namespace Fw.Util {
     import Dump = Fw.Util.Dump;
 
-    export class Number {
+    export class Num {
         /**
          * @see ビルトインisNaNでは、isNaN(null) === true になってしまう。
          * @param value

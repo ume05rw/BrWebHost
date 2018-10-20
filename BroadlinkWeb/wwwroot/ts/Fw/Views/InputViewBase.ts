@@ -2,7 +2,6 @@
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Events/InputViewEvents.ts" />
 /// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
 /// <reference path="ViewBase.ts" />
 /// <reference path="IInputView.ts" />
 /// <reference path="Property/FitPolicy.ts" />
@@ -10,7 +9,6 @@
 namespace Fw.Views {
     import Dump = Fw.Util.Dump;
     import Events = Fw.Events.InputViewEvents;
-    import Number = Fw.Util.Number;
 
     export abstract class InputViewBase extends ViewBase implements IInputView {
 
@@ -46,7 +44,7 @@ namespace Fw.Views {
             this.BackgroundColor = '#FFFFFF';
 
             this.Elem.on('propertychange change keyup paste input', () => {
-                Dump.Log('InputViewBase.Changed');
+                //Dump.Log('InputViewBase.Changed');
                 this.DispatchEvent(Events.Changed, this.Value);
             });
 

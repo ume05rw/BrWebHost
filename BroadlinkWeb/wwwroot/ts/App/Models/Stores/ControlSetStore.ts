@@ -33,6 +33,8 @@ namespace App.Models.Stores {
                 entity
             );
 
+            //delete params.Values['Controls'];
+
             const res = await Xhr.Query.Invoke(params);
 
             if (res.Succeeded) {

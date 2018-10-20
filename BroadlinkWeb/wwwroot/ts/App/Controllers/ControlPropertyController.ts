@@ -35,7 +35,7 @@ namespace App.Controllers {
                 if (!this._control)
                     return;
 
-                Dump.Log('ControlPropertyController.TxtName.Changed');
+                //Dump.Log('ControlPropertyController.TxtName.Changed');
                 this._control.Name = this._page.TxtName.Value;
                 this._control.DispatchChanged();
             });
@@ -44,8 +44,7 @@ namespace App.Controllers {
                 if (!this._control)
                     return;
 
-                Dump.Log('ControlPropertyController.SboIcon.Changed');
-                //this._currentButton.SetImage(this._page.SboIcon.Value);
+                //Dump.Log('ControlPropertyController.SboIcon.Changed');
                 this._control.IconUrl = this._page.SboIcon.Value;
                 this._control.DispatchChanged();
             });
@@ -54,8 +53,7 @@ namespace App.Controllers {
                 if (!this._control)
                     return;
 
-                Dump.Log('ControlPropertyController.SboColor.Changed');
-                //this._currentButton.SetColor(this._page.SboColor.Value);
+                //Dump.Log('ControlPropertyController.SboColor.Changed');
                 this._control.Color = this._page.SboColor.Value;
                 this._control.DispatchChanged();
             });
@@ -64,7 +62,7 @@ namespace App.Controllers {
                 if (!this._control)
                     return;
 
-                Dump.Log('ControlPropertyController.TarCode.Changed');
+                //Dump.Log('ControlPropertyController.TarCode.Changed');
                 this._control.Code = this._page.TarCode.Value;
                 this._control.DispatchChanged();
             });
@@ -73,7 +71,7 @@ namespace App.Controllers {
                 if (!this._control)
                     return;
 
-                Dump.Log('ControlPropertyController.ChkToggleOn.Changed');
+                //Dump.Log('ControlPropertyController.ChkToggleOn.Changed');
                 this._control.IsAssignToggleOn = this._page.ChkToggleOn.BoolValue;
                 this._control.DispatchChanged();
             });
@@ -82,7 +80,7 @@ namespace App.Controllers {
                 if (!this._control)
                     return;
 
-                Dump.Log('ControlPropertyController.ChkToggleOff.Changed');
+                //Dump.Log('ControlPropertyController.ChkToggleOff.Changed');
                 this._control.IsAssignToggleOff = this._page.ChkToggleOff.BoolValue;
                 this._control.DispatchChanged();
             });

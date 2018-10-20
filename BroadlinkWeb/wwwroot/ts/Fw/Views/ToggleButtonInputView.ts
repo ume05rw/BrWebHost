@@ -2,7 +2,6 @@
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Events/ToggleButtonInputViewEvents.ts" />
 /// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
 /// <reference path="ControlView.ts" />
 /// <reference path="IInputView.ts" />
 

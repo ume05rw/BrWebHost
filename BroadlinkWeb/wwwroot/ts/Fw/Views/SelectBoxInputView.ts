@@ -2,14 +2,13 @@
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Events/ViewEvents.ts" />
 /// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
+/// <reference path="../Util/Num.ts" />
 /// <reference path="InputViewBase.ts" />
 /// <reference path="Property/FitPolicy.ts" />
 
 namespace Fw.Views {
     import Dump = Fw.Util.Dump;
     import Events = Fw.Events.ViewEvents;
-    import Number = Fw.Util.Number;
 
     export class SelectBoxInputView extends InputViewBase {
 

@@ -52,6 +52,89 @@ var Fw;
 (function (Fw) {
     var Util;
     (function (Util) {
+        var Obj = /** @class */ (function () {
+            function Obj() {
+            }
+            Obj.FormatSilializable = function (value) {
+                switch (typeof value) {
+                    case 'boolean':
+                    case 'number':
+                    case 'string':
+                        return value;
+                    case 'undefined':
+                    case 'function':
+                    case 'symbol':
+                        // 値がundefined, function のときは、undefined を返す。
+                        // symbol型はサポート外、undefined を返す。
+                        return undefined;
+                    case 'object':
+                        if (value instanceof jQuery
+                            || value instanceof HTMLElement) {
+                            // 値がundefined, JQueryオブジェクト, HTML要素のときは undefined を返す。
+                            return undefined;
+                        }
+                        else if (value === null) {
+                            // 値がnull のとき、そのまま nullを返す。
+                            // ※意図的にnullがセットされたものと看做す。
+                            return null;
+                        }
+                        else if (value instanceof Array) {
+                            // 値が単純配列のとき
+                            var ary_1 = [];
+                            _.each(value, function (v, k) {
+                                // 項目名が'_'で始まるものは除外
+                                if (typeof k === 'string' && k.substr(0, 1) === '_')
+                                    return;
+                                // 整形後の値を取得
+                                var tmpValue = Obj.FormatSilializable(v);
+                                // 値がundefinedのとき、除外
+                                if (tmpValue === undefined)
+                                    return;
+                                ary_1.push(tmpValue);
+                            });
+                            return ary_1;
+                        }
+                        else {
+                            // 値がobjectのとき
+                            var obj_1 = {};
+                            var exists_1 = false;
+                            _.each(value, function (v, k) {
+                                // 項目名が'_'で始まるものは除外
+                                if (typeof k === 'string' && k.substr(0, 1) === '_')
+                                    return;
+                                // 整形後の値を取得
+                                var tmpValue = Obj.FormatSilializable(v);
+                                // 値がundefinedのとき、除外
+                                if (tmpValue === undefined)
+                                    return;
+                                obj_1[k] = tmpValue;
+                                exists_1 = true;
+                            });
+                            // 値が1つでもある場合は整形済みオブジェクトを、
+                            // 1件も無い場合は undefined を返す。
+                            return (exists_1)
+                                ? obj_1
+                                : undefined;
+                        }
+                    default:
+                        Fw.Util.Dump.Log('想定外の渡し値');
+                        Fw.Util.Dump.Log(value);
+                        throw new Error('想定外の渡し値');
+                }
+            };
+            return Obj;
+        }());
+        Util.Obj = Obj;
+    })(Util = Fw.Util || (Fw.Util = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="Obj.ts" />
+var Fw;
+(function (Fw) {
+    var Util;
+    (function (Util) {
+        var Obj = Fw.Util.Obj;
         var LogMode;
         (function (LogMode) {
             LogMode[LogMode["Console"] = 1] = "Console";
@@ -121,7 +204,7 @@ var Fw;
             };
             Dump.GetDumpedString = function (value) {
                 return _.isObject(value)
-                    ? '\n' + JSON.stringify(value, null, "\t")
+                    ? '\n' + JSON.stringify(Obj.FormatSilializable(value), null, "\t")
                     : String(value);
             };
             Dump.InitLogWindow = function () {
@@ -269,87 +352,8 @@ var Fw;
                     console.log(e);
                 }
             };
-            Dump.WriteObjectToLogWindow = function (obj) {
-                Dump.WriteToLogWindow(Dump.BuildJson(obj));
-            };
-            Dump.BuildJson = function (obj, opts) {
-                if (opts === void 0) { opts = null; }
-                var _opts = {
-                    maxDepth: 3
-                };
-                //渡し値のオプション値で、デフォルトオプション定義を上書きする。
-                for (var key in opts)
-                    _opts[key] = opts[key];
-                //階層指定範囲を、1～100までに限定する。
-                var depth = parseInt(String(_opts.maxDepth));
-                _opts.maxDepth = (depth > 0)
-                    ? ((depth < 100)
-                        ? depth
-                        : 100)
-                    : 1;
-                //特定の文字を置換する。
-                var aryTargetStrings = [[/\\/g, "\\\\"], [/\n/g, "\\n"], [/\r/g, "\\r"], [/\t/g, "\\t"], [/(")/g, "\\$1"]];
-                var formatString = function (value) {
-                    for (var i = 0; i < aryTargetStrings.length; i++) {
-                        value = value.replace.apply(value, aryTargetStrings[i]);
-                    }
-                    return value;
-                };
-                //渡し値の型によって戻り値の内容表現を変える。(含再帰処理)
-                var makeDump = function (value, currentDepth) {
-                    //console.log("makeDump value= " + value);
-                    //console.log("makeDump typeof= " + (typeof value));
-                    if (currentDepth >= _opts.maxDepth)
-                        return "*over*";
-                    if (value === null)
-                        return 'null';
-                    switch (typeof value) {
-                        case 'undefined':
-                            return '"undefined"';
-                        case 'boolean':
-                            return value ? 'true' : 'false';
-                        case 'function':
-                            return '"function()"'; //value.toSource()
-                        case 'string':
-                            return '"' + formatString(value) + '"';
-                        case 'number':
-                            return formatString(String(value));
-                        case 'object':
-                            //HTMLElementか否かを判定
-                            if (value instanceof HTMLElement)
-                                return '"HTML-Element"';
-                            var aryResult = [];
-                            var aryKey = [];
-                            if (value instanceof Array) {
-                                //渡し値が配列のとき
-                                if ((currentDepth + 1) >= _opts.maxDepth)
-                                    return "[\"*depth-over*\"]";
-                                for (var key in value)
-                                    aryKey.push(key);
-                                for (var i = 0; i < aryKey.length; i++) {
-                                    aryResult.push(makeDump(value[aryKey[i]], currentDepth + 1));
-                                }
-                                return '[' + aryResult.join(', ') + ']';
-                            }
-                            else {
-                                //渡し値がオブジェクトのとき
-                                if ((currentDepth + 1) >= _opts.maxDepth)
-                                    return "{\"*depth-over*\": \"*depth-over*\"}";
-                                for (var key in value)
-                                    aryKey.push(key);
-                                for (var i = 0; i < aryKey.length; i++) {
-                                    aryResult.push(makeDump(aryKey[i], currentDepth + 1)
-                                        + ':'
-                                        + makeDump(value[aryKey[i]], currentDepth + 1));
-                                }
-                                return '{' + aryResult.join(', ') + '}';
-                            }
-                        default:
-                            return formatString(String(value));
-                    }
-                };
-                //ダンプ文字列を生成する。
-                return makeDump(obj, 0);
+            Dump.WriteObjectToLogWindow = function (value) {
+                Dump.WriteToLogWindow(JSON.stringify(Obj.FormatSilializable(value), null, "\t"));
             };
             Dump._logMode = LogMode.Console;
             Dump._logParams = {
@@ -737,26 +741,26 @@ var Fw;
 (function (Fw) {
     var Util;
     (function (Util) {
-        var Number = /** @class */ (function () {
-            function Number() {
+        var Num = /** @class */ (function () {
+            function Num() {
             }
             /**
              * @see ビルトインisNaNでは、isNaN(null) === true になってしまう。
              * @param value
              */
-            Number.IsNaN = function (value) {
+            Num.IsNaN = function (value) {
                 return (value !== value);
             };
-            return Number;
+            return Num;
         }());
-        Util.Number = Number;
+        Util.Num = Num;
     })(Util = Fw.Util || (Fw.Util = {}));
 })(Fw || (Fw = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Events/ViewEvents.ts" />
 /// <reference path="../../Util/Dump.ts" />
-/// <reference path="../../Util/Number.ts" />
+/// <reference path="../../Util/Num.ts" />
 var Fw;
 (function (Fw) {
     var Views;
@@ -764,7 +768,7 @@ var Fw;
         var Property;
         (function (Property) {
             var Events = Fw.Events.ViewEvents;
-            var Number = Fw.Util.Number;
+            var Num = Fw.Util.Num;
             var Anchor = /** @class */ (function () {
                 function Anchor(view) {
                     if (view === void 0) { view = null; }
@@ -803,7 +807,7 @@ var Fw;
                     },
                     set: function (value) {
                         // nullは許可、その他は例外
-                        if (Number.IsNaN(value) || value === undefined)
+                        if (Num.IsNaN(value) || value === undefined)
                             throw new Error("value type not allowed");
                         var changed = (this._marginTop !== value);
                         this._marginTop = value;
@@ -835,7 +839,7 @@ var Fw;
                     },
                     set: function (value) {
                         // nullは許可、その他は例外
-                        if (Number.IsNaN(value) || value === undefined)
+                        if (Num.IsNaN(value) || value === undefined)
                             throw new Error("value type not allowed");
                         var changed = (this._marginLeft !== value);
                         this._marginLeft = value;
@@ -867,7 +871,7 @@ var Fw;
                     },
                     set: function (value) {
                         // nullは許可、その他は例外
-                        if (Number.IsNaN(value) || value === undefined)
+                        if (Num.IsNaN(value) || value === undefined)
                             throw new Error("value type not allowed");
                         var changed = (this._marginRight !== value);
                         this._marginRight = value;
@@ -899,7 +903,7 @@ var Fw;
                     },
                     set: function (value) {
                         // nullは許可、その他は例外
-                        if (Number.IsNaN(value) || value === undefined)
+                        if (Num.IsNaN(value) || value === undefined)
                             throw new Error("value type not allowed");
                         var changed = (this._marginBottom !== value);
                         this._marginBottom = value;
@@ -1354,7 +1358,7 @@ var Fw;
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Events/ViewEvents.ts" />
 /// <reference path="../../Util/Dump.ts" />
-/// <reference path="../../Util/Number.ts" />
+/// <reference path="../../Util/Num.ts" />
 var Fw;
 (function (Fw) {
     var Views;
@@ -1362,7 +1366,7 @@ var Fw;
         var Property;
         (function (Property) {
             var Events = Fw.Events.ViewEvents;
-            var Number = Fw.Util.Number;
+            var Num = Fw.Util.Num;
             var Size = /** @class */ (function () {
                 function Size(view) {
                     if (view === void 0) { view = null; }
@@ -1377,7 +1381,7 @@ var Fw;
                     },
                     set: function (value) {
                         // nullは許可、その他は例外
-                        if (Number.IsNaN(value) || value === undefined)
+                        if (Num.IsNaN(value) || value === undefined)
                             throw new Error("value type not allowed");
                         var changed = (this._width !== value);
                         this._width = value;
@@ -1393,7 +1397,7 @@ var Fw;
                     },
                     set: function (value) {
                         // nullは許可、その他は例外
-                        if (Number.IsNaN(value) || value === undefined)
+                        if (Num.IsNaN(value) || value === undefined)
                             throw new Error("value type not allowed");
                         var changed = (this._height !== value);
                         this._height = value;
@@ -2435,14 +2439,14 @@ var Fw;
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Events/ControlViewEvents.ts" />
 /// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
+/// <reference path="../Util/Num.ts" />
 /// <reference path="./ViewBase.ts" />
 var Fw;
 (function (Fw) {
     var Views;
     (function (Views) {
         var Dump = Fw.Util.Dump;
-        var Number = Fw.Util.Number;
+        var Num = Fw.Util.Num;
         var BoxView = /** @class */ (function (_super) {
             __extends(BoxView, _super);
             function BoxView() {
@@ -2473,7 +2477,7 @@ var Fw;
                     return this._borderRadius;
                 },
                 set: function (value) {
-                    if (Number.IsNaN(value) || value === null || value === undefined)
+                    if (Num.IsNaN(value) || value === null || value === undefined)
                         value = 0;
                     if (value < 0)
                         value = 0;
@@ -2728,17 +2732,26 @@ var App;
                 _this._page.SboRm.AddEventListener(Events.InputViewEvents.Changed, function (je, eo) {
                     if (!_this._controlSet)
                         return;
-                    _this._controlSet.BrDeviceId = (_this._page.SboRm.Value == '')
-                        ? null
-                        : parseInt(_this._page.SboRm.Value, 10);
-                    _this._controlSet.DispatchChanged();
+                    if ($.isNumeric(_this._page.SboRm.Value)) {
+                        _this._controlSet.BrDeviceId = parseInt(_this._page.SboRm.Value, 10);
+                        _this._controlSet.DispatchChanged();
+                    }
                 });
                 _this._page.TmpRegistButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function () { return __awaiter(_this, void 0, void 0, function () {
+                    var res;
                     return __generator(this, function (_a) {
-                        // 仮機能 - 新規ControlSetを保存する。
-                        Dump.Log('Register');
-                        Dump.Log(this._controlSet);
-                        return [2 /*return*/];
+                        switch (_a.label) {
+                            case 0:
+                                // 仮機能 - 新規ControlSetを保存する。
+                                Dump.Log('Register');
+                                Dump.Log(this._controlSet);
+                                return [4 /*yield*/, App.Models.Stores.ControlSets.Write(this._controlSet)];
+                            case 1:
+                                res = _a.sent();
+                                Dump.Log('Register Completed?');
+                                Dump.Log(res);
+                                return [2 /*return*/];
+                        }
                     });
                 }); });
                 return _this;
@@ -2757,7 +2770,7 @@ var App;
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Events/ControlViewEvents.ts" />
 /// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
+/// <reference path="../Util/Num.ts" />
 /// <reference path="./BoxView.ts" />
 var Fw;
 (function (Fw) {
@@ -2867,7 +2880,6 @@ var Fw;
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Events/ControlViewEvents.ts" />
 /// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
 /// <reference path="ControlView.ts" />
 var Fw;
 (function (Fw) {
@@ -3104,44 +3116,42 @@ var App;
                 _this._page.TxtName.AddEventListener(Events.InputViewEvents.Changed, function (je, eo) {
                     if (!_this._control)
                         return;
-                    Dump.Log('ControlPropertyController.TxtName.Changed');
+                    //Dump.Log('ControlPropertyController.TxtName.Changed');
                     _this._control.Name = _this._page.TxtName.Value;
                     _this._control.DispatchChanged();
                 });
                 _this._page.SboIcon.AddEventListener(Events.InputViewEvents.Changed, function (je, eo) {
                     if (!_this._control)
                         return;
-                    Dump.Log('ControlPropertyController.SboIcon.Changed');
-                    //this._currentButton.SetImage(this._page.SboIcon.Value);
+                    //Dump.Log('ControlPropertyController.SboIcon.Changed');
                     _this._control.IconUrl = _this._page.SboIcon.Value;
                     _this._control.DispatchChanged();
                 });
                 _this._page.SboColor.AddEventListener(Events.InputViewEvents.Changed, function (je, eo) {
                     if (!_this._control)
                         return;
-                    Dump.Log('ControlPropertyController.SboColor.Changed');
-                    //this._currentButton.SetColor(this._page.SboColor.Value);
+                    //Dump.Log('ControlPropertyController.SboColor.Changed');
                     _this._control.Color = _this._page.SboColor.Value;
                     _this._control.DispatchChanged();
                 });
                 _this._page.TarCode.AddEventListener(Events.InputViewEvents.Changed, function (je, eo) {
                     if (!_this._control)
                         return;
-                    Dump.Log('ControlPropertyController.TarCode.Changed');
+                    //Dump.Log('ControlPropertyController.TarCode.Changed');
                     _this._control.Code = _this._page.TarCode.Value;
                     _this._control.DispatchChanged();
                 });
                 _this._page.ChkToggleOn.AddEventListener(Events.InputViewEvents.Changed, function (je, eo) {
                     if (!_this._control)
                         return;
-                    Dump.Log('ControlPropertyController.ChkToggleOn.Changed');
+                    //Dump.Log('ControlPropertyController.ChkToggleOn.Changed');
                     _this._control.IsAssignToggleOn = _this._page.ChkToggleOn.BoolValue;
                     _this._control.DispatchChanged();
                 });
                 _this._page.ChkToggleOff.AddEventListener(Events.InputViewEvents.Changed, function (je, eo) {
                     if (!_this._control)
                         return;
-                    Dump.Log('ControlPropertyController.ChkToggleOff.Changed');
+                    //Dump.Log('ControlPropertyController.ChkToggleOff.Changed');
                     _this._control.IsAssignToggleOff = _this._page.ChkToggleOff.BoolValue;
                     _this._control.DispatchChanged();
                 });
@@ -3563,18 +3573,18 @@ var Fw;
                     // 既存Entityのとき
                     // API応答はJSONから生成されたオブジェクトで、IEntityコンストラクタを通っていない。
                     // 既存要素はIEntity機能の保持が保障されているため、既存要素の値を更新して保持し続ける。
-                    var obj_1 = this._list[entity.Id];
+                    var obj_2 = this._list[entity.Id];
                     var changed_1 = false;
                     _.each(entity, function (val, key) {
                         if (typeof val === 'function')
                             return;
-                        if (obj_1[key] && obj_1[key] !== val) {
-                            obj_1[key] = val;
+                        if (obj_2[key] && obj_2[key] !== val) {
+                            obj_2[key] = val;
                             changed_1 = true;
                         }
                     });
                     if (changed_1)
-                        obj_1.DispatchChanged();
+                        obj_2.DispatchChanged();
                 }
                 else {
                     // 新規Entityのとき
@@ -3597,6 +3607,7 @@ var Fw;
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Util/Dump.ts" />
+/// <reference path="../../Util/Obj.ts" />
 /// <reference path="../../Config.ts" />
 var Fw;
 (function (Fw) {
@@ -3606,6 +3617,7 @@ var Fw;
         (function (Xhr) {
             var Dump = Fw.Util.Dump;
             var Config = Fw.Config;
+            var Obj = Fw.Util.Obj;
             var Query = /** @class */ (function () {
                 function Query() {
                 }
@@ -3636,11 +3648,17 @@ var Fw;
                                             break;
                                         default: method = 'POST';
                                     }
+                                    var data = (params.Values)
+                                        ? Obj.FormatSilializable(params.Values)
+                                        : null;
                                     $.ajax({
                                         url: Config.XhrBaseUrl + params.Url,
                                         method: method,
-                                        data: params.Values || null,
+                                        data: JSON.stringify(data),
                                         cache: false,
+                                        // リクエストのbodyフォーマットをJSONにする。
+                                        contentType: 'application/json',
+                                        // 応答をJSONとしてパースする。
                                         dataType: 'json',
                                         beforeSend: function (xhr) {
                                             xhr.setRequestHeader('Accept', 'application/json; charset=utf-8');
@@ -4049,18 +4067,7 @@ var App;
             var Control = /** @class */ (function (_super) {
                 __extends(Control, _super);
                 function Control() {
-                    var _this = _super !== null && _super.apply(this, arguments) || this;
-                    _this.ControlSetId = 0;
-                    _this.Name = '';
-                    _this.PositionLeft = 0;
-                    _this.PositionTop = 0;
-                    _this.Color = '';
-                    _this.HoverColor = '';
-                    _this.IconUrl = '';
-                    _this.Code = '';
-                    _this.IsAssignToggleOn = false;
-                    _this.IsAssignToggleOff = false;
-                    return _this;
+                    return _super !== null && _super.apply(this, arguments) || this;
                 }
                 return Control;
             }(Fw.Models.EntityBase));
@@ -4188,7 +4195,6 @@ var App;
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Events/ViewEvents.ts" />
 /// <reference path="../../Util/Dump.ts" />
-/// <reference path="../../Util/Number.ts" />
 var Fw;
 (function (Fw) {
     var Views;
@@ -4657,6 +4663,12 @@ var App;
                     _this.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, function (e) {
                         _this.OnSingleClicked(e);
                     });
+                    _this.AddEventListener(Events.PositionChanged, function () {
+                        if (_this._control) {
+                            _this._control.PositionLeft = _this.Position.Left;
+                            _this._control.PositionTop = _this.Position.Top;
+                        }
+                    });
                     return _this;
                 }
                 Object.defineProperty(ControlButtonView.prototype, "Name", {
@@ -4665,7 +4677,6 @@ var App;
                     },
                     set: function (value) {
                         this._name = value;
-                        Dump.Log(this.ImageSrc);
                         if (this.ImageSrc === '')
                             this.Text = value;
                     },
@@ -4726,11 +4737,19 @@ var App;
                         // 色が見つからないとき、デフォルト
                         this.Color = Color.MainHover;
                         this.HoverColor = Color.MainHover;
+                        if (this._control) {
+                            this._control.Color = Color.MainHover;
+                            this._control.HoverColor = Color.MainHover;
+                        }
                     }
                     else {
                         // 色が定義済みのとき、ホバー色とともにセット
                         this.Color = value;
                         this.HoverColor = Color.ButtonHoverColors[idx];
+                        if (this._control) {
+                            this._control.Color = value;
+                            this._control.HoverColor = Color.ButtonHoverColors[idx];
+                        }
                     }
                     this.Refresh();
                 };
@@ -5877,6 +5896,7 @@ var Fw;
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Util/Dump.ts" />
+/// <reference path="../../Util/Obj.ts" />
 var Fw;
 (function (Fw) {
     var Util;
@@ -5892,7 +5912,9 @@ var Fw;
                     this.Callback = function () { };
                     this.Url = url;
                     this.Method = method || Xhr.MethodType.Post;
-                    this.Values = values || {};
+                    this.Values = (values)
+                        ? values
+                        : {};
                 }
                 return Params;
             }());
@@ -5947,7 +5969,6 @@ var Fw;
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Events/CheckBoxInputViewEvents.ts" />
 /// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
 /// <reference path="ViewBase.ts" />
 /// <reference path="IInputView.ts" />
 /// <reference path="Property/FitPolicy.ts" />
@@ -6050,7 +6071,6 @@ var Fw;
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Events/ViewEvents.ts" />
 /// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
 /// <reference path="ViewBase.ts" />
 /// <reference path="Property/FitPolicy.ts" />
 var Fw;
@@ -6135,7 +6155,6 @@ var Fw;
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Events/InputViewEvents.ts" />
 /// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
 /// <reference path="ViewBase.ts" />
 /// <reference path="IInputView.ts" />
 /// <reference path="Property/FitPolicy.ts" />
@@ -6143,7 +6162,6 @@ var Fw;
 (function (Fw) {
     var Views;
     (function (Views) {
-        var Dump = Fw.Util.Dump;
         var Events = Fw.Events.InputViewEvents;
         var InputViewBase = /** @class */ (function (_super) {
             __extends(InputViewBase, _super);
@@ -6155,7 +6173,7 @@ var Fw;
                 _this._value = '';
                 _this.BackgroundColor = '#FFFFFF';
                 _this.Elem.on('propertychange change keyup paste input', function () {
-                    Dump.Log('InputViewBase.Changed');
+                    //Dump.Log('InputViewBase.Changed');
                     _this.DispatchEvent(Events.Changed, _this.Value);
                 });
                 _this.Elem.on('focus', function () {
@@ -6222,7 +6240,6 @@ var Fw;
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Events/ControlViewEvents.ts" />
 /// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
 /// <reference path="ViewBase.ts" />
 /// <reference path="Property/FontWeight.ts" />
 var Fw;
@@ -6381,7 +6398,6 @@ var Fw;
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Events/ControlViewEvents.ts" />
 /// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
 /// <reference path="./BoxView.ts" />
 var Fw;
 (function (Fw) {
@@ -6480,7 +6496,7 @@ var Fw;
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Events/ViewEvents.ts" />
 /// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
+/// <reference path="../Util/Num.ts" />
 /// <reference path="InputViewBase.ts" />
 /// <reference path="Property/FitPolicy.ts" />
 var Fw;
@@ -7538,7 +7554,6 @@ var Fw;
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Events/ViewEvents.ts" />
 /// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
 /// <reference path="InputViewBase.ts" />
 /// <reference path="Property/FitPolicy.ts" />
 var Fw;
@@ -7562,7 +7577,6 @@ var Fw;
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Events/ViewEvents.ts" />
 /// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
 /// <reference path="InputViewBase.ts" />
 /// <reference path="Property/FitPolicy.ts" />
 var Fw;
@@ -7586,7 +7600,6 @@ var Fw;
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Events/ToggleButtonInputViewEvents.ts" />
 /// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
 /// <reference path="ControlView.ts" />
 /// <reference path="IInputView.ts" />
 var Fw;
@@ -7797,7 +7810,7 @@ var Fw;
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Events/ViewEvents.ts" />
 /// <reference path="../../Util/Dump.ts" />
-/// <reference path="../../Util/Number.ts" />
+/// <reference path="../../Util/Num.ts" />
 /// <reference path="PositionPolicy.ts" />
 var Fw;
 (function (Fw) {
@@ -7806,7 +7819,7 @@ var Fw;
         var Property;
         (function (Property) {
             var Events = Fw.Events.ViewEvents;
-            var Number = Fw.Util.Number;
+            var Num = Fw.Util.Num;
             var Position = /** @class */ (function () {
                 function Position(view) {
                     if (view === void 0) { view = null; }
@@ -7863,7 +7876,7 @@ var Fw;
                     },
                     set: function (value) {
                         // nullは許可、その他は例外
-                        if (Number.IsNaN(value) || value === undefined)
+                        if (Num.IsNaN(value) || value === undefined)
                             throw new Error("value type not allowed");
                         var changed = false;
                         if (this._policy === Property.PositionPolicy.Centering) {
@@ -7901,7 +7914,7 @@ var Fw;
                     },
                     set: function (value) {
                         // nullは許可、その他は例外
-                        if (Number.IsNaN(value) || value === undefined)
+                        if (Num.IsNaN(value) || value === undefined)
                             throw new Error("value type not allowed");
                         var changed = false;
                         if (this._policy === Property.PositionPolicy.Centering) {
@@ -7939,7 +7952,7 @@ var Fw;
                     },
                     set: function (value) {
                         // nullは許可、その他は例外
-                        if (Number.IsNaN(value) || value === undefined)
+                        if (Num.IsNaN(value) || value === undefined)
                             throw new Error("value type not allowed");
                         var changed = false;
                         if (this._policy === Property.PositionPolicy.Centering) {
@@ -7977,7 +7990,7 @@ var Fw;
                     },
                     set: function (value) {
                         // nullは許可、その他は例外
-                        if (Number.IsNaN(value) || value === undefined)
+                        if (Num.IsNaN(value) || value === undefined)
                             throw new Error("value type not allowed");
                         var changed = false;
                         if (this._policy === Property.PositionPolicy.Centering) {
@@ -8043,7 +8056,6 @@ var Fw;
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Events/ViewEvents.ts" />
 /// <reference path="../../Util/Dump.ts" />
-/// <reference path="../../Util/Number.ts" />
 var Fw;
 (function (Fw) {
     var Views;

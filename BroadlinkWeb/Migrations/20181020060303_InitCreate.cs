@@ -30,7 +30,7 @@ namespace BroadlinkWeb.Migrations
                 {
                     Id = table.Column<int>(type: "int(11)", nullable: false)
                         .Annotation("MySQL:AutoIncrement", true),
-                    BrDeviceId = table.Column<int>(type: "int(11)", nullable: false),
+                    BrDeviceId = table.Column<int>(type: "int(11)", nullable: true),
                     Name = table.Column<string>(type: "varchar(50)", nullable: false)
                 },
                 constraints: table =>

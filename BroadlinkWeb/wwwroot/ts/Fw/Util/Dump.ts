@@ -1,7 +1,10 @@
 ﻿/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="Obj.ts" />
 
 namespace Fw.Util {
+    import Obj = Fw.Util.Obj;
+
     export enum LogMode {
         Console = 1,
         Window = 2
@@ -69,7 +72,7 @@ namespace Fw.Util {
 
         private static GetDumpedString(value: any): string {
             return _.isObject(value)
-                ? '\n' + JSON.stringify(value, null, "\t")
+                ? '\n' + JSON.stringify(Obj.FormatSilializable(value), null, "\t")
                 : String(value);
         }
 
@@ -250,106 +253,106 @@ namespace Fw.Util {
             }
         }
 
-        private static WriteObjectToLogWindow(obj: any): void {
-            Dump.WriteToLogWindow(Dump.BuildJson(obj));
+        private static WriteObjectToLogWindow(value: any): void {
+            Dump.WriteToLogWindow(JSON.stringify(Obj.FormatSilializable(value), null, "\t"));
         }
 
-        private static BuildJson(obj, opts = null): string {
-            var _opts = { //デフォルトオプション定義
-                    maxDepth: 3
-                };
+        //private static BuildJson(obj, opts = null): string {
+        //    var _opts = { //デフォルトオプション定義
+        //            maxDepth: 3
+        //        };
 
-            //渡し値のオプション値で、デフォルトオプション定義を上書きする。
-            for (var key in opts)
-                _opts[key] = opts[key];
+        //    //渡し値のオプション値で、デフォルトオプション定義を上書きする。
+        //    for (var key in opts)
+        //        _opts[key] = opts[key];
 
-            //階層指定範囲を、1～100までに限定する。
-            var depth = parseInt(String(_opts.maxDepth));
-            _opts.maxDepth = (depth > 0)
-                ? ((depth < 100)
-                    ? depth
-                    : 100)
-                : 1;
+        //    //階層指定範囲を、1～100までに限定する。
+        //    var depth = parseInt(String(_opts.maxDepth));
+        //    _opts.maxDepth = (depth > 0)
+        //        ? ((depth < 100)
+        //            ? depth
+        //            : 100)
+        //        : 1;
 
-            //特定の文字を置換する。
-            var aryTargetStrings = [[/\\/g, "\\\\"], [/\n/g, "\\n"], [/\r/g, "\\r"], [/\t/g, "\\t"], [/(")/g, "\\$1"]];
-            var formatString = function (value) {
+        //    //特定の文字を置換する。
+        //    var aryTargetStrings = [[/\\/g, "\\\\"], [/\n/g, "\\n"], [/\r/g, "\\r"], [/\t/g, "\\t"], [/(")/g, "\\$1"]];
+        //    var formatString = function (value) {
 
-                for (var i = 0; i < aryTargetStrings.length; i++) {
-                    value = value.replace.apply(value, aryTargetStrings[i]);
-                }
-                return value;
-            };
+        //        for (var i = 0; i < aryTargetStrings.length; i++) {
+        //            value = value.replace.apply(value, aryTargetStrings[i]);
+        //        }
+        //        return value;
+        //    };
 
-            //渡し値の型によって戻り値の内容表現を変える。(含再帰処理)
-            var makeDump = function (value, currentDepth) {
-                //console.log("makeDump value= " + value);
-                //console.log("makeDump typeof= " + (typeof value));
+        //    //渡し値の型によって戻り値の内容表現を変える。(含再帰処理)
+        //    var makeDump = function (value, currentDepth) {
+        //        //console.log("makeDump value= " + value);
+        //        //console.log("makeDump typeof= " + (typeof value));
 
-                if (currentDepth >= _opts.maxDepth)
-                    return "*over*";
+        //        if (currentDepth >= _opts.maxDepth)
+        //            return "*over*";
 
-                if (value === null)
-                    return 'null';
+        //        if (value === null)
+        //            return 'null';
 
-                switch (typeof value) {
-                    case 'undefined':
-                        return '"undefined"';
-                    case 'boolean':
-                        return value ? 'true' : 'false';
-                    case 'function':
-                        return '"function()"';  //value.toSource()
-                    case 'string':
-                        return '"' + formatString(value) + '"';
-                    case 'number':
-                        return formatString(String(value));
-                    case 'object':
-                        //HTMLElementか否かを判定
-                        if (value instanceof HTMLElement)
-                            return '"HTML-Element"';
+        //        switch (typeof value) {
+        //            case 'undefined':
+        //                return '"undefined"';
+        //            case 'boolean':
+        //                return value ? 'true' : 'false';
+        //            case 'function':
+        //                return '"function()"';  //value.toSource()
+        //            case 'string':
+        //                return '"' + formatString(value) + '"';
+        //            case 'number':
+        //                return formatString(String(value));
+        //            case 'object':
+        //                //HTMLElementか否かを判定
+        //                if (value instanceof HTMLElement)
+        //                    return '"HTML-Element"';
 
-                        var aryResult = [];
-                        var aryKey = [];
+        //                var aryResult = [];
+        //                var aryKey = [];
 
-                        if (value instanceof Array) {
-                            //渡し値が配列のとき
-                            if ((currentDepth + 1) >= _opts.maxDepth)
-                                return "[\"*depth-over*\"]";
+        //                if (value instanceof Array) {
+        //                    //渡し値が配列のとき
+        //                    if ((currentDepth + 1) >= _opts.maxDepth)
+        //                        return "[\"*depth-over*\"]";
 
-                            for (var key in value)
-                                aryKey.push(key);
+        //                    for (var key in value)
+        //                        aryKey.push(key);
 
-                            for (var i = 0; i < aryKey.length; i++) {
-                                aryResult.push(
-                                    makeDump(value[aryKey[i]], currentDepth + 1)
-                                );
-                            }
-                            return '[' + aryResult.join(', ') + ']';
-                        } else {
-                            //渡し値がオブジェクトのとき
-                            if ((currentDepth + 1) >= _opts.maxDepth)
-                                return "{\"*depth-over*\": \"*depth-over*\"}";
+        //                    for (var i = 0; i < aryKey.length; i++) {
+        //                        aryResult.push(
+        //                            makeDump(value[aryKey[i]], currentDepth + 1)
+        //                        );
+        //                    }
+        //                    return '[' + aryResult.join(', ') + ']';
+        //                } else {
+        //                    //渡し値がオブジェクトのとき
+        //                    if ((currentDepth + 1) >= _opts.maxDepth)
+        //                        return "{\"*depth-over*\": \"*depth-over*\"}";
 
-                            for (var key in value)
-                                aryKey.push(key);
+        //                    for (var key in value)
+        //                        aryKey.push(key);
 
-                            for (var i = 0; i < aryKey.length; i++) {
-                                aryResult.push(
-                                    makeDump(aryKey[i], currentDepth + 1)
-                                    + ':'
-                                    + makeDump(value[aryKey[i]], currentDepth + 1)
-                                );
-                            }
-                            return '{' + aryResult.join(', ') + '}';
-                        }
+        //                    for (var i = 0; i < aryKey.length; i++) {
+        //                        aryResult.push(
+        //                            makeDump(aryKey[i], currentDepth + 1)
+        //                            + ':'
+        //                            + makeDump(value[aryKey[i]], currentDepth + 1)
+        //                        );
+        //                    }
+        //                    return '{' + aryResult.join(', ') + '}';
+        //                }
 
 
-                    default:
-                        return formatString(String(value));
-                }
-            };
-            //ダンプ文字列を生成する。
-            return makeDump(obj, 0);
-        }
+        //            default:
+        //                return formatString(String(value));
+        //        }
+        //    };
+        //    //ダンプ文字列を生成する。
+        //    return makeDump(obj, 0);
+        //}
     }
 }

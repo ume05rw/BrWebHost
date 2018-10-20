@@ -21,7 +21,6 @@ namespace BroadlinkWeb.Models.Entities
         [Description("Control-Set Name")]
         public string Name { get; set; }
 
-        [Required]
         [Column(Order = 1, TypeName = "int(11)")]
         [Description("Taget Broadlink Device ID")]
         public int BrDeviceId { get; set; }

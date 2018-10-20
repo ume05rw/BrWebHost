@@ -2,7 +2,6 @@
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Events/CheckBoxInputViewEvents.ts" />
 /// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
 /// <reference path="ViewBase.ts" />
 /// <reference path="IInputView.ts" />
 /// <reference path="Property/FitPolicy.ts" />
@@ -10,7 +9,6 @@
 namespace Fw.Views {
     import Dump = Fw.Util.Dump;
     import Events = Fw.Events.CheckBoxInputViewEvents;
-    import Number = Fw.Util.Number;
 
     export class CheckBoxInputView extends ViewBase implements IInputView {
 

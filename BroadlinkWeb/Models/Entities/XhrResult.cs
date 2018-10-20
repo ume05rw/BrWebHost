@@ -66,15 +66,46 @@ namespace BroadlinkWeb.Models.Entities
                 list.Add(new Error()
                 {
                     Name = name,
-                    Message = $"Message: {err.ErrorMessage}, Exception: {err.Exception.Message}, StuckTrace: {err.Exception.StackTrace}"
+                    Message = $"Message: {err.ErrorMessage}, Exception: {err.Exception?.Message}, StuckTrace: {err.Exception?.StackTrace}"
                 });
             }
 
-            foreach (var child in msEnt.Children)
-                list.AddRange(GetModelStateErrors(name, child));
+            if (msEnt.Children != null)
+            {
+                foreach (var child in msEnt.Children)
+                    list.AddRange(GetModelStateErrors(name, child));
+            }
 
             return list.ToArray();
         }
+
+        public static XhrResult CreateError(Exception exception)
+        {
+            var errors = new List<Error>();
+            errors.AddRange(GetExceptionErrors(exception));
+
+            var result = new XhrResult();
+            result.Succeeded = false;
+            result.Errors = errors.ToArray();
+            return result;
+        }
+
+        private static Error[] GetExceptionErrors(Exception exception)
+        {
+            var list = new List<Error>();
+
+            list.Add(new Error()
+            {
+                Name = "",
+                Message = $"Exception: {exception.Message}, StuckTrace: {exception.StackTrace}"
+            });
+
+            if (exception.InnerException != null)
+                list.AddRange(GetExceptionErrors(exception.InnerException));
+
+            return list.ToArray();
+        }
+
 
 
         public object Values { get; set; } = null;

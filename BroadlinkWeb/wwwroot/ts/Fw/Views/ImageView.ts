@@ -2,14 +2,12 @@
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Events/ViewEvents.ts" />
 /// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
 /// <reference path="ViewBase.ts" />
 /// <reference path="Property/FitPolicy.ts" />
 
 namespace Fw.Views {
     import Dump = Fw.Util.Dump;
     import Events = Fw.Events.ViewEvents;
-    import Number = Fw.Util.Number;
     import FitPolicy = Fw.Views.Property.FitPolicy;
 
     export class ImageView extends ViewBase {

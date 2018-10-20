@@ -2,13 +2,13 @@
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Events/ControlViewEvents.ts" />
 /// <reference path="../Util/Dump.ts" />
-/// <reference path="../Util/Number.ts" />
+/// <reference path="../Util/Num.ts" />
 /// <reference path="./ViewBase.ts" />
 
 namespace Fw.Views {
     import Dump = Fw.Util.Dump;
     import Events = Fw.Events.ControlViewEvents;
-    import Number = Fw.Util.Number;
+    import Num = Fw.Util.Num;
 
     export class BoxView extends ViewBase {
 
@@ -30,7 +30,7 @@ namespace Fw.Views {
             return this._borderRadius;
         }
         public set BorderRadius(value: number) {
-            if (Number.IsNaN(value) || value === null || value === undefined)
+            if (Num.IsNaN(value) || value === null || value === undefined)
                 value = 0;
 
             if (value < 0)

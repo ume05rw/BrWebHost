@@ -44,18 +44,19 @@ namespace App.Controllers {
                 if (!this._controlSet)
                     return;
 
-                this._controlSet.BrDeviceId = (this._page.SboRm.Value == '')
-                    ? null
-                    : parseInt(this._page.SboRm.Value, 10);
-
-                this._controlSet.DispatchChanged();
+                if ($.isNumeric(this._page.SboRm.Value)) {
+                    this._controlSet.BrDeviceId = parseInt(this._page.SboRm.Value, 10);
+                    this._controlSet.DispatchChanged();
+                }
             });
 
             this._page.TmpRegistButton.AddEventListener(Events.ButtonViewEvents.SingleClick, async () => {
                 // 仮機能 - 新規ControlSetを保存する。
                 Dump.Log('Register');
                 Dump.Log(this._controlSet);
-                //await App.Models.Stores.ControlSets.Write(this._controlSet);
+                const res = await App.Models.Stores.ControlSets.Write(this._controlSet);
+                Dump.Log('Register Completed?');
+                Dump.Log(res);
             });
         }
 

@@ -53,73 +53,80 @@ namespace BroadlinkWeb.Areas.Api.Controllers
         [HttpPost]
         public async Task<XhrResult> PostControlSet([FromBody] ControlSet controlSet)
         {
-            if (!ModelState.IsValid)
-                return XhrResult.CreateError(ModelState);
-
-            if (controlSet.Id == default(int))
+            try
             {
-                // IDが無いEntity = 新規
-                this._context.ControlSets.Add(controlSet);
+                if (!ModelState.IsValid)
+                    return XhrResult.CreateError(ModelState);
 
-                // 一旦ヘッダレコードを保存->IDが貰える。
-                await _context.SaveChangesAsync();
-
-                if (controlSet.Controls.Count > 0)
+                if (controlSet.Id == default(int))
                 {
-                    foreach (var control in controlSet.Controls)
+                    // IDが無いEntity = 新規
+                    this._context.ControlSets.Add(controlSet);
+
+                    // 一旦ヘッダレコードを保存->IDが貰える。
+                    await _context.SaveChangesAsync();
+
+                    if (controlSet.Controls.Count > 0)
                     {
-                        control.ControlSetId = controlSet.Id;
-                        this._context.Controls.Add(control);
+                        foreach (var control in controlSet.Controls)
+                        {
+                            control.ControlSetId = controlSet.Id;
+                            this._context.Controls.Add(control);
+                        }
+
+                        // 明細レコードを保存
+                        await _context.SaveChangesAsync();
+                    }
+                }
+                else
+                {
+                    // IDを持つEntity = 既存の更新
+                    this._context.Entry(controlSet).State = EntityState.Modified;
+
+                    // 既存の明細レコードを取得
+                    var children = this._context.Controls.Where(c => c.ControlSetId == controlSet.Id).ToArray();
+
+                    if (controlSet.Controls.Count > 0)
+                    {
+                        foreach (var control in controlSet.Controls)
+                        {
+                            // 明細レコードが既存か否か
+                            var exists = (children.FirstOrDefault(c => c.Id == control.Id) != null);
+
+                            if (exists)
+                            {
+                                // 既存の明細は更新フラグON
+                                this._context.Entry(control).State = EntityState.Modified;
+                            }
+                            else
+                            {
+                                // 新規の明細はcontextに追加。
+                                control.ControlSetId = controlSet.Id; //setのIdは不変
+                                this._context.Controls.Add(control);
+                            }
+                        }
                     }
 
-                    // 明細レコードを保存
+                    // 既存の明細のうち、渡し値に存在しないものを削除。
+                    if (children.Length > 0)
+                    {
+                        var removes = children.Where(c => !controlSet.Controls.Any(c2 => c2.Id == c.Id));
+                        foreach (var control in removes)
+                        {
+                            this._context.Controls.Remove(control);
+                        }
+                    }
+
+                    // ヘッダと明細を一括保存
                     await _context.SaveChangesAsync();
                 }
 
-            } else
-            {
-                // IDを持つEntity = 既存の更新
-                this._context.Entry(controlSet).State = EntityState.Modified;
-
-                // 既存の明細レコードを取得
-                var children = this._context.Controls.Where(c => c.ControlSetId == controlSet.Id).ToArray();
-
-                if (controlSet.Controls.Count > 0)
-                {
-                    foreach (var control in controlSet.Controls)
-                    {
-                        // 明細レコードが既存か否か
-                        var exists = (children.FirstOrDefault(c => c.Id == control.Id) != null);
-
-                        if (exists)
-                        {
-                            // 既存の明細は更新フラグON
-                            this._context.Entry(control).State = EntityState.Modified;
-                        }
-                        else
-                        {
-                            // 新規の明細はcontextに追加。
-                            control.ControlSetId = controlSet.Id; //setのIdは不変
-                            this._context.Controls.Add(control);
-                        }
-                    }
-                }
-
-                // 既存の明細のうち、渡し値に存在しないものを削除。
-                if (children.Length > 0)
-                {
-                    var removes = children.Where(c => !controlSet.Controls.Any(c2 => c2.Id == c.Id));
-                    foreach (var control in removes)
-                    {
-                        this._context.Controls.Remove(control);
-                    }
-                }
-
-                // ヘッダと明細を一括保存
-                await _context.SaveChangesAsync();
+                return XhrResult.CreateSucceeded(controlSet);
             }
-
-            return XhrResult.CreateSucceeded(controlSet);
+            catch (Exception ex)
+            {
+                return XhrResult.CreateError(ex);
+            }
         }
 
         // DELETE: api/ControlSets/5

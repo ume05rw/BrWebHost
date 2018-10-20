@@ -10,7 +10,7 @@ using System;
 namespace BroadlinkWeb.Migrations
 {
     [DbContext(typeof(Dbc))]
-    [Migration("20181019143228_InitCreate")]
+    [Migration("20181020060303_InitCreate")]
     partial class InitCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -115,7 +115,7 @@ namespace BroadlinkWeb.Migrations
             modelBuilder.Entity("BroadlinkWeb.Models.Entities.Control", b =>
                 {
                     b.HasOne("BroadlinkWeb.Models.Entities.ControlSet", "ControlSet")
-                        .WithMany()
+                        .WithMany("Controls")
                         .HasForeignKey("ControlSetId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

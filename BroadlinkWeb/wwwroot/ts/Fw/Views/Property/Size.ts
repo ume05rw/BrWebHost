@@ -2,12 +2,12 @@
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Events/ViewEvents.ts" />
 /// <reference path="../../Util/Dump.ts" />
-/// <reference path="../../Util/Number.ts" />
+/// <reference path="../../Util/Num.ts" />
 
 namespace Fw.Views.Property {
     import Dump = Fw.Util.Dump;
     import Events = Fw.Events.ViewEvents;
-    import Number = Fw.Util.Number;
+    import Num = Fw.Util.Num;
 
     export class Size {
         private _view: IView = null;
@@ -18,7 +18,7 @@ namespace Fw.Views.Property {
         }
         public set Width(value: number) {
             // nullは許可、その他は例外
-            if (Number.IsNaN(value) || value === undefined)
+            if (Num.IsNaN(value) || value === undefined)
                 throw new Error("value type not allowed");
 
             const changed = (this._width !== value);
@@ -34,7 +34,7 @@ namespace Fw.Views.Property {
         }
         public set Height(value: number) {
             // nullは許可、その他は例外
-            if (Number.IsNaN(value) || value === undefined)
+            if (Num.IsNaN(value) || value === undefined)
                 throw new Error("value type not allowed");
 
             const changed = (this._height !== value);

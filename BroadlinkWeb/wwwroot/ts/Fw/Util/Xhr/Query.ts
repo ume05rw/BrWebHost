@@ -1,11 +1,13 @@
 ﻿/// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Util/Dump.ts" />
+/// <reference path="../../Util/Obj.ts" />
 /// <reference path="../../Config.ts" />
 
 namespace Fw.Util.Xhr {
     import Dump = Fw.Util.Dump;
     import Config = Fw.Config;
+    import Obj = Fw.Util.Obj;
 
     export class Query {
         /**
@@ -27,11 +29,20 @@ namespace Fw.Util.Xhr {
                     default: method = 'POST';
                 }
 
+                const data = (params.Values)
+                    ? Obj.FormatSilializable(params.Values)
+                    : null;
+
                 $.ajax({
                     url: Config.XhrBaseUrl + params.Url,
                     method: method,
-                    data: params.Values || null,
+                    data: JSON.stringify(data),
                     cache: false,
+
+                    // リクエストのbodyフォーマットをJSONにする。
+                    contentType: 'application/json',
+
+                    // 応答をJSONとしてパースする。
                     dataType: 'json',
                     beforeSend: function (xhr) {
                         xhr.setRequestHeader('Accept', 'application/json; charset=utf-8');
