@@ -114,7 +114,7 @@ namespace BroadlinkWeb.Migrations
             modelBuilder.Entity("BroadlinkWeb.Models.Entities.Control", b =>
                 {
                     b.HasOne("BroadlinkWeb.Models.Entities.ControlSet", "ControlSet")
-                        .WithMany()
+                        .WithMany("Controls")
                         .HasForeignKey("ControlSetId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

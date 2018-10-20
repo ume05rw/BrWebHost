@@ -23,100 +23,187 @@ namespace BroadlinkWeb.Areas.Api.Controllers
 
         // GET: api/ControlSets
         [HttpGet]
-        public IEnumerable<ControlSet> GetControlSets()
+        public XhrResult GetControlSets()
         {
-            return _context.ControlSets;
+            if (!ModelState.IsValid)
+                return XhrResult.CreateError(ModelState);
+
+            var list = _context.ControlSets
+                .Include(c => c.Controls)
+                .ToArray();
+            return XhrResult.CreateSucceeded(list);
         }
 
         // GET: api/ControlSets/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetControlSet([FromRoute] int id)
+        public async Task<XhrResult> GetControlSet([FromRoute] int id)
         {
             if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+                return XhrResult.CreateError(ModelState);
 
             var controlSet = await _context.ControlSets.SingleOrDefaultAsync(m => m.Id == id);
 
             if (controlSet == null)
-            {
-                return NotFound();
-            }
+                return XhrResult.CreateError("Entity Not Found");
 
-            return Ok(controlSet);
-        }
-
-        // PUT: api/ControlSets/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutControlSet([FromRoute] int id, [FromBody] ControlSet controlSet)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != controlSet.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(controlSet).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ControlSetExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            return XhrResult.CreateSucceeded(controlSet);
         }
 
         // POST: api/ControlSets
         [HttpPost]
-        public async Task<IActionResult> PostControlSet([FromBody] ControlSet controlSet)
+        public async Task<XhrResult> PostControlSet([FromBody] ControlSet controlSet)
         {
             if (!ModelState.IsValid)
+                return XhrResult.CreateError(ModelState);
+
+            if (controlSet.Id == default(int))
             {
-                return BadRequest(ModelState);
+                // IDが無いEntity = 新規
+                this._context.ControlSets.Add(controlSet);
+
+                // 一旦ヘッダレコードを保存->IDが貰える。
+                await _context.SaveChangesAsync();
+
+                if (controlSet.Controls.Count > 0)
+                {
+                    foreach (var control in controlSet.Controls)
+                    {
+                        control.ControlSetId = controlSet.Id;
+                        this._context.Controls.Add(control);
+                    }
+
+                    // 明細レコードを保存
+                    await _context.SaveChangesAsync();
+                }
+
+            } else
+            {
+                // IDを持つEntity = 既存の更新
+                this._context.Entry(controlSet).State = EntityState.Modified;
+
+                // 既存の明細レコードを取得
+                var children = this._context.Controls.Where(c => c.ControlSetId == controlSet.Id).ToArray();
+
+                if (controlSet.Controls.Count > 0)
+                {
+                    foreach (var control in controlSet.Controls)
+                    {
+                        // 明細レコードが既存か否か
+                        var exists = (children.FirstOrDefault(c => c.Id == control.Id) != null);
+
+                        if (exists)
+                        {
+                            // 既存の明細は更新フラグON
+                            this._context.Entry(control).State = EntityState.Modified;
+                        }
+                        else
+                        {
+                            // 新規の明細はcontextに追加。
+                            control.ControlSetId = controlSet.Id; //setのIdは不変
+                            this._context.Controls.Add(control);
+                        }
+                    }
+                }
+
+                // 既存の明細のうち、渡し値に存在しないものを削除。
+                if (children.Length > 0)
+                {
+                    var removes = children.Where(c => !controlSet.Controls.Any(c2 => c2.Id == c.Id));
+                    foreach (var control in removes)
+                    {
+                        this._context.Controls.Remove(control);
+                    }
+                }
+
+                // ヘッダと明細を一括保存
+                await _context.SaveChangesAsync();
             }
 
-            _context.ControlSets.Add(controlSet);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetControlSet", new { id = controlSet.Id }, controlSet);
+            return XhrResult.CreateSucceeded(controlSet);
         }
 
         // DELETE: api/ControlSets/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteControlSet([FromRoute] int id)
+        public async Task<XhrResult> DeleteControlSet([FromRoute] int id)
         {
             if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+                return XhrResult.CreateError(ModelState);
 
-            var controlSet = await _context.ControlSets.SingleOrDefaultAsync(m => m.Id == id);
+            var controlSet = await this._context.ControlSets.SingleOrDefaultAsync(m => m.Id == id);
+
             if (controlSet == null)
+                return XhrResult.CreateError("Entity Not Found");
+
+            // 既存の明細レコードを取得
+            var children = this._context.Controls.Where(c => c.ControlSetId == controlSet.Id).ToArray();
+
+            // 既存明細レコードを削除指定
+            foreach (var control in children)
             {
-                return NotFound();
+                this._context.Controls.Remove(control);
             }
 
-            _context.ControlSets.Remove(controlSet);
-            await _context.SaveChangesAsync();
+            // ヘッダレコードを削除指定
+            this._context.ControlSets.Remove(controlSet);
 
-            return Ok(controlSet);
+            // ヘッダ・明細を一括削除
+            await this._context.SaveChangesAsync();
+
+            return XhrResult.CreateSucceeded();
         }
+
+        //// PUT: api/ControlSets/5
+        //[HttpPut("{id}")]
+        //public async Task<IActionResult> PutControlSet(
+        //    [FromRoute] int id, 
+        //    [FromBody] ControlSet controlSet
+        //)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
+
+        //    if (id != controlSet.Id)
+        //    {
+        //        return BadRequest();
+        //    }
+
+        //    _context.Entry(controlSet).State = EntityState.Modified;
+
+        //    try
+        //    {
+        //        await _context.SaveChangesAsync();
+        //    }
+        //    catch (DbUpdateConcurrencyException)
+        //    {
+        //        if (!ControlSetExists(id))
+        //        {
+        //            return NotFound();
+        //        }
+        //        else
+        //        {
+        //            throw;
+        //        }
+        //    }
+
+        //    return NoContent();
+        //}
+
+        //// POST: api/ControlSets
+        //[HttpPost]
+        //public async Task<IActionResult> PostControlSet([FromBody] ControlSet controlSet)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
+
+        //    _context.ControlSets.Add(controlSet);
+        //    await _context.SaveChangesAsync();
+
+        //    return CreatedAtAction("GetControlSet", new { id = controlSet.Id }, controlSet);
+        //}
 
         private bool ControlSetExists(int id)
         {

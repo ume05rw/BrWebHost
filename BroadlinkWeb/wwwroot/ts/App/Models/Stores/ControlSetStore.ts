@@ -1,6 +1,6 @@
 ﻿/// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Models/Stores/StoreBase.ts" />
+/// <reference path="../../../Fw/Models/StoreBase.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../../../Fw/Util/Xhr/Query.ts" />
 /// <reference path="../Entities/ControlSet.ts" />
@@ -10,22 +10,33 @@ namespace App.Models.Stores {
     import ControlSet = App.Models.Entities.ControlSet;
     import Xhr = Fw.Util.Xhr;
 
-    export class ControlSetStore extends Fw.Models.Stores.StoreBase<ControlSet> {
+    export class ControlSetStore extends Fw.Models.StoreBase<ControlSet> {
 
-        public async Write(ent: ControlSet): Promise<ControlSet> {
+        private static _instance: ControlSetStore = null;
+        public static get Instance(): ControlSetStore {
+            if (ControlSetStore._instance === null)
+                ControlSetStore._instance = new ControlSetStore();
+
+            return ControlSetStore._instance;
+        }
+
+        protected GetNewEntity(): ControlSet {
+            return new ControlSet();
+        }
+
+
+        public async Write(entity: ControlSet): Promise<ControlSet> {
 
             const params = new Xhr.Params(
-                'ControlSet/Write',
+                'ControlSets',
                 Xhr.MethodType.Post,
-                ent
+                entity
             );
 
             const res = await Xhr.Query.Invoke(params);
+
             if (res.Succeeded) {
-                _.each(res.Values, (row: ControlSet) => {
-                    if (_.findIndex(this.List, { Id: row.Id }) === -1)
-                        this.List.push(row);
-                });
+                this.Merge(res.Values as ControlSet);
 
                 return res.Values as ControlSet;
             } else {
@@ -35,4 +46,6 @@ namespace App.Models.Stores {
             }
         }
     }
+
+    export const ControlSets: ControlSetStore = ControlSetStore.Instance;
 }

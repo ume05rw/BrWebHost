@@ -21,6 +21,7 @@ namespace App.Views.Pages {
         public TxtName: Views.TextBoxInputView;
         public SboRm: Views.SelectBoxInputView;
         public DeleteButton: Controls.ButtonView;
+        public TmpRegistButton: Controls.ButtonView;
 
         constructor() {
             super($(""));
@@ -30,6 +31,7 @@ namespace App.Views.Pages {
             this.TxtName = new Views.TextBoxInputView();
             this.SboRm = new Views.SelectBoxInputView();
             this.DeleteButton = new Controls.ButtonView();
+            this.TmpRegistButton = new Controls.ButtonView();
 
             this.SetClassName('ControlHeaderPropertyPageView');
 
@@ -92,6 +94,11 @@ namespace App.Views.Pages {
             this.DeleteButton.Size.Height = 30;
             this.DeleteButton.Text = '*Delete*';
             this.InputPanel.Add(this.DeleteButton);
+
+            this.TmpRegistButton.SetAnchor(null, 5, 15, null);
+            this.TmpRegistButton.Size.Height = 30;
+            this.TmpRegistButton.Text = '*Regist*';
+            this.InputPanel.Add(this.TmpRegistButton);
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿/// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Models/Stores/StoreBase.ts" />
+/// <reference path="../../../Fw/Models/StoreBase.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../../../Fw/Util/Xhr/Query.ts" />
 /// <reference path="../Entities/BrDevice.ts" />
@@ -10,7 +10,19 @@ namespace App.Models.Stores {
     import BrDevice = App.Models.Entities.BrDevice;
     import Xhr = Fw.Util.Xhr;
 
-    export class BrDeviceStore extends Fw.Models.Stores.StoreBase<BrDevice> {
+    export class BrDeviceStore extends Fw.Models.StoreBase<BrDevice> {
+
+        private static _instance: BrDeviceStore = null;
+        public static get Instance(): BrDeviceStore {
+            if (BrDeviceStore._instance === null)
+                BrDeviceStore._instance = new BrDeviceStore();
+
+            return BrDeviceStore._instance;
+        }
+
+        protected GetNewEntity(): BrDevice {
+            return new BrDevice();
+        }
 
         public async Discover(): Promise<BrDevice[]> {
 
@@ -20,11 +32,10 @@ namespace App.Models.Stores {
             );
 
             const res = await Xhr.Query.Invoke(params);
+
             if (res.Succeeded) {
-                _.each(res.Values, (row: BrDevice) => {
-                    if (_.findIndex(this.List, { Id: row.Id }) === -1)
-                        this.List.push(row);
-                });
+                for (let i = 0; i < res.Values.length; i++)
+                    this.Merge(res.Values[i] as BrDevice);
 
                 return res.Values as BrDevice[];
             } else {
@@ -33,5 +44,11 @@ namespace App.Models.Stores {
                 return null;
             }
         }
+
+        public Write(entity: BrDevice): void {
+            throw new Error('Only Server can add BrDevices.');
+        }
     }
+
+    export const BrDevices: BrDeviceStore = BrDeviceStore.Instance;
 }

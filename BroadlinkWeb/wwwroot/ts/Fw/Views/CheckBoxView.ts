@@ -43,15 +43,7 @@ namespace Fw.Views {
         public set BoolValue(value: boolean) {
             const changed = (this._boolValue !== (value === true));
             this._boolValue = (value === true);
-
-            const strVal = (this._boolValue === true)
-                ? 'true'
-                : 'false';
-            this._input.attr('value', strVal);
-
-            const id = `${this._name}_${strVal}`;
-            this._input.attr('id', id);
-            this._label.attr('for', id);
+            this._input.prop('checked', this._boolValue);
 
             if (changed) {
                 //Dump.Log('CheckBoxInputView.Changed');

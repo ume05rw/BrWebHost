@@ -16,7 +16,7 @@ namespace BroadlinkWeb.Models
 
         public DbSet<ControlSet> ControlSets { get; set; }
 
-        public DbSet<Control> Controlls { get; set; }
+        public DbSet<Control> Controls { get; set; }
 
         /// <summary>
         /// Constructor

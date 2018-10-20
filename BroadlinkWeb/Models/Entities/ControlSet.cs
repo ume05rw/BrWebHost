@@ -27,6 +27,7 @@ namespace BroadlinkWeb.Models.Entities
         public int BrDeviceId { get; set; }
 
 
+        public List<Control> Controls { get; set; }
         public BrDevice BrDevice { get; set; }
     }
 }

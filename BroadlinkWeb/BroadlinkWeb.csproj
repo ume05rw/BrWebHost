@@ -42,6 +42,7 @@
     <Content Remove="wwwroot\ts\Fw\Events\ButtonViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\CheckBoxInputViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\ControlViewEvents.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\EntityEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\EventObject.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\EventReference.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\ImageViewEvents.ts" />
@@ -59,10 +60,6 @@
     <Content Remove="wwwroot\ts\Fw\Events\ToggleButtonInputViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\ViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\IObject.ts" />
-    <Content Remove="wwwroot\ts\Fw\Models\Entities\EntityBase.ts" />
-    <Content Remove="wwwroot\ts\Fw\Models\Entities\IEntity.ts" />
-    <Content Remove="wwwroot\ts\Fw\Models\Stores\IStore.ts" />
-    <Content Remove="wwwroot\ts\Fw\Models\Stores\StoreBase.ts" />
     <Content Remove="wwwroot\ts\Fw\ObjectBase.ts" />
     <Content Remove="wwwroot\ts\Fw\Startup.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\App.ts" />
@@ -163,6 +160,7 @@
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\BoxViewEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\ButtonViewEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\CheckBoxInputViewEvents.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\EntityEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\EventObject.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\InputViewEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\SelectBoxInputViewEvents.ts" />
@@ -181,10 +179,10 @@
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\ToggleButtonInputViewEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\ViewEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\IObject.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Models\Entities\EntityBase.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Models\Entities\IEntity.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Models\Stores\IStore.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Models\Stores\StoreBase.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Models\EntityBase.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Models\IEntity.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Models\IStore.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Models\StoreBase.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\ObjectBase.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Startup.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\App.ts" />

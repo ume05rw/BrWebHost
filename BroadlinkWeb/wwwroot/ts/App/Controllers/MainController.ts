@@ -30,7 +30,12 @@ namespace App.Controllers {
             const page = this.View as Pages.MainPageView;
 
             page.HeaderBar.RightButton.AddEventListener(Events.ButtonViewEvents.SingleClick, () => {
-                this.Manager.Get('ControlSet').SetModal();
+
+                // TODO: 仮実装-実際は、シーンorリモコン、リモコン種選択をさせたあと、リモコン編集画面に遷移。
+
+                const ctr = this.Manager.Get('ControlSet') as ControlSetController;
+                ctr.SetControlSet(new App.Models.Entities.ControlSet());
+                ctr.SetModal();
                 //this.SwitchTo('ControlSet');
             });
 

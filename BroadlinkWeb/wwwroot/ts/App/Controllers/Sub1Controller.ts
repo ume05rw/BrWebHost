@@ -13,7 +13,7 @@ namespace App.Controllers {
     import Events = Fw.Events;
     import Manager = Fw.Controllers.Manager;
     import BrDevice = App.Models.Entities.BrDevice;
-    import BrDeviceStore = App.Models.Stores.BrDeviceStore;
+    import Stores = App.Models.Stores;
     import Property = Fw.Views.Property;
 
     export class Sub1Controller extends Fw.Controllers.ControllerBase {
@@ -37,8 +37,7 @@ namespace App.Controllers {
                 //this.Discover();
 
                 Dump.Log('Discover');
-                const store = new BrDeviceStore();
-                const devs = await store.Discover();
+                const devs = await Stores.BrDevices.Discover();
                 _.each(devs, (dev) => {
                     Dump.Log({
                         Id: dev.Id,

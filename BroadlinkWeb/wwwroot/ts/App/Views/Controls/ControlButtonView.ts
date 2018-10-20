@@ -3,6 +3,7 @@
 /// <reference path="../../../Fw/Views/RelocatableButtonView.ts" />
 /// <reference path="../../../Fw/Views/Property/Anchor.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../../Fw/Events/EntityEvents.ts" />
 /// <reference path="../../Color.ts" />
 /// <reference path="../../Events/Controls/ControlButtonViewEvents.ts" />
 /// <reference path="LabeledButtonView.ts" />
@@ -14,6 +15,7 @@ namespace App.Views.Controls {
     import Property = Fw.Views.Property;
     import Color = App.Color;
     import Events = App.Events.Controls.ControlButtonViewEvents;
+    import EntityEvents = Fw.Events.EntityEvents;
 
     export class ControlButtonView extends Views.RelocatableButtonView {
 
@@ -29,6 +31,23 @@ namespace App.Views.Controls {
         }
         public Code: string;
 
+        private _control: App.Models.Entities.Control;
+        public get Control(): App.Models.Entities.Control {
+            return this._control;
+        }
+        public set Control(value: App.Models.Entities.Control) {
+            if (this._control) {
+                this._control.RemoveEventListener(EntityEvents.Changed, this.ApplyFromEntity);
+            }
+
+            this._control = value;
+
+            if (this._control) {
+                this._control.AddEventListener(EntityEvents.Changed, this.ApplyFromEntity, this);
+            }
+
+            this.ApplyFromEntity();
+        }
 
         constructor() {
             super();
@@ -61,6 +80,17 @@ namespace App.Views.Controls {
                 Dump.Log('Exec');
                 this.DispatchEvent(Events.ExecOrdered, this.Code);
             }
+        }
+
+        private ApplyFromEntity(): void {
+            if (!this._control)
+                return;
+
+            this.Name = this._control.Name;
+            this.Code = this._control.Code;
+            this.SetImage(this._control.IconUrl);
+            this.SetColor(this._control.Color);
+            this.Refresh();
         }
 
         public SetImage(value: string): void {

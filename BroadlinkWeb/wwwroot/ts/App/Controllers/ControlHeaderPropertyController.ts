@@ -4,6 +4,7 @@
 /// <reference path="../../Fw/Controllers/Manager.ts" />
 /// <reference path="../../Fw/Util/Dump.ts" />
 /// <reference path="../../Fw/Events/ControlViewEvents.ts" />
+/// <reference path="../../Fw/Events/EntityEvents.ts" />
 /// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
 /// <reference path="../Views/Pages/MainPageView.ts" />
 
@@ -14,10 +15,13 @@ namespace App.Controllers {
     import Property = Fw.Views.Property;
     import Pages = App.Views.Pages;
     import Controls = App.Views.Controls;
+    import EntityEvents = Fw.Events.EntityEvents;
 
     export class ControlHeaderPropertyController extends Fw.Controllers.ControllerBase {
 
         private _page: Pages.ControlHeaderPropertyPageView;
+
+        private _controlSet: App.Models.Entities.ControlSet;
 
         constructor() {
             super('ControlHeaderProperty');
@@ -26,6 +30,41 @@ namespace App.Controllers {
 
             this.SetPageView(new Pages.ControlHeaderPropertyPageView());
             this._page = this.View as Pages.ControlHeaderPropertyPageView;
+            this._controlSet = null;
+
+            this._page.TxtName.AddEventListener(Events.InputViewEvents.Changed, (je, eo) => {
+                if (!this._controlSet)
+                    return;
+
+                this._controlSet.Name = this._page.TxtName.Value;
+                this._controlSet.DispatchChanged();
+            });
+
+            this._page.SboRm.AddEventListener(Events.InputViewEvents.Changed, (je, eo) => {
+                if (!this._controlSet)
+                    return;
+
+                this._controlSet.BrDeviceId = (this._page.SboRm.Value == '')
+                    ? null
+                    : parseInt(this._page.SboRm.Value, 10);
+
+                this._controlSet.DispatchChanged();
+            });
+
+            this._page.TmpRegistButton.AddEventListener(Events.ButtonViewEvents.SingleClick, async () => {
+                // 仮機能 - 新規ControlSetを保存する。
+                Dump.Log('Register');
+                Dump.Log(this._controlSet);
+                //await App.Models.Stores.ControlSets.Write(this._controlSet);
+            });
+        }
+
+
+        public SetControlSet(entity: App.Models.Entities.ControlSet): void {
+            this._controlSet = entity;
+
+            this._page.TxtName.Value = this._controlSet.Name;
+            this._page.SboRm.Value = String(this._controlSet.BrDeviceId);
         }
     }
 }
