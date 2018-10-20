@@ -41,7 +41,7 @@ namespace BroadlinkWeb.Migrations
                         column: x => x.BrDeviceId,
                         principalTable: "brdevices",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -51,10 +51,10 @@ namespace BroadlinkWeb.Migrations
                     Id = table.Column<int>(type: "int(11)", nullable: false)
                         .Annotation("MySQL:AutoIncrement", true),
                     Code = table.Column<string>(type: "text", nullable: true),
-                    Color = table.Column<string>(type: "varchar(8)", nullable: false),
+                    Color = table.Column<string>(type: "varchar(255)", nullable: false),
                     ControlSetId = table.Column<int>(type: "int(11)", nullable: false),
-                    HoverColor = table.Column<string>(type: "varchar(8)", nullable: false),
-                    IconUrl = table.Column<string>(type: "int(11)", nullable: true),
+                    HoverColor = table.Column<string>(type: "varchar(255)", nullable: false),
+                    IconUrl = table.Column<string>(type: "varchar(255)", nullable: true),
                     IsAssignToggleOff = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     IsAssignToggleOn = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     Name = table.Column<string>(type: "varchar(50)", nullable: false),

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MySql.Data.EntityFrameworkCore.DataAnnotations;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -9,6 +10,8 @@ using System.Threading.Tasks;
 namespace BroadlinkWeb.Models.Entities
 {
     [Table("controlsets")] // テーブル名を小文字指定しないとLinuxで動作しない。
+    [MySqlCharset("utf8")]
+    [MySqlCollation("utf8_general_ci ")]
     public class ControlSet
     {
         [Key]
@@ -23,7 +26,7 @@ namespace BroadlinkWeb.Models.Entities
 
         [Column(Order = 1, TypeName = "int(11)")]
         [Description("Taget Broadlink Device ID")]
-        public int BrDeviceId { get; set; }
+        public int? BrDeviceId { get; set; }
 
 
         public List<Control> Controls { get; set; }

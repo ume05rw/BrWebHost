@@ -10,7 +10,7 @@ using System;
 namespace BroadlinkWeb.Migrations
 {
     [DbContext(typeof(Dbc))]
-    [Migration("20181020060303_InitCreate")]
+    [Migration("20181020071120_InitCreate")]
     partial class InitCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,6 +42,10 @@ namespace BroadlinkWeb.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("brdevices");
+
+                    b.HasAnnotation("MySQL:Charset", "utf8");
+
+                    b.HasAnnotation("MySQL:Collation", "utf8_general_ci ");
                 });
 
             modelBuilder.Entity("BroadlinkWeb.Models.Entities.Control", b =>
@@ -55,17 +59,17 @@ namespace BroadlinkWeb.Migrations
 
                     b.Property<string>("Color")
                         .IsRequired()
-                        .HasColumnType("varchar(8)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<int>("ControlSetId")
                         .HasColumnType("int(11)");
 
                     b.Property<string>("HoverColor")
                         .IsRequired()
-                        .HasColumnType("varchar(8)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("IconUrl")
-                        .HasColumnType("int(11)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<bool>("IsAssignToggleOff")
                         .HasColumnType("tinyint(1)");
@@ -90,6 +94,10 @@ namespace BroadlinkWeb.Migrations
                     b.HasIndex("ControlSetId");
 
                     b.ToTable("controls");
+
+                    b.HasAnnotation("MySQL:Charset", "utf8");
+
+                    b.HasAnnotation("MySQL:Collation", "utf8_general_ci ");
                 });
 
             modelBuilder.Entity("BroadlinkWeb.Models.Entities.ControlSet", b =>
@@ -98,7 +106,7 @@ namespace BroadlinkWeb.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int(11)");
 
-                    b.Property<int>("BrDeviceId")
+                    b.Property<int?>("BrDeviceId")
                         .HasColumnType("int(11)");
 
                     b.Property<string>("Name")
@@ -110,6 +118,10 @@ namespace BroadlinkWeb.Migrations
                     b.HasIndex("BrDeviceId");
 
                     b.ToTable("controlsets");
+
+                    b.HasAnnotation("MySQL:Charset", "utf8");
+
+                    b.HasAnnotation("MySQL:Collation", "utf8_general_ci ");
                 });
 
             modelBuilder.Entity("BroadlinkWeb.Models.Entities.Control", b =>
@@ -124,8 +136,7 @@ namespace BroadlinkWeb.Migrations
                 {
                     b.HasOne("BroadlinkWeb.Models.Entities.BrDevice", "BrDevice")
                         .WithMany()
-                        .HasForeignKey("BrDeviceId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("BrDeviceId");
                 });
 #pragma warning restore 612, 618
         }

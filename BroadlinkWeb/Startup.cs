@@ -52,11 +52,15 @@ namespace BroadlinkWeb
                 .AddMvc()
                 .AddJsonOptions(options =>
                 {
+                    // APIのJSON応答時、キャメル先頭を小文字で返す場合：
+                    //= new CamelCasePropertyNamesContractResolver();
+                    // キャメル先頭を大文字で返す場合
                     options.SerializerSettings.ContractResolver
-                        // APIのJSON応答時、キャメル先頭を小文字で返す場合：
-                        //= new CamelCasePropertyNamesContractResolver();
-                        // キャメル先頭を大文字で返す場合
                         = new DefaultContractResolver();
+
+                    // 無限ループ検出時の動作...?
+                    options.SerializerSettings.ReferenceLoopHandling
+                        = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
                 });
         }
 

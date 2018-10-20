@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MySql.Data.EntityFrameworkCore.DataAnnotations;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -9,6 +10,8 @@ using System.Threading.Tasks;
 namespace BroadlinkWeb.Models.Entities
 {
     [Table("controls")] // テーブル名を小文字指定しないとLinuxで動作しない。
+    [MySqlCharset("utf8")]
+    [MySqlCollation("utf8_general_ci ")]
     public class Control
     {
         [Key]
@@ -37,16 +40,16 @@ namespace BroadlinkWeb.Models.Entities
         public string PositionTop { get; set; }
 
         [Required]
-        [Column(Order = 5, TypeName = "varchar(8)")]
+        [Column(Order = 5, TypeName = "varchar(255)")]
         [Description("Color String")]
         public string Color { get; set; }
 
         [Required]
-        [Column(Order = 6, TypeName = "varchar(8)")]
+        [Column(Order = 6, TypeName = "varchar(255)")]
         [Description("HoverColor String")]
         public string HoverColor { get; set; }
 
-        [Column(Order = 7, TypeName = "int(11)")]
+        [Column(Order = 7, TypeName = "varchar(255)")]
         [Description("Icon Url")]
         public string IconUrl { get; set; }
 
