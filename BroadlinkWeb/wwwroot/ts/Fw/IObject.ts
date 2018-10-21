@@ -3,17 +3,24 @@
 
 namespace Fw {
     export interface IObject {
-        readonly Elem: JQuery;
+        /**
+         * クラス名称
+         */
         readonly ClassName: string;
+
+        /**
+         * 一意のクラスインスタンスID
+         */
+        readonly InstanceId: string;
+
+        /**
+         * 破棄されたか否か
+         */
         readonly IsDisposed: boolean;
 
-        AddEventListener(name: string, handler: (je: JQueryEventObject, eo: Fw.Events.EventObject) => void, bindObject?: any): void;
-        RemoveEventListener(name: string, handler?: (je: JQueryEventObject, eo: Fw.Events.EventObject) => void, bindObject?: any): void;
-        DispatchEvent(name: string, value?: Object): void;
-        SuppressEvent(name: string): void;
-        IsSuppressedEvent(name: string): boolean;
-        ResumeEvent(name: string): void;
-
+        /**
+         * インスタンスを破棄する。
+         */
         Dispose(): void;
     }
 }

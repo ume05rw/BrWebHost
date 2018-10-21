@@ -1,19 +1,19 @@
-﻿/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
+
+/// <reference path="IController.ts" />
+/// <reference path="../ObjectBase.ts" />
+
 /// <reference path="../Config.ts" />
 /// <reference path="../Util/Dump.ts" />
-/// <reference path="IController.ts" />
 /// <reference path="Manager.ts" />
-/* /// <reference path="../Views/PageView.ts" /> */
+
 
 namespace Fw.Controllers {
     import Dump = Fw.Util.Dump;
     import Config = Fw.Config;
 
-    /**
-     * @see コントローラはイベント等の実装が無いので、IObjectを実装しない。
-     * */
-    export abstract class ControllerBase implements IController {
+    export abstract class ControllerBase extends ObjectBase implements IController {
 
         private _id: string;
         public get Id(): string {
@@ -33,12 +33,11 @@ namespace Fw.Controllers {
             return this._manager;
         }
 
-        private _className: string;
-        public get ClassName(): string {
-            return this._className;
-        }
-
         constructor(id?: string, jqueryElem?: JQuery) {
+            super();
+
+            this.SetClassName('ControllerBase');
+
             if (!id)
                 id = Fw.Util.App.CreateId();
 
@@ -46,16 +45,10 @@ namespace Fw.Controllers {
             this.IsDefaultView = false;
             this._view = null;
             this._manager = Fw.Controllers.Manager.Instance;
-            this._className = 'ControllerBase';
-
             this._manager.Add(this);
 
             if (jqueryElem)
                 this.SetPageViewByJQuery(jqueryElem);
-        }
-
-        public SetClassName(name: string): void {
-            this._className = name;
         }
 
         public SetPageView(view: Views.PageView): void {
@@ -91,6 +84,8 @@ namespace Fw.Controllers {
         }
 
         public Dispose(): void {
+            super.Dispose();
+
             this._manager.Remove(this.Id);
 
             this._view.Dispose();
@@ -99,7 +94,6 @@ namespace Fw.Controllers {
             this._id = null;
             this.IsDefaultView = null;
             this._manager = null;
-            this._className = null;
         }
     }
 }

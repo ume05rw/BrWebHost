@@ -1,6 +1,9 @@
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../ObjectBase.ts" />
+
+/// <reference path="IView.ts" />
+/// <reference path="../EventableBase.ts" />
+
 /// <reference path="../Util/Dump.ts" />
 /// <reference path="../Events/ViewEvents.ts" />
 /// <reference path="Animation/Animator.ts" />
@@ -13,7 +16,7 @@ namespace Fw.Views {
     import Anim = Fw.Views.Animation;
     import Events = Fw.Events.ViewEvents;
 
-    export abstract class ViewBase extends ObjectBase implements IView {
+    export abstract class ViewBase extends EventableBase implements IView {
         // Properties
         private _dom: HTMLElement = null;
         public get Dom(): HTMLElement {

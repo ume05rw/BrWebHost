@@ -1,43 +1,48 @@
 計20
 
+
 ObjectBase
   |
-  +- EntityBase
+  +- ControllerBase
   |
-  +- StoreBase<T>
-  |
-  +- ViewBase
+  +- EventableBase
        |
-       +- PageView
+       +- EntityBase
        |
-       +- LineView
+       +- StoreBase<T>
        |
-       +- LabelView
-       |
-       +- ImageView
-       |
-       +- CheckBoxInputView
-       |
-       +- BoxView
-       |    |
-       |    +- SlidableBoxView
-       |    |
-       |    +- StuckerBoxView
-       |    |
-       |    +- ControlView
-       |         |
-       |         +- ButtonView
-       |         |    |
-       |         |    +- RelocatableButtonView
-       |         |
-       |         +- ToggleButtonInputView ※このへんがちょっと苦しい。InputViewBaseに移動させるか？InputViewBaseをControlView配下にするか？
-       |
-       +- InputViewBase
+       +- ViewBase
             |
-            +- SelectBoxInputView
+            +- PageView
             |
-            +- TextBoxInputView
+            +- LineView
             |
-            +- TextAreaInputView
+            +- LabelView
+            |
+            +- ImageView
+            |
+            +- CheckBoxInputView
+            |
+            +- BoxView
+            |    |
+            |    +- SlidableBoxView
+            |    |
+            |    +- StuckerBoxView
+            |    |
+            |    +- ControlView
+            |         |
+            |         +- ButtonView
+            |         |    |
+            |         |    +- RelocatableButtonView
+            |         |
+            |         +- ToggleButtonInputView ※このへんがちょっと苦しい。InputViewBaseに移動させるか？InputViewBaseをControlView配下にするか？
+            |
+            +- InputViewBase
+                 |
+                 +- SelectBoxInputView
+                 |
+                 +- TextBoxInputView
+                 |
+                 +- TextAreaInputView
 
 

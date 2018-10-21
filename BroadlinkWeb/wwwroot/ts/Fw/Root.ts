@@ -1,5 +1,8 @@
-﻿/// <reference path="../../lib/jquery/index.d.ts" />
+/// <reference path="../../lib/jquery/index.d.ts" />
 /// <reference path="../../lib/underscore/index.d.ts" />
+
+/// <reference path="EventableBase.ts" />
+
 /// <reference path="Events/RootEvents.ts" />
 /// <reference path="Util/Dump.ts" />
 /// <reference path="Views/Property/Size.ts" />
@@ -9,7 +12,7 @@ namespace Fw {
     import Events = Fw.Events.RootEvents;
     import Property = Fw.Views.Property;
 
-    export class Root extends ObjectBase {
+    export class Root extends EventableBase {
         private static _instance: Root = null;
         public static get Instance(): Root {
             if (!Root._instance) {

@@ -1,13 +1,14 @@
-﻿/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../IObject.ts" />
+
+/// <reference path="../IEventable.ts" />
+
 /// <reference path="Property/Anchor.ts" />
 
 namespace Fw.Views {
     import Property = Fw.Views.Property;
 
-    export interface IView extends Fw.IObject {
-        readonly Elem: JQuery;
+    export interface IView extends IEventable {
         readonly Dom: HTMLElement;
         readonly Page: PageView;
         readonly Parent: IView;
