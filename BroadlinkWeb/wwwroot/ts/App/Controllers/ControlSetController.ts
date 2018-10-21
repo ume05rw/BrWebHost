@@ -102,7 +102,7 @@ namespace App.Controllers {
                     btn.SetImage(control.IconUrl);
 
                     btn.AddEventListener(ControlButtonViewEvents.EditOrdered, (e, p) => {
-                        Dump.Log(p);
+                        this.Log(p);
                         const ctr = this.Manager.Get('ControlProperty') as ControlPropertyController;
                         const button = p.Sender as Controls.ControlButtonView;
                         ctr.SetEntity(button.Control);
@@ -110,7 +110,7 @@ namespace App.Controllers {
                     }, this);
 
                     btn.AddEventListener(ControlButtonViewEvents.ExecOrdered, (e, p) => {
-                        Dump.Log(p);
+                        this.Log(p);
                     }, this);
 
                     this._page.ButtonPanel.Add(btn);
@@ -156,7 +156,7 @@ namespace App.Controllers {
 
             btn.AddEventListener(ControlButtonViewEvents.ExecOrdered, (e, p) => {
                 // ボタン実行指示
-                Dump.Log('TODO: コード送信');
+                this.Log('TODO: コード送信');
             }, this);
 
             this._page.ButtonPanel.Add(btn);

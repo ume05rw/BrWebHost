@@ -61,7 +61,7 @@ namespace Fw.Views {
             });
 
             this.Elem.on('mousedown touchstart', (e) => {
-                //Dump.Log('RelocatableButtonView.mousedown');
+                //this.Log('RelocatableButtonView.mousedown');
                 e.preventDefault();
 
                 if (!this._isRelocatable) {
@@ -89,7 +89,7 @@ namespace Fw.Views {
 
             // ↓mouseoutイベントは捕捉しない。途切れまくるので。
             this.Elem.on('mouseup touchend', (e) => {
-                //Dump.Log('RelocatableButtonView.mouseup');
+                //this.Log('RelocatableButtonView.mouseup');
                 e.preventDefault();
 
                 if (!this._isRelocatable) {
@@ -113,7 +113,7 @@ namespace Fw.Views {
                         const addX = ml.PageX - this._dragStartMousePosition.X;
                         const addY = ml.PageY - this._dragStartMousePosition.Y;
 
-                        //Dump.Log({
+                        //this.Log({
                         //    name: 'RelButton.SlickDetection',
                         //    _mouseDownTime: this._mouseDownTime,
                         //    elapsed: elapsed,
@@ -126,7 +126,7 @@ namespace Fw.Views {
                             (Math.abs(addX) + Math.abs(addY)) < 10
                             && elapsed < 500
                         ) {
-                            Dump.Log('Fire.SingleClick');
+                            this.Log('Fire.SingleClick');
                             if (this.IsSuppressedEvent(Events.SingleClick))
                                 this.ResumeEvent(Events.SingleClick);
                             this.DispatchEvent(Events.SingleClick);
@@ -158,7 +158,7 @@ namespace Fw.Views {
         }
 
         private OnMouseMove(e: JQueryEventObject): void {
-            //Dump.Log('RelocatableButtonView.OnMouseMove');
+            //this.Log('RelocatableButtonView.OnMouseMove');
             e.preventDefault();
             if (this._isRelocatable && this._isDragging) {
                 const ml = MouseLocation.Create(e);
@@ -191,7 +191,7 @@ namespace Fw.Views {
             }
 
             this._delayedResumeTimer = setTimeout(() => {
-                //Dump.Log('ResumeMouseEvents');
+                //this.Log('ResumeMouseEvents');
                 if (this.IsSuppressedEvent(Events.LongClick))
                     this.ResumeEvent(Events.LongClick);
                 if (this.IsSuppressedEvent(Events.SingleClick))
@@ -273,8 +273,6 @@ namespace Fw.Views {
 
             } catch (e) {
                 Dump.ErrorLog(e, this.ClassName);
-                Dump.Log('Parentは誰？');
-                Dump.Log(this.Parent);
             } finally {
                 this.ResumeLayout();
             }

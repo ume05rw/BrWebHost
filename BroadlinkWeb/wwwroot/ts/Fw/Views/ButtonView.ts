@@ -48,7 +48,7 @@ namespace Fw.Views {
             this.Add(this._imageView);
 
             this.Elem.hover(() => {
-                //Dump.Log(`${this.ClassName}.hover: color = ${this.HoverColor}`);
+                //this.Log(`${this.ClassName}.hover: color = ${this.HoverColor}`);
                 this.Dom.style.backgroundColor = this.HoverColor;
                 //this.SetStyle('backgroundColor', this.HoverColor);
                 //this.Refresh();

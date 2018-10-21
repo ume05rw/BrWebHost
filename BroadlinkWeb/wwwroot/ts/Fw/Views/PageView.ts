@@ -52,7 +52,7 @@ namespace Fw.Views {
 
             // ブラウザのリサイズ時、ページ全体を再描画
             Fw.Root.Instance.AddEventListener(Fw.Events.RootEvents.Resized, () => {
-                //Dump.Log(`${this.ClassName}.Resized`);
+                //this.Log(`${this.ClassName}.Resized`);
                 this.Size.Width = Fw.Root.Instance.Size.Width;
                 this.Size.Height = Fw.Root.Instance.Size.Height;
                 this.Refresh();
@@ -74,7 +74,7 @@ namespace Fw.Views {
         }
 
         public Show(duration: number = 200): void {
-            Dump.Log(`PageView.Show: ${this.ClassName}`);
+            this.Log(`PageView.Show: ${this.ClassName}`);
             if (this.IsVisible && !this.IsModal) {
                 this.Refresh();
                 return;
@@ -105,7 +105,7 @@ namespace Fw.Views {
         }
 
         public Hide(duration: number = 200): void {
-            //Dump.Log(`PageView.Hide: ${this.Elem.data('controller')}`);
+            //this.Log(`PageView.Hide: ${this.Elem.data('controller')}`);
             if (!this.IsVisible && !this.IsModal) {
                 this.Refresh();
                 return;
@@ -135,7 +135,7 @@ namespace Fw.Views {
         }
 
         public ShowModal(duration: number = 200, width: number = 300): void {
-            Dump.Log(`PageView.ShowModal: ${this.ClassName}`);
+            this.Log(`PageView.ShowModal: ${this.ClassName}`);
             if (this.IsVisible && this._isModal) {
                 this.Refresh();
                 return;
@@ -169,7 +169,7 @@ namespace Fw.Views {
         }
 
         public HideModal(duration: number = 200): void {
-            //Dump.Log(`PageView.HideModal: ${this.Elem.data('controller')}`);
+            //this.Log(`PageView.HideModal: ${this.Elem.data('controller')}`);
             if (!this.IsVisible) {
                 this.Refresh();
                 return;
@@ -202,7 +202,7 @@ namespace Fw.Views {
         }
 
         public SetUnmodal(duration: number = 200): void {
-            //Dump.Log(`PageView.SetUnmodal: ${this.Elem.data('controller')}`);
+            //this.Log(`PageView.SetUnmodal: ${this.Elem.data('controller')}`);
             if (this.IsVisible && !this._isModal) {
                 this.Refresh();
                 return;
@@ -235,7 +235,7 @@ namespace Fw.Views {
         }
 
         public Mask(): void {
-            //Dump.Log(`${this.ClassName}.Mask`);
+            //this.Log(`${this.ClassName}.Mask`);
             this._isMasked = true;
             Fw.Root.Instance.Mask();
             //this.Dom.style.zIndex = '-1';
@@ -244,7 +244,7 @@ namespace Fw.Views {
         }
 
         public UnMask(): void {
-            //Dump.Log(`${this.ClassName}.UnMask`);
+            //this.Log(`${this.ClassName}.UnMask`);
             this._isMasked = false;
             Fw.Root.Instance.UnMask();
             //this.Dom.style.zIndex = '0';

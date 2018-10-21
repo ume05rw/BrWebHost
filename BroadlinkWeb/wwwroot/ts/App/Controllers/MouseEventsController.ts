@@ -1,4 +1,4 @@
-﻿/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Fw/Controllers/ControllerBase.ts" />
 /// <reference path="../../Fw/Controllers/Manager.ts" />
@@ -39,29 +39,29 @@ namespace App.Controllers {
             });
 
             this.View.Elem.on('click', (e) => {
-                Dump.Log('click');
+                this.Log('click');
             });
             this.View.Elem.on('mousedown', (e) => {
-                Dump.Log('mousedown');
+                this.Log('mousedown');
             });
             this.View.Elem.on('mousemove', (e) => {
-                Dump.Log('mousemove');
+                this.Log('mousemove');
             });
             this.View.Elem.on('mouseup', (e) => {
-                Dump.Log('mouseup');
+                this.Log('mouseup');
             });
             this.View.Elem.on('mouseout', (e) => {
-                Dump.Log('mouseout');
+                this.Log('mouseout');
             });
 
             this.View.Elem.on('touchstart', (e) => {
-                Dump.Log('touchstart');
+                this.Log('touchstart');
             });
             this.View.Elem.on('touchmove', (e) => {
-                Dump.Log('touchmove');
+                this.Log('touchmove');
             });
             this.View.Elem.on('touchend', (e) => {
-                Dump.Log('touchend');
+                this.Log('touchend');
             });
 
         }

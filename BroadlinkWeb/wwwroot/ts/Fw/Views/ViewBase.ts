@@ -135,10 +135,6 @@ namespace Fw.Views {
                 this._size.Height = 0;
             }
 
-            // RemoveEventListenerが出来ない？
-            // 画面リサイズ時に再描画
-            //Fw.Root.Instance.AddEventListener(Fw.Events.RootEvents.Resized, this.Refresh, this);
-
             _.defer(() => {
                 this.Elem.addClass('IView TransAnimation');
 
@@ -340,17 +336,16 @@ namespace Fw.Views {
                 view.Elem.detach();
                 view.DispatchEvent(Events.Detached);
             } else {
-                Dump.Log('削除できなかった。');
-                Dump.Log(view);
+                this.Log('削除できなかった。');
+                this.Log(view);
             }
         }
 
         public Refresh(): void {
-            //Dump.Log(`${this.ClassName}.Refresh`);
             if (this._isSuppressLayout || !this._isInitialized)
                 return;
 
-            //Dump.Log(`${this.ClassName}.Refresh`);
+            //this.Log(`Refresh - avtive`);
 
             // 子ViewもRefreshさせる。
             _.each(this.Children, (view: IView) => {
@@ -380,7 +375,7 @@ namespace Fw.Views {
         }
 
         protected InnerRefresh(): void {
-            //Dump.Log(`${this.ClassName}.InnerRefresh`);
+            this.Log(`InnerRefresh`);
             const parent = $(this.Elem.parent());
 
             if (parent.length <= 0)
@@ -407,13 +402,13 @@ namespace Fw.Views {
             let elemLeft = pHalfWidth - myHalfWidth + this.Position.X;
             let elemTop = pHalfHeight - myHalfHeight + this.Position.Y;
 
-            //Dump.Log({
-            //    left: this.Position.Left,
-            //    pHalfWidth: pHalfWidth,
-            //    myHalfWidth: myHalfWidth,
-            //    positionX: this.Position.X,
-            //    elemLeft: elemLeft
-            //});
+            this.Log({
+                left: this.Position.Left,
+                pHalfWidth: pHalfWidth,
+                myHalfWidth: myHalfWidth,
+                positionX: this.Position.X,
+                elemLeft: elemLeft
+            });
 
             this.SetStyles({
                 left: `${elemLeft}px`,
@@ -534,7 +529,7 @@ namespace Fw.Views {
 
                 // 描画抑止中でも、一定時間に一度はDom適用する。
                 if (elapsed > Root.Instance.ViewRefreshInterval) {
-                    //Dump.Log(`${this.ClassName}.ApplyStyles: ${elapsed} > ${Root.Instance.ViewRefreshInterval}`);
+                    this.Log(`ApplyStyles: ${elapsed} > ${Root.Instance.ViewRefreshInterval}`);
                     this.InnerApplyStyles();
                     return;
                 }
@@ -547,7 +542,7 @@ namespace Fw.Views {
         protected InnerApplyStyles(): void {
             this._innerApplyCount++;
             this._lastAppliedTime = new Date();
-            //Dump.Log(`${this.ClassName}.InnerApplyStyles: ${this._innerApplyCount}`);
+            this.Log(`InnerApplyStyles: ${this._innerApplyCount}`);
             _.each(this._newStyles, (v, k) => {
                 if (this._latestStyles[k] !== v) {
                     this.Dom.style[k] = v;
@@ -617,10 +612,6 @@ namespace Fw.Views {
         }
 
         public Dispose(): void {
-            Dump.Log(`${this.ClassName}.Dispose`);
-
-            //Fw.Root.Instance.RemoveEventListener(Fw.Events.RootEvents.Resized, this.Refresh, this);
-
             super.Dispose();
 
             var ary = Util.Obj.Mirror(this.Children);

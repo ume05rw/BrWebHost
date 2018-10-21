@@ -1,4 +1,4 @@
-﻿/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Fw/Controllers/ControllerBase.ts" />
 /// <reference path="../../Fw/Controllers/Manager.ts" />
@@ -44,7 +44,7 @@ namespace App.Controllers {
 
             btnMove.Text = '動く？';
             btnMove.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
-                Dump.Log('btnMove.SingleClick');
+                this.Log('btnMove.SingleClick');
             });
             this.View.Add(btnMove);
 
@@ -53,7 +53,7 @@ namespace App.Controllers {
             btnReset.SetAnchor(70, null, 5, null);
             btnReset.Text = 'リセット';
             btnReset.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
-                Dump.Log('btnReset.SingleClick');
+                this.Log('btnReset.SingleClick');
                 if (btnMove.IsRelocatable)
                     btnMove.SetRelocatable(false);
             });
@@ -61,16 +61,16 @@ namespace App.Controllers {
         }
 
         private async GetA1Value() {
-            Dump.Log('btnA1Value.click');
+            this.Log('btnA1Value.click');
 
             var params = new Xhr.Params('BrDevices/GetA1SensorValues', Xhr.MethodType.Get);
             // awaitな書き方。
             //const sVal = await Xhr.Query.Invoke(params);
-            //Dump.Log(sVal);
+            //this.Log(sVal);
 
             // awaitでない書き方。
             Xhr.Query.Invoke(params).then((value: Xhr.Result) => {
-                Dump.Log(value);
+                this.Log(value);
             })
         }
     }

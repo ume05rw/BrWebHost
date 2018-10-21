@@ -1,4 +1,4 @@
-﻿/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../../Fw/Views/ButtonView.ts" />
 /// <reference path="../../../Fw/Views/Property/Anchor.ts" />

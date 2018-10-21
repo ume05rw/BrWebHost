@@ -80,11 +80,11 @@ namespace App.Views.Controls {
         private OnSingleClicked(e: JQueryEventObject): void {
             if (this.IsRelocatable) {
                 // 編集モードのとき
-                Dump.Log('Edit');
+                this.Log('Edit');
                 this.DispatchEvent(Events.EditOrdered);
             } else {
                 // 実行モードのとき
-                Dump.Log('Exec');
+                this.Log('Exec');
                 this.DispatchEvent(Events.ExecOrdered, this.Code);
             }
         }

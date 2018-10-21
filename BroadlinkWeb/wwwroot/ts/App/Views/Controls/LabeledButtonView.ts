@@ -60,12 +60,6 @@ namespace App.Views.Controls {
                     opacity: `${this.Opacity}`
                 });
 
-                //this.Dom.style.color = 'transparent';
-                //this.Dom.style.backgroundColor = 'transparent';
-                //this.Dom.style.borderWidth = '0';
-                //this.Dom.style.borderColor = 'transparent';
-                //this.Dom.style.opacity = `${this.Opacity}`;
-
             } catch (e) {
                 Dump.ErrorLog(e, this.ClassName);
             } finally {

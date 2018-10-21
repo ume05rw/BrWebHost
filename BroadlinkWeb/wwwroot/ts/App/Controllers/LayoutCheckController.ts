@@ -1,4 +1,4 @@
-﻿/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Fw/Controllers/ControllerBase.ts" />
 /// <reference path="../../Fw/Controllers/Manager.ts" />
@@ -39,22 +39,22 @@ namespace App.Controllers {
             });
 
             page.TmpCtl.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
-                Dump.Log(`${this.ClassName}.SingleClick1`);
+                this.Log(`${this.ClassName}.SingleClick1`);
                 if (page.CenterControl.IsVisible) {
-                    Dump.Log('みえてんで！');
+                    this.Log('みえてんで！');
                     page.CenterControl.Hide();
                 } else {
-                    Dump.Log('みえへんで...？');
+                    this.Log('みえへんで...？');
                     page.CenterControl.Show();
                 }
             });
 
             this.View.AddEventListener(Events.PageViewEvents.Shown, () => {
-                Dump.Log(`${this.ClassName}.Shown`);
+                this.Log(`${this.ClassName}.Shown`);
             });
 
             page.AncCtl4.AddEventListener(Events.ButtonViewEvents.SingleClick, () => {
-                //Dump.Log(`${this.ClassName}.SingleClick2`);
+                //this.Log(`${this.ClassName}.SingleClick2`);
                 page.IsMasked
                     ? page.UnMask()
                     : page.Mask();

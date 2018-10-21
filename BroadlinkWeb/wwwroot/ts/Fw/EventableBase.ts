@@ -45,7 +45,7 @@ namespace Fw {
         public AddEventListener(
             name: string,
             handler: (je: JQueryEventObject, eo: Fw.Events.EventObject) => void,
-            bindObject: IObject | Fw.Controllers.IController = null
+            bindObject: IObject = null
         ): void {
             if (!bindObject)
                 bindObject = this;
@@ -56,7 +56,7 @@ namespace Fw {
             eRef.BindedHandler = handler.bind(bindObject);
             eRef.BindObject = bindObject;
 
-            //Dump.Log(`AddEv: ${eRef.BindObject.ClassName}_${eRef.BindObject.ObjectId}.${name}`);
+            this.Log(`AddEventListener: ${eRef.BindObject.ClassName}_${eRef.BindObject.InstanceId}.${name}`);
 
             this._eventHandlers.push(eRef);
             this.Elem.on(name, eRef.BindedHandler);
@@ -65,7 +65,7 @@ namespace Fw {
         public RemoveEventListener(
             name: string,
             handler?: (je: JQueryEventObject, eo: Fw.Events.EventObject) => void,
-            bindObject: IObject | Fw.Controllers.IController = null
+            bindObject: IObject = null
         ): void {
             if (!bindObject)
                 bindObject = this;
@@ -80,7 +80,7 @@ namespace Fw {
                     // 判定基準にならない。
                     //return (er.Name === name && er.Handler === handler);
 
-                    //Dump.Log(`RemoveEv: ${er.BindObject.ClassName}_${er.BindObject.ObjectId}.${name} :: ${bindObject.ObjectId}` );
+                    this.Log(`RemoveEventListener: ${er.BindObject.ClassName}_${er.BindObject.InstanceId}.${name} :: ${bindObject.ClassName}.${bindObject.InstanceId}` );
 
                     return (er.Name === name
                         && er.Handler === handler
@@ -117,7 +117,7 @@ namespace Fw {
             if (this.IsSuppressedEvent(name))
                 return;
 
-            //Dump.Log(`${this.ClassName}.DispatchEvent: ${name}`);
+            this.Log(`DispatchEvent: ${name}`);
             const eo = new Fw.Events.EventObject(this, name, params);
             this.Elem.trigger(name, eo);
         }

@@ -19,6 +19,17 @@ namespace Fw {
         readonly IsDisposed: boolean;
 
         /**
+         * ログ出力可否
+         */
+        LogEnable: boolean;
+
+        /**
+         * ログ出力
+         * @param value
+         */
+        Log(value: any): void;
+
+        /**
          * インスタンスを破棄する。
          */
         Dispose(): void;

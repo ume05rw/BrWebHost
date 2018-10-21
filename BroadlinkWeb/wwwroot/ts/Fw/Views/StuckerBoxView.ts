@@ -135,7 +135,7 @@ namespace Fw.Views {
             if (e.eventPhase !== 2)
                 return;
 
-            //Dump.Log(`${this.ClassName}.OnInnerMouseDown`);
+            //this.Log(`${this.ClassName}.OnInnerMouseDown`);
             e.preventDefault();
 
             if (this._isChildRelocation)
@@ -186,7 +186,7 @@ namespace Fw.Views {
 
             e.preventDefault();
 
-            //Dump.Log(`${this.ClassName}.OnInnerMouseUp`);
+            //this.Log(`${this.ClassName}.OnInnerMouseUp`);
             if (this._isChildRelocation)
                 return;
 
@@ -204,12 +204,12 @@ namespace Fw.Views {
          * @param e1
          */
         private OnChildLongClick(e: JQueryEventObject): void {
-            //Dump.Log(`${this.ClassName}.OnChildLongClick`);
+            //this.Log(`${this.ClassName}.OnChildLongClick`);
             this.StartRelocation();
         }
 
         public StartRelocation(): void {
-            //Dump.Log(`${this.ClassName}.StartRelocation`);
+            //this.Log(`${this.ClassName}.StartRelocation`);
             this._isChildRelocation = true;
             Fw.Root.Instance.SetTextSelection(false);
 
@@ -230,7 +230,7 @@ namespace Fw.Views {
             if (e.eventPhase !== 2)
                 return;
 
-            //Dump.Log(`${this.ClassName}.OnSingleClick`);
+            //this.Log(`${this.ClassName}.OnSingleClick`);
             if (this._isChildRelocation) {
                 // 子要素再配置モードのとき、配置を確定させる。
                 this.CommitRelocation();
@@ -238,7 +238,7 @@ namespace Fw.Views {
         }
 
         public CommitRelocation(): void {
-            //Dump.Log(`${this.ClassName}.CommitRelocation`);
+            //this.Log(`${this.ClassName}.CommitRelocation`);
             if (this._relocationTargetView) {
                 this.RestoreDummyView();
                 this._relocationTargetView.SetTransAnimation(true);
@@ -266,7 +266,7 @@ namespace Fw.Views {
             //if (e.eventPhase !== 2)
             //    return;
 
-            //Dump.Log(`${this.ClassName}.OnChildMouseDown`);
+            //this.Log(`${this.ClassName}.OnChildMouseDown`);
             if (!this._isChildRelocation)
                 return;
 
@@ -279,7 +279,7 @@ namespace Fw.Views {
             const innerTop = ml.PageY - rect.top + (this._innerBox.Position.Top * -1);
             const view = this.GetNearestByPosition(innerLeft, innerTop);
             if (view) {
-                //Dump.Log('OnChildMouseDown - view found: ' + (view as ButtonView).Label);
+                //this.Log('OnChildMouseDown - view found: ' + (view as ButtonView).Label);
                 this._isChildDragging = true;
                 this._relocationTargetView = view;
                 this._dragStartMousePosition.X = ml.PageX;
@@ -305,7 +305,7 @@ namespace Fw.Views {
 
             e.preventDefault();
 
-            //Dump.Log(`${this.ClassName}.OnChildMouseMove`);
+            //this.Log(`${this.ClassName}.OnChildMouseMove`);
 
             const view = this._relocationTargetView;
 
@@ -331,7 +331,7 @@ namespace Fw.Views {
             //if (e.eventPhase !== 2)
             //    return;
 
-            //Dump.Log(`${this.ClassName}.OnChildMouseUp`);
+            //this.Log(`${this.ClassName}.OnChildMouseUp`);
             if (!this._isChildRelocation) {
                 this._isChildDragging = false;
             } else {
@@ -435,7 +435,7 @@ namespace Fw.Views {
 
         protected InnerRefresh(): void {
             try {
-                //Dump.Log(`${this.ClassName}.InnerRefresh`);
+                //this.Log(`${this.ClassName}.InnerRefresh`);
                 this.SuppressLayout();
                 this._innerBox.SuppressLayout();
                 _.each(this._innerBox.Children, (view: IView) => {
@@ -458,7 +458,7 @@ namespace Fw.Views {
                 this._positionBarMax.Refresh();
                 this._positionBarCurrent.ResumeLayout();
                 this._positionBarCurrent.Refresh();
-                //Dump.Log(`${this.ClassName}.InnerRefresh-End`);
+                //this.Log(`${this.ClassName}.InnerRefresh-End`);
             }
         }
 

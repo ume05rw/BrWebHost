@@ -51,8 +51,8 @@ namespace App.Models.Stores {
 
                 return result;
             } else {
-                Dump.Log('Query Fail');
-                Dump.Log(res.Errors);
+                this.Log('Query Fail');
+                this.Log(res.Errors);
                 return null;
             }
         }
@@ -77,8 +77,8 @@ namespace App.Models.Stores {
 
                 return true;
             } else {
-                Dump.Log('Query Fail');
-                Dump.Log(res.Errors);
+                this.Log('Query Fail');
+                this.Log(res.Errors);
                 return false;
             }
         }

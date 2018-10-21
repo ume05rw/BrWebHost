@@ -47,7 +47,7 @@ namespace Fw.Views {
 
         protected InnerRefresh(): void {
             try {
-                //Dump.Log(`${this.ClassName}.InnerRefresh`);
+                //this.Log(`${this.ClassName}.InnerRefresh`);
                 this.SuppressLayout();
 
                 super.InnerRefresh();
@@ -69,11 +69,11 @@ namespace Fw.Views {
                 this.SuppressLayout();
 
                 if (this.Direction === Property.Direction.Horizontal) {
-                    //Dump.Log(`${this.ClassName}.Direction = ${this.Direction}`);
+                    //this.Log(`${this.ClassName}.Direction = ${this.Direction}`);
                     this.Size.Height = 2;
                     this.Size.Width = this.Length;
                 } else {
-                    //Dump.Log(`${this.ClassName}.Direction = ${this.Direction}`);
+                    //this.Log(`${this.ClassName}.Direction = ${this.Direction}`);
                     this.Size.Width = 2;
                     this.Size.Height = this.Length;
                 }

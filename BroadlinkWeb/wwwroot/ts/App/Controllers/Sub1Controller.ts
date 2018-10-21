@@ -1,4 +1,4 @@
-﻿/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Fw/Controllers/ControllerBase.ts" />
 /// <reference path="../../Fw/Controllers/Manager.ts" />
@@ -36,10 +36,10 @@ namespace App.Controllers {
             devices.AddEventListener(Events.ControlViewEvents.SingleClick, async () => {
                 //this.Discover();
 
-                Dump.Log('Discover');
+                this.Log('Discover');
                 const devs = await Stores.BrDevices.Discover();
                 _.each(devs, (dev) => {
-                    Dump.Log({
+                    this.Log({
                         Id: dev.Id,
                         Mac: dev.MacAddressString,
                         Ip: dev.IpAddressString,
@@ -105,11 +105,11 @@ namespace App.Controllers {
         }
 
         //private async Discover() {
-        //    Dump.Log('Discover');
+        //    this.Log('Discover');
         //    const store = new BrDeviceStore();
         //    const devs = await store.Discover();
         //    _.each(devs, (dev) => {
-        //        Dump.Log({
+        //        this.Log({
         //            Id: dev.Id,
         //            Mac: dev.MacAddressString,
         //            Ip: dev.IpAddressString,

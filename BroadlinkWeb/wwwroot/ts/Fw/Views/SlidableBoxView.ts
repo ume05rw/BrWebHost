@@ -300,7 +300,7 @@ namespace Fw.Views {
                         this._positionBarCurrent.Show();
                     }
                         
-                    //Dump.Log({
+                    //this.Log({
                     //    max_Length: this._positionBarMax.Length,
                     //    current_Length: this._positionBarCurrent.Length,
                     //    maxLeft: maxLeft,

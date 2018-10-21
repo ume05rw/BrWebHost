@@ -1,4 +1,4 @@
-﻿/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Events/ViewEvents.ts" />
 /// <reference path="../Util/Dump.ts" />
@@ -22,8 +22,8 @@ namespace Fw.Views {
         }
 
         public AddItem(name: string, value: string): void {
-            //Dump.Log('name: ' + name);
-            //Dump.Log(`<option value="${value}">${name}</option>`);
+            //this.Log('name: ' + name);
+            //this.Log(`<option value="${value}">${name}</option>`);
             const option = $(`<option value="${value}"></option>`);
             option.html(name);
             this.Elem.append(option);

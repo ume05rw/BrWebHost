@@ -1,4 +1,4 @@
-﻿/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Events/CheckBoxInputViewEvents.ts" />
 /// <reference path="../Util/Dump.ts" />
@@ -44,7 +44,7 @@ namespace Fw.Views {
             this._input.prop('checked', this._boolValue);
 
             if (changed) {
-                //Dump.Log('CheckBoxInputView.Changed');
+                //this.Log('CheckBoxInputView.Changed');
                 this.DispatchEvent(Events.Changed, this.Value);
             }
         }
@@ -82,17 +82,17 @@ namespace Fw.Views {
             this._input.prop('checked', false);
 
             this._input.on('propertychange change keyup paste input', () => {
-                //Dump.Log('CheckBoxInputView.Changed');
+                //this.Log('CheckBoxInputView.Changed');
                 this.BoolValue = this._input.prop('checked');
             });
 
             this._input.on('focus', () => {
-                //Dump.Log('CheckBoxInputView.Focused');
+                //this.Log('CheckBoxInputView.Focused');
                 this.DispatchEvent(Events.Focused);
             });
 
             this._input.on('blur', () => {
-                //Dump.Log('CheckBoxInputView.Blurred');
+                //this.Log('CheckBoxInputView.Blurred');
                 this.DispatchEvent(Events.Blurred);
             });
         }

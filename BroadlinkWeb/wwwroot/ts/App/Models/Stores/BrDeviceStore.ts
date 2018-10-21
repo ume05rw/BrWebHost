@@ -1,4 +1,4 @@
-﻿/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../../Fw/Models/StoreBase.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
@@ -39,8 +39,8 @@ namespace App.Models.Stores {
 
                 return res.Values as BrDevice[];
             } else {
-                Dump.Log('Query Fail');
-                Dump.Log(res.Errors);
+                this.Log('Query Fail');
+                this.Log(res.Errors);
                 return null;
             }
         }

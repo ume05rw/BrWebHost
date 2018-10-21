@@ -73,7 +73,7 @@ namespace App.Controllers {
             this._page.TmpRegistButton.AddEventListener(Events.ButtonViewEvents.SingleClick, async () => {
                 // 仮機能 - 新規ControlSetを保存する。
                 const res = await App.Models.Stores.ControlSets.Write(this._controlSet);
-                //Dump.Log(res);
+                //this.Log(res);
             });
         }
 

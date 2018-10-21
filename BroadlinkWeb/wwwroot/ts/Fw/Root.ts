@@ -80,13 +80,13 @@ namespace Fw {
         }
 
         public Mask(): void {
-            //Dump.Log(`${this.ClassName}.Mask`);
+            //this.Log(`${this.ClassName}.Mask`);
             this._masked = true;
             this.Refresh();
         }
 
         public UnMask(): void {
-            //Dump.Log(`${this.ClassName}.UnMask`);
+            //this.Log(`${this.ClassName}.UnMask`);
             this._masked = false;
             
             this.Refresh();
@@ -116,7 +116,7 @@ namespace Fw {
 
             // 最長5秒間、ViewのDom更新を抑止する。
             this._viewRefreshInterval = 800;
-            //Dump.Log('Root.StartPageInitialize');
+            //this.Log('Root.StartPageInitialize');
 
             //this._lastInitializeTimer = setTimeout(() => {
             //    this._viewRefreshInterval = 100;
@@ -127,7 +127,7 @@ namespace Fw {
         public ReleasePageInitialize(): void {
             if (this._viewRefreshInterval <= 100)
                 return;
-            //Dump.Log('Root.ReleasePageInitialize');
+            //this.Log('Root.ReleasePageInitialize');
 
             if (this._releaseInitializeTimer != null) {
                 clearTimeout(this._releaseInitializeTimer);
@@ -135,7 +135,7 @@ namespace Fw {
 
             this._releaseInitializeTimer = setTimeout(() => {
                 this._viewRefreshInterval = 100;
-                Dump.Log('Root.ReleasePageInitialize - Released');
+                this.Log('Root.ReleasePageInitialize - Released');
             }, 300);
         }
 

@@ -1,4 +1,4 @@
-﻿/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Events/ControlViewEvents.ts" />
 /// <reference path="../Util/Dump.ts" />
@@ -14,7 +14,6 @@ namespace Fw.Views {
         private _label: JQuery;
         private _clickEventTimer: number = null;
         private _cvMouseSuppressor = false;
-        private _cvDelayedResumeEventsTimer: number = null;
 
         public get Text(): string {
             return this._label.html();
@@ -39,7 +38,7 @@ namespace Fw.Views {
 
             // touch系イベントはmouse系と重複して発生するため、リッスンしない。
             this.Elem.on('mousedown', (e) => {
-                //Dump.Log(`${this.ClassName}.mousedown`);
+                this.Log(`mousedown`);
                 if (this._clickEventTimer != null)
                     clearTimeout(this._clickEventTimer);
 
@@ -51,13 +50,13 @@ namespace Fw.Views {
                     if (this._cvMouseSuppressor)
                         return;
 
-                    //Dump.Log('longtapped');
+                    this.Log('longtapped');
                     this.DispatchEvent(Events.LongClick);
                 }, 1000);
             });
 
             this.Elem.on('mouseup', (e) => {
-                //Dump.Log(`${this.ClassName}.mouseup`);
+                this.Log(`mouseup`);
                 if (this._clickEventTimer != null) {
                     // ロングタップ検出中のとき
                     clearTimeout(this._clickEventTimer);
@@ -68,7 +67,7 @@ namespace Fw.Views {
                         return;
 
                     // 以降、シングルタップイベント処理
-                    //Dump.Log('singletapped');
+                    this.Log('singletapped');
                     this.DispatchEvent(Events.SingleClick);
                 } else {
                 }
@@ -79,35 +78,9 @@ namespace Fw.Views {
                     // ロングタップ検出中のとき
                     clearTimeout(this._clickEventTimer);
                     this._clickEventTimer = null;
-                    //Dump.Log('tap canceled');
+                    this.Log('tap canceled');
                 }
             });
-        }
-
-        protected InitPage(): void {
-            if (this.Page) {
-                this.RemoveEventListener(Fw.Events.PageViewEvents.Dragging, this.OnPageDragging);
-            }
-
-            super.InitPage();
-
-            if (this.Page) {
-                this.AddEventListener(Fw.Events.PageViewEvents.Dragging, this.OnPageDragging);
-            }
-        }
-
-        private OnPageDragging(): void {
-            this._cvMouseSuppressor = true;
-
-            if (this._cvDelayedResumeEventsTimer !== null) {
-                clearTimeout(this._cvDelayedResumeEventsTimer);
-                this._cvDelayedResumeEventsTimer = null;
-            }
-
-            this._cvDelayedResumeEventsTimer = setTimeout(() => {
-                //Dump.Log('ResumeMouseEvents');
-                this._cvMouseSuppressor = false;
-            }, 100);
         }
 
         public Dispose(): void {
@@ -116,7 +89,6 @@ namespace Fw.Views {
             this._label = null;
             this._clickEventTimer = null;
             this._cvMouseSuppressor = null;
-            this._cvDelayedResumeEventsTimer = null;
         }
     }
 }

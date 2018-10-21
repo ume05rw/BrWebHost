@@ -50,7 +50,7 @@ namespace Fw.Views {
 
             // 注) ImageオブジェクトはDomツリーに入れない。
             this._image.onload = () => {
-                //Dump.Log('Image Loaded!!');
+                //this.Log('Image Loaded!!');
                 this.Refresh();
             };
 

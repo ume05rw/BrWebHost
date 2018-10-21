@@ -1,4 +1,4 @@
-﻿/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Events/InputViewEvents.ts" />
 /// <reference path="../Util/Dump.ts" />
@@ -44,17 +44,17 @@ namespace Fw.Views {
             this.BackgroundColor = '#FFFFFF';
 
             this.Elem.on('propertychange change keyup paste input', () => {
-                //Dump.Log('InputViewBase.Changed');
+                //this.Log('InputViewBase.Changed');
                 this.DispatchEvent(Events.Changed, this.Value);
             });
 
             this.Elem.on('focus', () => {
-                //Dump.Log('InputViewBase.Focused');
+                //this.Log('InputViewBase.Focused');
                 this.DispatchEvent(Events.Focused);
             });
 
             this.Elem.on('blur', () => {
-                //Dump.Log('InputViewBase.Blurred');
+                //this.Log('InputViewBase.Blurred');
                 this.DispatchEvent(Events.Blurred);
             });
         }

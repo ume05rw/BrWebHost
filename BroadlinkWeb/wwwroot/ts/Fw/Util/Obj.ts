@@ -119,5 +119,17 @@ namespace Fw.Util {
                     throw new Error('想定外の渡し値');
             }
         }
+
+        public static Clean(obj: IObject): void {
+            _.delay(() => {
+                const header = `${obj.ClassName}[${obj.InstanceId}]:: `;
+                Dump.Log(header + 'Obj.Clean');
+                _.each(obj as any, (v, k: any) => {
+                    if (k === '_className' || k === '_instanceId')
+                        return;
+                    obj[k] = undefined;
+                });
+            }, 500);
+        }
     }
 }
