@@ -1,4 +1,4 @@
-﻿/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../../Fw/Views/PageView.ts" />
 /// <reference path="../../../Fw/Views/Property/Anchor.ts" />
@@ -57,7 +57,7 @@ namespace App.Views.Pages {
             this.InputPanel.ReferencePoint = Property.ReferencePoint.LeftTop;
             this.InputPanel.Size.Width = 280;
             this.InputPanel.SetAnchor(70, 10, null, 10);
-            this.InputPanel.Color = Color.Main;
+            this.InputPanel.Color = Color.MainBackground;
             this.Add(this.InputPanel);
 
             const lbl1 = new Views.LabelView();

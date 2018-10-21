@@ -594,12 +594,33 @@ var App;
         //public static HeaderButtonBackground = '#C79B41';
         //public static HeaderButtonHover = '#CDA555';
         Color.Transparent = 'transparent';
+        /**
+         * メイン文字／枠線色
+         */
         Color.Main = '#000000';
+        /**
+         * メイン背景色
+         */
         Color.MainBackground = '#f5f5f5';
+        /**
+         * メインホバー色
+         */
         Color.MainHover = '#e0e0e0';
+        /**
+         * ヘッダ配置ボタンの背景色
+         */
         Color.HeaderButtonBackground = '#ececec';
+        /**
+         * ヘッダ配置ボタンのホバー色
+         */
         Color.HeaderButtonHover = '#e0e0e0';
+        /**
+         * 反転した文字／枠線色
+         */
         Color.ReverseMain = '#FFFFFF';
+        /**
+         * ボタン色配列
+         */
         Color.ButtonColors = [
             '#9d9e9e',
             '#84bde8',
@@ -610,6 +631,9 @@ var App;
             '#6545C6',
             '#B5743B',
         ];
+        /**
+         * ボタン色名配列
+         */
         Color.ButtonColorNames = [
             'gray',
             'light blue',
@@ -620,6 +644,9 @@ var App;
             'purple',
             'brown'
         ];
+        /**
+         * ボタンのホバー色配列
+         */
         Color.ButtonHoverColors = [
             '#b4b4b4',
             '#8fcfff',
@@ -5223,7 +5250,7 @@ var App;
                     _this.InputPanel.ReferencePoint = Property.ReferencePoint.LeftTop;
                     _this.InputPanel.Size.Width = 280;
                     _this.InputPanel.SetAnchor(70, 10, null, 10);
-                    _this.InputPanel.Color = App.Color.Main;
+                    _this.InputPanel.Color = App.Color.MainBackground;
                     _this.Add(_this.InputPanel);
                     var lbl1 = new Views.LabelView();
                     lbl1.Text = 'Name';
@@ -5317,7 +5344,7 @@ var App;
                     _this.InputPanel.ReferencePoint = Property.ReferencePoint.LeftTop;
                     _this.InputPanel.Size.Width = 280;
                     _this.InputPanel.SetAnchor(70, 10, null, 10);
-                    _this.InputPanel.Color = App.Color.Main;
+                    _this.InputPanel.Color = App.Color.MainBackground;
                     _this.Add(_this.InputPanel);
                     var lbl1 = new Views.LabelView();
                     lbl1.Text = 'Name';
@@ -8465,4 +8492,128 @@ var Fw;
         })(Property = Views.Property || (Views.Property = {}));
     })(Views = Fw.Views || (Fw.Views = {}));
 })(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Fw/Controllers/ControllerBase.ts" />
+/// <reference path="../../Fw/Controllers/Manager.ts" />
+/// <reference path="../../Fw/Util/Dump.ts" />
+/// <reference path="../../Fw/Events/ControlViewEvents.ts" />
+/// <reference path="../../Fw/Events/EntityEvents.ts" />
+/// <reference path="../../Fw/Events/ButtonViewEvents.ts" />
+/// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
+/// <reference path="../Views/Pages/MainPageView.ts" />
+/// <reference path="../Events/Controls/ControlButtonViewEvents.ts" />
+var App;
+(function (App) {
+    var Controllers;
+    (function (Controllers) {
+        var Dump = Fw.Util.Dump;
+        var Pages = App.Views.Pages;
+        var ItemSelectionController = /** @class */ (function (_super) {
+            __extends(ItemSelectionController, _super);
+            function ItemSelectionController() {
+                var _this = _super.call(this, 'ItemSelection') || this;
+                _this.SetPageView(new Pages.ItemSelectionPageView());
+                _this._page = _this.View;
+                _this.SetClassName('ItemSelectionController');
+                return _this;
+            }
+            ItemSelectionController.prototype.ShowSelector = function (parentController) {
+                return __awaiter(this, void 0, void 0, function () {
+                    var _this = this;
+                    return __generator(this, function (_a) {
+                        return [2 /*return*/, new Promise(function (resolve) {
+                                _this._parentController = parentController;
+                                _this._resolve = resolve;
+                            })];
+                    });
+                });
+            };
+            ItemSelectionController.prototype.Commit = function (selectedItem) {
+                if (!this._parentController || !this._resolve)
+                    throw new Error('Exec ShowSelector');
+                try {
+                    this._resolve(selectedItem);
+                }
+                catch (e) {
+                    this.Log('ERROR!');
+                    Dump.ErrorLog(e);
+                }
+                this.HideModal();
+                this._parentController.View.UnMask();
+                this._parentController = null;
+                this._resolve = null;
+            };
+            ItemSelectionController.prototype.Cancel = function () {
+                if (!this._parentController || !this._resolve)
+                    throw new Error('Exec ShowSelector');
+                try {
+                    this._resolve(null);
+                }
+                catch (e) {
+                    this.Log('ERROR!');
+                    Dump.ErrorLog(e);
+                }
+                this.HideModal();
+                this._parentController.View.UnMask();
+                this._parentController = null;
+                this._resolve = null;
+            };
+            return ItemSelectionController;
+        }(Fw.Controllers.ControllerBase));
+        Controllers.ItemSelectionController = ItemSelectionController;
+    })(Controllers = App.Controllers || (App.Controllers = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Views/PageView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Events/PageViewEvents.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../Controls/HeaderBarView.ts" />
+var App;
+(function (App) {
+    var Views;
+    (function (Views_16) {
+        var Pages;
+        (function (Pages) {
+            var Views = Fw.Views;
+            var Property = Fw.Views.Property;
+            var Controls = App.Views.Controls;
+            var ItemSelectionPageView = /** @class */ (function (_super) {
+                __extends(ItemSelectionPageView, _super);
+                function ItemSelectionPageView() {
+                    var _this = _super.call(this, $("")) || this;
+                    _this.HeaderBar = new Controls.HeaderBarView();
+                    _this.SelectorPanel = new Views.StuckerBoxView();
+                    _this.SetClassName('ItemSelectionPageView');
+                    var background = new Views.ImageView();
+                    background.SetAnchor(0, 0, 0, 0);
+                    background.FitPolicy = Property.FitPolicy.Cover;
+                    background.Src = 'images/Pages/ControlProperty/background.jpg';
+                    _this.Add(background);
+                    _this.HeaderBar.Text = '';
+                    _this.HeaderBar.LeftButton.Hide(0);
+                    _this.HeaderBar.RightButton.Hide(0);
+                    _this.Add(_this.HeaderBar);
+                    _this.Label = new Views.LabelView();
+                    _this.Label.FontSize = Property.FontSize.Large;
+                    _this.Label.Color = App.Color.Main;
+                    _this.Label.SetAnchor(null, 5, null, null);
+                    _this.Label.Text = '';
+                    _this.HeaderBar.Add(_this.Label);
+                    _this.SelectorPanel.Position.Policy = Property.PositionPolicy.LeftTop;
+                    _this.SelectorPanel.ReferencePoint = Property.ReferencePoint.LeftTop;
+                    _this.SelectorPanel.Size.Width = 280;
+                    _this.SelectorPanel.SetAnchor(70, 10, null, 10);
+                    _this.SelectorPanel.Color = App.Color.MainBackground;
+                    _this.Add(_this.SelectorPanel);
+                    return _this;
+                }
+                return ItemSelectionPageView;
+            }(Fw.Views.PageView));
+            Pages.ItemSelectionPageView = ItemSelectionPageView;
+        })(Pages = Views_16.Pages || (Views_16.Pages = {}));
+    })(Views = App.Views || (App.Views = {}));
+})(App || (App = {}));
 //# sourceMappingURL=tsout.js.map

@@ -10,7 +10,7 @@ namespace Fw.Controllers {
 
         readonly Id: string;
         readonly IsDefaultView: boolean;
-        readonly View: Fw.Views.IView;
+        readonly View: Fw.Views.PageView;
         readonly Manager: Fw.Controllers.Manager;
 
         SetPageView(view: Views.PageView): void;
