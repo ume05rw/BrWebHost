@@ -341,16 +341,35 @@ namespace Fw.Views {
             }
         }
 
+        /**
+         * デバッグ用 - 所属元文字列を再帰的に取得する
+         * @param current
+         * @param obj
+         */
+        protected GetParentsString(current: string = null): string {
+            const result = (current === null)
+                ? `${this.ObjectIdentifier}`
+                : `${current}-${this.ObjectIdentifier}`;
+
+            return (!this.Parent)
+                ? result
+                : (this.Parent as ViewBase).GetParentsString(result);
+        }
+
         public Refresh(): void {
             if (this._isSuppressLayout || !this._isInitialized)
                 return;
 
             //this.Log(`Refresh - avtive`);
+            //this.Log('Refresh Tree: ' + (this as ViewBase).GetParentsString());
 
-            // 子ViewもRefreshさせる。
-            _.each(this.Children, (view: IView) => {
-                view.Refresh();
-            });
+            //// 子ViewもRefreshさせる。
+            //_.each(this.Children, (view: IView) => {
+            //    //view.Log('Parent.Refresh');
+            //    if (view.LogEnable)
+            //        view.Log('Refresh Tree: ' + (view as ViewBase).GetParentsString());
+            //    view.Refresh();
+            //});
 
             if (this._lastRefreshTimer != null) {
                 clearTimeout(this._lastRefreshTimer);
@@ -375,7 +394,7 @@ namespace Fw.Views {
         }
 
         protected InnerRefresh(): void {
-            this.Log(`InnerRefresh`);
+            //this.Log(`InnerRefresh`);
             const parent = $(this.Elem.parent());
 
             if (parent.length <= 0)
@@ -402,13 +421,13 @@ namespace Fw.Views {
             let elemLeft = pHalfWidth - myHalfWidth + this.Position.X;
             let elemTop = pHalfHeight - myHalfHeight + this.Position.Y;
 
-            this.Log({
-                left: this.Position.Left,
-                pHalfWidth: pHalfWidth,
-                myHalfWidth: myHalfWidth,
-                positionX: this.Position.X,
-                elemLeft: elemLeft
-            });
+            //this.Log({
+            //    left: this.Position.Left,
+            //    pHalfWidth: pHalfWidth,
+            //    myHalfWidth: myHalfWidth,
+            //    positionX: this.Position.X,
+            //    elemLeft: elemLeft
+            //});
 
             this.SetStyles({
                 left: `${elemLeft}px`,
@@ -425,6 +444,11 @@ namespace Fw.Views {
             });
             _.defer(() => {
                 this.ApplyStyles();
+
+                // 子ViewをRefreshさせる。
+                _.each(this.Children, (view: IView) => {
+                    view.Refresh();
+                });
             });
 
             this._lastRefreshedTime = new Date();
@@ -529,7 +553,7 @@ namespace Fw.Views {
 
                 // 描画抑止中でも、一定時間に一度はDom適用する。
                 if (elapsed > Root.Instance.ViewRefreshInterval) {
-                    this.Log(`ApplyStyles: ${elapsed} > ${Root.Instance.ViewRefreshInterval}`);
+                    //this.Log(`ApplyStyles: ${elapsed} > ${Root.Instance.ViewRefreshInterval}`);
                     this.InnerApplyStyles();
                     return;
                 }
@@ -542,7 +566,7 @@ namespace Fw.Views {
         protected InnerApplyStyles(): void {
             this._innerApplyCount++;
             this._lastAppliedTime = new Date();
-            this.Log(`InnerApplyStyles: ${this._innerApplyCount}`);
+            //this.Log(`InnerApplyStyles: ${this._innerApplyCount}`);
             _.each(this._newStyles, (v, k) => {
                 if (this._latestStyles[k] !== v) {
                     this.Dom.style[k] = v;

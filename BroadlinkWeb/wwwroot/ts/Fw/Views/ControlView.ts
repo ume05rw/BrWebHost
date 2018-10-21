@@ -38,7 +38,7 @@ namespace Fw.Views {
 
             // touch系イベントはmouse系と重複して発生するため、リッスンしない。
             this.Elem.on('mousedown', (e) => {
-                this.Log(`mousedown`);
+                //this.Log(`mousedown`);
                 if (this._clickEventTimer != null)
                     clearTimeout(this._clickEventTimer);
 
@@ -50,13 +50,13 @@ namespace Fw.Views {
                     if (this._cvMouseSuppressor)
                         return;
 
-                    this.Log('longtapped');
+                    //this.Log('longtapped');
                     this.DispatchEvent(Events.LongClick);
                 }, 1000);
             });
 
             this.Elem.on('mouseup', (e) => {
-                this.Log(`mouseup`);
+                //this.Log(`mouseup`);
                 if (this._clickEventTimer != null) {
                     // ロングタップ検出中のとき
                     clearTimeout(this._clickEventTimer);
@@ -67,7 +67,7 @@ namespace Fw.Views {
                         return;
 
                     // 以降、シングルタップイベント処理
-                    this.Log('singletapped');
+                    //this.Log('singletapped');
                     this.DispatchEvent(Events.SingleClick);
                 } else {
                 }
@@ -78,7 +78,7 @@ namespace Fw.Views {
                     // ロングタップ検出中のとき
                     clearTimeout(this._clickEventTimer);
                     this._clickEventTimer = null;
-                    this.Log('tap canceled');
+                    //this.Log('tap canceled');
                 }
             });
         }

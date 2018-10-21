@@ -126,7 +126,7 @@ namespace Fw.Views {
                             (Math.abs(addX) + Math.abs(addY)) < 10
                             && elapsed < 500
                         ) {
-                            this.Log('Fire.SingleClick');
+                            //this.Log('Fire.SingleClick');
                             if (this.IsSuppressedEvent(Events.SingleClick))
                                 this.ResumeEvent(Events.SingleClick);
                             this.DispatchEvent(Events.SingleClick);

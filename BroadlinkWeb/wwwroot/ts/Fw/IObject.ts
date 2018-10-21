@@ -14,6 +14,11 @@ namespace Fw {
         readonly InstanceId: string;
 
         /**
+         * クラス名-インスタンスIDのセット文字列
+         */
+        readonly ObjectIdentifier: string;
+
+        /**
          * 破棄されたか否か
          */
         readonly IsDisposed: boolean;

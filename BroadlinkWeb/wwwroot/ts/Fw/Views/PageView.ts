@@ -49,6 +49,8 @@ namespace Fw.Views {
             this.Size.Height = Fw.Root.Instance.Size.Height;
             this.IsVisible = false;
 
+            ////デバッグ用
+            //this.LogEnable = true;
 
             // ブラウザのリサイズ時、ページ全体を再描画
             Fw.Root.Instance.AddEventListener(Fw.Events.RootEvents.Resized, () => {
@@ -56,9 +58,6 @@ namespace Fw.Views {
                 this.Size.Width = Fw.Root.Instance.Size.Width;
                 this.Size.Height = Fw.Root.Instance.Size.Height;
                 this.Refresh();
-                _.delay(() => {
-                    this.Refresh();
-                }, 100);
             });
 
             // マスクをクリックしたとき、戻る。
@@ -250,6 +249,16 @@ namespace Fw.Views {
             //this.Dom.style.zIndex = '0';
             this.SetStyle('zIndex', '0');
             this.Refresh();
+        }
+
+        public Refresh(): void {
+            super.Refresh();
+
+            // ページリフレッシュ時は、即座に子Viewをリフレッシュ指示する。
+            _.each(this.Children, (v: IView) => {
+                //this.Log(`${this.ClassName}.Resized - Child Refresh: ${v.ObjectIdentifier}`);
+                v.Refresh();
+            });
         }
 
         protected InnerRefresh(): void {

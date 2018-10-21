@@ -74,6 +74,7 @@ namespace Fw.Views {
             this._innerBox.SetTransAnimation(false);
             this._innerBox.SetLeftTop(0, 0);
             this._innerBox.BackgroundColor = 'transparent';
+            this._innerBox.SetParent(this);
             this.Elem.append(this._innerBox.Elem);
             //super.Add(this._innerBox); // Addメソッドでthis.Childrenを呼ぶため循環参照になる。
 

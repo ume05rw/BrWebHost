@@ -26,6 +26,10 @@ namespace Fw {
             return this._className;
         }
 
+        public get ObjectIdentifier(): string {
+            return `[${this._className}[${this._instanceId}]`;
+        }
+
         public LogEnable: boolean;
 
         constructor() {

@@ -1071,6 +1071,13 @@ var Fw;
             enumerable: true,
             configurable: true
         });
+        Object.defineProperty(ObjectBase.prototype, "ObjectIdentifier", {
+            get: function () {
+                return "[" + this._className + "[" + this._instanceId + "]";
+            },
+            enumerable: true,
+            configurable: true
+        });
         ObjectBase.prototype.SetClassName = function (name) {
             this._className = name;
         };
@@ -2035,15 +2042,33 @@ var Fw;
                     this.Log(view);
                 }
             };
+            /**
+             * デバッグ用 - 所属元文字列を再帰的に取得する
+             * @param current
+             * @param obj
+             */
+            ViewBase.prototype.GetParentsString = function (current) {
+                if (current === void 0) { current = null; }
+                var result = (current === null)
+                    ? "" + this.ObjectIdentifier
+                    : current + "-" + this.ObjectIdentifier;
+                return (!this.Parent)
+                    ? result
+                    : this.Parent.GetParentsString(result);
+            };
             ViewBase.prototype.Refresh = function () {
                 var _this = this;
                 if (this._isSuppressLayout || !this._isInitialized)
                     return;
                 //this.Log(`Refresh - avtive`);
-                // 子ViewもRefreshさせる。
-                _.each(this.Children, function (view) {
-                    view.Refresh();
-                });
+                //this.Log('Refresh Tree: ' + (this as ViewBase).GetParentsString());
+                //// 子ViewもRefreshさせる。
+                //_.each(this.Children, (view: IView) => {
+                //    //view.Log('Parent.Refresh');
+                //    if (view.LogEnable)
+                //        view.Log('Refresh Tree: ' + (view as ViewBase).GetParentsString());
+                //    view.Refresh();
+                //});
                 if (this._lastRefreshTimer != null) {
                     clearTimeout(this._lastRefreshTimer);
                     this._lastRefreshTimer = null;
@@ -2063,7 +2088,7 @@ var Fw;
             };
             ViewBase.prototype.InnerRefresh = function () {
                 var _this = this;
-                this.Log("InnerRefresh");
+                //this.Log(`InnerRefresh`);
                 var parent = $(this.Elem.parent());
                 if (parent.length <= 0)
                     return;
@@ -2082,13 +2107,13 @@ var Fw;
                 var myHalfHeight = this.Size.Height / 2;
                 var elemLeft = pHalfWidth - myHalfWidth + this.Position.X;
                 var elemTop = pHalfHeight - myHalfHeight + this.Position.Y;
-                this.Log({
-                    left: this.Position.Left,
-                    pHalfWidth: pHalfWidth,
-                    myHalfWidth: myHalfWidth,
-                    positionX: this.Position.X,
-                    elemLeft: elemLeft
-                });
+                //this.Log({
+                //    left: this.Position.Left,
+                //    pHalfWidth: pHalfWidth,
+                //    myHalfWidth: myHalfWidth,
+                //    positionX: this.Position.X,
+                //    elemLeft: elemLeft
+                //});
                 this.SetStyles({
                     left: elemLeft + "px",
                     top: elemTop + "px",
@@ -2104,6 +2129,10 @@ var Fw;
                 });
                 _.defer(function () {
                     _this.ApplyStyles();
+                    // 子ViewをRefreshさせる。
+                    _.each(_this.Children, function (view) {
+                        view.Refresh();
+                    });
                 });
                 this._lastRefreshedTime = new Date();
             };
@@ -2193,7 +2222,7 @@ var Fw;
                     var elapsed = (now.getTime() - this._lastAppliedTime.getTime());
                     // 描画抑止中でも、一定時間に一度はDom適用する。
                     if (elapsed > Fw.Root.Instance.ViewRefreshInterval) {
-                        this.Log("ApplyStyles: " + elapsed + " > " + Fw.Root.Instance.ViewRefreshInterval);
+                        //this.Log(`ApplyStyles: ${elapsed} > ${Root.Instance.ViewRefreshInterval}`);
                         this.InnerApplyStyles();
                         return;
                     }
@@ -2206,7 +2235,7 @@ var Fw;
                 var _this = this;
                 this._innerApplyCount++;
                 this._lastAppliedTime = new Date();
-                this.Log("InnerApplyStyles: " + this._innerApplyCount);
+                //this.Log(`InnerApplyStyles: ${this._innerApplyCount}`);
                 _.each(this._newStyles, function (v, k) {
                     if (_this._latestStyles[k] !== v) {
                         _this.Dom.style[k] = v;
@@ -2331,15 +2360,14 @@ var Fw;
                 _this.Size.Width = Fw.Root.Instance.Size.Width;
                 _this.Size.Height = Fw.Root.Instance.Size.Height;
                 _this.IsVisible = false;
+                ////デバッグ用
+                //this.LogEnable = true;
                 // ブラウザのリサイズ時、ページ全体を再描画
                 Fw.Root.Instance.AddEventListener(Fw.Events.RootEvents.Resized, function () {
                     //this.Log(`${this.ClassName}.Resized`);
                     _this.Size.Width = Fw.Root.Instance.Size.Width;
                     _this.Size.Height = Fw.Root.Instance.Size.Height;
                     _this.Refresh();
-                    _.delay(function () {
-                        _this.Refresh();
-                    }, 100);
                 });
                 // マスクをクリックしたとき、戻る。
                 Fw.Root.Instance.AddEventListener(Fw.Events.RootEvents.MaskClicked, function () {
@@ -2538,6 +2566,14 @@ var Fw;
                 //this.Dom.style.zIndex = '0';
                 this.SetStyle('zIndex', '0');
                 this.Refresh();
+            };
+            PageView.prototype.Refresh = function () {
+                _super.prototype.Refresh.call(this);
+                // ページリフレッシュ時は、即座に子Viewをリフレッシュ指示する。
+                _.each(this.Children, function (v) {
+                    //this.Log(`${this.ClassName}.Resized - Child Refresh: ${v.ObjectIdentifier}`);
+                    v.Refresh();
+                });
             };
             PageView.prototype.InnerRefresh = function () {
                 var _this = this;
@@ -2868,7 +2904,7 @@ var Fw;
                 _this.Elem.append(_this._label);
                 // touch系イベントはmouse系と重複して発生するため、リッスンしない。
                 _this.Elem.on('mousedown', function (e) {
-                    _this.Log("mousedown");
+                    //this.Log(`mousedown`);
                     if (_this._clickEventTimer != null)
                         clearTimeout(_this._clickEventTimer);
                     _this._clickEventTimer = setTimeout(function () {
@@ -2877,12 +2913,12 @@ var Fw;
                         // Pageのドラッグ処理中のとき、クリックイベントを抑制する。
                         if (_this._cvMouseSuppressor)
                             return;
-                        _this.Log('longtapped');
+                        //this.Log('longtapped');
                         _this.DispatchEvent(Events.LongClick);
                     }, 1000);
                 });
                 _this.Elem.on('mouseup', function (e) {
-                    _this.Log("mouseup");
+                    //this.Log(`mouseup`);
                     if (_this._clickEventTimer != null) {
                         // ロングタップ検出中のとき
                         clearTimeout(_this._clickEventTimer);
@@ -2891,7 +2927,7 @@ var Fw;
                         if (_this._cvMouseSuppressor)
                             return;
                         // 以降、シングルタップイベント処理
-                        _this.Log('singletapped');
+                        //this.Log('singletapped');
                         _this.DispatchEvent(Events.SingleClick);
                     }
                     else {
@@ -2902,7 +2938,7 @@ var Fw;
                         // ロングタップ検出中のとき
                         clearTimeout(_this._clickEventTimer);
                         _this._clickEventTimer = null;
-                        _this.Log('tap canceled');
+                        //this.Log('tap canceled');
                     }
                 });
                 return _this;
@@ -4638,7 +4674,7 @@ var Fw;
                             //});
                             if ((Math.abs(addX) + Math.abs(addY)) < 10
                                 && elapsed < 500) {
-                                _this.Log('Fire.SingleClick');
+                                //this.Log('Fire.SingleClick');
                                 if (_this.IsSuppressedEvent(Events.SingleClick))
                                     _this.ResumeEvent(Events.SingleClick);
                                 _this.DispatchEvent(Events.SingleClick);
@@ -7242,6 +7278,7 @@ var Fw;
                 _this._innerBox.SetTransAnimation(false);
                 _this._innerBox.SetLeftTop(0, 0);
                 _this._innerBox.BackgroundColor = 'transparent';
+                _this._innerBox.SetParent(_this);
                 _this.Elem.append(_this._innerBox.Elem);
                 //super.Add(this._innerBox); // Addメソッドでthis.Childrenを呼ぶため循環参照になる。
                 _this._positionBarMax.Position.Policy = Property.PositionPolicy.LeftTop;
