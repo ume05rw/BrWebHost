@@ -1,9 +1,9 @@
-﻿/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="ObjectEvents.ts" />
+/// <reference path="EventableEvents.ts" />
 
 namespace Fw.Events {
-    export class ViewEventsClass extends ObjectEventsClass {
+    export class ViewEventsClass extends EventableEventsClass {
         public readonly Shown: string = 'Shown';
         public readonly Hidden: string = 'Hidden';
         public readonly Attached: string = 'Attached';

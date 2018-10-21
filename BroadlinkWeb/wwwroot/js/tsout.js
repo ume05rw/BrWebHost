@@ -760,27 +760,11 @@ var Fw;
         Events.EventReference = EventReference;
     })(Events = Fw.Events || (Fw.Events = {}));
 })(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-var Fw;
-(function (Fw) {
-    var Events;
-    (function (Events) {
-        var ObjectEventsClass = /** @class */ (function () {
-            function ObjectEventsClass() {
-            }
-            return ObjectEventsClass;
-        }());
-        Events.ObjectEventsClass = ObjectEventsClass;
-        Events.ObjectEvents = new ObjectEventsClass();
-    })(Events = Fw.Events || (Fw.Events = {}));
-})(Fw || (Fw = {}));
 /// <reference path="../../lib/jquery/index.d.ts" />
 /// <reference path="../../lib/underscore/index.d.ts" />
+/// <reference path="IObject.ts" />
 /// <reference path="Events/EventReference.ts" />
 /// <reference path="Util/Dump.ts" />
-/// <reference path="IObject.ts" />
-/// <reference path="Events/ObjectEvents.ts" />
 var Fw;
 (function (Fw) {
     var ObjectBase = /** @class */ (function () {
@@ -822,13 +806,28 @@ var Fw;
     }());
     Fw.ObjectBase = ObjectBase;
 })(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+var Fw;
+(function (Fw) {
+    var Events;
+    (function (Events) {
+        var EventableEventsClass = /** @class */ (function () {
+            function EventableEventsClass() {
+            }
+            return EventableEventsClass;
+        }());
+        Events.EventableEventsClass = EventableEventsClass;
+        Events.EventableEvents = new EventableEventsClass();
+    })(Events = Fw.Events || (Fw.Events = {}));
+})(Fw || (Fw = {}));
 /// <reference path="../../lib/jquery/index.d.ts" />
 /// <reference path="../../lib/underscore/index.d.ts" />
 /// <reference path="IEventable.ts" />
 /// <reference path="ObjectBase.ts" />
 /// <reference path="Events/EventReference.ts" />
 /// <reference path="Util/Dump.ts" />
-/// <reference path="Events/ObjectEvents.ts" />
+/// <reference path="Events/EventableEvents.ts" />
 var Fw;
 (function (Fw) {
     var Dump = Fw.Util.Dump;
@@ -953,7 +952,7 @@ var Fw;
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="ObjectEvents.ts" />
+/// <reference path="EventableEvents.ts" />
 var Fw;
 (function (Fw) {
     var Events;
@@ -967,14 +966,14 @@ var Fw;
                 return _this;
             }
             return RootEventsClass;
-        }(Events.ObjectEventsClass));
+        }(Events.EventableEventsClass));
         Events.RootEventsClass = RootEventsClass;
         Events.RootEvents = new RootEventsClass();
     })(Events = Fw.Events || (Fw.Events = {}));
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="ObjectEvents.ts" />
+/// <reference path="EventableEvents.ts" />
 var Fw;
 (function (Fw) {
     var Events;
@@ -995,7 +994,7 @@ var Fw;
                 return _this;
             }
             return ViewEventsClass;
-        }(Events.ObjectEventsClass));
+        }(Events.EventableEventsClass));
         Events.ViewEventsClass = ViewEventsClass;
         Events.ViewEvents = new ViewEventsClass();
     })(Events = Fw.Events || (Fw.Events = {}));
@@ -1602,7 +1601,7 @@ var Fw;
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="ObjectEvents.ts" />
+/// <reference path="EventableEvents.ts" />
 var Fw;
 (function (Fw) {
     var Events;
@@ -1615,7 +1614,7 @@ var Fw;
                 return _this;
             }
             return EntityEventsClass;
-        }(Events.ObjectEventsClass));
+        }(Events.EventableEventsClass));
         Events.EntityEventsClass = EntityEventsClass;
         Events.EntityEvents = new EntityEventsClass();
     })(Events = Fw.Events || (Fw.Events = {}));
@@ -4659,7 +4658,7 @@ var Fw;
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="ObjectEvents.ts" />
+/// <reference path="EventableEvents.ts" />
 var Fw;
 (function (Fw) {
     var Events;
@@ -4670,7 +4669,7 @@ var Fw;
                 return _super !== null && _super.apply(this, arguments) || this;
             }
             return StoreEventsClass;
-        }(Events.ObjectEventsClass));
+        }(Events.EventableEventsClass));
         Events.StoreEventsClass = StoreEventsClass;
         Events.StoreEvents = new StoreEventsClass();
     })(Events = Fw.Events || (Fw.Events = {}));

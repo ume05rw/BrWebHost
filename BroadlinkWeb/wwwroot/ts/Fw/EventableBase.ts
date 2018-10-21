@@ -6,13 +6,12 @@
 
 /// <reference path="Events/EventReference.ts" />
 /// <reference path="Util/Dump.ts" />
-
-/// <reference path="Events/ObjectEvents.ts" />
+/// <reference path="Events/EventableEvents.ts" />
 
 namespace Fw {
     import Dump = Fw.Util.Dump;
     import EventReference = Fw.Events.EventReference;
-    import Events = Fw.Events.ObjectEvents;
+    import Events = Fw.Events.EventableEvents;
 
     export abstract class EventableBase extends ObjectBase implements IEventable {
 

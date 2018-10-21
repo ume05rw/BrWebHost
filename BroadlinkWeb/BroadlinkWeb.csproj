@@ -45,13 +45,13 @@
     <Content Remove="wwwroot\ts\Fw\Events\CheckBoxInputViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\ControlViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\EntityEvents.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\EventableEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\EventObject.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\EventReference.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\ImageViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\InputViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\LabelViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\LineViewEvents.ts" />
-    <Content Remove="wwwroot\ts\Fw\Events\ObjectEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\PageViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\RelocatableButtonViewEvents.ts" />
     <Content Remove="wwwroot\ts\Fw\Events\RootEvents.ts" />
@@ -171,7 +171,7 @@
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\EntityEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\EventObject.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\InputViewEvents.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\ObjectEvents.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\EventableEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\SelectBoxInputViewEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\StoreEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Events\StuckerBoxViewEvents.ts" />

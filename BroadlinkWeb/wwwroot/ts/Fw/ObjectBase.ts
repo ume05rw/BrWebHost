@@ -1,14 +1,13 @@
 /// <reference path="../../lib/jquery/index.d.ts" />
 /// <reference path="../../lib/underscore/index.d.ts" />
+
+/// <reference path="IObject.ts" />
+
 /// <reference path="Events/EventReference.ts" />
 /// <reference path="Util/Dump.ts" />
-/// <reference path="IObject.ts" />
-/// <reference path="Events/ObjectEvents.ts" />
 
 namespace Fw {
     import Dump = Fw.Util.Dump;
-    import EventReference = Fw.Events.EventReference;
-    import Events = Fw.Events.ObjectEvents;
 
     export abstract class ObjectBase implements IObject {
 

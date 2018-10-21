@@ -2,8 +2,8 @@
 /// <reference path="../../../lib/underscore/index.d.ts" />
 
 namespace Fw.Events {
-    export class ObjectEventsClass {
+    export class EventableEventsClass {
     }
 
-    export const ObjectEvents: ObjectEventsClass = new ObjectEventsClass();
+    export const EventableEvents: EventableEventsClass = new EventableEventsClass();
 }

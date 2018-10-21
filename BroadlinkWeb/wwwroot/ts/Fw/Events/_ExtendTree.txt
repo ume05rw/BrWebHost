@@ -1,6 +1,6 @@
 計21
 
-ObjectEventsClass
+EventableEventsClass
   |
   +- RootEventsClass
   |
