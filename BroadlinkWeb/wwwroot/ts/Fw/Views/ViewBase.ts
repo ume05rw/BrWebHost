@@ -115,8 +115,11 @@ namespace Fw.Views {
             super();
 
             this.SetElem(jqueryElem);
-
             this.SetClassName('ViewBase');
+
+            //// デバッグ用、全Viewのログを出す。
+            //this.LogEnable = true;
+
 
             this._children = new Array<IView>();
             this._size = new Property.Size(this);

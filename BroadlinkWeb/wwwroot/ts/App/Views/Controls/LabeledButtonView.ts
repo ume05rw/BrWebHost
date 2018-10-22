@@ -44,6 +44,10 @@ namespace App.Views.Controls {
             this._labelView.Size.Height = 15;
             this._labelView.FontSize = Property.FontSize.Small;
             this.Add(this._labelView);
+
+            // ボタンクリックが二回走ることの対策。
+            this._buttonView.SuppressEvent(Fw.Events.ButtonViewEvents.SingleClick);
+            this._buttonView.SuppressEvent(Fw.Events.ButtonViewEvents.LongClick);
         }
 
         protected InnerRefresh(): void {

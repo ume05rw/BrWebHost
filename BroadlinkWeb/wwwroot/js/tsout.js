@@ -670,6 +670,20 @@ var App;
     var Icon = /** @class */ (function () {
         function Icon() {
         }
+        Icon.Scene = 'images/icons/target.png';
+        Icon.Tv = 'images/icons/monitor.png';
+        Icon.Av = 'images/icons/sound.png';
+        Icon.Light = 'images/icons/sun.png';
+        Icon.Free = 'images/icons/circle_plus.png';
+        Icon.WoL = 'images/icons/speech.png';
+        Icon.Script = 'images/icons/edit.png';
+        Icon.Remote = 'images/icons/lightning.png';
+        // TODO: 以下、ソレっぽいアイコンを用意する。
+        Icon.Air = 'images/icons/layout.png';
+        Icon.BrA1 = 'images/icons/rocket.png';
+        Icon.BrSp2 = 'images/icons/rocket.png';
+        Icon.BrSc1 = 'images/icons/rocket.png';
+        Icon.BrS1c = 'images/icons/rocket.png';
         Icon.Names = [
             'arrow1_down.png',
             'arrow1_left.png',
@@ -1755,6 +1769,8 @@ var Fw;
                 _this._newStyles = {};
                 _this.SetElem(jqueryElem);
                 _this.SetClassName('ViewBase');
+                //// デバッグ用、全Viewのログを出す。
+                //this.LogEnable = true;
                 _this._children = new Array();
                 _this._size = new Property.Size(_this);
                 _this._position = new Property.Position(_this);
@@ -3707,14 +3723,15 @@ var App;
 /// <reference path="../../Fw/Controllers/Manager.ts" />
 /// <reference path="../../Fw/Util/Dump.ts" />
 /// <reference path="../../Fw/Events/ControlViewEvents.ts" />
+/// <reference path="../../Fw/Events/ButtonViewEvents.ts" />
 /// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
 /// <reference path="../Views/Pages/MainPageView.ts" />
 var App;
 (function (App) {
     var Controllers;
     (function (Controllers) {
-        var Events = Fw.Events;
         var Pages = App.Views.Pages;
+        var ButtonEvents = Fw.Events.ButtonViewEvents;
         var MainController = /** @class */ (function (_super) {
             __extends(MainController, _super);
             function MainController() {
@@ -3724,25 +3741,32 @@ var App;
                 var controlSetCtr = new Controllers.ControlSetController();
                 var controlPropertyCtr = new Controllers.ControlPropertyController();
                 var controlHeaderPropertyCtr = new Controllers.ControlHeaderPropertyController();
+                var functionSelectCtr = new Controllers.FunctionSelectController();
                 _this.SetPageView(new Pages.MainPageView());
                 var page = _this.View;
-                page.HeaderBar.RightButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
-                    // TODO: 仮実装-実際は、シーンorリモコン、リモコン種選択をさせたあと、リモコン編集画面に遷移。
-                    var ctr = _this.Manager.Get('ControlSet');
-                    ctr.SetEntity(new App.Models.Entities.ControlSet());
-                    ctr.SetModal();
-                    //this.SwitchTo('ControlSet');
-                });
-                page.BtnGoSub1.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
+                page.HeaderBar.RightButton.AddEventListener(ButtonEvents.SingleClick, function () { return __awaiter(_this, void 0, void 0, function () {
+                    var ctr, item;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                ctr = this.Manager.Get('FunctionSelect');
+                                return [4 /*yield*/, ctr.Select(this)];
+                            case 1:
+                                item = _a.sent();
+                                return [2 /*return*/];
+                        }
+                    });
+                }); });
+                page.BtnGoSub1.AddEventListener(ButtonEvents.SingleClick, function () {
                     _this.SwitchTo("Sub1");
                 });
-                page.BtnGoSub2.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
+                page.BtnGoSub2.AddEventListener(ButtonEvents.SingleClick, function () {
                     _this.SwitchTo("Sub2");
                 });
-                page.BtnGoSub3.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
+                page.BtnGoSub3.AddEventListener(ButtonEvents.SingleClick, function () {
                     _this.SwitchTo("Sub3");
                 });
-                page.BtnGoDynamic.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
+                page.BtnGoDynamic.AddEventListener(ButtonEvents.SingleClick, function () {
                     var ctr = new Controllers.LayoutCheckController('LayoutCheck');
                     _this.SwitchController(ctr);
                     // TODO: 二回目以降で落ちる。処理後にControllerをDisposeするフローを考える。
@@ -4930,6 +4954,9 @@ var App;
                     _this._labelView.Size.Height = 15;
                     _this._labelView.FontSize = Property.FontSize.Small;
                     _this.Add(_this._labelView);
+                    // ボタンクリックが二回走ることの対策。
+                    _this._buttonView.SuppressEvent(Fw.Events.ButtonViewEvents.SingleClick);
+                    _this._buttonView.SuppressEvent(Fw.Events.ButtonViewEvents.LongClick);
                     return _this;
                 }
                 Object.defineProperty(LabeledButtonView.prototype, "Button", {
@@ -6787,6 +6814,7 @@ var Fw;
     var Views;
     (function (Views) {
         var Dump = Fw.Util.Dump;
+        var Events = Fw.Events.BoxViewEvents;
         var LineView = /** @class */ (function (_super) {
             __extends(LineView, _super);
             function LineView(direction) {
@@ -6848,23 +6876,41 @@ var Fw;
             LineView.prototype.CalcLayout = function () {
                 try {
                     this.SuppressLayout();
+                    this.SuppressEvent(Events.SizeChanged);
+                    this.SuppressEvent(Events.PositionChanged);
                     if (this.Direction === Views.Property.Direction.Horizontal) {
                         //this.Log(`${this.ClassName}.Direction = ${this.Direction}`);
                         this.Size.Height = 2;
-                        this.Size.Width = this.Length;
+                        // 左右端がどちらかがアンカーされていないとき、Length基準で幅を決める。
+                        if (!(this.Anchor.IsAnchoredLeft && this.Anchor.IsAnchoredRight))
+                            this.Size.Width = this.Length;
                     }
                     else {
                         //this.Log(`${this.ClassName}.Direction = ${this.Direction}`);
                         this.Size.Width = 2;
-                        this.Size.Height = this.Length;
+                        // 上下端のどちらかがアンカーされていないとき、Length基準で高さを決める。
+                        if (!(this.Anchor.IsAnchoredTop && this.Anchor.IsAnchoredBottom))
+                            this.Size.Height = this.Length;
                     }
                     _super.prototype.CalcLayout.call(this);
+                    if (this.Direction === Views.Property.Direction.Horizontal) {
+                        // 左右両端がアンカーされているとき、Lengthは自動決定。
+                        if (this.Anchor.IsAnchoredLeft && this.Anchor.IsAnchoredRight)
+                            this.Length = this.Size.Width;
+                    }
+                    else {
+                        // 上下両端がアンカーされているとき、Lengthは自動決定
+                        if (this.Anchor.IsAnchoredTop && this.Anchor.IsAnchoredBottom)
+                            this.Length = this.Size.Height;
+                    }
                 }
                 catch (e) {
                     Dump.ErrorLog(e, this.ClassName);
                 }
                 finally {
                     this.ResumeLayout();
+                    this.ResumeEvent(Events.SizeChanged);
+                    this.ResumeEvent(Events.PositionChanged);
                 }
             };
             LineView.prototype.Dispose = function () {
@@ -8492,78 +8538,6 @@ var Fw;
         })(Property = Views.Property || (Views.Property = {}));
     })(Views = Fw.Views || (Fw.Views = {}));
 })(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../../Fw/Controllers/ControllerBase.ts" />
-/// <reference path="../../Fw/Controllers/Manager.ts" />
-/// <reference path="../../Fw/Util/Dump.ts" />
-/// <reference path="../../Fw/Events/ControlViewEvents.ts" />
-/// <reference path="../../Fw/Events/EntityEvents.ts" />
-/// <reference path="../../Fw/Events/ButtonViewEvents.ts" />
-/// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
-/// <reference path="../Views/Pages/MainPageView.ts" />
-/// <reference path="../Events/Controls/ControlButtonViewEvents.ts" />
-var App;
-(function (App) {
-    var Controllers;
-    (function (Controllers) {
-        var Dump = Fw.Util.Dump;
-        var Pages = App.Views.Pages;
-        var ItemSelectionController = /** @class */ (function (_super) {
-            __extends(ItemSelectionController, _super);
-            function ItemSelectionController() {
-                var _this = _super.call(this, 'ItemSelection') || this;
-                _this.SetPageView(new Pages.ItemSelectionPageView());
-                _this._page = _this.View;
-                _this.SetClassName('ItemSelectionController');
-                return _this;
-            }
-            ItemSelectionController.prototype.ShowSelector = function (parentController) {
-                return __awaiter(this, void 0, void 0, function () {
-                    var _this = this;
-                    return __generator(this, function (_a) {
-                        return [2 /*return*/, new Promise(function (resolve) {
-                                _this._parentController = parentController;
-                                _this._resolve = resolve;
-                            })];
-                    });
-                });
-            };
-            ItemSelectionController.prototype.Commit = function (selectedItem) {
-                if (!this._parentController || !this._resolve)
-                    throw new Error('Exec ShowSelector');
-                try {
-                    this._resolve(selectedItem);
-                }
-                catch (e) {
-                    this.Log('ERROR!');
-                    Dump.ErrorLog(e);
-                }
-                this.HideModal();
-                this._parentController.View.UnMask();
-                this._parentController = null;
-                this._resolve = null;
-            };
-            ItemSelectionController.prototype.Cancel = function () {
-                if (!this._parentController || !this._resolve)
-                    throw new Error('Exec ShowSelector');
-                try {
-                    this._resolve(null);
-                }
-                catch (e) {
-                    this.Log('ERROR!');
-                    Dump.ErrorLog(e);
-                }
-                this.HideModal();
-                this._parentController.View.UnMask();
-                this._parentController = null;
-                this._resolve = null;
-            };
-            return ItemSelectionController;
-        }(Fw.Controllers.ControllerBase));
-        Controllers.ItemSelectionController = ItemSelectionController;
-    })(Controllers = App.Controllers || (App.Controllers = {}));
-})(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../../Fw/Views/PageView.ts" />
@@ -8580,9 +8554,9 @@ var App;
             var Views = Fw.Views;
             var Property = Fw.Views.Property;
             var Controls = App.Views.Controls;
-            var ItemSelectionPageView = /** @class */ (function (_super) {
-                __extends(ItemSelectionPageView, _super);
-                function ItemSelectionPageView() {
+            var ItemSelectPageView = /** @class */ (function (_super) {
+                __extends(ItemSelectPageView, _super);
+                function ItemSelectPageView() {
                     var _this = _super.call(this, $("")) || this;
                     _this.HeaderBar = new Controls.HeaderBarView();
                     _this.SelectorPanel = new Views.StuckerBoxView();
@@ -8610,10 +8584,296 @@ var App;
                     _this.Add(_this.SelectorPanel);
                     return _this;
                 }
-                return ItemSelectionPageView;
+                return ItemSelectPageView;
             }(Fw.Views.PageView));
-            Pages.ItemSelectionPageView = ItemSelectionPageView;
+            Pages.ItemSelectPageView = ItemSelectPageView;
         })(Pages = Views_16.Pages || (Views_16.Pages = {}));
+    })(Views = App.Views || (App.Views = {}));
+})(App || (App = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Fw/Controllers/ControllerBase.ts" />
+/// <reference path="../../Fw/Controllers/Manager.ts" />
+/// <reference path="../../Fw/Util/Dump.ts" />
+/// <reference path="../../Fw/Events/ControlViewEvents.ts" />
+/// <reference path="../../Fw/Events/EntityEvents.ts" />
+/// <reference path="../../Fw/Events/ButtonViewEvents.ts" />
+/// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
+/// <reference path="../Views/Pages/MainPageView.ts" />
+/// <reference path="../Events/Controls/ControlButtonViewEvents.ts" />
+var App;
+(function (App) {
+    var Controllers;
+    (function (Controllers) {
+        var Dump = Fw.Util.Dump;
+        var Pages = App.Views.Pages;
+        var ItemSelectControllerBase = /** @class */ (function (_super) {
+            __extends(ItemSelectControllerBase, _super);
+            //private _callback: (value: any) => void;
+            function ItemSelectControllerBase(controllerId) {
+                var _this = _super.call(this, controllerId) || this;
+                _this.SetPageView(new Pages.ItemSelectPageView());
+                _this.SetClassName('ItemSelectController');
+                _this.LogEnable = true;
+                return _this;
+            }
+            ItemSelectControllerBase.prototype.Select = function (parentController) {
+                return __awaiter(this, void 0, void 0, function () {
+                    var _this = this;
+                    return __generator(this, function (_a) {
+                        this.Log('ShowSelector');
+                        return [2 /*return*/, new Promise(function (resolve) {
+                                _this.Log('ShowSelector.Promise');
+                                _this._parentController = parentController;
+                                _this._resolve = resolve;
+                                //this._callback = (value: any) => {
+                                //    resolve(value);
+                                //};
+                                _this.View.ShowModal();
+                                _this._parentController.View.Mask();
+                            })];
+                    });
+                });
+            };
+            ItemSelectControllerBase.prototype.Commit = function (selectedItem) {
+                this.Log('Commit: ' + selectedItem);
+                console.log(this._resolve);
+                if (!this._parentController || !this._resolve)
+                    throw new Error('Exec Select');
+                try {
+                    this._resolve(selectedItem);
+                }
+                catch (e) {
+                    this.Log('ERROR!');
+                    Dump.ErrorLog(e);
+                }
+                this._resolve = null;
+                this.Reset();
+            };
+            ItemSelectControllerBase.prototype.Cancel = function () {
+                this.Log('Cancel');
+                if (!this._parentController || !this._resolve)
+                    throw new Error('Exec Select');
+                try {
+                    this._resolve(null);
+                }
+                catch (e) {
+                    this.Log('ERROR!');
+                    Dump.ErrorLog(e);
+                }
+                this._resolve = null;
+                this.Reset();
+            };
+            ItemSelectControllerBase.prototype.HideModal = function () {
+                this.Log('HideModal');
+                _super.prototype.HideModal.call(this);
+                if (this._resolve) {
+                    this._resolve(null);
+                    this._resolve = null;
+                }
+            };
+            ItemSelectControllerBase.prototype.Reset = function () {
+                this.Log('Reset');
+                this._resolve = null;
+                this.HideModal();
+                if (this._parentController.View.IsModal) {
+                    this._parentController.View.ShowModal();
+                }
+                else {
+                    if (this._parentController.View.IsMasked)
+                        this._parentController.View.UnMask();
+                }
+                this._parentController = null;
+            };
+            return ItemSelectControllerBase;
+        }(Fw.Controllers.ControllerBase));
+        Controllers.ItemSelectControllerBase = ItemSelectControllerBase;
+    })(Controllers = App.Controllers || (App.Controllers = {}));
+})(App || (App = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+var App;
+(function (App) {
+    var Itmes;
+    (function (Itmes) {
+        /**
+         * メイン画面機能
+         */
+        var Operation;
+        (function (Operation) {
+            Operation[Operation["Scene"] = 1] = "Scene";
+            Operation[Operation["Tv"] = 2] = "Tv";
+            Operation[Operation["Av"] = 3] = "Av";
+            Operation[Operation["Light"] = 4] = "Light";
+            Operation[Operation["Free"] = 6] = "Free";
+            // 以下、そのうち暇なら実装すっべ系
+            Operation[Operation["Air"] = 5] = "Air";
+            Operation[Operation["WoL"] = 7] = "WoL";
+            Operation[Operation["Script"] = 8] = "Script";
+            Operation[Operation["Remote"] = 9] = "Remote";
+            Operation[Operation["BrA1"] = 101] = "BrA1";
+            Operation[Operation["BrSp2"] = 102] = "BrSp2";
+            Operation[Operation["BrSc1"] = 103] = "BrSc1";
+            Operation[Operation["BrS1c"] = 104] = "BrS1c";
+        })(Operation = Itmes.Operation || (Itmes.Operation = {}));
+    })(Itmes = App.Itmes || (App.Itmes = {}));
+})(App || (App = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="ItemSelectControllerBase.ts" />
+/// <reference path="../../Fw/Util/Dump.ts" />
+/// <reference path="../../Fw/Controllers/Manager.ts" />
+/// <reference path="../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../Views/Pages/MainPageView.ts" />
+/// <reference path="../Views/Controls/LabeledButtonView.ts" />
+/// <reference path="../../Fw/Events/ButtonViewEvents.ts" />
+/// <reference path="../Items/Operation.ts" />
+var App;
+(function (App) {
+    var Controllers;
+    (function (Controllers) {
+        var Property = Fw.Views.Property;
+        var LabeledButtonView = App.Views.Controls.LabeledButtonView;
+        var ButtonEvents = Fw.Events.ButtonViewEvents;
+        var Operation = App.Itmes.Operation;
+        var FunctionSelectController = /** @class */ (function (_super) {
+            __extends(FunctionSelectController, _super);
+            function FunctionSelectController() {
+                var _this = _super.call(this, 'FunctionSelect') || this;
+                _this.SetClassName('ItemSelectionController');
+                _this._page = _this.View;
+                _this.InitView();
+                return _this;
+            }
+            FunctionSelectController.prototype.InitView = function () {
+                //_.each(App.Icon.Names, (name) => {
+                //    const btn = new 
+                //});
+                var _this = this;
+                // シーン
+                var btn1 = this.GetNewButton();
+                btn1.Label.Text = 'Scene';
+                btn1.Button.ImageSrc = App.Icon.Scene;
+                btn1.AddEventListener(ButtonEvents.SingleClick, function () {
+                    _this.Log('Scene!!!!');
+                    _this.Commit(Operation.Scene);
+                });
+                this._page.SelectorPanel.Add(btn1);
+                // 区切り線
+                var line = new Fw.Views.LineView(Property.Direction.Horizontal);
+                line.SetAnchor(null, 5, 5, null);
+                line.Color = App.Color.MainBackground;
+                this._page.SelectorPanel.Add(line);
+                // TV
+                var btn2 = this.GetNewButton();
+                btn2.Label.Text = 'TV';
+                btn2.Button.ImageSrc = App.Icon.Tv;
+                btn2.AddEventListener(ButtonEvents.SingleClick, function () {
+                    _this.Commit(Operation.Tv);
+                });
+                this._page.SelectorPanel.Add(btn2);
+                // AV
+                var btn3 = this.GetNewButton();
+                btn3.Label.Text = 'AV';
+                btn3.Button.ImageSrc = App.Icon.Av;
+                btn3.AddEventListener(ButtonEvents.SingleClick, function () {
+                    _this.Commit(Operation.Av);
+                });
+                this._page.SelectorPanel.Add(btn3);
+                // 照明
+                var btn4 = this.GetNewButton();
+                btn4.Label.Text = 'Light';
+                btn4.Button.ImageSrc = App.Icon.Light;
+                btn4.AddEventListener(ButtonEvents.SingleClick, function () {
+                    _this.Commit(Operation.Light);
+                });
+                this._page.SelectorPanel.Add(btn4);
+                // フリー編集
+                var btn5 = this.GetNewButton();
+                btn5.Label.Text = 'Free';
+                btn5.Button.ImageSrc = App.Icon.Free;
+                btn5.AddEventListener(ButtonEvents.SingleClick, function () {
+                    _this.Commit(Operation.Free);
+                });
+                this._page.SelectorPanel.Add(btn5);
+                //// WoL
+                //const btn6 = this.GetNewButton();
+                //btn6.Label.Text = 'WoL';
+                //btn6.Button.ImageSrc = App.Icon.WoL;
+                //btn6.AddEventListener(ButtonEvents.SingleClick, () => {
+                //    this.Commit(Operation.WoL);
+                //});
+                //this._page.SelectorPanel.Add(btn6);
+                //// ローカル実行
+                //const btn7 = this.GetNewButton();
+                //btn7.Label.Text = 'Script';
+                //btn7.Button.ImageSrc = App.Icon.Script;
+                //btn7.AddEventListener(ButtonEvents.SingleClick, () => {
+                //    this.Commit(Operation.Script);
+                //});
+                //this._page.SelectorPanel.Add(btn7);
+                //// リモート実行
+                //const btn8 = this.GetNewButton();
+                //btn8.Label.Text = 'Remote';
+                //btn8.Button.ImageSrc = App.Icon.Remote;
+                //btn8.AddEventListener(ButtonEvents.SingleClick, () => {
+                //    this.Commit(Operation.Remote);
+                //});
+                //this._page.SelectorPanel.Add(btn8);
+            };
+            FunctionSelectController.prototype.GetNewButton = function () {
+                var button = new LabeledButtonView();
+                button.SetSize(75, 95);
+                button.Button.Position.Policy = Property.PositionPolicy.LeftTop;
+                button.Button.HasBorder = true;
+                button.Button.BorderRadius = 10;
+                button.Button.BackgroundColor = App.Color.MainBackground;
+                button.Button.HoverColor = App.Color.ButtonHoverColors[0];
+                button.Button.Color = App.Color.ButtonColors[0];
+                button.Button.ImageFitPolicy = Property.FitPolicy.Auto;
+                return button;
+            };
+            return FunctionSelectController;
+        }(Controllers.ItemSelectControllerBase));
+        Controllers.FunctionSelectController = FunctionSelectController;
+    })(Controllers = App.Controllers || (App.Controllers = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Views/RelocatableButtonView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../../Fw/Events/EntityEvents.ts" />
+/// <reference path="../../Color.ts" />
+/// <reference path="../../Events/Controls/ControlButtonViewEvents.ts" />
+/// <reference path="LabeledButtonView.ts" />
+var App;
+(function (App) {
+    var Views;
+    (function (Views_17) {
+        var Controls;
+        (function (Controls) {
+            var Views = Fw.Views;
+            var Property = Fw.Views.Property;
+            var Color = App.Color;
+            var ItemSelectButtonView = /** @class */ (function (_super) {
+                __extends(ItemSelectButtonView, _super);
+                function ItemSelectButtonView() {
+                    var _this = _super.call(this) || this;
+                    _this.SetSize(75, 75);
+                    _this.Position.Policy = Property.PositionPolicy.LeftTop;
+                    _this.HasBorder = true;
+                    _this.BorderRadius = 10;
+                    _this.BackgroundColor = Color.MainBackground;
+                    _this.HoverColor = Color.ButtonHoverColors[0];
+                    _this.Color = Color.ButtonColors[0];
+                    _this.ImageFitPolicy = Property.FitPolicy.Auto;
+                    return _this;
+                }
+                return ItemSelectButtonView;
+            }(Views.ButtonView));
+            Controls.ItemSelectButtonView = ItemSelectButtonView;
+        })(Controls = Views_17.Controls || (Views_17.Controls = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 //# sourceMappingURL=tsout.js.map

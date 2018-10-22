@@ -14,7 +14,7 @@ namespace App.Views.Pages {
     import Property = Fw.Views.Property;
     import Controls = App.Views.Controls;
 
-    export class ItemSelectionPageView extends Fw.Views.PageView {
+    export class ItemSelectPageView extends Fw.Views.PageView {
 
         public HeaderBar: Controls.HeaderBarView;
         public SelectorPanel: Views.StuckerBoxView;

@@ -1,4 +1,4 @@
-﻿/// <reference path="../../lib/jquery/index.d.ts" />
+/// <reference path="../../lib/jquery/index.d.ts" />
 /// <reference path="../../lib/underscore/index.d.ts" />
 /// <reference path="../Fw/Util/Dump.ts" />
 /// <reference path="../Fw/Controllers/Manager.ts" />
@@ -8,6 +8,24 @@ namespace App {
     import Manager = Fw.Controllers.Manager;
 
     export class Icon {
+        public static Scene: string = 'images/icons/target.png';
+        public static Tv: string = 'images/icons/monitor.png';
+        public static Av: string = 'images/icons/sound.png';
+        public static Light: string = 'images/icons/sun.png';
+
+        public static Free: string = 'images/icons/circle_plus.png';
+        public static WoL: string = 'images/icons/speech.png';
+        public static Script: string = 'images/icons/edit.png';
+        public static Remote: string = 'images/icons/lightning.png';
+
+        // TODO: 以下、ソレっぽいアイコンを用意する。
+        public static Air: string = 'images/icons/layout.png'; 
+        public static BrA1: string = 'images/icons/rocket.png';
+        public static BrSp2: string = 'images/icons/rocket.png';
+        public static BrSc1: string = 'images/icons/rocket.png';
+        public static BrS1c: string = 'images/icons/rocket.png';
+
+
         public static Names: Array<string> = [
             'arrow1_down.png',
             'arrow1_left.png',

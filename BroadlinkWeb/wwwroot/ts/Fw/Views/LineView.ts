@@ -67,23 +67,44 @@ namespace Fw.Views {
         public CalcLayout(): void {
             try {
                 this.SuppressLayout();
+                this.SuppressEvent(Events.SizeChanged);
+                this.SuppressEvent(Events.PositionChanged);
+
 
                 if (this.Direction === Property.Direction.Horizontal) {
                     //this.Log(`${this.ClassName}.Direction = ${this.Direction}`);
                     this.Size.Height = 2;
-                    this.Size.Width = this.Length;
+
+                    // 左右端がどちらかがアンカーされていないとき、Length基準で幅を決める。
+                    if (!(this.Anchor.IsAnchoredLeft && this.Anchor.IsAnchoredRight))
+                        this.Size.Width = this.Length;
                 } else {
                     //this.Log(`${this.ClassName}.Direction = ${this.Direction}`);
                     this.Size.Width = 2;
-                    this.Size.Height = this.Length;
+
+                    // 上下端のどちらかがアンカーされていないとき、Length基準で高さを決める。
+                    if (!(this.Anchor.IsAnchoredTop && this.Anchor.IsAnchoredBottom))
+                        this.Size.Height = this.Length;
                 }
 
                 super.CalcLayout();
+
+                if (this.Direction === Property.Direction.Horizontal) {
+                    // 左右両端がアンカーされているとき、Lengthは自動決定。
+                    if (this.Anchor.IsAnchoredLeft && this.Anchor.IsAnchoredRight)
+                        this.Length = this.Size.Width;
+                } else {
+                    // 上下両端がアンカーされているとき、Lengthは自動決定
+                    if (this.Anchor.IsAnchoredTop && this.Anchor.IsAnchoredBottom)
+                        this.Length = this.Size.Height;
+                }
 
             } catch (e) {
                 Dump.ErrorLog(e, this.ClassName);
             } finally {
                 this.ResumeLayout();
+                this.ResumeEvent(Events.SizeChanged);
+                this.ResumeEvent(Events.PositionChanged);
             }
         }
 
