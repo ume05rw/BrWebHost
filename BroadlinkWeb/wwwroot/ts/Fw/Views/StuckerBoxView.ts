@@ -102,12 +102,20 @@ namespace Fw.Views {
             this.OnInnerSingleClick = this.OnInnerSingleClick.bind(this);
             this.OnChildMouseDown = this.OnChildMouseDown.bind(this);
             this.OnChildMouseMove = this.OnChildMouseMove.bind(this);
+            this.OnInnerMouseWheel = this.OnInnerMouseWheel.bind(this);
             this.OnChildMouseUp = this.OnChildMouseUp.bind(this);
 
             this._innerBox.Elem.on('touchstart mousedown', this.OnInnerMouseDown);
             this._innerBox.Elem.on('touchmove mousemove', this.OnInnerMouseMove);
             this._innerBox.Elem.on('touchend mouseup mouseout', this.OnInnerMouseUp);
             this._innerBox.Elem.on('click', this.OnInnerSingleClick);
+
+            var mouseWheelEvent = 'onwheel' in document
+                ? 'wheel'
+                : 'onmousewheel' in document
+                    ? 'mousewheel'
+                    : 'DOMMouseScroll';
+            this._innerBox.Elem.on(mouseWheelEvent, this.OnInnerMouseWheel);
         }
 
         public Add(view: IView): void {
@@ -127,6 +135,17 @@ namespace Fw.Views {
             view.Elem.off('touchstart mousedown', this.OnChildMouseDown);
             view.Elem.off('touchmove mousemove', this.OnChildMouseMove);
             view.Elem.off('touchend mouseup', this.OnChildMouseUp);
+        }
+
+        public AddSpacer(): void {
+            const spacer = new Views.BoxView();
+            spacer.BackgroundColor = App.Items.Color.Transparent;
+            spacer.Color = App.Items.Color.Transparent;
+            spacer.HasBorder = false;
+            spacer.Opacity = 0;
+            spacer.SetAnchor(null, 0, 0, null);
+            spacer.Size.Height = 0;
+            this.Add(spacer);
         }
 
 // #region "上下スクロール"
@@ -160,7 +179,11 @@ namespace Fw.Views {
 
             e.preventDefault();
 
-            if (this._isChildRelocation || !this._isInnerDragging || this._scrollMargin === 0)
+            if (this._isChildRelocation || this._scrollMargin === 0)
+                return;
+
+            // * ドラッグ処理中でないとき *　は無視する。
+            if (!this._isInnerDragging)
                 return;
 
             // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
@@ -171,6 +194,32 @@ namespace Fw.Views {
             const addY = ml.ClientY - this._dragStartMousePosition.Y;
             let top = this._dragStartViewPosition.Y + addY;
 
+            const margin = this._scrollMargin * -1;
+            if (top < margin)
+                top = margin;
+            else if (0 < top)
+                top = 0;
+
+            this._innerBox.Position.Top = top;
+        }
+
+        private OnInnerMouseWheel(e: JQueryEventObject): void {
+            if (this._isChildRelocation || this._scrollMargin === 0)
+                return;
+
+            // * ドラッグ処理中のとき *　は無視する。
+            if (this._isInnerDragging)
+                return;
+
+            e.preventDefault();
+            const orgEv = e.originalEvent as any;
+            const delta = orgEv.deltaY
+                ? -(orgEv.deltaY)
+                : orgEv.wheelDelta
+                    ? orgEv.wheelDelta
+                    : -(orgEv.detail);
+
+            let top = this._innerBox.Position.Top + (delta * 10);
             const margin = this._scrollMargin * -1;
             if (top < margin)
                 top = margin;
@@ -792,9 +841,7 @@ namespace Fw.Views {
         }
 
         public Dispose(): void {
-            this._innerBox.Elem.off('touchstart mousedown');
-            this._innerBox.Elem.off('touchmove mousemove');
-            this._innerBox.Elem.off('touchend mouseup mouseout');
+            this._innerBox.Elem.off();
 
             super.Dispose();
 

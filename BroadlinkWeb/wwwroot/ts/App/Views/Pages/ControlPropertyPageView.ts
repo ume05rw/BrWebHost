@@ -20,8 +20,8 @@ namespace App.Views.Pages {
         public HeaderBar: Controls.HeaderBarView;
         public InputPanel: Views.StuckerBoxView;
         public TxtName: Views.TextBoxInputView;
-        public SboIcon: Views.SelectBoxInputView;
-        public SboColor: Views.SelectBoxInputView;
+        public BtnIcon: Controls.ItemSelectButtonView;
+        public BtnColor: Controls.ItemSelectButtonView;
         public TarCode: Views.TextAreaInputView;
         public BtnLearn: Controls.ButtonView;
         public ChkToggleOn: Views.CheckBoxInputView;
@@ -34,8 +34,8 @@ namespace App.Views.Pages {
             this.HeaderBar = new Controls.HeaderBarView();
             this.InputPanel = new Views.StuckerBoxView();
             this.TxtName = new Views.TextBoxInputView();
-            this.SboIcon = new Views.SelectBoxInputView();
-            this.SboColor = new Views.SelectBoxInputView();
+            this.BtnIcon = new Controls.ItemSelectButtonView();
+            this.BtnColor = new Controls.ItemSelectButtonView();
             this.TarCode = new Views.TextAreaInputView();
             this.BtnLearn = new Controls.ButtonView();
             this.ChkToggleOn = new Views.CheckBoxInputView();
@@ -83,39 +83,17 @@ namespace App.Views.Pages {
             this.InputPanel.Add(this.TxtName);
 
             const lbl2 = new Views.LabelView();
-            lbl2.Text = 'Icon';
+            lbl2.Text = 'Icon / Color';
             lbl2.TextAlign = Property.TextAlign.Left;
             lbl2.AutoSize = true;
             lbl2.SetAnchor(null, 5, null, null);
             lbl2.Size.Height = 21;
             this.InputPanel.Add(lbl2);
+            this.InputPanel.AddSpacer();
 
-            this.SboIcon.SetAnchor(null, 5, 15, null);
-            this.SboIcon.Size.Height = 30;
-            this.SboIcon.Name = 'Icon';
-            _.each(App.Items.Icon.Names, (iconName) => {
-                const dispName = iconName.substr(0, iconName.indexOf('.')).replace('_', ' ');
-                this.SboIcon.AddItem(dispName, `images/icons/${iconName}`);
-            });
-            this.InputPanel.Add(this.SboIcon);
-
-            const lbl3 = new Views.LabelView();
-            lbl3.Text = 'Color';
-            lbl3.TextAlign = Property.TextAlign.Left;
-            lbl3.AutoSize = true;
-            lbl3.SetAnchor(null, 5, null, null);
-            lbl3.Size.Height = 21;
-            
-            this.InputPanel.Add(lbl3);
-
-            this.SboColor.SetAnchor(null, 5, 15, null);
-            this.SboColor.Size.Height = 30;
-            this.SboColor.Name = 'Color';
-            _.each(Color.ButtonColors, (color, idx) => {
-                const name = Color.ButtonColorNames[idx];
-                this.SboColor.AddItem(`<label style="background-color: ${color};">${name}</label>`, color);
-            });
-            this.InputPanel.Add(this.SboColor);
+            this.InputPanel.Add(this.BtnIcon);
+            this.InputPanel.Add(this.BtnColor);
+            this.InputPanel.AddSpacer();
 
             const lbl4 = new Views.LabelView();
             lbl4.Text = 'Code';

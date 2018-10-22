@@ -19,7 +19,6 @@ namespace App.Controllers {
     import Pages = App.Views.Pages;
     import LabeledButtonView = App.Views.Controls.LabeledButtonView;
     import ButtonEvents = Fw.Events.ButtonViewEvents;
-    import ButtonViewEvents = Fw.Events.ButtonViewEvents;
     import Operation = App.Itmes.Operation;
 
     export class OperationSelectController extends ItemSelectControllerBase {
@@ -37,10 +36,6 @@ namespace App.Controllers {
         }
 
         private InitView(): void {
-            //_.each(App.Icon.Names, (name) => {
-            //    const btn = new 
-            //});
-
             this._page.Label.Text = 'Select New Operation';
 
             // シーン
@@ -48,7 +43,6 @@ namespace App.Controllers {
             btn1.Label.Text = 'Scene';
             btn1.Button.ImageSrc = App.Items.Icon.Scene;
             btn1.AddEventListener(ButtonEvents.SingleClick, () => {
-                this.Log('Scene!!!!');
                 this.Commit(Operation.Scene);
             });
             this._page.SelectorPanel.Add(btn1);

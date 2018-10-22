@@ -40,21 +40,39 @@ namespace App.Controllers {
                 this._control.DispatchChanged();
             });
 
-            this._page.SboIcon.AddEventListener(Events.InputViewEvents.Changed, (je, eo) => {
+            this._page.BtnIcon.AddEventListener(Events.ButtonViewEvents.SingleClick, async () => {
                 if (!this._control)
                     return;
 
-                //this.Log('ControlPropertyController.SboIcon.Changed');
-                this._control.IconUrl = this._page.SboIcon.Value;
+                this.Log('ControlPropertyController.BtnIcon.SingleClick');
+
+                const ctr = this.Manager.Get('IconSelect') as IconSelectController;
+                const icon: string = await ctr.Select(this);
+
+                const url = (icon)
+                    ? 'images/icons/' + icon
+                    : '';
+
+                this._control.IconUrl = url;
+                this._page.BtnIcon.ImageSrc = url;
+
                 this._control.DispatchChanged();
             });
 
-            this._page.SboColor.AddEventListener(Events.InputViewEvents.Changed, (je, eo) => {
+            this._page.BtnColor.AddEventListener(Events.ButtonViewEvents.SingleClick, async () => {
                 if (!this._control)
                     return;
 
-                //this.Log('ControlPropertyController.SboColor.Changed');
-                this._control.Color = this._page.SboColor.Value;
+                this.Log('ControlPropertyController.BtnColor.SingleClick');
+
+                const ctr = this.Manager.Get('ColorSelect') as ColorSelectController;
+                const color: string = await ctr.Select(this);
+
+                this._control.Color = color;
+                this._page.BtnColor.Color = color;
+                this._page.BtnColor.BackgroundColor = color;
+                this._page.BtnColor.HoverColor = App.Items.Color.GetButtonHoverColor(color);
+
                 this._control.DispatchChanged();
             });
 
@@ -109,8 +127,12 @@ namespace App.Controllers {
             this._control = control;
 
             this._page.TxtName.Value = this._control.Name;
-            this._page.SboIcon.Value = this._control.IconUrl;
-            this._page.SboColor.Value = this._control.Color;
+            this._page.BtnIcon.ImageSrc = this._control.IconUrl;
+
+            this._page.BtnColor.Color = this._control.Color;
+            this._page.BtnColor.BackgroundColor = this._control.Color;
+            this._page.BtnColor.HoverColor = App.Items.Color.GetButtonHoverColor(this._control.Color);
+
             this._page.TarCode.Value = this._control.Code;
             this._page.ChkToggleOn.BoolValue = this._control.IsAssignToggleOn;
             this._page.ChkToggleOff.BoolValue = this._control.IsAssignToggleOff;

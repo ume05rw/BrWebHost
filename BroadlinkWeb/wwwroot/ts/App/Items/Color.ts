@@ -86,5 +86,12 @@ namespace App.Items {
             '#8463e6',
             '#d88e4e'
         ];
+
+        public static GetButtonHoverColor(color: string): string {
+            const idx = Color.ButtonColors.indexOf(color);
+            return (idx === -1)
+                ? Color.MainHover
+                : Color.ButtonHoverColors[idx];
+        }
     }
 }

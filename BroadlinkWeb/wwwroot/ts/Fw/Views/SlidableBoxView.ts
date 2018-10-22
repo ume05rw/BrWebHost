@@ -123,6 +123,7 @@ namespace Fw.Views {
                 Fw.Root.Instance.SetTextSelection(false);
             });
             this._innerBox.Elem.on('touchmove mousemove', (e) => {
+                // * ドラッグ処理中でないとき *　は無視する。
                 if (!this._isDragging || this._spcvMouseSuppressor)
                     return;
 
@@ -138,7 +139,6 @@ namespace Fw.Views {
                 
                 if (this._direction === Property.Direction.Horizontal) {
                     // 横方向
-                    //this._innerBox.Position.Left = this._dragStartViewPosition.X + addX;
                     let left = this._dragStartViewPosition.X + addX;
                     const margin = this.Size.Width - this.InnerLength;
 
@@ -151,7 +151,6 @@ namespace Fw.Views {
 
                 } else {
                     // 縦方向
-                    //this._innerBox.Position.Top = this._dragStartViewPosition.Y + addY;
                     let top = this._dragStartViewPosition.Y + addY;
                     const margin = this.Size.Height - this.InnerLength;
 
@@ -164,6 +163,53 @@ namespace Fw.Views {
                 }
                 this.Refresh();
             });
+
+            var mouseWheelEvent = 'onwheel' in document
+                ? 'wheel'
+                : 'onmousewheel' in document
+                        ? 'mousewheel'
+                        : 'DOMMouseScroll';
+
+            this._innerBox.Elem.on(mouseWheelEvent, (e) => {
+                // * ドラッグ処理中 * のときは無視する。
+                if (this._isDragging || this._spcvMouseSuppressor)
+                    return;
+
+                e.preventDefault();
+                const orgEv = e.originalEvent as any;
+                const delta = orgEv.deltaY
+                    ? -(orgEv.deltaY)
+                    : orgEv.wheelDelta
+                        ? orgEv.wheelDelta
+                        : -(orgEv.detail);
+
+                if (this._direction === Property.Direction.Horizontal) {
+                    // 横方向
+                    let left = this._innerBox.Position.Left + (delta * 10);
+                    const margin = this.Size.Width - this.InnerLength;
+
+                    if (left < margin)
+                        left = margin;
+                    else if (0 < left)
+                        left = 0;
+
+                    this._innerBox.Position.Left = left;
+
+                } else {
+                    // 縦方向
+                    let top = this._innerBox.Position.Top + (delta * 10);
+                    const margin = this.Size.Height - this.InnerLength;
+
+                    if (top < margin)
+                        top = margin;
+                    else if (0 < top)
+                        top = 0;
+
+                    this._innerBox.Position.Top = top;
+                }
+                this.Refresh();
+            });
+
             this._innerBox.Elem.on('touchend mouseup mouseout', (e) => {
                 // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
                 if (e.eventPhase !== 2)

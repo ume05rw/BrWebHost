@@ -52,7 +52,7 @@ namespace App.Views.Controls {
         constructor() {
             super();
 
-            this.SetSize(75, 75);
+            this.SetSize(70, 75);
             this.GridSize = 90;
             this.Margin = 5;
             this.Position.Policy = Property.PositionPolicy.LeftTop;

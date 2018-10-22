@@ -28,6 +28,8 @@ namespace App.Controllers {
             const controlPropertyCtr = new ControlPropertyController();
             const controlHeaderPropertyCtr = new ControlHeaderPropertyController();
             const functionSelectCtr = new OperationSelectController();
+            const iconSelectCtr = new IconSelectController();
+            const colorSelectCtr = new ColorSelectController();
 
             this.SetPageView(new Pages.MainPageView());
             const page = this.View as Pages.MainPageView;
@@ -46,6 +48,10 @@ namespace App.Controllers {
                 const ctr = this.Manager.Get('OperationSelect') as OperationSelectController;
                 const item: App.Itmes.Operation = await ctr.Select(this);
 
+                const ctr2 = this.Manager.Get('ControlSet') as ControlSetController;
+                ctr2.SetEntity(new App.Models.Entities.ControlSet());
+                ctr2.SetModal();
+                //this.SwitchTo('ControlSet');
 
             });
 
