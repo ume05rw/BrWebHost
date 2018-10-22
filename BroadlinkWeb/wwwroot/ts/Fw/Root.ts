@@ -40,6 +40,8 @@ namespace Fw {
 
         private _mask: Fw.Views.BoxView;
 
+        private _renderInitializer: Fw.Util.DelayedOnceExecuter;
+
         private constructor(jqueryElem: JQuery) {
             super();
 
@@ -60,6 +62,20 @@ namespace Fw {
                 this.Refresh();
                 this.DispatchEvent(Events.Resized);
             });
+
+            this._renderInitializer = new Fw.Util.DelayedOnceExecuter(
+                this,
+                () => {
+                    this._viewRefreshInterval = 30;
+                    this._releaseInitialized = true;
+                    this.DispatchEvent(Events.RenderInitialized);
+                    this.Log('Root.ReleasePageInitialize - Released');
+                },
+                300,
+                -1,
+                true
+            );
+
 
             // Root.Init()の終了後にViewBaseからFw.Root.Instanceを呼び出す。
             _.defer(() => {
@@ -109,38 +125,19 @@ namespace Fw {
         /**
          * @description ページ生成開始から一定時間、ViewのDom更新頻度を大幅に下げる。
          */
-        private _lastInitializeTimer: number = null;
         public StartPageInitialize(): void {
-            //if (this._lastInitializeTimer != null) {
-            //    clearTimeout(this._lastInitializeTimer);
-            //    this._lastInitializeTimer = null;
-            //}
-
-            // 最長5秒間、ViewのDom更新を抑止する。
-            this._viewRefreshInterval = 800;
+            // ViewのDom更新を抑止する。
+            this._viewRefreshInterval = 3000;
             this.Log('Root.StartPageInitialize');
-
-            //this._lastInitializeTimer = setTimeout(() => {
-            //    this._viewRefreshInterval = 100;
-            //}, 5000);
         }
 
         private _releaseInitialized: boolean = false;
-        private _releaseInitializeTimer: number = null;
         public ReleasePageInitialize(view: Fw.Views.IView): void {
             if (this._releaseInitialized)
                 return;
+
             //this.Log('Root.ReleasePageInitialize: ' + view.ObjectIdentifier);
-
-            if (this._releaseInitializeTimer !== null) {
-                clearTimeout(this._releaseInitializeTimer);
-            }
-
-            this._releaseInitializeTimer = setTimeout(() => {
-                this._viewRefreshInterval = 30;
-                this._releaseInitialized = true;
-                this.Log('Root.ReleasePageInitialize - Released');
-            }, 300);
+            this._renderInitializer.Exec();
         }
 
 

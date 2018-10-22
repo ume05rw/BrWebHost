@@ -106,8 +106,10 @@ namespace Fw.Views {
         }
 
         // Refresh() Multiple execution suppressor
-        private _lastRefreshTimer: number;
-        private _lastRefreshedTime: Date;
+        private _refresher: Fw.Util.DelayedOnceExecuter;
+        private _applyStyler: Fw.Util.DelayedOnceExecuter;
+
+
         private _isSuppressLayout: boolean = false;
 
 
@@ -137,6 +139,22 @@ namespace Fw.Views {
                 this._size.Width = 0;
                 this._size.Height = 0;
             }
+
+            this._refresher = new Fw.Util.DelayedOnceExecuter(
+                this,
+                this.InnerRefresh.bind(this),
+                10,
+                Root.Instance.ViewRefreshInterval
+                //, true
+            );
+
+            this._applyStyler = new Fw.Util.DelayedOnceExecuter(
+                this,
+                this.InnerApplyStyles.bind(this),
+                10,
+                Root.Instance.ViewRefreshInterval
+                //, true
+            );
 
             _.defer(() => {
                 this.Elem.addClass('IView TransAnimation');
@@ -363,37 +381,7 @@ namespace Fw.Views {
             if (this._isSuppressLayout || !this._isInitialized)
                 return;
 
-            //this.Log(`Refresh - avtive`);
-            //this.Log('Refresh Tree: ' + (this as ViewBase).GetParentsString());
-
-            //// 子ViewもRefreshさせる。
-            //_.each(this.Children, (view: IView) => {
-            //    //view.Log('Parent.Refresh');
-            //    if (view.LogEnable)
-            //        view.Log('Refresh Tree: ' + (view as ViewBase).GetParentsString());
-            //    view.Refresh();
-            //});
-
-            if (this._lastRefreshTimer != null) {
-                clearTimeout(this._lastRefreshTimer);
-                this._lastRefreshTimer = null;
-
-                if (!this._lastRefreshedTime)
-                    this._lastRefreshedTime = new Date();
-
-                const now = new Date();
-                const elapsed = (now.getTime() - this._lastRefreshedTime.getTime());
-
-                // 描画抑止中でも、一定時間に一度は描画する。
-                if (elapsed > Root.Instance.ViewRefreshInterval) {
-                    this.InnerRefresh();
-                    return;
-                }
-            }
-
-            this._lastRefreshTimer = setTimeout(() => {
-                this.InnerRefresh();
-            }, 10);
+            this._refresher.Exec();
         }
 
         protected InnerRefresh(): void {
@@ -453,9 +441,6 @@ namespace Fw.Views {
                     view.Refresh();
                 });
             });
-
-            this._lastRefreshedTime = new Date();
-
         }
 
         public CalcLayout(): void {
@@ -532,9 +517,10 @@ namespace Fw.Views {
             }
         }
 
-        private _lastApplyTimer: number = null;
-        private _lastAppliedTime: Date = null;
+        //private _lastApplyTimer: number = null;
+        //private _lastAppliedTime: Date = null;
         private _innerApplyCount: number = 0;
+
         private _latestStyles: { [name: string]: string } = {};
         private _newStyles: { [name: string]: string } = {};
         public SetStyle(name: string, value: string): void {
@@ -544,31 +530,11 @@ namespace Fw.Views {
             _.extend(this._newStyles, styles);
         }
         public ApplyStyles(): void {
-            if (this._lastApplyTimer != null) {
-                clearTimeout(this._lastApplyTimer);
-                this._lastApplyTimer = null;
-
-                if (!this._lastAppliedTime)
-                    this._lastAppliedTime = new Date();
-
-                const now = new Date();
-                const elapsed = (now.getTime() - this._lastAppliedTime.getTime());
-
-                // 描画抑止中でも、一定時間に一度はDom適用する。
-                if (elapsed > Root.Instance.ViewRefreshInterval) {
-                    //this.Log(`ApplyStyles: ${elapsed} > ${Root.Instance.ViewRefreshInterval}`);
-                    this.InnerApplyStyles();
-                    return;
-                }
-            }
-            this._lastApplyTimer = setTimeout(() => {
-                this.InnerApplyStyles();
-            }, 10);
+            this._applyStyler.Exec();
         }
 
         protected InnerApplyStyles(): void {
             this._innerApplyCount++;
-            this._lastAppliedTime = new Date();
 
             this.Log(`InnerApplyStyles: ${this._innerApplyCount}`);
             _.each(this._newStyles, (v, k) => {

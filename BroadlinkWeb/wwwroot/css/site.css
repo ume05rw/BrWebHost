@@ -1,4 +1,4 @@
-﻿html,
+html,
 body,
 .body-content {
     width: 100%;
@@ -87,7 +87,7 @@ div.IController .IView.Shadow {
 }
 
 /* ボタン背景色のホバーアニメーション */
-div.IController .ControlView.ButtonView {
+div.IController .ControlView.ButtonView.TransAnimation {
     transition: background-color, 0.3s ease-in-out;
 }
 
@@ -98,7 +98,7 @@ div.IController .ControlView.ToggleButtonView:hover {
 }
 
 /* トグルボタンのノッチ移動アニメーション */
-div.IController .ControlView.ToggleButtonView .BoxView {
+div.IController .ControlView.ToggleButtonView.TransAnimation .BoxView {
     transition: all 0.3s ease-in-out;
 }
 

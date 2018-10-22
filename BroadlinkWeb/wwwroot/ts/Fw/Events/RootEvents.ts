@@ -4,6 +4,7 @@
 
 namespace Fw.Events {
     export class RootEventsClass extends EventableEventsClass {
+        public readonly RenderInitialized: string = 'RenderInitialized';
         public readonly Resized: string = 'Resized';
         public readonly MaskClicked: string = 'MaskClicked';
     }
