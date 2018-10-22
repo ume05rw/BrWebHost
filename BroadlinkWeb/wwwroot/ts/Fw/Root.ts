@@ -55,7 +55,7 @@ namespace Fw {
 
             this._masked = false;
 
-            this.LogEnable = true;
+            //this.LogEnable = true;
 
             const $window = $(window);
             $window.on('resize', () => {
@@ -68,7 +68,7 @@ namespace Fw {
                 () => {
                     this._viewRefreshInterval = 30;
                     this._releaseInitialized = true;
-                    this.DispatchEvent(Events.RenderInitialized);
+                    this.DispatchEvent(Events.PageInitializeCompleted);
                     this.Log('Root.ReleasePageInitialize - Released');
                 },
                 300,
@@ -117,7 +117,7 @@ namespace Fw {
                 this.Elem.addClass('TextUnselect');
         }
 
-        private _viewRefreshInterval: number = 30;
+        private _viewRefreshInterval: number = 3000;
         public get ViewRefreshInterval(): number {
             return this._viewRefreshInterval;
         }
@@ -127,7 +127,9 @@ namespace Fw {
          */
         public StartPageInitialize(): void {
             // ViewのDom更新を抑止する。
+            this._releaseInitialized = false;
             this._viewRefreshInterval = 3000;
+            this.DispatchEvent(Events.PageInitializeStarted);
             this.Log('Root.StartPageInitialize');
         }
 

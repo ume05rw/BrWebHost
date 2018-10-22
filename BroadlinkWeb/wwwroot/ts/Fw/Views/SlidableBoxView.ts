@@ -161,7 +161,6 @@ namespace Fw.Views {
 
                     this._innerBox.Position.Top = top;
                 }
-                this.Refresh();
             });
 
             var mouseWheelEvent = 'onwheel' in document
@@ -207,7 +206,6 @@ namespace Fw.Views {
 
                     this._innerBox.Position.Top = top;
                 }
-                this.Refresh();
             });
 
             this._innerBox.Elem.on('touchend mouseup mouseout', (e) => {
@@ -266,21 +264,28 @@ namespace Fw.Views {
             this._innerBox.Remove(view);
         }
 
-        public Refresh(): void {
-            if (!this.IsInitialized)
-                return;
+        //public Refresh(): void {
+        //    if (!this.IsInitialized)
+        //        return;
 
-            super.Refresh();
-            this._innerBox.Refresh();
-            this._positionBarMax.Refresh();
-            this._positionBarCurrent.Refresh();
-        }
+        //    super.Refresh();
+        //    this._innerBox.Refresh();
+        //    this._positionBarMax.Refresh();
+        //    this._positionBarCurrent.Refresh();
+        //}
 
         protected InnerRefresh(): void {
             try {
                 this.SuppressLayout();
+                this._innerBox.SuppressLayout();
+                this._positionBarMax.SuppressLayout();
+                this._positionBarCurrent.SuppressLayout();
+                _.each(this._innerBox.Children, (view: IView) => {
+                    view.SuppressLayout();
+                });
 
                 this._innerBox.BackgroundColor = this._innerBackgroundColor;
+
 
                 super.InnerRefresh();
 
@@ -293,6 +298,16 @@ namespace Fw.Views {
                 Dump.ErrorLog(e, this.ClassName);
             } finally {
                 this.ResumeLayout();
+                this._innerBox.ResumeLayout();
+                this._innerBox.Refresh();
+                _.each(this._innerBox.Children, (view: IView) => {
+                    view.ResumeLayout();
+                    view.Refresh();
+                });
+                this._positionBarMax.ResumeLayout();
+                this._positionBarMax.Refresh();
+                this._positionBarCurrent.ResumeLayout();
+                this._positionBarCurrent.Refresh();
             }
         }
 
@@ -302,6 +317,9 @@ namespace Fw.Views {
                 this._innerBox.SuppressLayout();
                 this._positionBarMax.SuppressLayout();
                 this._positionBarCurrent.SuppressLayout();
+                _.each(this._innerBox.Children, (view: IView) => {
+                    view.SuppressLayout();
+                });
 
                 if (this.Direction === Property.Direction.Horizontal) {
                     // 横方向
@@ -409,6 +427,9 @@ namespace Fw.Views {
                 this._innerBox.ResumeLayout();
                 this._positionBarMax.ResumeLayout();
                 this._positionBarCurrent.ResumeLayout();
+                _.each(this._innerBox.Children, (view: IView) => {
+                    view.ResumeLayout();
+                });
             }
         }
 

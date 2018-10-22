@@ -6,6 +6,7 @@
 
 /// <reference path="../Util/Dump.ts" />
 /// <reference path="../Events/ViewEvents.ts" />
+/// <reference path="../Events/RootEvents.ts" />
 /// <reference path="Animation/Animator.ts" />
 /// <reference path="Animation/Params.ts" />
 /// <reference path="Property/Size.ts" />
@@ -15,6 +16,7 @@ namespace Fw.Views {
     import Property = Fw.Views.Property;
     import Anim = Fw.Views.Animation;
     import Events = Fw.Events.ViewEvents;
+    import RootEvents = Fw.Events.RootEvents;
 
     export abstract class ViewBase extends EventableBase implements IView {
         // Properties
@@ -132,6 +134,40 @@ namespace Fw.Views {
             this._parent = null;
             this._color = '#000000';
 
+            this._refresher = new Fw.Util.DelayedOnceExecuter(
+                this,
+                this.InnerRefresh.bind(this),
+                10,
+                3000 //Fw.Root.Instance.ViewRefreshInterval
+                , true
+            );
+
+            this._applyStyler = new Fw.Util.DelayedOnceExecuter(
+                this,
+                this.InnerApplyStyles.bind(this),
+                10,
+                3000 //Fw.Root.Instance.ViewRefreshInterval
+                , true
+            );
+
+            Fw.Root.Instance.AddEventListener(RootEvents.PageInitializeStarted, () => {
+                //console.log('Time' + Fw.Root.Instance.ViewRefreshInterval);
+                //this.Log('Time: ' + Fw.Root.Instance.ViewRefreshInterval);
+                this._refresher.Timeout = Fw.Root.Instance.ViewRefreshInterval;
+                this._applyStyler.Timeout = Fw.Root.Instance.ViewRefreshInterval;
+            }, this);
+            Fw.Root.Instance.AddEventListener(RootEvents.PageInitializeCompleted, () => {
+                //console.log('Time' + Fw.Root.Instance.ViewRefreshInterval);
+                //this.Log('Time: ' + Fw.Root.Instance.ViewRefreshInterval);
+                this._refresher.Timeout = Fw.Root.Instance.ViewRefreshInterval;
+                this._applyStyler.Timeout = Fw.Root.Instance.ViewRefreshInterval;
+            }, this);
+
+            _.delay(() => {
+                this._refresher.Timeout = Fw.Root.Instance.ViewRefreshInterval;
+                this._applyStyler.Timeout = Fw.Root.Instance.ViewRefreshInterval;
+            }, 3000);
+
             if (this.Elem) {
                 this._size.Width = this.Elem.width();
                 this._size.Height = this.Elem.height();
@@ -139,22 +175,6 @@ namespace Fw.Views {
                 this._size.Width = 0;
                 this._size.Height = 0;
             }
-
-            this._refresher = new Fw.Util.DelayedOnceExecuter(
-                this,
-                this.InnerRefresh.bind(this),
-                10,
-                Root.Instance.ViewRefreshInterval
-                //, true
-            );
-
-            this._applyStyler = new Fw.Util.DelayedOnceExecuter(
-                this,
-                this.InnerApplyStyles.bind(this),
-                10,
-                Root.Instance.ViewRefreshInterval
-                //, true
-            );
 
             _.defer(() => {
                 this.Elem.addClass('IView TransAnimation');
@@ -536,7 +556,7 @@ namespace Fw.Views {
         protected InnerApplyStyles(): void {
             this._innerApplyCount++;
 
-            this.Log(`InnerApplyStyles: ${this._innerApplyCount}`);
+            //this.Log(`InnerApplyStyles: ${this._innerApplyCount}`);
             _.each(this._newStyles, (v, k) => {
                 if (this._latestStyles[k] !== v) {
                     this.Dom.style[k] = v;

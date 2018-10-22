@@ -488,6 +488,8 @@ namespace Fw.Views {
                 //this.Log(`${this.ClassName}.InnerRefresh`);
                 this.SuppressLayout();
                 this._innerBox.SuppressLayout();
+                this._positionBarMax.SuppressLayout();
+                this._positionBarCurrent.SuppressLayout();
                 _.each(this._innerBox.Children, (view: IView) => {
                     view.SuppressLayout();
                 });

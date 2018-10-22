@@ -36,9 +36,24 @@ namespace Fw.Util {
         public static DelayThreshold: number = 3000;
         public static SuppressThreshold: number = 100;
 
-        private _object: IObject;
         private _delay: number;
+        public get Delay(): number {
+            return this._delay;
+        }
+        public set Delay(value: number) {
+            this._delay = value;
+        }
+
         private _timeout: number;
+        public get Timeout(): number {
+            return this._timeout;
+        }
+        public set Timeout(value: number) {
+            this._timeout;
+        }
+
+
+        private _object: IObject;
         private _startTime: Date;
         private _timer: number;
         private _callback: (passing: any) => any;
@@ -67,6 +82,9 @@ namespace Fw.Util {
             this._isActive = false;
             this._suppressCount = 0;
             this._timeoutExecStartTime = null;
+
+            //this.LogEnable = true;
+
 
             if (isMonitor) {
                 this.LogEnable = true;
@@ -133,7 +151,7 @@ namespace Fw.Util {
         }
 
         private InnerExec(passingValues?: any): void {
-            //this.Log(`InnerExec: ${this._object.ObjectIdentifier}`);
+            //this.Log(`InnerExec: ${this._object.ObjectIdentifier}: suppressed[${this._suppressCount}]`);
             try {
                 this._callback(passingValues);
             } catch (e) {

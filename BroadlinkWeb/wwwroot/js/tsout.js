@@ -1207,6 +1207,7 @@ var Fw;
                 _this._isActive = false;
                 _this._suppressCount = 0;
                 _this._timeoutExecStartTime = null;
+                //this.LogEnable = true;
                 if (isMonitor) {
                     _this.LogEnable = true;
                     setInterval(function () {
@@ -1234,6 +1235,26 @@ var Fw;
                 }
                 return _this;
             }
+            Object.defineProperty(DelayedOnceExecuter.prototype, "Delay", {
+                get: function () {
+                    return this._delay;
+                },
+                set: function (value) {
+                    this._delay = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(DelayedOnceExecuter.prototype, "Timeout", {
+                get: function () {
+                    return this._timeout;
+                },
+                set: function (value) {
+                    this._timeout;
+                },
+                enumerable: true,
+                configurable: true
+            });
             DelayedOnceExecuter.prototype.Exec = function (passingValues) {
                 var _this = this;
                 this._isActive = true;
@@ -1265,7 +1286,7 @@ var Fw;
                 }
             };
             DelayedOnceExecuter.prototype.InnerExec = function (passingValues) {
-                //this.Log(`InnerExec: ${this._object.ObjectIdentifier}`);
+                //this.Log(`InnerExec: ${this._object.ObjectIdentifier}: suppressed[${this._suppressCount}]`);
                 try {
                     this._callback(passingValues);
                 }
@@ -1675,10 +1696,34 @@ var Fw;
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="EventableEvents.ts" />
+var Fw;
+(function (Fw) {
+    var Events;
+    (function (Events) {
+        var RootEventsClass = /** @class */ (function (_super) {
+            __extends(RootEventsClass, _super);
+            function RootEventsClass() {
+                var _this = _super !== null && _super.apply(this, arguments) || this;
+                _this.PageInitializeStarted = 'PageInitializeStarted';
+                _this.PageInitializeCompleted = 'PageInitializeCompleted';
+                _this.Resized = 'Resized';
+                _this.MaskClicked = 'MaskClicked';
+                return _this;
+            }
+            return RootEventsClass;
+        }(Events.EventableEventsClass));
+        Events.RootEventsClass = RootEventsClass;
+        Events.RootEvents = new RootEventsClass();
+    })(Events = Fw.Events || (Fw.Events = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="IView.ts" />
 /// <reference path="../EventableBase.ts" />
 /// <reference path="../Util/Dump.ts" />
 /// <reference path="../Events/ViewEvents.ts" />
+/// <reference path="../Events/RootEvents.ts" />
 /// <reference path="Animation/Animator.ts" />
 /// <reference path="Animation/Params.ts" />
 /// <reference path="Property/Size.ts" />
@@ -1690,6 +1735,7 @@ var Fw;
         var Property = Fw.Views.Property;
         var Anim = Fw.Views.Animation;
         var Events = Fw.Events.ViewEvents;
+        var RootEvents = Fw.Events.RootEvents;
         var ViewBase = /** @class */ (function (_super) {
             __extends(ViewBase, _super);
             function ViewBase(jqueryElem) {
@@ -1719,6 +1765,26 @@ var Fw;
                 _this._page = null;
                 _this._parent = null;
                 _this._color = '#000000';
+                _this._refresher = new Fw.Util.DelayedOnceExecuter(_this, _this.InnerRefresh.bind(_this), 10, 3000 //Fw.Root.Instance.ViewRefreshInterval
+                , true);
+                _this._applyStyler = new Fw.Util.DelayedOnceExecuter(_this, _this.InnerApplyStyles.bind(_this), 10, 3000 //Fw.Root.Instance.ViewRefreshInterval
+                , true);
+                Fw.Root.Instance.AddEventListener(RootEvents.PageInitializeStarted, function () {
+                    //console.log('Time' + Fw.Root.Instance.ViewRefreshInterval);
+                    //this.Log('Time: ' + Fw.Root.Instance.ViewRefreshInterval);
+                    _this._refresher.Timeout = Fw.Root.Instance.ViewRefreshInterval;
+                    _this._applyStyler.Timeout = Fw.Root.Instance.ViewRefreshInterval;
+                }, _this);
+                Fw.Root.Instance.AddEventListener(RootEvents.PageInitializeCompleted, function () {
+                    //console.log('Time' + Fw.Root.Instance.ViewRefreshInterval);
+                    //this.Log('Time: ' + Fw.Root.Instance.ViewRefreshInterval);
+                    _this._refresher.Timeout = Fw.Root.Instance.ViewRefreshInterval;
+                    _this._applyStyler.Timeout = Fw.Root.Instance.ViewRefreshInterval;
+                }, _this);
+                _.delay(function () {
+                    _this._refresher.Timeout = Fw.Root.Instance.ViewRefreshInterval;
+                    _this._applyStyler.Timeout = Fw.Root.Instance.ViewRefreshInterval;
+                }, 3000);
                 if (_this.Elem) {
                     _this._size.Width = _this.Elem.width();
                     _this._size.Height = _this.Elem.height();
@@ -1727,12 +1793,6 @@ var Fw;
                     _this._size.Width = 0;
                     _this._size.Height = 0;
                 }
-                _this._refresher = new Fw.Util.DelayedOnceExecuter(_this, _this.InnerRefresh.bind(_this), 10, Fw.Root.Instance.ViewRefreshInterval
-                //, true
-                );
-                _this._applyStyler = new Fw.Util.DelayedOnceExecuter(_this, _this.InnerApplyStyles.bind(_this), 10, Fw.Root.Instance.ViewRefreshInterval
-                //, true
-                );
                 _.defer(function () {
                     _this.Elem.addClass('IView TransAnimation');
                     if (_this._size.Width === 0)
@@ -2181,7 +2241,7 @@ var Fw;
             ViewBase.prototype.InnerApplyStyles = function () {
                 var _this = this;
                 this._innerApplyCount++;
-                this.Log("InnerApplyStyles: " + this._innerApplyCount);
+                //this.Log(`InnerApplyStyles: ${this._innerApplyCount}`);
                 _.each(this._newStyles, function (v, k) {
                     if (_this._latestStyles[k] !== v) {
                         _this.Dom.style[k] = v;
@@ -2879,8 +2939,8 @@ var App;
                     _this.Add(remConPanel);
                     for (var i = 0; i < 20; i++) {
                         var btn = new Controls.ControlSetButtonView();
-                        //if (i === 0)
-                        //    btn.LogEnable = true;
+                        if (i === 0)
+                            btn.LogEnable = true;
                         var idx = i % Color.ButtonColors.length;
                         btn.Button.BackgroundColor = Color.ButtonColors[idx];
                         btn.Button.Color = Color.ReverseMain;
@@ -6322,28 +6382,6 @@ var App;
         })(Popup = Views_17.Popup || (Views_17.Popup = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="EventableEvents.ts" />
-var Fw;
-(function (Fw) {
-    var Events;
-    (function (Events) {
-        var RootEventsClass = /** @class */ (function (_super) {
-            __extends(RootEventsClass, _super);
-            function RootEventsClass() {
-                var _this = _super !== null && _super.apply(this, arguments) || this;
-                _this.RenderInitialized = 'RenderInitialized';
-                _this.Resized = 'Resized';
-                _this.MaskClicked = 'MaskClicked';
-                return _this;
-            }
-            return RootEventsClass;
-        }(Events.EventableEventsClass));
-        Events.RootEventsClass = RootEventsClass;
-        Events.RootEvents = new RootEventsClass();
-    })(Events = Fw.Events || (Fw.Events = {}));
-})(Fw || (Fw = {}));
 /// <reference path="../../lib/jquery/index.d.ts" />
 /// <reference path="../../lib/underscore/index.d.ts" />
 /// <reference path="EventableBase.ts" />
@@ -6358,7 +6396,7 @@ var Fw;
         __extends(Root, _super);
         function Root(jqueryElem) {
             var _this = _super.call(this) || this;
-            _this._viewRefreshInterval = 30;
+            _this._viewRefreshInterval = 3000;
             _this._releaseInitialized = false;
             _this.SetElem(jqueryElem);
             _this.SetClassName('Root');
@@ -6367,7 +6405,7 @@ var Fw;
             _this._size.Height = _this.Elem.height();
             _this._dom = jqueryElem.get(0);
             _this._masked = false;
-            _this.LogEnable = true;
+            //this.LogEnable = true;
             var $window = $(window);
             $window.on('resize', function () {
                 _this.Refresh();
@@ -6376,7 +6414,7 @@ var Fw;
             _this._renderInitializer = new Fw.Util.DelayedOnceExecuter(_this, function () {
                 _this._viewRefreshInterval = 30;
                 _this._releaseInitialized = true;
-                _this.DispatchEvent(Events.RenderInitialized);
+                _this.DispatchEvent(Events.PageInitializeCompleted);
                 _this.Log('Root.ReleasePageInitialize - Released');
             }, 300, -1, true);
             // Root.Init()の終了後にViewBaseからFw.Root.Instanceを呼び出す。
@@ -6451,7 +6489,9 @@ var Fw;
          */
         Root.prototype.StartPageInitialize = function () {
             // ViewのDom更新を抑止する。
+            this._releaseInitialized = false;
             this._viewRefreshInterval = 3000;
+            this.DispatchEvent(Events.PageInitializeStarted);
             this.Log('Root.StartPageInitialize');
         };
         Root.prototype.ReleasePageInitialize = function (view) {
@@ -7559,7 +7599,6 @@ var Fw;
                             top_2 = 0;
                         _this._innerBox.Position.Top = top_2;
                     }
-                    _this.Refresh();
                 });
                 var mouseWheelEvent = 'onwheel' in document
                     ? 'wheel'
@@ -7597,7 +7636,6 @@ var Fw;
                             top_3 = 0;
                         _this._innerBox.Position.Top = top_3;
                     }
-                    _this.Refresh();
                 });
                 _this._innerBox.Elem.on('touchend mouseup mouseout', function (e) {
                     // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
@@ -7683,17 +7721,23 @@ var Fw;
             SlidableBoxView.prototype.Remove = function (view) {
                 this._innerBox.Remove(view);
             };
-            SlidableBoxView.prototype.Refresh = function () {
-                if (!this.IsInitialized)
-                    return;
-                _super.prototype.Refresh.call(this);
-                this._innerBox.Refresh();
-                this._positionBarMax.Refresh();
-                this._positionBarCurrent.Refresh();
-            };
+            //public Refresh(): void {
+            //    if (!this.IsInitialized)
+            //        return;
+            //    super.Refresh();
+            //    this._innerBox.Refresh();
+            //    this._positionBarMax.Refresh();
+            //    this._positionBarCurrent.Refresh();
+            //}
             SlidableBoxView.prototype.InnerRefresh = function () {
                 try {
                     this.SuppressLayout();
+                    this._innerBox.SuppressLayout();
+                    this._positionBarMax.SuppressLayout();
+                    this._positionBarCurrent.SuppressLayout();
+                    _.each(this._innerBox.Children, function (view) {
+                        view.SuppressLayout();
+                    });
                     this._innerBox.BackgroundColor = this._innerBackgroundColor;
                     _super.prototype.InnerRefresh.call(this);
                     this.SetStyles({
@@ -7706,6 +7750,16 @@ var Fw;
                 }
                 finally {
                     this.ResumeLayout();
+                    this._innerBox.ResumeLayout();
+                    this._innerBox.Refresh();
+                    _.each(this._innerBox.Children, function (view) {
+                        view.ResumeLayout();
+                        view.Refresh();
+                    });
+                    this._positionBarMax.ResumeLayout();
+                    this._positionBarMax.Refresh();
+                    this._positionBarCurrent.ResumeLayout();
+                    this._positionBarCurrent.Refresh();
                 }
             };
             SlidableBoxView.prototype.CalcLayout = function () {
@@ -7714,6 +7768,9 @@ var Fw;
                     this._innerBox.SuppressLayout();
                     this._positionBarMax.SuppressLayout();
                     this._positionBarCurrent.SuppressLayout();
+                    _.each(this._innerBox.Children, function (view) {
+                        view.SuppressLayout();
+                    });
                     if (this.Direction === Property.Direction.Horizontal) {
                         // 横方向
                         if (this.InnerLength < this.Size.Width)
@@ -7805,6 +7862,9 @@ var Fw;
                     this._innerBox.ResumeLayout();
                     this._positionBarMax.ResumeLayout();
                     this._positionBarCurrent.ResumeLayout();
+                    _.each(this._innerBox.Children, function (view) {
+                        view.ResumeLayout();
+                    });
                 }
             };
             SlidableBoxView.prototype.GetMaxInnerLength = function () {
@@ -8254,6 +8314,8 @@ var Fw;
                     //this.Log(`${this.ClassName}.InnerRefresh`);
                     this.SuppressLayout();
                     this._innerBox.SuppressLayout();
+                    this._positionBarMax.SuppressLayout();
+                    this._positionBarCurrent.SuppressLayout();
                     _.each(this._innerBox.Children, function (view) {
                         view.SuppressLayout();
                     });
