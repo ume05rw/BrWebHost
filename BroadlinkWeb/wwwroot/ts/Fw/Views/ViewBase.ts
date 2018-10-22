@@ -150,6 +150,7 @@ namespace Fw.Views {
                 , true
             );
 
+
             Fw.Root.Instance.AddEventListener(RootEvents.PageInitializeStarted, () => {
                 //console.log('Time' + Fw.Root.Instance.ViewRefreshInterval);
                 //this.Log('Time: ' + Fw.Root.Instance.ViewRefreshInterval);
