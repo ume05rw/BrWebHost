@@ -1209,7 +1209,7 @@ var Fw;
                 _this._timeoutExecStartTime = null;
                 //this.LogEnable = true;
                 if (isMonitor) {
-                    _this.LogEnable = true;
+                    //this.LogEnable = true;
                     setInterval(function () {
                         if (!_this._isActive)
                             return;
@@ -1221,6 +1221,8 @@ var Fw;
                             if (DelayedOnceExecuter.DelayThreshold < elapsed) {
                                 // Delay閾値より長い時間の間、一度も実行されていない。
                                 // 無限ループの可能性がある。
+                                _this.LogEnable = true;
+                                _this._object.LogEnable = true;
                                 _this.Log('＊＊＊無限ループの可能性があります＊＊＊');
                                 _this.Log("" + _this._object.ObjectIdentifier);
                             }
@@ -1228,6 +1230,8 @@ var Fw;
                         if (DelayedOnceExecuter.SuppressThreshold < _this._suppressCount) {
                             // Suppress閾値より多くの回数分、実行が抑制されている。
                             // 呼び出し回数が多すぎる可能性がある。
+                            _this.LogEnable = true;
+                            _this._object.LogEnable = true;
                             _this.Log('＊＊＊呼び出し回数が多すぎます＊＊＊');
                             _this.Log("" + _this._object.ObjectIdentifier);
                         }
@@ -1765,26 +1769,22 @@ var Fw;
                 _this._page = null;
                 _this._parent = null;
                 _this._color = '#000000';
-                _this._refresher = new Fw.Util.DelayedOnceExecuter(_this, _this.InnerRefresh.bind(_this), 10, 1000 //Fw.Root.Instance.ViewRefreshInterval
+                _this._refresher = new Fw.Util.DelayedOnceExecuter(_this, _this.InnerRefresh.bind(_this), 10, 3000 //Fw.Root.Instance.ViewRefreshInterval
                 , true);
-                _this._applyStyler = new Fw.Util.DelayedOnceExecuter(_this, _this.InnerApplyStyles.bind(_this), 10, 1000 //Fw.Root.Instance.ViewRefreshInterval
+                _this._applyStyler = new Fw.Util.DelayedOnceExecuter(_this, _this.InnerApplyStyles.bind(_this), 10, 3000 //Fw.Root.Instance.ViewRefreshInterval
                 , true);
                 Fw.Root.Instance.AddEventListener(RootEvents.PageInitializeStarted, function () {
-                    //console.log('Time' + Fw.Root.Instance.ViewRefreshInterval);
-                    //this.Log('Time: ' + Fw.Root.Instance.ViewRefreshInterval);
                     _this._refresher.Timeout = Fw.Root.Instance.ViewRefreshInterval;
                     _this._applyStyler.Timeout = Fw.Root.Instance.ViewRefreshInterval;
                 }, _this);
                 Fw.Root.Instance.AddEventListener(RootEvents.PageInitializeCompleted, function () {
-                    //console.log('Time' + Fw.Root.Instance.ViewRefreshInterval);
-                    //this.Log('Time: ' + Fw.Root.Instance.ViewRefreshInterval);
                     _this._refresher.Timeout = Fw.Root.Instance.ViewRefreshInterval;
                     _this._applyStyler.Timeout = Fw.Root.Instance.ViewRefreshInterval;
                 }, _this);
                 _.delay(function () {
                     _this._refresher.Timeout = Fw.Root.Instance.ViewRefreshInterval;
                     _this._applyStyler.Timeout = Fw.Root.Instance.ViewRefreshInterval;
-                }, 1000);
+                }, 3000);
                 if (_this.Elem) {
                     _this._size.Width = _this.Elem.width();
                     _this._size.Height = _this.Elem.height();
@@ -2113,7 +2113,7 @@ var Fw;
             };
             ViewBase.prototype.InnerRefresh = function () {
                 var _this = this;
-                //this.Log(`InnerRefresh`);
+                this.Log("InnerRefresh - " + this.GetParentsString());
                 var parent = $(this.Elem.parent());
                 if (parent.length <= 0)
                     return;
@@ -2241,7 +2241,7 @@ var Fw;
             ViewBase.prototype.InnerApplyStyles = function () {
                 var _this = this;
                 this._innerApplyCount++;
-                //this.Log(`InnerApplyStyles: ${this._innerApplyCount}`);
+                this.Log("InnerApplyStyles: " + this._innerApplyCount);
                 _.each(this._newStyles, function (v, k) {
                     if (_this._latestStyles[k] !== v) {
                         _this.Dom.style[k] = v;
@@ -2939,8 +2939,8 @@ var App;
                     _this.Add(remConPanel);
                     for (var i = 0; i < 20; i++) {
                         var btn = new Controls.ControlSetButtonView();
-                        if (i === 0)
-                            btn.LogEnable = true;
+                        //if (i === 0)
+                        //    btn.LogEnable = true;
                         var idx = i % Color.ButtonColors.length;
                         btn.Button.BackgroundColor = Color.ButtonColors[idx];
                         btn.Button.Color = Color.ReverseMain;

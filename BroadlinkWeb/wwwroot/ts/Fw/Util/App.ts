@@ -87,7 +87,7 @@ namespace Fw.Util {
 
 
             if (isMonitor) {
-                this.LogEnable = true;
+                //this.LogEnable = true;
 
                 setInterval(() => {
                     if (!this._isActive)
@@ -102,6 +102,8 @@ namespace Fw.Util {
                         if (DelayedOnceExecuter.DelayThreshold < elapsed) {
                             // Delay閾値より長い時間の間、一度も実行されていない。
                             // 無限ループの可能性がある。
+                            this.LogEnable = true;
+                            this._object.LogEnable = true;
                             this.Log('＊＊＊無限ループの可能性があります＊＊＊');
                             this.Log(`${this._object.ObjectIdentifier}`);
                         }
@@ -110,6 +112,8 @@ namespace Fw.Util {
                     if (DelayedOnceExecuter.SuppressThreshold < this._suppressCount) {
                         // Suppress閾値より多くの回数分、実行が抑制されている。
                         // 呼び出し回数が多すぎる可能性がある。
+                        this.LogEnable = true;
+                        this._object.LogEnable = true;
                         this.Log('＊＊＊呼び出し回数が多すぎます＊＊＊');
                         this.Log(`${this._object.ObjectIdentifier}`);
                     }

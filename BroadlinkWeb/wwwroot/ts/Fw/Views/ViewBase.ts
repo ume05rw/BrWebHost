@@ -138,7 +138,7 @@ namespace Fw.Views {
                 this,
                 this.InnerRefresh.bind(this),
                 10,
-                1000 //Fw.Root.Instance.ViewRefreshInterval
+                3000 //Fw.Root.Instance.ViewRefreshInterval
                 , true
             );
 
@@ -146,20 +146,16 @@ namespace Fw.Views {
                 this,
                 this.InnerApplyStyles.bind(this),
                 10,
-                1000 //Fw.Root.Instance.ViewRefreshInterval
+                3000 //Fw.Root.Instance.ViewRefreshInterval
                 , true
             );
 
 
             Fw.Root.Instance.AddEventListener(RootEvents.PageInitializeStarted, () => {
-                //console.log('Time' + Fw.Root.Instance.ViewRefreshInterval);
-                //this.Log('Time: ' + Fw.Root.Instance.ViewRefreshInterval);
                 this._refresher.Timeout = Fw.Root.Instance.ViewRefreshInterval;
                 this._applyStyler.Timeout = Fw.Root.Instance.ViewRefreshInterval;
             }, this);
             Fw.Root.Instance.AddEventListener(RootEvents.PageInitializeCompleted, () => {
-                //console.log('Time' + Fw.Root.Instance.ViewRefreshInterval);
-                //this.Log('Time: ' + Fw.Root.Instance.ViewRefreshInterval);
                 this._refresher.Timeout = Fw.Root.Instance.ViewRefreshInterval;
                 this._applyStyler.Timeout = Fw.Root.Instance.ViewRefreshInterval;
             }, this);
@@ -167,7 +163,7 @@ namespace Fw.Views {
             _.delay(() => {
                 this._refresher.Timeout = Fw.Root.Instance.ViewRefreshInterval;
                 this._applyStyler.Timeout = Fw.Root.Instance.ViewRefreshInterval;
-            }, 1000);
+            }, 3000);
 
             if (this.Elem) {
                 this._size.Width = this.Elem.width();
@@ -406,7 +402,7 @@ namespace Fw.Views {
         }
 
         protected InnerRefresh(): void {
-            //this.Log(`InnerRefresh`);
+            this.Log(`InnerRefresh - ` + this.GetParentsString());
             const parent = $(this.Elem.parent());
 
             if (parent.length <= 0)
@@ -557,7 +553,7 @@ namespace Fw.Views {
         protected InnerApplyStyles(): void {
             this._innerApplyCount++;
 
-            //this.Log(`InnerApplyStyles: ${this._innerApplyCount}`);
+            this.Log(`InnerApplyStyles: ${this._innerApplyCount}`);
             _.each(this._newStyles, (v, k) => {
                 if (this._latestStyles[k] !== v) {
                     this.Dom.style[k] = v;
