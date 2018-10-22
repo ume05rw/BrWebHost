@@ -1,4 +1,4 @@
-﻿/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Config.ts" />
 /// <reference path="../Util/Dump.ts" />
@@ -12,16 +12,12 @@ namespace Fw.Controllers {
         private static _instance: Manager = null;
         public static get Instance(): Manager {
             if (!Manager._instance) {
-                Manager.Init();
+                Manager._instance = new Manager();
             }
 
             return Manager._instance;
         }
-        // TODO: ↓そのうち削除予定
-        public static Init(): void {
-            if (!Manager._instance)
-                Manager._instance = new Manager();
-        }
+
 
         private _controllers: { [name: string]: IController };
 

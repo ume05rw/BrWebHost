@@ -22,14 +22,14 @@ namespace App.Controllers {
     import ButtonViewEvents = Fw.Events.ButtonViewEvents;
     import Operation = App.Itmes.Operation;
 
-    export class FunctionSelectController extends ItemSelectControllerBase {
+    export class OperationSelectController extends ItemSelectControllerBase {
 
         private _page: Pages.ItemSelectPageView;
 
         constructor() {
-            super('FunctionSelect');
+            super('OperationSelect');
 
-            this.SetClassName('ItemSelectionController');
+            this.SetClassName('OperationSelectController');
 
             this._page = this.View as Pages.ItemSelectPageView;
 
@@ -40,7 +40,9 @@ namespace App.Controllers {
             //_.each(App.Icon.Names, (name) => {
             //    const btn = new 
             //});
-            
+
+            this._page.Label.Text = 'Select New Operation';
+
             // シーン
             const btn1 = this.GetNewButton();
             btn1.Label.Text = 'Scene';

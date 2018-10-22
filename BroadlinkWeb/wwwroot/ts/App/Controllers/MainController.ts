@@ -27,7 +27,7 @@ namespace App.Controllers {
             const controlSetCtr = new ControlSetController();
             const controlPropertyCtr = new ControlPropertyController();
             const controlHeaderPropertyCtr = new ControlHeaderPropertyController();
-            const functionSelectCtr = new FunctionSelectController();
+            const functionSelectCtr = new OperationSelectController();
 
             this.SetPageView(new Pages.MainPageView());
             const page = this.View as Pages.MainPageView;
@@ -43,7 +43,7 @@ namespace App.Controllers {
                 ////this.SwitchTo('ControlSet');
 
 
-                const ctr = this.Manager.Get('FunctionSelect') as FunctionSelectController;
+                const ctr = this.Manager.Get('OperationSelect') as OperationSelectController;
                 const item: App.Itmes.Operation = await ctr.Select(this);
 
 

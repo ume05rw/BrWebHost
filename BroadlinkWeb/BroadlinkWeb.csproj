@@ -11,10 +11,10 @@
     <Content Remove="wwwroot\ts\App\Controllers\ControlHeaderPropertyController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\ControlPropertyController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\ControlSetController.ts" />
-    <Content Remove="wwwroot\ts\App\Controllers\FunctionSelectController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\ItemSelectControllerBase.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\LayoutCheckController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\MouseEventsController.ts" />
+    <Content Remove="wwwroot\ts\App\Controllers\OperationSelectController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\Sub3Controller.ts" />
     <Content Remove="wwwroot\ts\App\Events\Controls\ControlButtonViewEvents.ts" />
     <Content Remove="wwwroot\ts\App\Icon.ts" />
@@ -134,7 +134,7 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ControlHeaderPropertyController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ControlPropertyController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ControlSetController.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\App\Controllers\FunctionSelectController.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Controllers\OperationSelectController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ItemSelectControllerBase.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\LayoutCheckController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\MouseEventsController.ts" />

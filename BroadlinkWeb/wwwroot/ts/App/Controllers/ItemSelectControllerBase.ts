@@ -33,7 +33,6 @@ namespace App.Controllers {
 
             this.SetPageView(new Pages.ItemSelectPageView());
             this.SetClassName('ItemSelectController');
-            this.LogEnable = true;
         }
 
         public async Select(parentController: Fw.Controllers.IController): Promise<any> {

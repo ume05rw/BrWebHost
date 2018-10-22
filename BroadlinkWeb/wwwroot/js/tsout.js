@@ -484,18 +484,13 @@ var Fw;
             Object.defineProperty(Manager, "Instance", {
                 get: function () {
                     if (!Manager._instance) {
-                        Manager.Init();
+                        Manager._instance = new Manager();
                     }
                     return Manager._instance;
                 },
                 enumerable: true,
                 configurable: true
             });
-            // TODO: ↓そのうち削除予定
-            Manager.Init = function () {
-                if (!Manager._instance)
-                    Manager._instance = new Manager();
-            };
             Manager.prototype.InitControllersByTemplates = function () {
                 $("div[" + Config.PageIdAttribute + "]").each(function (i, el) {
                     var $elem = $(el);
@@ -3741,7 +3736,7 @@ var App;
                 var controlSetCtr = new Controllers.ControlSetController();
                 var controlPropertyCtr = new Controllers.ControlPropertyController();
                 var controlHeaderPropertyCtr = new Controllers.ControlHeaderPropertyController();
-                var functionSelectCtr = new Controllers.FunctionSelectController();
+                var functionSelectCtr = new Controllers.OperationSelectController();
                 _this.SetPageView(new Pages.MainPageView());
                 var page = _this.View;
                 page.HeaderBar.RightButton.AddEventListener(ButtonEvents.SingleClick, function () { return __awaiter(_this, void 0, void 0, function () {
@@ -3749,7 +3744,7 @@ var App;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
-                                ctr = this.Manager.Get('FunctionSelect');
+                                ctr = this.Manager.Get('OperationSelect');
                                 return [4 /*yield*/, ctr.Select(this)];
                             case 1:
                                 item = _a.sent();
@@ -6016,7 +6011,6 @@ var Fw;
             // 画面全体のコンテナを初期化
             Fw.Root.Init('div.body-content');
             // Controllers.Managerの初期化
-            Fw.Controllers.Manager.Init();
             Fw.Controllers.Manager.Instance.InitControllersByTemplates();
         };
         return Startup;
@@ -8614,7 +8608,6 @@ var App;
                 var _this = _super.call(this, controllerId) || this;
                 _this.SetPageView(new Pages.ItemSelectPageView());
                 _this.SetClassName('ItemSelectController');
-                _this.LogEnable = true;
                 return _this;
             }
             ItemSelectControllerBase.prototype.Select = function (parentController) {
@@ -8690,6 +8683,44 @@ var App;
         Controllers.ItemSelectControllerBase = ItemSelectControllerBase;
     })(Controllers = App.Controllers || (App.Controllers = {}));
 })(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Views/RelocatableButtonView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../../Fw/Events/EntityEvents.ts" />
+/// <reference path="../../Color.ts" />
+/// <reference path="../../Events/Controls/ControlButtonViewEvents.ts" />
+/// <reference path="LabeledButtonView.ts" />
+var App;
+(function (App) {
+    var Views;
+    (function (Views_17) {
+        var Controls;
+        (function (Controls) {
+            var Views = Fw.Views;
+            var Property = Fw.Views.Property;
+            var Color = App.Color;
+            var ItemSelectButtonView = /** @class */ (function (_super) {
+                __extends(ItemSelectButtonView, _super);
+                function ItemSelectButtonView() {
+                    var _this = _super.call(this) || this;
+                    _this.SetSize(75, 75);
+                    _this.Position.Policy = Property.PositionPolicy.LeftTop;
+                    _this.HasBorder = true;
+                    _this.BorderRadius = 10;
+                    _this.BackgroundColor = Color.MainBackground;
+                    _this.HoverColor = Color.ButtonHoverColors[0];
+                    _this.Color = Color.ButtonColors[0];
+                    _this.ImageFitPolicy = Property.FitPolicy.Auto;
+                    return _this;
+                }
+                return ItemSelectButtonView;
+            }(Views.ButtonView));
+            Controls.ItemSelectButtonView = ItemSelectButtonView;
+        })(Controls = Views_17.Controls || (Views_17.Controls = {}));
+    })(Views = App.Views || (App.Views = {}));
+})(App || (App = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 var App;
@@ -8736,20 +8767,21 @@ var App;
         var LabeledButtonView = App.Views.Controls.LabeledButtonView;
         var ButtonEvents = Fw.Events.ButtonViewEvents;
         var Operation = App.Itmes.Operation;
-        var FunctionSelectController = /** @class */ (function (_super) {
-            __extends(FunctionSelectController, _super);
-            function FunctionSelectController() {
-                var _this = _super.call(this, 'FunctionSelect') || this;
-                _this.SetClassName('ItemSelectionController');
+        var OperationSelectController = /** @class */ (function (_super) {
+            __extends(OperationSelectController, _super);
+            function OperationSelectController() {
+                var _this = _super.call(this, 'OperationSelect') || this;
+                _this.SetClassName('OperationSelectController');
                 _this._page = _this.View;
                 _this.InitView();
                 return _this;
             }
-            FunctionSelectController.prototype.InitView = function () {
+            OperationSelectController.prototype.InitView = function () {
                 //_.each(App.Icon.Names, (name) => {
                 //    const btn = new 
                 //});
                 var _this = this;
+                this._page.Label.Text = 'Select New Operation';
                 // シーン
                 var btn1 = this.GetNewButton();
                 btn1.Label.Text = 'Scene';
@@ -8821,7 +8853,7 @@ var App;
                 //});
                 //this._page.SelectorPanel.Add(btn8);
             };
-            FunctionSelectController.prototype.GetNewButton = function () {
+            OperationSelectController.prototype.GetNewButton = function () {
                 var button = new LabeledButtonView();
                 button.SetSize(75, 95);
                 button.Button.Position.Policy = Property.PositionPolicy.LeftTop;
@@ -8833,47 +8865,9 @@ var App;
                 button.Button.ImageFitPolicy = Property.FitPolicy.Auto;
                 return button;
             };
-            return FunctionSelectController;
+            return OperationSelectController;
         }(Controllers.ItemSelectControllerBase));
-        Controllers.FunctionSelectController = FunctionSelectController;
+        Controllers.OperationSelectController = OperationSelectController;
     })(Controllers = App.Controllers || (App.Controllers = {}));
-})(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Views/RelocatableButtonView.ts" />
-/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-/// <reference path="../../../Fw/Events/EntityEvents.ts" />
-/// <reference path="../../Color.ts" />
-/// <reference path="../../Events/Controls/ControlButtonViewEvents.ts" />
-/// <reference path="LabeledButtonView.ts" />
-var App;
-(function (App) {
-    var Views;
-    (function (Views_17) {
-        var Controls;
-        (function (Controls) {
-            var Views = Fw.Views;
-            var Property = Fw.Views.Property;
-            var Color = App.Color;
-            var ItemSelectButtonView = /** @class */ (function (_super) {
-                __extends(ItemSelectButtonView, _super);
-                function ItemSelectButtonView() {
-                    var _this = _super.call(this) || this;
-                    _this.SetSize(75, 75);
-                    _this.Position.Policy = Property.PositionPolicy.LeftTop;
-                    _this.HasBorder = true;
-                    _this.BorderRadius = 10;
-                    _this.BackgroundColor = Color.MainBackground;
-                    _this.HoverColor = Color.ButtonHoverColors[0];
-                    _this.Color = Color.ButtonColors[0];
-                    _this.ImageFitPolicy = Property.FitPolicy.Auto;
-                    return _this;
-                }
-                return ItemSelectButtonView;
-            }(Views.ButtonView));
-            Controls.ItemSelectButtonView = ItemSelectButtonView;
-        })(Controls = Views_17.Controls || (Views_17.Controls = {}));
-    })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 //# sourceMappingURL=tsout.js.map

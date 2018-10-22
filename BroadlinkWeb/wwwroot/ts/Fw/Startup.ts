@@ -1,4 +1,4 @@
-﻿/// <reference path="../../lib/jquery/index.d.ts" />
+/// <reference path="../../lib/jquery/index.d.ts" />
 /// <reference path="../../lib/underscore/index.d.ts" />
 /// <reference path="Util/Dump.ts" />
 /* /// <reference path="Views/Root.ts" /> */
@@ -32,7 +32,6 @@ namespace Fw {
             Fw.Root.Init('div.body-content');
 
             // Controllers.Managerの初期化
-            Fw.Controllers.Manager.Init();
             Fw.Controllers.Manager.Instance.InitControllersByTemplates();
         }
     }
