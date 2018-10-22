@@ -181,10 +181,15 @@ namespace Fw.Views {
                     : orgEv.wheelDelta
                         ? orgEv.wheelDelta
                         : -(orgEv.detail);
+                const direction = (delta === 0)
+                    ? 0
+                    : (delta > 0)
+                        ? 1
+                        : -1;
 
                 if (this._direction === Property.Direction.Horizontal) {
                     // 横方向
-                    let left = this._innerBox.Position.Left + (delta * 10);
+                    let left = this._innerBox.Position.Left + (direction * 20);
                     const margin = this.Size.Width - this.InnerLength;
 
                     if (left < margin)

@@ -218,8 +218,13 @@ namespace Fw.Views {
                 : orgEv.wheelDelta
                     ? orgEv.wheelDelta
                     : -(orgEv.detail);
+            const direction = (delta === 0)
+                ? 0
+                : (delta > 0)
+                    ? 1
+                    : -1;
 
-            let top = this._innerBox.Position.Top + (delta * 10);
+            let top = this._innerBox.Position.Top + (direction * 20);
             const margin = this._scrollMargin * -1;
             if (top < margin)
                 top = margin;
