@@ -1,4 +1,4 @@
-﻿/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../../Fw/Models/EntityBase.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
@@ -17,7 +17,7 @@ namespace App.Models.Entities {
         /**
          * リモコン名
          */
-        public Name: string = '';
+        public Name: string = 'New Remote Control';
 
         /**
          * リモコン配置テンプレートか否か
