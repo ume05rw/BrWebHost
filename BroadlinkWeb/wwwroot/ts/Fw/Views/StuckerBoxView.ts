@@ -94,6 +94,8 @@ namespace Fw.Views {
             this._dummyView.Elem.addClass('Shadow');
             this._dummyView.Position.Policy = Property.PositionPolicy.LeftTop;
 
+            //this.LogEnable = true;
+
             // 下に定義済みのメソッドをthisバインドしておく。
             this.OnInnerMouseDown = this.OnInnerMouseDown.bind(this);
             this.OnInnerMouseMove = this.OnInnerMouseMove.bind(this);

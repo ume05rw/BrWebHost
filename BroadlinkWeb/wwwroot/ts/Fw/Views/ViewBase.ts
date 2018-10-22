@@ -138,7 +138,7 @@ namespace Fw.Views {
                 this,
                 this.InnerRefresh.bind(this),
                 10,
-                3000 //Fw.Root.Instance.ViewRefreshInterval
+                1000 //Fw.Root.Instance.ViewRefreshInterval
                 , true
             );
 
@@ -146,7 +146,7 @@ namespace Fw.Views {
                 this,
                 this.InnerApplyStyles.bind(this),
                 10,
-                3000 //Fw.Root.Instance.ViewRefreshInterval
+                1000 //Fw.Root.Instance.ViewRefreshInterval
                 , true
             );
 
@@ -167,7 +167,7 @@ namespace Fw.Views {
             _.delay(() => {
                 this._refresher.Timeout = Fw.Root.Instance.ViewRefreshInterval;
                 this._applyStyler.Timeout = Fw.Root.Instance.ViewRefreshInterval;
-            }, 3000);
+            }, 1000);
 
             if (this.Elem) {
                 this._size.Width = this.Elem.width();

@@ -1765,9 +1765,9 @@ var Fw;
                 _this._page = null;
                 _this._parent = null;
                 _this._color = '#000000';
-                _this._refresher = new Fw.Util.DelayedOnceExecuter(_this, _this.InnerRefresh.bind(_this), 10, 3000 //Fw.Root.Instance.ViewRefreshInterval
+                _this._refresher = new Fw.Util.DelayedOnceExecuter(_this, _this.InnerRefresh.bind(_this), 10, 1000 //Fw.Root.Instance.ViewRefreshInterval
                 , true);
-                _this._applyStyler = new Fw.Util.DelayedOnceExecuter(_this, _this.InnerApplyStyles.bind(_this), 10, 3000 //Fw.Root.Instance.ViewRefreshInterval
+                _this._applyStyler = new Fw.Util.DelayedOnceExecuter(_this, _this.InnerApplyStyles.bind(_this), 10, 1000 //Fw.Root.Instance.ViewRefreshInterval
                 , true);
                 Fw.Root.Instance.AddEventListener(RootEvents.PageInitializeStarted, function () {
                     //console.log('Time' + Fw.Root.Instance.ViewRefreshInterval);
@@ -1784,7 +1784,7 @@ var Fw;
                 _.delay(function () {
                     _this._refresher.Timeout = Fw.Root.Instance.ViewRefreshInterval;
                     _this._applyStyler.Timeout = Fw.Root.Instance.ViewRefreshInterval;
-                }, 3000);
+                }, 1000);
                 if (_this.Elem) {
                     _this._size.Width = _this.Elem.width();
                     _this._size.Height = _this.Elem.height();
@@ -7539,6 +7539,7 @@ var Fw;
                 _this._innerBox.SetTransAnimation(false);
                 _this._innerBox.SetParent(_this);
                 _this.Elem.append(_this._innerBox.Elem);
+                //this.LogEnable = true;
                 // コンストラクタ完了後に実行。
                 // コンストラクタ引数で取得したDirectionがセットされていないため。
                 _this._positionBarMax.Position.Policy = Property.PositionPolicy.LeftTop;
@@ -7971,6 +7972,7 @@ var Fw;
                 _this._backupView = null;
                 _this._dummyView.Elem.addClass('Shadow');
                 _this._dummyView.Position.Policy = Property.PositionPolicy.LeftTop;
+                //this.LogEnable = true;
                 // 下に定義済みのメソッドをthisバインドしておく。
                 _this.OnInnerMouseDown = _this.OnInnerMouseDown.bind(_this);
                 _this.OnInnerMouseMove = _this.OnInnerMouseMove.bind(_this);

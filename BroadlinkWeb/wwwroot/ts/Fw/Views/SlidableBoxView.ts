@@ -85,6 +85,8 @@ namespace Fw.Views {
             this.Elem.append(this._innerBox.Elem);
 
 
+            //this.LogEnable = true;
+
             // コンストラクタ完了後に実行。
             // コンストラクタ引数で取得したDirectionがセットされていないため。
             this._positionBarMax.Position.Policy = Property.PositionPolicy.LeftTop;
