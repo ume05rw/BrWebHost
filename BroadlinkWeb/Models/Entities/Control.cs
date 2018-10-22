@@ -1,4 +1,4 @@
-﻿using MySql.Data.EntityFrameworkCore.DataAnnotations;
+using MySql.Data.EntityFrameworkCore.DataAnnotations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -24,7 +24,7 @@ namespace BroadlinkWeb.Models.Entities
         [Description("Control Set ID")]
         public int ControlSetId { get; set; }
 
-        [Required]
+        //[Required] //<- 空でもOK
         [Column(Order = 2, TypeName = "varchar(50)")]
         [Description("Name")]
         public string Name { get; set; }

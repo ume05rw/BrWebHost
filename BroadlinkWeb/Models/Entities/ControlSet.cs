@@ -1,4 +1,4 @@
-﻿using MySql.Data.EntityFrameworkCore.DataAnnotations;
+using MySql.Data.EntityFrameworkCore.DataAnnotations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -19,7 +19,6 @@ namespace BroadlinkWeb.Models.Entities
         [Description("Control-Set ID")] // Description属性は、EFCore未サポート
         public int Id { get; set; }
 
-        [Required]
         [Column(Order = 1, TypeName = "varchar(50)")]
         [Description("Control-Set Name")]
         public string Name { get; set; }

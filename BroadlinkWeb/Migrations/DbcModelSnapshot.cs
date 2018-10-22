@@ -77,7 +77,6 @@ namespace BroadlinkWeb.Migrations
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("varchar(50)");
 
                     b.Property<string>("PositionLeft")
@@ -112,7 +111,6 @@ namespace BroadlinkWeb.Migrations
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("varchar(50)");
 
                     b.HasKey("Id");
