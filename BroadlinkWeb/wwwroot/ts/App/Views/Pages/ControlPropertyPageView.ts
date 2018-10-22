@@ -5,7 +5,7 @@
 /// <reference path="../../../Fw/Events/PageViewEvents.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../Controls/HeaderBarView.ts" />
-
+/// <reference path="../../Items/Color.ts" />
 
 namespace App.Views.Pages {
     import Dump = Fw.Util.Dump;
@@ -13,6 +13,7 @@ namespace App.Views.Pages {
     import Views = Fw.Views;
     import Property = Fw.Views.Property;
     import Controls = App.Views.Controls;
+    import Color = App.Items.Color;
 
     export class ControlPropertyPageView extends Fw.Views.PageView {
 
@@ -92,7 +93,7 @@ namespace App.Views.Pages {
             this.SboIcon.SetAnchor(null, 5, 15, null);
             this.SboIcon.Size.Height = 30;
             this.SboIcon.Name = 'Icon';
-            _.each(App.Icon.Names, (iconName) => {
+            _.each(App.Items.Icon.Names, (iconName) => {
                 const dispName = iconName.substr(0, iconName.indexOf('.')).replace('_', ' ');
                 this.SboIcon.AddItem(dispName, `images/icons/${iconName}`);
             });
@@ -110,8 +111,8 @@ namespace App.Views.Pages {
             this.SboColor.SetAnchor(null, 5, 15, null);
             this.SboColor.Size.Height = 30;
             this.SboColor.Name = 'Color';
-            _.each(App.Color.ButtonColors, (color, idx) => {
-                const name = App.Color.ButtonColorNames[idx];
+            _.each(Color.ButtonColors, (color, idx) => {
+                const name = Color.ButtonColorNames[idx];
                 this.SboColor.AddItem(`<label style="background-color: ${color};">${name}</label>`, color);
             });
             this.InputPanel.Add(this.SboColor);

@@ -5,7 +5,7 @@
 /// <reference path="../../../Fw/Events/PageViewEvents.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../Controls/HeaderBarView.ts" />
-
+/// <reference path="../../Items/Color.ts" />
 
 namespace App.Views.Pages {
     import Dump = Fw.Util.Dump;
@@ -13,6 +13,7 @@ namespace App.Views.Pages {
     import Views = Fw.Views;
     import Property = Fw.Views.Property;
     import Controls = App.Views.Controls;
+    import Color = App.Items.Color;
 
     export class MainPageView extends Fw.Views.PageView {
 

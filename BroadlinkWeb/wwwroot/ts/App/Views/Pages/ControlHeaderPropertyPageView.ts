@@ -48,7 +48,7 @@ namespace App.Views.Pages {
 
             const label = new Views.LabelView();
             label.FontSize = Property.FontSize.Large;
-            label.Color = Color.Main;
+            label.Color = App.Items.Color.Main;
             label.SetAnchor(null, 5, null, null);
             label.Text = 'Remote Control';
             this.HeaderBar.Add(label);
@@ -57,7 +57,7 @@ namespace App.Views.Pages {
             this.InputPanel.ReferencePoint = Property.ReferencePoint.LeftTop;
             this.InputPanel.Size.Width = 280;
             this.InputPanel.SetAnchor(70, 10, null, 10);
-            this.InputPanel.Color = Color.MainBackground;
+            this.InputPanel.Color = App.Items.Color.MainBackground;
             this.Add(this.InputPanel);
 
             const lbl1 = new Views.LabelView();
@@ -84,7 +84,7 @@ namespace App.Views.Pages {
             this.SboRm.SetAnchor(null, 5, 15, null);
             this.SboRm.Size.Height = 30;
             this.SboRm.Name = 'Icon';
-            _.each(App.Icon.Names, (iconName) => {
+            _.each(App.Items.Icon.Names, (iconName) => {
                 const dispName = iconName.substr(0, iconName.indexOf('.')).replace('_', ' ');
                 this.SboRm.AddItem(dispName, `images/icons/${iconName}`);
             });

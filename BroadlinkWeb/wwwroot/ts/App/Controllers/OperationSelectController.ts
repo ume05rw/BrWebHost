@@ -46,7 +46,7 @@ namespace App.Controllers {
             // シーン
             const btn1 = this.GetNewButton();
             btn1.Label.Text = 'Scene';
-            btn1.Button.ImageSrc = App.Icon.Scene;
+            btn1.Button.ImageSrc = App.Items.Icon.Scene;
             btn1.AddEventListener(ButtonEvents.SingleClick, () => {
                 this.Log('Scene!!!!');
                 this.Commit(Operation.Scene);
@@ -56,13 +56,13 @@ namespace App.Controllers {
             // 区切り線
             const line = new Fw.Views.LineView(Property.Direction.Horizontal);
             line.SetAnchor(null, 5, 5, null);
-            line.Color = Color.MainBackground;
+            line.Color = App.Items.Color.MainBackground;
             this._page.SelectorPanel.Add(line);
 
             // TV
             const btn2 = this.GetNewButton();
             btn2.Label.Text = 'TV';
-            btn2.Button.ImageSrc = App.Icon.Tv;
+            btn2.Button.ImageSrc = App.Items.Icon.Tv;
             btn2.AddEventListener(ButtonEvents.SingleClick, () => {
                 this.Commit(Operation.Tv);
             });
@@ -71,7 +71,7 @@ namespace App.Controllers {
             // AV
             const btn3 = this.GetNewButton();
             btn3.Label.Text = 'AV';
-            btn3.Button.ImageSrc = App.Icon.Av;
+            btn3.Button.ImageSrc = App.Items.Icon.Av;
             btn3.AddEventListener(ButtonEvents.SingleClick, () => {
                 this.Commit(Operation.Av);
             });
@@ -80,7 +80,7 @@ namespace App.Controllers {
             // 照明
             const btn4 = this.GetNewButton();
             btn4.Label.Text = 'Light';
-            btn4.Button.ImageSrc = App.Icon.Light;
+            btn4.Button.ImageSrc = App.Items.Icon.Light;
             btn4.AddEventListener(ButtonEvents.SingleClick, () => {
                 this.Commit(Operation.Light);
             });
@@ -89,7 +89,7 @@ namespace App.Controllers {
             // フリー編集
             const btn5 = this.GetNewButton();
             btn5.Label.Text = 'Free';
-            btn5.Button.ImageSrc = App.Icon.Free;
+            btn5.Button.ImageSrc = App.Items.Icon.Free;
             btn5.AddEventListener(ButtonEvents.SingleClick, () => {
                 this.Commit(Operation.Free);
             });
@@ -129,9 +129,9 @@ namespace App.Controllers {
             button.Button.Position.Policy = Property.PositionPolicy.LeftTop;
             button.Button.HasBorder = true;
             button.Button.BorderRadius = 10;
-            button.Button.BackgroundColor = Color.MainBackground;
-            button.Button.HoverColor = Color.ButtonHoverColors[0];
-            button.Button.Color = Color.ButtonColors[0];
+            button.Button.BackgroundColor = App.Items.Color.MainBackground;
+            button.Button.HoverColor = App.Items.Color.ButtonHoverColors[0];
+            button.Button.Color = App.Items.Color.ButtonColors[0];
             button.Button.ImageFitPolicy = Property.FitPolicy.Auto;
             return button;
         }

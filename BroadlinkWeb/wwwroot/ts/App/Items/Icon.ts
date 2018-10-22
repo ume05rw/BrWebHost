@@ -1,9 +1,9 @@
-/// <reference path="../../lib/jquery/index.d.ts" />
-/// <reference path="../../lib/underscore/index.d.ts" />
-/// <reference path="../Fw/Util/Dump.ts" />
-/// <reference path="../Fw/Controllers/Manager.ts" />
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Fw/Util/Dump.ts" />
+/// <reference path="../../Fw/Controllers/Manager.ts" />
 
-namespace App {
+namespace App.Items {
     import Dump = Fw.Util.Dump;
     import Manager = Fw.Controllers.Manager;
 

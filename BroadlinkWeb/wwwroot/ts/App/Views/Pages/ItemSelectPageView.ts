@@ -41,7 +41,7 @@ namespace App.Views.Pages {
 
             this.Label = new Views.LabelView();
             this.Label.FontSize = Property.FontSize.Large;
-            this.Label.Color = Color.Main;
+            this.Label.Color = App.Items.Color.Main;
             this.Label.SetAnchor(null, 5, null, null);
             this.Label.Text = '';
             this.HeaderBar.Add(this.Label);
@@ -50,7 +50,7 @@ namespace App.Views.Pages {
             this.SelectorPanel.ReferencePoint = Property.ReferencePoint.LeftTop;
             this.SelectorPanel.Size.Width = 280;
             this.SelectorPanel.SetAnchor(70, 10, null, 10);
-            this.SelectorPanel.Color = Color.MainBackground;
+            this.SelectorPanel.Color = App.Items.Color.MainBackground;
             this.Add(this.SelectorPanel);
         }
     }

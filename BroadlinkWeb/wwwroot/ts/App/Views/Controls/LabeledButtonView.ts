@@ -3,13 +3,13 @@
 /// <reference path="../../../Fw/Views/ControlView.ts" />
 /// <reference path="../../../Fw/Views/Property/Anchor.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
-/// <reference path="../../Color.ts" />
+/// <reference path="../../Items/Color.ts" />
 
 namespace App.Views.Controls {
     import Dump = Fw.Util.Dump;
     import Views = Fw.Views;
     import Property = Fw.Views.Property;
-    import Color = App.Color;
+    import Color = App.Items.Color;
 
     export class LabeledButtonView extends Fw.Views.ControlView {
 
