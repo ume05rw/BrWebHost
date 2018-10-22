@@ -161,6 +161,9 @@ namespace Fw.Views {
             }, this);
 
             _.delay(() => {
+                if (this.IsDisposed)
+                    return;
+
                 this._refresher.Timeout = Fw.Root.Instance.ViewRefreshInterval;
                 this._applyStyler.Timeout = Fw.Root.Instance.ViewRefreshInterval;
             }, 3000);

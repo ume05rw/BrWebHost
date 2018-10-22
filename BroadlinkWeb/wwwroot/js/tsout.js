@@ -1782,6 +1782,8 @@ var Fw;
                     _this._applyStyler.Timeout = Fw.Root.Instance.ViewRefreshInterval;
                 }, _this);
                 _.delay(function () {
+                    if (_this.IsDisposed)
+                        return;
                     _this._refresher.Timeout = Fw.Root.Instance.ViewRefreshInterval;
                     _this._applyStyler.Timeout = Fw.Root.Instance.ViewRefreshInterval;
                 }, 3000);
@@ -4158,7 +4160,7 @@ var App;
                 _this._page = _this.View;
                 _this._page.HeaderBar.LeftButton.Hide(0);
                 _this._page.HeaderBar.LeftButton.AddEventListener(ButtonViewEvents.SingleClick, function () { return __awaiter(_this, void 0, void 0, function () {
-                    var controlSet, buttons, res;
+                    var controlSet, buttons, isSave, res;
                     var _this = this;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
@@ -4171,8 +4173,19 @@ var App;
                                     _this._page.ButtonPanel.Remove(btn);
                                     btn.Dispose();
                                 });
-                                return [4 /*yield*/, App.Models.Stores.ControlSets.Write(controlSet)];
+                                isSave = true;
+                                if (!(controlSet.Controls.length <= 0)) return [3 /*break*/, 2];
+                                return [4 /*yield*/, App.Views.Popup.Confirm.OpenAsync({
+                                        Message: 'No buttons.<br/>Save OK?'
+                                    })];
                             case 1:
+                                isSave = _a.sent();
+                                _a.label = 2;
+                            case 2:
+                                if (!isSave)
+                                    return [2 /*return*/];
+                                return [4 /*yield*/, App.Models.Stores.ControlSets.Write(controlSet)];
+                            case 3:
                                 res = _a.sent();
                                 return [2 /*return*/];
                         }
@@ -6372,6 +6385,8 @@ var App;
                                     _this._callbackCancel = function () {
                                         resolve(false);
                                     };
+                                    // TODO: ↓ときどき、この書き方が通らずthisのメソッドが呼ばれるようなフローがある。
+                                    // TODO: ↓いずれきちんと理解する。
                                     // コールバックが上書きされないよう、thisでなくsuperのOpenを呼ぶ。
                                     _super.prototype.Open.call(_this, params);
                                 })];

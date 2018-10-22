@@ -60,6 +60,16 @@ namespace App.Controllers {
                 });
 
                 // 登録処理、結果を確認せず画面を閉じる。
+                let isSave = true;
+                if (controlSet.Controls.length <= 0) {
+                    isSave = await App.Views.Popup.Confirm.OpenAsync({
+                        Message: 'No buttons.<br/>Save OK?'
+                    });
+                }
+
+                if (!isSave)
+                    return;
+
                 const res = await App.Models.Stores.ControlSets.Write(controlSet);
             });
 

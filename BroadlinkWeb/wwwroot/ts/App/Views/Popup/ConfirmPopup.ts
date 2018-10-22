@@ -69,6 +69,8 @@ namespace App.Views.Popup {
                     resolve(false);
                 };
 
+                // TODO: ↓ときどき、この書き方が通らずthisのメソッドが呼ばれるようなフローがある。
+                // TODO: ↓いずれきちんと理解する。
                 // コールバックが上書きされないよう、thisでなくsuperのOpenを呼ぶ。
                 super.Open(params);
             });
