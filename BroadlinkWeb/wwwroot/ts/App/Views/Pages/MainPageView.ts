@@ -75,8 +75,8 @@ namespace App.Views.Pages {
             for (let i = 0; i < 20; i++) {
                 const btn = new Controls.ControlSetButtonView();
 
-                if (i === 0)
-                    btn.LogEnable = true;
+                //if (i === 0)
+                //    btn.LogEnable = true;
 
                 const idx = i % Color.ButtonColors.length;
                 btn.Button.BackgroundColor = Color.ButtonColors[idx];

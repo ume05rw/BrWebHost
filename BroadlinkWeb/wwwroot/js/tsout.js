@@ -2795,8 +2795,8 @@ var App;
                     _this.Add(remConPanel);
                     for (var i = 0; i < 20; i++) {
                         var btn = new Controls.ControlSetButtonView();
-                        if (i === 0)
-                            btn.LogEnable = true;
+                        //if (i === 0)
+                        //    btn.LogEnable = true;
                         var idx = i % Color.ButtonColors.length;
                         btn.Button.BackgroundColor = Color.ButtonColors[idx];
                         btn.Button.Color = Color.ReverseMain;
