@@ -569,15 +569,17 @@ namespace Fw.Views {
         protected InnerApplyStyles(): void {
             this._innerApplyCount++;
             this._lastAppliedTime = new Date();
-            //this.Log(`InnerApplyStyles: ${this._innerApplyCount}`);
+
+            this.Log(`InnerApplyStyles: ${this._innerApplyCount}`);
             _.each(this._newStyles, (v, k) => {
                 if (this._latestStyles[k] !== v) {
                     this.Dom.style[k] = v;
                     this._latestStyles[k] = v;
                 }
             });
+
             this._newStyles = {};
-            Root.Instance.ReleasePageInitialize();
+            Root.Instance.ReleasePageInitialize(this);
         }
 
         public SuppressLayout(): void {

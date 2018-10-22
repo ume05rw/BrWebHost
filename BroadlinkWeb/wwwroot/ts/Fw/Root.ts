@@ -111,10 +111,10 @@ namespace Fw {
          */
         private _lastInitializeTimer: number = null;
         public StartPageInitialize(): void {
-            if (this._lastInitializeTimer != null) {
-                clearTimeout(this._lastInitializeTimer);
-                this._lastInitializeTimer = null;
-            }
+            //if (this._lastInitializeTimer != null) {
+            //    clearTimeout(this._lastInitializeTimer);
+            //    this._lastInitializeTimer = null;
+            //}
 
             // 最長5秒間、ViewのDom更新を抑止する。
             this._viewRefreshInterval = 800;
@@ -125,18 +125,20 @@ namespace Fw {
             //}, 5000);
         }
 
+        private _releaseInitialized: boolean = false;
         private _releaseInitializeTimer: number = null;
-        public ReleasePageInitialize(): void {
-            if (this._viewRefreshInterval <= 100)
+        public ReleasePageInitialize(view: Fw.Views.IView): void {
+            if (this._releaseInitialized)
                 return;
-            this.Log('Root.ReleasePageInitialize');
+            //this.Log('Root.ReleasePageInitialize: ' + view.ObjectIdentifier);
 
-            if (this._releaseInitializeTimer != null) {
+            if (this._releaseInitializeTimer !== null) {
                 clearTimeout(this._releaseInitializeTimer);
             }
 
             this._releaseInitializeTimer = setTimeout(() => {
-                this._viewRefreshInterval = 100;
+                this._viewRefreshInterval = 30;
+                this._releaseInitialized = true;
                 this.Log('Root.ReleasePageInitialize - Released');
             }, 300);
         }

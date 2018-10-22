@@ -20,8 +20,11 @@ namespace Fw.Views {
             return this._length;
         }
         public set Length(value: number) {
+            const changed = (this._length !== value);
             this._length = value;
-            this.Refresh();
+
+            if (changed && !this.IsSuppressedLayout())
+                this.Refresh();
         }
 
         public get BackgroundColor(): string {
@@ -66,10 +69,10 @@ namespace Fw.Views {
 
         public CalcLayout(): void {
             try {
+                //this.Log(`${this.ClassName}.CalcLayout`);
                 this.SuppressLayout();
                 this.SuppressEvent(Events.SizeChanged);
                 this.SuppressEvent(Events.PositionChanged);
-
 
                 if (this.Direction === Property.Direction.Horizontal) {
                     //this.Log(`${this.ClassName}.Direction = ${this.Direction}`);

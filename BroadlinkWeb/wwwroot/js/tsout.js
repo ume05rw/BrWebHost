@@ -2097,7 +2097,7 @@ var Fw;
                 var _this = this;
                 this._innerApplyCount++;
                 this._lastAppliedTime = new Date();
-                //this.Log(`InnerApplyStyles: ${this._innerApplyCount}`);
+                this.Log("InnerApplyStyles: " + this._innerApplyCount);
                 _.each(this._newStyles, function (v, k) {
                     if (_this._latestStyles[k] !== v) {
                         _this.Dom.style[k] = v;
@@ -2105,7 +2105,7 @@ var Fw;
                     }
                 });
                 this._newStyles = {};
-                Fw.Root.Instance.ReleasePageInitialize();
+                Fw.Root.Instance.ReleasePageInitialize(this);
             };
             ViewBase.prototype.SuppressLayout = function () {
                 this._isSuppressLayout = true;
@@ -5785,6 +5785,7 @@ var Fw;
              * @description ページ生成開始から一定時間、ViewのDom更新頻度を大幅に下げる。
              */
             _this._lastInitializeTimer = null;
+            _this._releaseInitialized = false;
             _this._releaseInitializeTimer = null;
             _this.SetElem(jqueryElem);
             _this.SetClassName('Root');
@@ -5867,10 +5868,10 @@ var Fw;
             configurable: true
         });
         Root.prototype.StartPageInitialize = function () {
-            if (this._lastInitializeTimer != null) {
-                clearTimeout(this._lastInitializeTimer);
-                this._lastInitializeTimer = null;
-            }
+            //if (this._lastInitializeTimer != null) {
+            //    clearTimeout(this._lastInitializeTimer);
+            //    this._lastInitializeTimer = null;
+            //}
             // 最長5秒間、ViewのDom更新を抑止する。
             this._viewRefreshInterval = 800;
             this.Log('Root.StartPageInitialize');
@@ -5878,16 +5879,17 @@ var Fw;
             //    this._viewRefreshInterval = 100;
             //}, 5000);
         };
-        Root.prototype.ReleasePageInitialize = function () {
+        Root.prototype.ReleasePageInitialize = function (view) {
             var _this = this;
-            if (this._viewRefreshInterval <= 100)
+            if (this._releaseInitialized)
                 return;
-            this.Log('Root.ReleasePageInitialize');
-            if (this._releaseInitializeTimer != null) {
+            //this.Log('Root.ReleasePageInitialize: ' + view.ObjectIdentifier);
+            if (this._releaseInitializeTimer !== null) {
                 clearTimeout(this._releaseInitializeTimer);
             }
             this._releaseInitializeTimer = setTimeout(function () {
-                _this._viewRefreshInterval = 100;
+                _this._viewRefreshInterval = 30;
+                _this._releaseInitialized = true;
                 _this.Log('Root.ReleasePageInitialize - Released');
             }, 300);
         };
@@ -6770,8 +6772,10 @@ var Fw;
                     return this._length;
                 },
                 set: function (value) {
+                    var changed = (this._length !== value);
                     this._length = value;
-                    this.Refresh();
+                    if (changed && !this.IsSuppressedLayout())
+                        this.Refresh();
                 },
                 enumerable: true,
                 configurable: true
@@ -6805,6 +6809,7 @@ var Fw;
             };
             LineView.prototype.CalcLayout = function () {
                 try {
+                    //this.Log(`${this.ClassName}.CalcLayout`);
                     this.SuppressLayout();
                     this.SuppressEvent(Events.SizeChanged);
                     this.SuppressEvent(Events.PositionChanged);
