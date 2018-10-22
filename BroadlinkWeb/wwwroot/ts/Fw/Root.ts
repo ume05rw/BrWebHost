@@ -55,7 +55,7 @@ namespace Fw {
 
             this._masked = false;
 
-            //this.LogEnable = true;
+            //this.EnableLog = true;
 
             const $window = $(window);
             $window.on('resize', () => {

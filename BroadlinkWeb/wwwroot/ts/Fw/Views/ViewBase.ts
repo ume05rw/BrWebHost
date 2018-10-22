@@ -122,7 +122,7 @@ namespace Fw.Views {
             this.SetClassName('ViewBase');
 
             //// デバッグ用、全Viewのログを出す。
-            //this.LogEnable = true;
+            //this.EnableLog = true;
 
 
             this._children = new Array<IView>();

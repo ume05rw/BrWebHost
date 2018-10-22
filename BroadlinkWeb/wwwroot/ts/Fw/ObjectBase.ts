@@ -30,11 +30,11 @@ namespace Fw {
             return `[${this._className}[${this._instanceId}]`;
         }
 
-        public LogEnable: boolean;
+        public EnableLog: boolean;
 
         constructor() {
             this._instanceId = Fw.Util.App.CreateId();
-            this.LogEnable = false;
+            this.EnableLog = false;
         }
 
         protected SetClassName(name: string): void {
@@ -42,7 +42,7 @@ namespace Fw {
         }
 
         public Log(value: any): void {
-            if (!this.LogEnable)
+            if (!this.EnableLog)
                 return;
 
             const header = `${this.ClassName}[${this.InstanceId}]:: `;

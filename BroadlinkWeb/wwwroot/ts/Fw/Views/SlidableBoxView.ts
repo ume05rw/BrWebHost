@@ -85,7 +85,7 @@ namespace Fw.Views {
             this.Elem.append(this._innerBox.Elem);
 
 
-            //this.LogEnable = true;
+            //this.EnableLog = true;
 
             // コンストラクタ完了後に実行。
             // コンストラクタ引数で取得したDirectionがセットされていないため。

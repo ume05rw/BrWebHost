@@ -50,7 +50,7 @@ namespace Fw.Views {
             this.IsVisible = false;
 
             ////デバッグ用
-            //this.LogEnable = true;
+            //this.EnableLog = true;
 
             // ブラウザのリサイズ時、ページ全体を再描画
             Fw.Root.Instance.AddEventListener(Fw.Events.RootEvents.Resized, () => {

@@ -26,7 +26,7 @@ namespace Fw {
         /**
          * ログ出力可否
          */
-        LogEnable: boolean;
+        EnableLog: boolean;
 
         /**
          * ログ出力

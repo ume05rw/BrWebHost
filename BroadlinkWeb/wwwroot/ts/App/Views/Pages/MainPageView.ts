@@ -75,8 +75,9 @@ namespace App.Views.Pages {
             for (let i = 0; i < 20; i++) {
                 const btn = new Controls.ControlSetButtonView();
 
+                // 何かひとつ、詳細なログ出力を行う。デバッグ用。
                 //if (i === 0)
-                //    btn.LogEnable = true;
+                //    btn.EnableLog = true;
 
                 const idx = i % Color.ButtonColors.length;
                 btn.Button.BackgroundColor = Color.ButtonColors[idx];
@@ -94,6 +95,7 @@ namespace App.Views.Pages {
             bottom.SetAnchor(null, 10, 10, 10);
             bottom.ReferencePoint = Property.ReferencePoint.RightBottom;
             bottom.Size.Height = 50;
+            bottom.EnableLog = true;
             this.Add(bottom);
 
             this.BtnGoSub1.Text = 'Show Sub1';
