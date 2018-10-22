@@ -53,6 +53,8 @@ namespace Fw {
 
             this._masked = false;
 
+            this.LogEnable = true;
+
             const $window = $(window);
             $window.on('resize', () => {
                 this.Refresh();
@@ -116,7 +118,7 @@ namespace Fw {
 
             // 最長5秒間、ViewのDom更新を抑止する。
             this._viewRefreshInterval = 800;
-            //this.Log('Root.StartPageInitialize');
+            this.Log('Root.StartPageInitialize');
 
             //this._lastInitializeTimer = setTimeout(() => {
             //    this._viewRefreshInterval = 100;
@@ -127,7 +129,7 @@ namespace Fw {
         public ReleasePageInitialize(): void {
             if (this._viewRefreshInterval <= 100)
                 return;
-            //this.Log('Root.ReleasePageInitialize');
+            this.Log('Root.ReleasePageInitialize');
 
             if (this._releaseInitializeTimer != null) {
                 clearTimeout(this._releaseInitializeTimer);

@@ -5793,6 +5793,7 @@ var Fw;
             _this._size.Height = _this.Elem.height();
             _this._dom = jqueryElem.get(0);
             _this._masked = false;
+            _this.LogEnable = true;
             var $window = $(window);
             $window.on('resize', function () {
                 _this.Refresh();
@@ -5872,7 +5873,7 @@ var Fw;
             }
             // 最長5秒間、ViewのDom更新を抑止する。
             this._viewRefreshInterval = 800;
-            //this.Log('Root.StartPageInitialize');
+            this.Log('Root.StartPageInitialize');
             //this._lastInitializeTimer = setTimeout(() => {
             //    this._viewRefreshInterval = 100;
             //}, 5000);
@@ -5881,7 +5882,7 @@ var Fw;
             var _this = this;
             if (this._viewRefreshInterval <= 100)
                 return;
-            //this.Log('Root.ReleasePageInitialize');
+            this.Log('Root.ReleasePageInitialize');
             if (this._releaseInitializeTimer != null) {
                 clearTimeout(this._releaseInitializeTimer);
             }
