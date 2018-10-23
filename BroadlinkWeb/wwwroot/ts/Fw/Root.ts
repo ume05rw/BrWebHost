@@ -55,8 +55,6 @@ namespace Fw {
 
             this._masked = false;
 
-            //this.EnableLog = true;
-
             const $window = $(window);
             $window.on('resize', () => {
                 this.Refresh();

@@ -2095,14 +2095,14 @@ var Fw;
                     : this.Parent.InnerGetParentsString(result);
             };
             ViewBase.prototype.Refresh = function () {
-                //this.Log('ViewBase.Refresh');
+                this.Log('ViewBase.Refresh');
                 if (this._isSuppressLayout || !this._isInitialized)
                     return;
                 this._refresher.Exec();
             };
             ViewBase.prototype.InnerRefresh = function () {
                 var _this = this;
-                //this.Log(`ViewBase.InnerRefresh - ${this.GetParentsString()}`);
+                this.Log("ViewBase.InnerRefresh - " + this.GetParentsString());
                 var parent = $(this.Elem.parent());
                 if (parent.length <= 0)
                     return;
@@ -2391,6 +2391,7 @@ var Fw;
                 enumerable: true,
                 configurable: true
             });
+            // #region "Animations"
             PageView.prototype.Show = function (duration) {
                 var _this = this;
                 if (duration === void 0) { duration = 200; }
@@ -2551,6 +2552,7 @@ var Fw;
                     animator.Invoke(duration);
                 }
             };
+            // #endregion
             PageView.prototype.Mask = function () {
                 //this.Log(`${this.ClassName}.Mask`);
                 this._isMasked = true;
@@ -2577,9 +2579,8 @@ var Fw;
                 // ツリーの上位に向かってイベントが伝播していく。
                 // AddEventListenerでバインドしたラムダの先頭行には、常に event.stopPropagation() を
                 // 最初に書くように。
-                // ページリフレッシュ時は、即座に子Viewをリフレッシュ指示する。
+                // ページリフレッシュ時は、子Viewをリフレッシュ指示する。
                 _.each(this.Children, function (v) {
-                    //this.Log(`${this.ClassName}.Refresh - Child Refresh: ${v.ObjectIdentifier}`);
                     v.Refresh();
                 });
             };
@@ -6428,7 +6429,6 @@ var Fw;
             _this._size.Height = _this.Elem.height();
             _this._dom = jqueryElem.get(0);
             _this._masked = false;
-            //this.EnableLog = true;
             var $window = $(window);
             $window.on('resize', function () {
                 _this.Refresh();
@@ -7563,7 +7563,7 @@ var Fw;
                 _this._innerBox.SetTransAnimation(false);
                 _this._innerBox.SetParent(_this);
                 _this.Elem.append(_this._innerBox.Elem);
-                //this.EnableLog = true;
+                _this.EnableLog = true;
                 // コンストラクタ完了後に実行。
                 // コンストラクタ引数で取得したDirectionがセットされていないため。
                 _this._positionBarMax.Position.Policy = Property.PositionPolicy.LeftTop;
@@ -7754,14 +7754,6 @@ var Fw;
             SlidableBoxView.prototype.Remove = function (view) {
                 this._innerBox.Remove(view);
             };
-            //public Refresh(): void {
-            //    if (!this.IsInitialized)
-            //        return;
-            //    super.Refresh();
-            //    this._innerBox.Refresh();
-            //    this._positionBarMax.Refresh();
-            //    this._positionBarCurrent.Refresh();
-            //}
             SlidableBoxView.prototype.InnerRefresh = function () {
                 try {
                     this.SuppressLayout();
@@ -7804,6 +7796,8 @@ var Fw;
                     _.each(this._innerBox.Children, function (view) {
                         view.SuppressLayout();
                     });
+                    // 子Viewより前に、自身のサイズを確定させる。
+                    _super.prototype.CalcLayout.call(this);
                     if (this.Direction === Property.Direction.Horizontal) {
                         // 横方向
                         if (this.InnerLength < this.Size.Width)
@@ -7831,6 +7825,8 @@ var Fw;
                             : currentLeft / maxLeft;
                         var leftLength = this._positionBarMax.Length - this._positionBarCurrent.Length;
                         this._positionBarCurrent.Position.Left = this._barMargin - (leftLength * posRate);
+                        this._positionBarMax.CalcLayout();
+                        this._positionBarCurrent.CalcLayout();
                         if (this.InnerLength <= this.Size.Width) {
                             this._positionBarMax.Hide();
                             this._positionBarCurrent.Hide();
@@ -7876,6 +7872,8 @@ var Fw;
                             : currentTop / maxTop;
                         var topLength = this._positionBarMax.Length - this._positionBarCurrent.Length;
                         this._positionBarCurrent.Position.Top = this._barMargin - (topLength * posRate);
+                        this._positionBarMax.CalcLayout();
+                        this._positionBarCurrent.CalcLayout();
                         if (this.InnerLength <= this.Size.Height) {
                             this._positionBarMax.Hide();
                             this._positionBarCurrent.Hide();
@@ -7885,7 +7883,6 @@ var Fw;
                             this._positionBarCurrent.Show();
                         }
                     }
-                    _super.prototype.CalcLayout.call(this);
                 }
                 catch (e) {
                     Dump.ErrorLog(e, this.ClassName);
@@ -8353,13 +8350,6 @@ var Fw;
                 this._dummyView.Elem.detach();
             };
             // #endregion "子View再配置"
-            StuckerBoxView.prototype.Refresh = function () {
-                this.Log(this.ClassName + ".Refresh");
-                _super.prototype.Refresh.call(this);
-                if (this.EnableLog) {
-                    var a = 1;
-                }
-            };
             StuckerBoxView.prototype.InnerRefresh = function () {
                 try {
                     this.Log(this.ClassName + ".InnerRefresh");
@@ -8399,6 +8389,8 @@ var Fw;
                     _.each(this._innerBox.Children, function (view) {
                         view.SuppressLayout();
                     });
+                    // 子Viewより前に、自身のサイズを確定させる。
+                    _super.prototype.CalcLayout.call(this);
                     this._innerBox.Size.Width = this.Size.Width;
                     this._innerBox.Size.Height = this.Size.Height;
                     _.each(this._innerBox.Children, function (view) {
@@ -8445,7 +8437,6 @@ var Fw;
                             throw new Error("ReferencePoint not found: " + this._referencePoint);
                     }
                     this.InnerRefreshPositionLine();
-                    _super.prototype.CalcLayout.call(this);
                 }
                 catch (e) {
                     Dump.ErrorLog(e, this.ClassName);
@@ -8453,11 +8444,15 @@ var Fw;
                 finally {
                     this.ResumeLayout();
                     this._innerBox.ResumeLayout();
-                    this._positionBarMax.ResumeLayout();
-                    this._positionBarCurrent.ResumeLayout();
+                    this._innerBox.Refresh();
                     _.each(this._innerBox.Children, function (view) {
                         view.ResumeLayout();
+                        view.Refresh();
                     });
+                    this._positionBarMax.ResumeLayout();
+                    this._positionBarMax.Refresh();
+                    this._positionBarCurrent.ResumeLayout();
+                    this._positionBarCurrent.Refresh();
                 }
             };
             StuckerBoxView.prototype.InnerRefreshLeftTop = function (calcScrollMargin) {
@@ -8666,6 +8661,8 @@ var Fw;
                     : currentTop / maxTop;
                 var topLength = this._positionBarMax.Length - this._positionBarCurrent.Length;
                 this._positionBarCurrent.Position.Top = this._margin - (topLength * posRate);
+                this._positionBarMax.CalcLayout();
+                this._positionBarCurrent.CalcLayout();
                 if (this._innerBox.Size.Height <= this.Size.Height) {
                     this._positionBarMax.Hide();
                     this._positionBarCurrent.Hide();

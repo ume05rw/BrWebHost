@@ -495,14 +495,6 @@ namespace Fw.Views {
         }
 
 // #endregion "子View再配置"
-        public Refresh(): void {
-            this.Log(`${this.ClassName}.Refresh`);
-            super.Refresh();
-            if (this.EnableLog) {
-                const a = 1;
-            }
-        }
-
 
         protected InnerRefresh(): void {
             try {
@@ -544,6 +536,9 @@ namespace Fw.Views {
                 _.each(this._innerBox.Children, (view: IView) => {
                     view.SuppressLayout();
                 });
+
+                // 子Viewより前に、自身のサイズを確定させる。
+                super.CalcLayout();
 
                 this._innerBox.Size.Width = this.Size.Width;
                 this._innerBox.Size.Height = this.Size.Height;
@@ -598,18 +593,20 @@ namespace Fw.Views {
 
                 this.InnerRefreshPositionLine();
 
-                super.CalcLayout();
-
             } catch (e) {
                 Dump.ErrorLog(e, this.ClassName);
             } finally {
                 this.ResumeLayout();
                 this._innerBox.ResumeLayout();
-                this._positionBarMax.ResumeLayout();
-                this._positionBarCurrent.ResumeLayout();
+                this._innerBox.Refresh();
                 _.each(this._innerBox.Children, (view: IView) => {
                     view.ResumeLayout();
+                    view.Refresh();
                 });
+                this._positionBarMax.ResumeLayout();
+                this._positionBarMax.Refresh();
+                this._positionBarCurrent.ResumeLayout();
+                this._positionBarCurrent.Refresh();
             }
         }
 
@@ -853,6 +850,9 @@ namespace Fw.Views {
                 = this._positionBarMax.Length - this._positionBarCurrent.Length;
 
             this._positionBarCurrent.Position.Top = this._margin - (topLength * posRate);
+
+            this._positionBarMax.CalcLayout();
+            this._positionBarCurrent.CalcLayout();
 
             if (this._innerBox.Size.Height <= this.Size.Height) {
                 this._positionBarMax.Hide();

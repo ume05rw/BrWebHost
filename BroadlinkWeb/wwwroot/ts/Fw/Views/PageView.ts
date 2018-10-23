@@ -64,6 +64,8 @@ namespace Fw.Views {
             });
         }
 
+// #region "Animations"
+
         public Show(duration: number = 200): void {
             this.Log('PageView.Show');
             if (this.IsVisible && !this.IsModal) {
@@ -227,6 +229,8 @@ namespace Fw.Views {
             }
         }
 
+// #endregion
+
         public Mask(): void {
             //this.Log(`${this.ClassName}.Mask`);
             this._isMasked = true;
@@ -258,9 +262,8 @@ namespace Fw.Views {
             // AddEventListenerでバインドしたラムダの先頭行には、常に event.stopPropagation() を
             // 最初に書くように。
 
-            // ページリフレッシュ時は、即座に子Viewをリフレッシュ指示する。
+            // ページリフレッシュ時は、子Viewをリフレッシュ指示する。
             _.each(this.Children, (v: IView) => {
-                //this.Log(`${this.ClassName}.Refresh - Child Refresh: ${v.ObjectIdentifier}`);
                 v.Refresh();
             });
         }

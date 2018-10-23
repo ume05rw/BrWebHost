@@ -44,10 +44,6 @@ namespace Fw.Views {
             this.Refresh();
         }
 
-        //public get InnerBox(): BoxView {
-        //    return this._innerBox;
-        //}
-
         private _innerBox: BoxView;
         private _positionBarMax: LineView;
         private _positionBarCurrent: LineView;
@@ -85,7 +81,7 @@ namespace Fw.Views {
             this.Elem.append(this._innerBox.Elem);
 
 
-            //this.EnableLog = true;
+            this.EnableLog = true;
 
             // コンストラクタ完了後に実行。
             // コンストラクタ引数で取得したDirectionがセットされていないため。
@@ -274,15 +270,6 @@ namespace Fw.Views {
             this._innerBox.Remove(view);
         }
 
-        //public Refresh(): void {
-        //    if (!this.IsInitialized)
-        //        return;
-
-        //    super.Refresh();
-        //    this._innerBox.Refresh();
-        //    this._positionBarMax.Refresh();
-        //    this._positionBarCurrent.Refresh();
-        //}
 
         protected InnerRefresh(): void {
             try {
@@ -331,6 +318,9 @@ namespace Fw.Views {
                     view.SuppressLayout();
                 });
 
+                // 子Viewより前に、自身のサイズを確定させる。
+                super.CalcLayout();
+
                 if (this.Direction === Property.Direction.Horizontal) {
                     // 横方向
                     if (this.InnerLength < this.Size.Width)
@@ -365,6 +355,9 @@ namespace Fw.Views {
                     const leftLength
                         = this._positionBarMax.Length - this._positionBarCurrent.Length;
                     this._positionBarCurrent.Position.Left = this._barMargin - (leftLength * posRate);
+
+                    this._positionBarMax.CalcLayout();
+                    this._positionBarCurrent.CalcLayout();
 
                     if (this.InnerLength <= this.Size.Width) {
                         this._positionBarMax.Hide();
@@ -419,6 +412,9 @@ namespace Fw.Views {
                         = this._positionBarMax.Length - this._positionBarCurrent.Length;
                     this._positionBarCurrent.Position.Top = this._barMargin - (topLength * posRate);
 
+                    this._positionBarMax.CalcLayout();
+                    this._positionBarCurrent.CalcLayout();
+
                     if (this.InnerLength <= this.Size.Height) {
                         this._positionBarMax.Hide();
                         this._positionBarCurrent.Hide();
@@ -427,8 +423,6 @@ namespace Fw.Views {
                         this._positionBarCurrent.Show();
                     }
                 }
-
-                super.CalcLayout();
 
             } catch (e) {
                 Dump.ErrorLog(e, this.ClassName);
