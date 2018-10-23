@@ -59,7 +59,9 @@ namespace Fw {
             this.Log(`AddEventListener: ${eRef.BindObject.ClassName}_${eRef.BindObject.InstanceId}.${name}`);
 
             this._eventHandlers.push(eRef);
-            this.Elem.on(name, eRef.BindedHandler);
+            //const je = this.GetEvent(eRef.Name);
+            //this.Elem.on(je, eRef.BindedHandler);
+            this.Elem.on(eRef.Name, eRef.BindedHandler);
         }
 
         public RemoveEventListener(
@@ -91,6 +93,8 @@ namespace Fw {
                     throw new Error(`${this.ClassName}.${name} event not found.`);
                 }
 
+                //const je = this.GetEvent(eRef.Name);
+                //this.Elem.off(je, eRef.BindedHandler);
                 this.Elem.off(eRef.Name, eRef.BindedHandler);
                 this._eventHandlers.splice(key, 1);
             } else {
@@ -105,9 +109,11 @@ namespace Fw {
                         eRefs.push(er);
                     }
                 });
-                _.each(eRefs, (er) => {
-                    this.Elem.off(er.Name, er.BindedHandler);
-                    const idx = this._eventHandlers.indexOf(er);
+                _.each(eRefs, (eRef) => {
+                    //const je = this.GetEvent(eRef.Name);
+                    //this.Elem.off(je, eRef.BindedHandler);
+                    this.Elem.off(eRef.Name, eRef.BindedHandler);
+                    const idx = this._eventHandlers.indexOf(eRef);
                     this._eventHandlers.splice(idx, 1);
                 });
             }
@@ -119,8 +125,21 @@ namespace Fw {
 
             this.Log(`DispatchEvent: ${name}`);
             const eo = new Fw.Events.EventObject(this, name, params);
+            //const je = this.GetEvent(name);
+            //this.Elem.trigger(je, eo);
             this.Elem.trigger(name, eo);
         }
+
+        //private _events: { [name: string]: JQueryEventObject } = {};
+        //private GetEvent(name: string): JQueryEventObject {
+        //    if (!this._events[name]) {
+        //        const je = $.Event(name);
+        //        je.stopPropagation();
+        //        this._events[name] = je;
+        //    }
+        //    return this._events[name];
+        //}
+
 
         public SuppressEvent(name: string): void {
             if (this.IsSuppressedEvent(name))

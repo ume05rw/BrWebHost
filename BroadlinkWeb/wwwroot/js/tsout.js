@@ -1575,7 +1575,9 @@ var Fw;
             eRef.BindObject = bindObject;
             this.Log("AddEventListener: " + eRef.BindObject.ClassName + "_" + eRef.BindObject.InstanceId + "." + name);
             this._eventHandlers.push(eRef);
-            this.Elem.on(name, eRef.BindedHandler);
+            //const je = this.GetEvent(eRef.Name);
+            //this.Elem.on(je, eRef.BindedHandler);
+            this.Elem.on(eRef.Name, eRef.BindedHandler);
         };
         EventableBase.prototype.RemoveEventListener = function (name, handler, bindObject) {
             var _this = this;
@@ -1599,6 +1601,8 @@ var Fw;
                 if (!eRef) {
                     throw new Error(this.ClassName + "." + name + " event not found.");
                 }
+                //const je = this.GetEvent(eRef.Name);
+                //this.Elem.off(je, eRef.BindedHandler);
                 this.Elem.off(eRef.Name, eRef.BindedHandler);
                 this._eventHandlers.splice(key_1, 1);
             }
@@ -1612,9 +1616,11 @@ var Fw;
                         eRefs_1.push(er);
                     }
                 });
-                _.each(eRefs_1, function (er) {
-                    _this.Elem.off(er.Name, er.BindedHandler);
-                    var idx = _this._eventHandlers.indexOf(er);
+                _.each(eRefs_1, function (eRef) {
+                    //const je = this.GetEvent(eRef.Name);
+                    //this.Elem.off(je, eRef.BindedHandler);
+                    _this.Elem.off(eRef.Name, eRef.BindedHandler);
+                    var idx = _this._eventHandlers.indexOf(eRef);
                     _this._eventHandlers.splice(idx, 1);
                 });
             }
@@ -1625,8 +1631,19 @@ var Fw;
                 return;
             this.Log("DispatchEvent: " + name);
             var eo = new Fw.Events.EventObject(this, name, params);
+            //const je = this.GetEvent(name);
+            //this.Elem.trigger(je, eo);
             this.Elem.trigger(name, eo);
         };
+        //private _events: { [name: string]: JQueryEventObject } = {};
+        //private GetEvent(name: string): JQueryEventObject {
+        //    if (!this._events[name]) {
+        //        const je = $.Event(name);
+        //        je.stopPropagation();
+        //        this._events[name] = je;
+        //    }
+        //    return this._events[name];
+        //}
         EventableBase.prototype.SuppressEvent = function (name) {
             if (this.IsSuppressedEvent(name))
                 return;
