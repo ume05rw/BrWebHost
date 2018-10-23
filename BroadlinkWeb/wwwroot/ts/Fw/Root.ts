@@ -57,8 +57,10 @@ namespace Fw {
 
             const $window = $(window);
             $window.on('resize', () => {
-                this.Refresh();
-                this.DispatchEvent(Events.Resized);
+                _.defer(() => {
+                    this.Refresh();
+                    this.DispatchEvent(Events.Resized);
+                });
             });
 
             this._renderInitializer = new Fw.Util.DelayedOnceExecuter(
