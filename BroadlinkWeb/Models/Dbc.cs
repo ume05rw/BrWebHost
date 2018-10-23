@@ -1,4 +1,4 @@
-﻿using BroadlinkWeb.Models.Entities;
+using BroadlinkWeb.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -25,6 +25,16 @@ namespace BroadlinkWeb.Models
         public Dbc(DbContextOptions<Dbc> options)
             : base(options)
         {
+        }
+
+        /// <summary>
+        /// シード生成
+        /// </summary>
+        /// <param name="modelBuilder"></param>
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            //modelBuilder.Entity<ControlSet>().Hasd
+            
         }
     }
 }
