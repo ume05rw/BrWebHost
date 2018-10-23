@@ -34,12 +34,6 @@ namespace Fw.Views {
             Fw.Root.Instance.Elem.append(this.Elem);
             Fw.Root.Instance.StartPageInitialize();
 
-            //if (!this.Dom) {
-            //    const elem = $(`<div class="IController IView TransAnimation"></div>`);
-            //    Fw.Root.Instance.Elem.append(elem);
-            //    this.SetElem(elem);
-            //}
-
             this._isMasked = false;
 
             this.SetClassName('PageView');
@@ -54,10 +48,8 @@ namespace Fw.Views {
 
             // ブラウザのリサイズ時、ページ全体を再描画
             Fw.Root.Instance.AddEventListener(Fw.Events.RootEvents.Resized, () => {
-                //this.Log(`${this.ClassName}.Resized`);
-                this.Size.Width = Fw.Root.Instance.Size.Width;
-                this.Size.Height = Fw.Root.Instance.Size.Height;
-                this.Refresh();
+                this.Log(`Root.Resized`);
+                this.SetSize(Fw.Root.Instance.Size.Width, Fw.Root.Instance.Size.Height);
             });
 
             // マスクをクリックしたとき、戻る。
@@ -73,7 +65,7 @@ namespace Fw.Views {
         }
 
         public Show(duration: number = 200): void {
-            this.Log(`PageView.Show: ${this.ClassName}`);
+            this.Log('PageView.Show');
             if (this.IsVisible && !this.IsModal) {
                 this.Refresh();
                 return;
@@ -104,7 +96,7 @@ namespace Fw.Views {
         }
 
         public Hide(duration: number = 200): void {
-            //this.Log(`PageView.Hide: ${this.Elem.data('controller')}`);
+            this.Log('PageView.Hide');
             if (!this.IsVisible && !this.IsModal) {
                 this.Refresh();
                 return;
@@ -134,7 +126,7 @@ namespace Fw.Views {
         }
 
         public ShowModal(duration: number = 200, width: number = 300): void {
-            this.Log(`PageView.ShowModal: ${this.ClassName}`);
+            this.Log('PageView.ShowModal');
             if (this.IsVisible && this._isModal) {
                 this.Refresh();
                 return;
@@ -168,7 +160,7 @@ namespace Fw.Views {
         }
 
         public HideModal(duration: number = 200): void {
-            //this.Log(`PageView.HideModal: ${this.Elem.data('controller')}`);
+            this.Log('PageView.HideModal');
             if (!this.IsVisible) {
                 this.Refresh();
                 return;
@@ -190,9 +182,10 @@ namespace Fw.Views {
 
                     this.IsVisible = false;
                     this._isModal = false;
-                    this.Position.X = 0;
-                    this.Position.Y = 0;
-                    this.Refresh();
+                    this.SetLeftTop(0, 0);
+                    //this.Position.X = 0;
+                    //this.Position.Y = 0;
+                    //this.Refresh();
                     this.DispatchEvent(Events.Hidden);
                 };
 
@@ -223,9 +216,10 @@ namespace Fw.Views {
 
                     this.IsVisible = true;
                     this._isModal = false;
-                    this.Position.X = 0;
-                    this.Position.Y = 0;
-                    this.Refresh();
+                    this.SetLeftTop(0, 0);
+                    //this.Position.X = 0;
+                    //this.Position.Y = 0;
+                    //this.Refresh();
                     this.DispatchEvent(Events.Hidden);
                 };
 
@@ -252,18 +246,28 @@ namespace Fw.Views {
         }
 
         public Refresh(): void {
+            //this.Log('PageView.Refresh');
             super.Refresh();
+
+            if (this.IsSuppressLayout || !this.IsInitialized)
+                return;
+
+            // jQueryのイベントバブリングに注意。
+            // Domツリーが構成された後では、Fw上で追加したコントロールの全て、
+            // ツリーの上位に向かってイベントが伝播していく。
+            // AddEventListenerでバインドしたラムダの先頭行には、常に event.stopPropagation() を
+            // 最初に書くように。
 
             // ページリフレッシュ時は、即座に子Viewをリフレッシュ指示する。
             _.each(this.Children, (v: IView) => {
-                //this.Log(`${this.ClassName}.Resized - Child Refresh: ${v.ObjectIdentifier}`);
+                //this.Log(`${this.ClassName}.Refresh - Child Refresh: ${v.ObjectIdentifier}`);
                 v.Refresh();
             });
-
-            const a = 1;
         }
 
         protected InnerRefresh(): void {
+            //this.Log('PageView.InnerRefresh');
+
             try {
                 this.SuppressLayout();
 

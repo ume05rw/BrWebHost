@@ -101,7 +101,8 @@ namespace Fw.Views {
             this._positionBarCurrent.SetParent(this);
             this.Elem.append(this._positionBarCurrent.Elem);
 
-            this.AddEventListener(Events.Initialized, () => {
+            this.AddEventListener(Events.Initialized, (e) => {
+                e.stopPropagation();
                 this.InitView();
             });
 

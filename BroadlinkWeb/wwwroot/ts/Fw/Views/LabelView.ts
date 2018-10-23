@@ -102,10 +102,12 @@ namespace Fw.Views {
             this._hiddenSpan.style.fontSize = this._fontSize;
             this._hiddenSpan.style.fontFamily = this._fontFamily;
 
-            this.AddEventListener(Events.Attached, () => {
+            this.AddEventListener(Events.Attached, (e) => {
+                e.stopPropagation();
                 this.Parent.Elem.append(this._hiddenSpan);
             });
-            this.AddEventListener(Events.Detached, () => {
+            this.AddEventListener(Events.Detached, (e) => {
+                e.stopPropagation();
                 $(this._hiddenSpan).remove();
             });
 

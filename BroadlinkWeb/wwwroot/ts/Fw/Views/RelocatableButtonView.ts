@@ -55,7 +55,8 @@ namespace Fw.Views {
             this.SetClassName('RelocatableControlView');
             this.Elem.addClass(this.ClassName);
 
-            this.AddEventListener(Events.LongClick, () => {
+            this.AddEventListener(Events.LongClick, (e) => {
+                e.stopPropagation();
                 if (!this._isRelocatable)
                     this.SetRelocatable(true);
             });

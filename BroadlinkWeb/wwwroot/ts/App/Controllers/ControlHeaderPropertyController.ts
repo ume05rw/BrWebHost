@@ -35,6 +35,7 @@ namespace App.Controllers {
             this._controlSet = null;
 
             this._page.TxtName.AddEventListener(Events.InputViewEvents.Changed, (je, eo) => {
+                je.stopPropagation();
                 if (!this._controlSet)
                     return;
 
@@ -43,6 +44,7 @@ namespace App.Controllers {
             });
 
             this._page.SboRm.AddEventListener(Events.InputViewEvents.Changed, (je, eo) => {
+                je.stopPropagation();
                 if (!this._controlSet)
                     return;
 
@@ -52,7 +54,8 @@ namespace App.Controllers {
                 }
             });
 
-            this._page.DeleteButton.AddEventListener(Events.ButtonViewEvents.SingleClick, async () => {
+            this._page.DeleteButton.AddEventListener(Events.ButtonViewEvents.SingleClick, async (je) => {
+                je.stopPropagation();
                 if (!this._controlSet)
                     return;
 
@@ -70,7 +73,8 @@ namespace App.Controllers {
                 this.HideModal();
             });
 
-            this._page.TmpRegistButton.AddEventListener(Events.ButtonViewEvents.SingleClick, async () => {
+            this._page.TmpRegistButton.AddEventListener(Events.ButtonViewEvents.SingleClick, async (je) => {
+                je.stopPropagation();
                 // 仮機能 - 新規ControlSetを保存する。
                 const res = await App.Models.Stores.ControlSets.Write(this._controlSet);
                 //this.Log(res);

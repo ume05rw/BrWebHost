@@ -38,7 +38,8 @@ namespace App.Controllers {
             this.SetPageView(new Pages.MainPageView());
             const page = this.View as Pages.MainPageView;
 
-            page.BottomPanel.EnableLog = true;
+            //page.EnableLog = true;
+            //page.BottomPanel.EnableLog = true;
 
             page.HeaderBar.RightButton.AddEventListener(ButtonEvents.SingleClick, async () => {
 

@@ -103,8 +103,9 @@ namespace Fw.Views {
                 this.Refresh();
             });
 
-            this.AddEventListener(Events.SingleClick, () => {
+            this.AddEventListener(Events.SingleClick, (e) => {
                 //this.Log(`${this.ClassName}.SingleClick`);
+                e.stopPropagation();
                 this.BoolValue = !this.BoolValue;
                 this.Refresh();
             });

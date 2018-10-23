@@ -113,10 +113,15 @@ namespace Fw.Views {
 
 
         private _isSuppressLayout: boolean = false;
+        public get IsSuppressLayout(): boolean {
+            return this._isSuppressLayout;
+        }
 
 
         constructor(jqueryElem: JQuery) {
             super();
+
+            //this.Log('ViewBase.Constructor');
 
             this.SetElem(jqueryElem);
             this.SetClassName('ViewBase');
@@ -151,24 +156,30 @@ namespace Fw.Views {
             );
             this._applyStyler.Name = 'ApplyStyler';
 
-            this.AddEventListener(Events.SizeChanged, () => {
+            this.AddEventListener(Events.SizeChanged, (e) => {
+                e.stopPropagation();
                 this.Refresh();
             });
-            this.AddEventListener(Events.PositionChanged, () => {
+            this.AddEventListener(Events.PositionChanged, (e) => {
+                e.stopPropagation();
                 this.Refresh();
             });
-            this.AddEventListener(Events.AnchorChanged, () => {
+            this.AddEventListener(Events.AnchorChanged, (e) => {
+                e.stopPropagation();
                 this.Refresh();
             });
-            this.AddEventListener(Events.Attached, () => {
+            this.AddEventListener(Events.Attached, (e) => {
+                e.stopPropagation();
                 this.InitPage();
                 this.InitHasAnchor();
             });
-            this.AddEventListener(Events.Detached, () => {
+            this.AddEventListener(Events.Detached, (e) => {
+                e.stopPropagation();
                 this._page = null;
                 this.InitHasAnchor();
             });
-            this.AddEventListener(Events.Initialized, () => {
+            this.AddEventListener(Events.Initialized, (e) => {
+                e.stopPropagation();
                 this.InitPage();
                 this.InitHasAnchor();
             });
@@ -199,6 +210,8 @@ namespace Fw.Views {
         }
 
         protected SetElem(jqueryElem: JQuery): void {
+            //this.Log('ViewBase.SetElem');
+
             if (!jqueryElem)
                 return;
 
@@ -207,6 +220,8 @@ namespace Fw.Views {
         }
 
         protected InitPage(): void {
+            //this.Log('ViewBase.InitPage');
+
             const get = (view: IView) => {
                 if (!view)
                     return null;
@@ -219,15 +234,21 @@ namespace Fw.Views {
         }
 
         public SetParent(parent: IView): void {
+            //this.Log('ViewBase.SetParent');
+
             this._parent = parent;
         }
 
         public SetSize(width: number, height: number): void {
+            //this.Log('ViewBase.SetSize');
+
             this.Size.Width = width;
             this.Size.Height = height;
         }
 
         public SetXY(x: number, y: number, updatePolicy: boolean = true): void {
+            //this.Log('ViewBase.SetXY');
+
             if (updatePolicy)
                 this.Position.Policy = Property.PositionPolicy.Centering;
 
@@ -236,6 +257,8 @@ namespace Fw.Views {
         }
 
         public SetLeftTop(left: number, top: number, updatePolicy: boolean = true): void {
+            //this.Log('ViewBase.SetLeftTop');
+
             if (updatePolicy)
                 this.Position.Policy = Property.PositionPolicy.LeftTop;
 
@@ -244,6 +267,8 @@ namespace Fw.Views {
         }
 
         public SetAnchor(top: number, left: number, right: number, bottom: number): void {
+            //this.Log('ViewBase.SetAnchor');
+
             if (_.isNumber(top)) {
                 this.Anchor.IsAnchoredTop = true;
                 this.Anchor.MarginTop = top;
@@ -285,6 +310,8 @@ namespace Fw.Views {
             color: string = undefined,
             backgroundColor: string = undefined
         ): void {
+            //this.Log('ViewBase.SetDisplayParams');
+
             if (width !== undefined)
                 this.Size.Width = width;
             if (height !== undefined)
@@ -300,6 +327,8 @@ namespace Fw.Views {
         }
 
         public SetTransAnimation(enable: boolean): void {
+            //this.Log('ViewBase.SetTransAnimation');
+
             if (enable) {
                 // アニメーション有効化
                 if (!this.Elem.hasClass('TransAnimation'))
@@ -316,10 +345,14 @@ namespace Fw.Views {
         }
 
         public HasTransAnimation(): boolean {
+            //this.Log('ViewBase.HasTransAnimation');
+
             return this.Elem.hasClass('TransAnimation');
         }
 
         protected InitHasAnchor(): void {
+            //this.Log('ViewBase.InitHasAnchor');
+
             let hasAnchorX: boolean = (this.Anchor.IsAnchoredLeft || this.Anchor.IsAnchoredRight);
             let hasAnchorY: boolean = (this.Anchor.IsAnchoredTop || this.Anchor.IsAnchoredBottom);
 
@@ -342,6 +375,8 @@ namespace Fw.Views {
         }
 
         public Add(view: IView): void {
+            //this.Log('ViewBase.Add');
+
             if (this.Children.indexOf(view) == -1) {
                 view.SetParent(this);
                 this.Children.push(view);
@@ -352,6 +387,8 @@ namespace Fw.Views {
         }
 
         public Remove(view: IView): void {
+            //this.Log('ViewBase.Remove');
+
             const index = this.Children.indexOf(view);
             if (index !== -1) {
                 view.SetParent(null);
@@ -369,17 +406,29 @@ namespace Fw.Views {
          * @param current
          * @param obj
          */
+        private _parentString: string = null;
         protected GetParentsString(current: string = null): string {
+            if (!this.Page) {
+                return `${this.ObjectIdentifier} ** Has No Page **`;
+            } else {
+                if (!this._parentString)
+                    this._parentString = this.InnerGetParentsString();
+                return this._parentString;
+            }
+        }
+
+        private InnerGetParentsString(current: string = null): string {
             const result = (current === null)
                 ? `${this.ObjectIdentifier}`
                 : `${current}-${this.ObjectIdentifier}`;
 
             return (!this.Parent)
                 ? result
-                : (this.Parent as ViewBase).GetParentsString(result);
+                : (this.Parent as ViewBase).InnerGetParentsString(result);
         }
 
         public Refresh(): void {
+            //this.Log('ViewBase.Refresh');
             if (this._isSuppressLayout || !this._isInitialized)
                 return;
 
@@ -387,7 +436,7 @@ namespace Fw.Views {
         }
 
         protected InnerRefresh(): void {
-            this.Log(`InnerRefresh - ` + this.GetParentsString());
+            //this.Log(`ViewBase.InnerRefresh - ${this.GetParentsString()}`);
             const parent = $(this.Elem.parent());
 
             if (parent.length <= 0)
@@ -437,14 +486,6 @@ namespace Fw.Views {
             });
             _.defer(() => {
                 this.ApplyStyles();
-                //if (this instanceof Views.PageView) {
-                //    this.ApplyStyles();
-                //} else if (this.Page) {
-                //    if (this.Page.IsVisible)
-                //        this.ApplyStyles();
-                //} else {
-                //    this.ApplyStyles();
-                //}
 
                 // 子ViewをRefreshさせる。
                 _.each(this.Children, (view: IView) => {
@@ -454,6 +495,8 @@ namespace Fw.Views {
         }
 
         public CalcLayout(): void {
+            //this.Log('ViewBase.CalcLayout');
+
             const parent = $(this.Elem.parent());
 
             if (parent.length <= 0)
@@ -527,26 +570,29 @@ namespace Fw.Views {
             }
         }
 
-        //private _lastApplyTimer: number = null;
-        //private _lastAppliedTime: Date = null;
         private _innerApplyCount: number = 0;
-
         private _latestStyles: { [name: string]: string } = {};
         private _newStyles: { [name: string]: string } = {};
         public SetStyle(name: string, value: string): void {
+            //this.Log('ViewBase.SetStyle');
+
             this._newStyles[name] = value;
         }
         public SetStyles(styles: { [name: string]: string }): void {
+            //this.Log('ViewBase.SetStyles');
+
             _.extend(this._newStyles, styles);
         }
         public ApplyStyles(): void {
+            //this.Log('ViewBase.ApplyStyles');
+
             this._applyStyler.Exec();
         }
 
         protected InnerApplyStyles(): void {
             this._innerApplyCount++;
 
-            this.Log(`InnerApplyStyles: ${this._innerApplyCount}`);
+            //this.Log(`ViewBase.InnerApplyStyles: ${this._innerApplyCount}`);
             _.each(this._newStyles, (v, k) => {
                 if (this._latestStyles[k] !== v) {
                     this.Dom.style[k] = v;
@@ -559,18 +605,26 @@ namespace Fw.Views {
         }
 
         public SuppressLayout(): void {
+            //this.Log('ViewBase.SuppressLayout');
+
             this._isSuppressLayout = true;
         }
 
         public IsSuppressedLayout(): boolean {
+            //this.Log('ViewBase.IsSuppressedLayout');
+
             return this._isSuppressLayout;
         }
 
         public ResumeLayout(): void {
+            //this.Log('ViewBase.ResumeLayout');
+
             this._isSuppressLayout = false;
         }
 
         public Show(duration: number = 200): void {
+            //this.Log('ViewBase.Show');
+
             if (this.IsVisible) {
                 this.Refresh();
                 return;
@@ -594,6 +648,8 @@ namespace Fw.Views {
         }
 
         public Hide(duration: number = 200): void {
+            //this.Log('ViewBase.Hide');
+
             if (!this.IsVisible) {
                 this.Refresh();
                 return;

@@ -22,17 +22,6 @@ namespace Fw.Views.Property {
                 throw new Error("value type not allowed");
 
             const changed = (this._width !== value);
-
-            if (
-                (this._view)
-                && (this._view.ClassName)
-                && this._view.ClassName == 'MainPageView'
-                && changed
-            ) {
-                const a = 1;
-            }
-
-
             this._width = value;
 
             if (changed && this._view)
@@ -49,16 +38,6 @@ namespace Fw.Views.Property {
                 throw new Error("value type not allowed");
 
             const changed = (this._height !== value);
-
-            if (
-                (this._view)
-                && (this._view.ClassName)
-                && this._view.ClassName == 'MainPageView'
-                && changed
-            ) {
-                const a = 1;
-            }
-
             this._height = value;
 
             if (changed && this._view)

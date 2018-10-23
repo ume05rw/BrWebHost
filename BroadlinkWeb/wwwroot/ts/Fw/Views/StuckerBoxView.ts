@@ -262,6 +262,7 @@ namespace Fw.Views {
          */
         private OnChildLongClick(e: JQueryEventObject): void {
             //this.Log(`${this.ClassName}.OnChildLongClick`);
+            e.stopPropagation();
             this.StartRelocation();
         }
 
@@ -284,6 +285,7 @@ namespace Fw.Views {
          * @param e1
          */
         private OnInnerSingleClick(e: JQueryEventObject): void {
+            e.stopPropagation();
             if (e.eventPhase !== 2)
                 return;
 
@@ -319,6 +321,8 @@ namespace Fw.Views {
          * @param e
          */
         private OnChildMouseDown(e: JQueryEventObject): void {
+            e.stopPropagation();
+
             //// 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
             //if (e.eventPhase !== 2)
             //    return;
