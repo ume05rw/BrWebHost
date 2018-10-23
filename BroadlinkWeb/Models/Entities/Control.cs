@@ -32,12 +32,12 @@ namespace BroadlinkWeb.Models.Entities
         [Required]
         [Column(Order = 3, TypeName = "int(11)")]
         [Description("Position Left px")]
-        public string PositionLeft { get; set; }
+        public int PositionLeft { get; set; }
 
         [Required]
         [Column(Order = 4, TypeName = "int(11)")]
         [Description("Position Top px")]
-        public string PositionTop { get; set; }
+        public int PositionTop { get; set; }
 
         [Required]
         [Column(Order = 5, TypeName = "varchar(255)")]
