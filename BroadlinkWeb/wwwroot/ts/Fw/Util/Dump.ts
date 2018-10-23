@@ -67,7 +67,7 @@ namespace Fw.Util {
 
         private static GetTimestamp(): string {
             const now = new Date();
-            return `${('0' + now.getHours()).slice(-2)}:${('0' + now.getMinutes()).slice(-2)}:${('0' + now.getSeconds()).slice(-2)}.${('000' + now.getMilliseconds()).substr(0, 3)}`;
+            return `${('0' + now.getHours()).slice(-2)}:${('0' + now.getMinutes()).slice(-2)}:${('0' + now.getSeconds()).slice(-2)}.${('000' + now.getMilliseconds()).substr(-3)}`;
         }
 
         private static GetDumpedString(value: any): string {

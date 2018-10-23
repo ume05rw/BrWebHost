@@ -244,7 +244,7 @@ var Fw;
             };
             Dump.GetTimestamp = function () {
                 var now = new Date();
-                return ('0' + now.getHours()).slice(-2) + ":" + ('0' + now.getMinutes()).slice(-2) + ":" + ('0' + now.getSeconds()).slice(-2) + "." + ('000' + now.getMilliseconds()).substr(0, 3);
+                return ('0' + now.getHours()).slice(-2) + ":" + ('0' + now.getMinutes()).slice(-2) + ":" + ('0' + now.getSeconds()).slice(-2) + "." + ('000' + now.getMilliseconds()).substr(-3);
             };
             Dump.GetDumpedString = function (value) {
                 return _.isObject(value)
