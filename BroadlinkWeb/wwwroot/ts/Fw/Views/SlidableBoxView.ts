@@ -164,6 +164,7 @@ namespace Fw.Views {
 
                     this._innerBox.Position.Top = top;
                 }
+                this.Refresh();
             });
 
             var mouseWheelEvent = 'onwheel' in document
@@ -204,7 +205,7 @@ namespace Fw.Views {
 
                 } else {
                     // 縦方向
-                    let top = this._innerBox.Position.Top + (delta * 10);
+                    let top = this._innerBox.Position.Top + (direction * 10);
                     const margin = this.Size.Height - this.InnerLength;
 
                     if (top < margin)
@@ -214,6 +215,7 @@ namespace Fw.Views {
 
                     this._innerBox.Position.Top = top;
                 }
+                this.Refresh();
             });
 
             this._innerBox.Elem.on('touchend mouseup mouseout', (e) => {

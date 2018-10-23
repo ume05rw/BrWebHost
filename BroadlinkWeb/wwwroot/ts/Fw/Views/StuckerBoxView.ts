@@ -203,6 +203,7 @@ namespace Fw.Views {
                 top = 0;
 
             this._innerBox.Position.Top = top;
+            this.Refresh();
         }
 
         private OnInnerMouseWheel(e: JQueryEventObject): void {
@@ -234,6 +235,7 @@ namespace Fw.Views {
                 top = 0;
 
             this._innerBox.Position.Top = top;
+            this.Refresh();
         }
 
         private OnInnerMouseUp(e: JQueryEventObject): void {

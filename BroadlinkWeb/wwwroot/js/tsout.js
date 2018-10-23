@@ -7625,6 +7625,7 @@ var Fw;
                             top_2 = 0;
                         _this._innerBox.Position.Top = top_2;
                     }
+                    _this.Refresh();
                 });
                 var mouseWheelEvent = 'onwheel' in document
                     ? 'wheel'
@@ -7659,7 +7660,7 @@ var Fw;
                     }
                     else {
                         // 縦方向
-                        var top_3 = _this._innerBox.Position.Top + (delta * 10);
+                        var top_3 = _this._innerBox.Position.Top + (direction * 10);
                         var margin = _this.Size.Height - _this.InnerLength;
                         if (top_3 < margin)
                             top_3 = margin;
@@ -7667,6 +7668,7 @@ var Fw;
                             top_3 = 0;
                         _this._innerBox.Position.Top = top_3;
                     }
+                    _this.Refresh();
                 });
                 _this._innerBox.Elem.on('touchend mouseup mouseout', function (e) {
                     // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
@@ -8112,6 +8114,7 @@ var Fw;
                 else if (0 < top)
                     top = 0;
                 this._innerBox.Position.Top = top;
+                this.Refresh();
             };
             StuckerBoxView.prototype.OnInnerMouseWheel = function (e) {
                 if (this._isChildRelocation || this._scrollMargin === 0)
@@ -8138,6 +8141,7 @@ var Fw;
                 else if (0 < top)
                     top = 0;
                 this._innerBox.Position.Top = top;
+                this.Refresh();
             };
             StuckerBoxView.prototype.OnInnerMouseUp = function (e) {
                 // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
