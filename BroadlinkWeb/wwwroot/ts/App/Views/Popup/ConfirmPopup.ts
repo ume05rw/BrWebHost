@@ -47,6 +47,9 @@ namespace App.Views.Popup {
         }
 
         public Open(params?: any): void {
+            // Callback方式で使えるけど、やめとけ、というやつ。
+            throw new Error('OpenAsyncを使いたまへ！');
+
             if (typeof params === 'object') {
                 this._callbackOk = _.isFunction(params.CallbackOk)
                     ? params.CallbackOk

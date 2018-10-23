@@ -23,6 +23,9 @@ namespace App.Controllers {
 
             this.SetClassName('MainController');
 
+            Dump.Log('SubController Load Start');
+            const sub1Ctr = new Sub1Controller();
+            const sub2Ctr = new Sub2Controller();
             const sub3Ctr = new Sub3Controller();
             const controlSetCtr = new ControlSetController();
             const controlPropertyCtr = new ControlPropertyController();
@@ -30,9 +33,12 @@ namespace App.Controllers {
             const functionSelectCtr = new OperationSelectController();
             const iconSelectCtr = new IconSelectController();
             const colorSelectCtr = new ColorSelectController();
+            Dump.Log('SubController Load End');
 
             this.SetPageView(new Pages.MainPageView());
             const page = this.View as Pages.MainPageView;
+
+            page.BottomPanel.EnableLog = true;
 
             page.HeaderBar.RightButton.AddEventListener(ButtonEvents.SingleClick, async () => {
 

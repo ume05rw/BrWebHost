@@ -2,7 +2,6 @@
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Config.ts" />
 /// <reference path="../Util/Dump.ts" />
-/// <reference path="Factory.ts" />
 
 namespace Fw.Controllers {
     import Dump = Fw.Util.Dump;
@@ -23,15 +22,6 @@ namespace Fw.Controllers {
 
         private constructor() {
             this._controllers = {};
-        }
-
-        public InitControllersByTemplates(): void {
-            $(`div[${Config.PageIdAttribute}]`).each(function (i, el) {
-                const $elem = $(el);
-                const id = $elem.attr(Config.PageIdAttribute);
-                const instance = Factory.Create(id, $elem);
-                //this._controllers[id] = instance;
-            }.bind(this));
         }
 
         public Add(controller: IController): void {

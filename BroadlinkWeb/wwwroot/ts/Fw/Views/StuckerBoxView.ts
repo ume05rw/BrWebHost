@@ -489,10 +489,18 @@ namespace Fw.Views {
         }
 
 // #endregion "子View再配置"
+        public Refresh(): void {
+            this.Log(`${this.ClassName}.Refresh`);
+            super.Refresh();
+            if (this.EnableLog) {
+                const a = 1;
+            }
+        }
+
 
         protected InnerRefresh(): void {
             try {
-                //this.Log(`${this.ClassName}.InnerRefresh`);
+                this.Log(`${this.ClassName}.InnerRefresh`);
                 this.SuppressLayout();
                 this._innerBox.SuppressLayout();
                 this._positionBarMax.SuppressLayout();

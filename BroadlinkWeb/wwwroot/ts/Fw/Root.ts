@@ -69,12 +69,13 @@ namespace Fw {
                     this._viewRefreshInterval = 30;
                     this._releaseInitialized = true;
                     this.DispatchEvent(Events.PageInitializeCompleted);
-                    this.Log('Root.ReleasePageInitialize - Released');
+                    Dump.Log('Root.ReleasePageInitialize - Released');
                 },
                 300,
                 -1,
                 true
             );
+            this._renderInitializer.Name = 'RenderInitializer';
 
 
             // Root.Init()の終了後にViewBaseからFw.Root.Instanceを呼び出す。
@@ -130,7 +131,7 @@ namespace Fw {
             this._releaseInitialized = false;
             this._viewRefreshInterval = 3000;
             this.DispatchEvent(Events.PageInitializeStarted);
-            this.Log('Root.StartPageInitialize');
+            Dump.Log('Root.StartPageInitialize');
         }
 
         private _releaseInitialized: boolean = false;

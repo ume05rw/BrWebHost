@@ -30,9 +30,6 @@ namespace Fw {
 
             // 画面全体のコンテナを初期化
             Fw.Root.Init('div.body-content');
-
-            // Controllers.Managerの初期化
-            Fw.Controllers.Manager.Instance.InitControllersByTemplates();
         }
     }
 }

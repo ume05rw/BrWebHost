@@ -174,7 +174,6 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Popup\ConfirmPopup.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Popup\PopupBase.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Config.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\Factory.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\IController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\ControllerBase.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\Manager.ts" />

@@ -120,10 +120,7 @@ namespace Fw.Views {
 
             this.SetElem(jqueryElem);
             this.SetClassName('ViewBase');
-
-            //// デバッグ用、全Viewのログを出す。
-            //this.EnableLog = true;
-
+            this.Elem.addClass('IView TransAnimation');
 
             this._children = new Array<IView>();
             this._size = new Property.Size(this);
@@ -133,6 +130,8 @@ namespace Fw.Views {
             this._page = null;
             this._parent = null;
             this._color = '#000000';
+            this._size.Width = this.Elem.width();
+            this._size.Height = this.Elem.height();
 
             this._refresher = new Fw.Util.DelayedOnceExecuter(
                 this,
@@ -141,6 +140,7 @@ namespace Fw.Views {
                 3000 //Fw.Root.Instance.ViewRefreshInterval
                 , true
             );
+            this._refresher.Name = 'Refresher';
 
             this._applyStyler = new Fw.Util.DelayedOnceExecuter(
                 this,
@@ -149,7 +149,29 @@ namespace Fw.Views {
                 3000 //Fw.Root.Instance.ViewRefreshInterval
                 , true
             );
+            this._applyStyler.Name = 'ApplyStyler';
 
+            this.AddEventListener(Events.SizeChanged, () => {
+                this.Refresh();
+            });
+            this.AddEventListener(Events.PositionChanged, () => {
+                this.Refresh();
+            });
+            this.AddEventListener(Events.AnchorChanged, () => {
+                this.Refresh();
+            });
+            this.AddEventListener(Events.Attached, () => {
+                this.InitPage();
+                this.InitHasAnchor();
+            });
+            this.AddEventListener(Events.Detached, () => {
+                this._page = null;
+                this.InitHasAnchor();
+            });
+            this.AddEventListener(Events.Initialized, () => {
+                this.InitPage();
+                this.InitHasAnchor();
+            });
 
             Fw.Root.Instance.AddEventListener(RootEvents.PageInitializeStarted, () => {
                 this._refresher.Timeout = Fw.Root.Instance.ViewRefreshInterval;
@@ -168,52 +190,12 @@ namespace Fw.Views {
                 this._applyStyler.Timeout = Fw.Root.Instance.ViewRefreshInterval;
             }, 3000);
 
-            if (this.Elem) {
-                this._size.Width = this.Elem.width();
-                this._size.Height = this.Elem.height();
-            } else {
-                this._size.Width = 0;
-                this._size.Height = 0;
+            // 初期化終了イベント
+            if (!this._isInitialized) {
+                this._isInitialized = true;
+                this.DispatchEvent(Events.Initialized);
+                this.Refresh();
             }
-
-            _.defer(() => {
-                this.Elem.addClass('IView TransAnimation');
-
-                if (this._size.Width === 0)
-                    this._size.Width = this.Elem.width();
-
-                if (this._size.Height === 0)
-                    this._size.Height = this.Elem.height();
-
-                this.AddEventListener(Events.SizeChanged, () => {
-                    this.Refresh();
-                });
-                this.AddEventListener(Events.PositionChanged, () => {
-                    this.Refresh();
-                });
-                this.AddEventListener(Events.AnchorChanged, () => {
-                    this.Refresh();
-                });
-                this.AddEventListener(Events.Attached, () => {
-                    this.InitPage();
-                    this.InitHasAnchor();
-                });
-                this.AddEventListener(Events.Detached, () => {
-                    this._page = null;
-                    this.InitHasAnchor();
-                });
-                this.AddEventListener(Events.Initialized, () => {
-                    this.InitPage();
-                    this.InitHasAnchor();
-                });
-
-                // 初期化終了イベント
-                if (!this._isInitialized) {
-                    this._isInitialized = true;
-                    this.DispatchEvent(Events.Initialized);
-                    this.Refresh();
-                }
-            });
         }
 
         protected SetElem(jqueryElem: JQuery): void {
@@ -455,6 +437,14 @@ namespace Fw.Views {
             });
             _.defer(() => {
                 this.ApplyStyles();
+                //if (this instanceof Views.PageView) {
+                //    this.ApplyStyles();
+                //} else if (this.Page) {
+                //    if (this.Page.IsVisible)
+                //        this.ApplyStyles();
+                //} else {
+                //    this.ApplyStyles();
+                //}
 
                 // 子ViewをRefreshさせる。
                 _.each(this.Children, (view: IView) => {

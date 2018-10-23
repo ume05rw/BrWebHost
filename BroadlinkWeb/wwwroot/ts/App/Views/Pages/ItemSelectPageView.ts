@@ -21,7 +21,7 @@ namespace App.Views.Pages {
         public Label: Views.LabelView;
 
         constructor() {
-            super($(""));
+            super();
 
             this.HeaderBar = new Controls.HeaderBarView();
             this.SelectorPanel = new Views.StuckerBoxView();

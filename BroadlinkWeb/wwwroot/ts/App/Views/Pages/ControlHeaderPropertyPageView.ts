@@ -24,7 +24,7 @@ namespace App.Views.Pages {
         public TmpRegistButton: Controls.ButtonView;
 
         constructor() {
-            super($(""));
+            super();
 
             this.HeaderBar = new Controls.HeaderBarView();
             this.InputPanel = new Views.StuckerBoxView();

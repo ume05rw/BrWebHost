@@ -14,7 +14,7 @@ namespace Fw.Controllers {
         readonly Manager: Fw.Controllers.Manager;
 
         SetPageView(view: Views.PageView): void;
-        SetPageViewByJQuery(elem: JQuery): void;
+        //SetPageViewByJQuery(elem: JQuery): void;
 
         SwitchTo(id: string): void;
         SwitchController(controller: IController): void;

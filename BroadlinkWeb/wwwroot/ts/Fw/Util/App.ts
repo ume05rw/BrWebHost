@@ -19,16 +19,6 @@ namespace Fw.Util {
             App._ids.push(id);
             return id;
         }
-
-        public static GetDelayedOnceExecuter(
-            iobject: IObject,
-            callback: (passing: any) => void,
-            delay: number = 100,
-            timeout: number = -1,
-            isMonitor: boolean = false
-        ): DelayedOnceExecuter {
-            return new DelayedOnceExecuter(iobject, callback, delay, timeout, isMonitor);
-        }
     }
 
     export class DelayedOnceExecuter extends ObjectBase {
@@ -51,6 +41,8 @@ namespace Fw.Util {
         public set Timeout(value: number) {
             this._timeout;
         }
+
+        public Name: string = '';
 
 
         private _object: IObject;
@@ -105,6 +97,7 @@ namespace Fw.Util {
                             this.EnableLog = true;
                             this._object.EnableLog = true;
                             this.Log('＊＊＊無限ループの可能性があります＊＊＊');
+                            this.Log(`${this.Name}: 経過時間(msec) = ` + elapsed);
                             this.Log(`${this._object.ObjectIdentifier}`);
                         }
                     }
@@ -115,6 +108,7 @@ namespace Fw.Util {
                         this.EnableLog = true;
                         this._object.EnableLog = true;
                         this.Log('＊＊＊呼び出し回数が多すぎます＊＊＊');
+                        this.Log(`${this.Name}: 抑制回数 = ` + this._suppressCount);
                         this.Log(`${this._object.ObjectIdentifier}`);
                     }
                 }, DelayedOnceExecuter.MonitorInterval);

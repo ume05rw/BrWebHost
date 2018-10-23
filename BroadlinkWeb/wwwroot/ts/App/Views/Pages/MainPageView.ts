@@ -18,6 +18,9 @@ namespace App.Views.Pages {
     export class MainPageView extends Fw.Views.PageView {
 
         public HeaderBar: Controls.HeaderBarView;
+        public ScenePanel: Views.StuckerBoxView;
+        public ControlSetPanel: Views.StuckerBoxView;
+        public BottomPanel: Views.StuckerBoxView;
         public BtnGoSub1: Controls.ButtonView;
         public BtnGoSub2: Controls.ButtonView;
         public BtnGoSub3: Controls.ButtonView;
@@ -25,7 +28,7 @@ namespace App.Views.Pages {
 
 
         constructor() {
-            super($(""));
+            super();
 
             this.HeaderBar = new Controls.HeaderBarView();
             this.BtnGoSub1 = new Controls.ButtonView();
@@ -46,31 +49,31 @@ namespace App.Views.Pages {
             //this.HeaderBar.RightButton.Hide(0);
             this.Add(this.HeaderBar);
 
-            const scenePanel = new Views.StuckerBoxView();
-            scenePanel.HasBorder = true;
-            scenePanel.BorderRadius = 0;
-            scenePanel.BackgroundColor = '#f2f2f2';
-            scenePanel.Color = Color.MainBackground;
-            scenePanel.SetAnchor(70, 10, 10, null);
-            scenePanel.Size.Height = 200;
-            scenePanel.ReferencePoint = Property.ReferencePoint.LeftTop;
-            this.Add(scenePanel);
+            this.ScenePanel = new Views.StuckerBoxView();
+            this.ScenePanel.HasBorder = true;
+            this.ScenePanel.BorderRadius = 0;
+            this.ScenePanel.BackgroundColor = '#f2f2f2';
+            this.ScenePanel.Color = Color.MainBackground;
+            this.ScenePanel.SetAnchor(70, 10, 10, null);
+            this.ScenePanel.Size.Height = 200;
+            this.ScenePanel.ReferencePoint = Property.ReferencePoint.LeftTop;
+            this.Add(this.ScenePanel);
 
             for (let i = 0; i < 5; i++) {
                 const btn = new Controls.SceneButtonView();
                 btn.Label.Text = `Scene ${i + 1}`;
-                scenePanel.Add(btn);
+                this.ScenePanel.Add(btn);
             }
 
-            const remConPanel = new Views.StuckerBoxView();
-            remConPanel.HasBorder = true;
-            remConPanel.BorderRadius = 0;
-            remConPanel.BackgroundColor = Color.Transparent;
-            remConPanel.Color = Color.MainBackground;
-            remConPanel.SetAnchor(280, 10, 10, 70);
+            this.ControlSetPanel = new Views.StuckerBoxView();
+            this.ControlSetPanel.HasBorder = true;
+            this.ControlSetPanel.BorderRadius = 0;
+            this.ControlSetPanel.BackgroundColor = Color.Transparent;
+            this.ControlSetPanel.Color = Color.MainBackground;
+            this.ControlSetPanel.SetAnchor(280, 10, 10, 70);
             //remConPanel.SetAnchor(280, 10, 10, 10);
-            remConPanel.ReferencePoint = Property.ReferencePoint.LeftTop;
-            this.Add(remConPanel);
+            this.ControlSetPanel.ReferencePoint = Property.ReferencePoint.LeftTop;
+            this.Add(this.ControlSetPanel);
 
             for (let i = 0; i < 20; i++) {
                 const btn = new Controls.ControlSetButtonView();
@@ -82,37 +85,37 @@ namespace App.Views.Pages {
                 const idx = i % Color.ButtonColors.length;
                 btn.Button.BackgroundColor = Color.ButtonColors[idx];
                 btn.Button.Color = Color.ReverseMain;
+                btn.Button.HoverColor = Color.ButtonHoverColors[idx];
                 btn.Label.Text = `Control ${i + 1}`;
                 //btn.Label.Color = Color.ReverseMain;
-                remConPanel.Add(btn);
+                this.ControlSetPanel.Add(btn);
             }
 
-            const bottom = new Views.StuckerBoxView();
-            bottom.HasBorder = true;
-            bottom.BorderRadius = 0;
-            bottom.BackgroundColor = 'transparent';
-            bottom.Color = '#f5f5f5';
-            bottom.SetAnchor(null, 10, 10, 10);
-            bottom.ReferencePoint = Property.ReferencePoint.RightBottom;
-            bottom.Size.Height = 50;
-            bottom.EnableLog = true;
-            this.Add(bottom);
+            this.BottomPanel = new Views.StuckerBoxView();
+            this.BottomPanel.HasBorder = true;
+            this.BottomPanel.BorderRadius = 0;
+            this.BottomPanel.BackgroundColor = 'transparent';
+            this.BottomPanel.Color = '#f5f5f5';
+            this.BottomPanel.SetAnchor(null, 10, 10, 10);
+            this.BottomPanel.ReferencePoint = Property.ReferencePoint.RightBottom;
+            this.BottomPanel.Size.Height = 50;
+            this.Add(this.BottomPanel);
 
             this.BtnGoSub1.Text = 'Show Sub1';
             this.BtnGoSub1.SetSize(80, 30);
-            bottom.Add(this.BtnGoSub1);
+            this.BottomPanel.Add(this.BtnGoSub1);
 
             this.BtnGoSub2.Text = 'Show Sub2';
             this.BtnGoSub2.SetSize(80, 30);
-            bottom.Add(this.BtnGoSub2);
+            this.BottomPanel.Add(this.BtnGoSub2);
 
             this.BtnGoSub3.Text = 'Show Sub3';
             this.BtnGoSub3.SetSize(80, 30);
-            bottom.Add(this.BtnGoSub3);
+            this.BottomPanel.Add(this.BtnGoSub3);
 
             this.BtnGoDynamic.Text = 'Layout';
             this.BtnGoDynamic.SetSize(80, 30);
-            bottom.Add(this.BtnGoDynamic);
+            this.BottomPanel.Add(this.BtnGoDynamic);
         }
     }
 }

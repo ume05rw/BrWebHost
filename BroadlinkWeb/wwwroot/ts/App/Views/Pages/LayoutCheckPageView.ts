@@ -1,4 +1,4 @@
-﻿/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../../Fw/Views/PageView.ts" />
 /// <reference path="../../../Fw/Views/Property/Anchor.ts" />
@@ -28,8 +28,7 @@ namespace App.Views.Pages {
 
 
         constructor() {
-            const jqueryElem = $("");
-            super(jqueryElem);
+            super();
 
             this.BtnGoSub1 = new Fw.Views.ButtonView();
             this.BtnGoSub2 = new Fw.Views.ButtonView();

@@ -22,7 +22,7 @@ namespace App.Views.Pages {
         public ButtonPanel: Views.SlidableBoxView;
 
         constructor() {
-            super($(""));
+            super();
 
             this.HeaderBar = new Controls.HeaderBarView();
             this.EditButton = new Controls.ButtonView();

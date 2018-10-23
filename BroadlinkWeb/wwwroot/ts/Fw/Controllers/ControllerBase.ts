@@ -32,7 +32,7 @@ namespace Fw.Controllers {
             return this._manager;
         }
 
-        constructor(id?: string, jqueryElem?: JQuery) {
+        constructor(id?: string) {
             super();
 
             this.SetClassName('ControllerBase');
@@ -45,22 +45,19 @@ namespace Fw.Controllers {
             this._view = null;
             this._manager = Fw.Controllers.Manager.Instance;
             this._manager.Add(this);
-
-            if (jqueryElem)
-                this.SetPageViewByJQuery(jqueryElem);
         }
 
         public SetPageView(view: Views.PageView): void {
             this._view = view;
         }
 
-        public SetPageViewByJQuery(elem: JQuery): void {
-            this._view = new Fw.Views.PageView(elem);
-            this.IsDefaultView = (this.View.Elem.attr(Config.DefaultPageAttribute) === "true");
+        //public SetPageViewByJQuery(elem: JQuery): void {
+        //    this._view = new Fw.Views.PageView(elem);
+        //    this.IsDefaultView = (this.View.Elem.attr(Config.DefaultPageAttribute) === "true");
 
-            if (this.IsDefaultView)
-                this.View.Show();
-        }
+        //    if (this.IsDefaultView)
+        //        this.View.Show();
+        //}
 
         public SwitchTo(id: string): void {
             this.Manager.Set(id);

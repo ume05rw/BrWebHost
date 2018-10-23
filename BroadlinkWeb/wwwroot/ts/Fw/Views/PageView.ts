@@ -29,16 +29,16 @@ namespace Fw.Views {
             return this._isModal;
         }
 
-        constructor(jqueryElem?: JQuery) {
-            super(jqueryElem);
-
+        constructor() {
+            super($(`<div class="IController IView TransAnimation"></div>`));
+            Fw.Root.Instance.Elem.append(this.Elem);
             Fw.Root.Instance.StartPageInitialize();
 
-            if (!this.Dom) {
-                const elem = $(`<div class="IController IView TransAnimation"></div>`);
-                Fw.Root.Instance.Elem.append(elem);
-                this.SetElem(elem);
-            }
+            //if (!this.Dom) {
+            //    const elem = $(`<div class="IController IView TransAnimation"></div>`);
+            //    Fw.Root.Instance.Elem.append(elem);
+            //    this.SetElem(elem);
+            //}
 
             this._isMasked = false;
 
@@ -259,6 +259,8 @@ namespace Fw.Views {
                 //this.Log(`${this.ClassName}.Resized - Child Refresh: ${v.ObjectIdentifier}`);
                 v.Refresh();
             });
+
+            const a = 1;
         }
 
         protected InnerRefresh(): void {

@@ -96,11 +96,9 @@ namespace Fw.Views {
             this.Add(this._notch);
 
             this.Elem.hover(() => {
-                //this.Dom.style.backgroundColor = this.HoverColor;
                 this.SetStyle('backgroundColor', this.HoverColor);
                 this.Refresh();
             }, () => {
-                //this.Dom.style.backgroundColor = this.BackgroundColor;
                 this.SetStyle('backgroundColor', this.BackgroundColor);
                 this.Refresh();
             });
