@@ -126,6 +126,7 @@
     <PackageReference Include="MySql.Data" Version="8.0.13" />
     <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="8.0.13" />
     <PackageReference Include="MySql.Data.EntityFrameworkCore.Design" Version="8.0.13" />
+    <PackageReference Include="SharpBroadlink" Version="1.0.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -251,10 +252,6 @@
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\TextBoxInputView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ToggleButtonInputView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ViewBase.ts" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Library\SharpBroadlink\SharpBroadlink\SharpBroadlink.csproj" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
