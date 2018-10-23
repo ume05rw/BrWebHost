@@ -31,6 +31,11 @@ namespace BroadlinkWeb.Models.Entities
         [Description("Taget Broadlink Device ID")]
         public bool IsTemplate { get; set; }
 
+        [Required]
+        [Column(Order = 4, TypeName = "varchar(255)")]
+        [Description("Color String")]
+        public string Color { get; set; }
+
         public List<Control> Controls { get; set; }
         public BrDevice BrDevice { get; set; }
     }

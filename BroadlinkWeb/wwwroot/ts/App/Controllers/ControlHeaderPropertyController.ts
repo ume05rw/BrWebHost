@@ -43,6 +43,24 @@ namespace App.Controllers {
                 this._controlSet.DispatchChanged();
             });
 
+            this._page.BtnColor.AddEventListener(Events.ButtonViewEvents.SingleClick, async (je) => {
+                je.stopPropagation();
+                if (!this._controlSet)
+                    return;
+
+                this.Log('ControlPropertyController.BtnColor.SingleClick');
+
+                const ctr = this.Manager.Get('ColorSelect') as ColorSelectController;
+                const color: string = await ctr.Select(this);
+
+                this._controlSet.Color = color;
+                this._page.BtnColor.Color = color;
+                this._page.BtnColor.BackgroundColor = color;
+                this._page.BtnColor.HoverColor = App.Items.Color.GetButtonHoverColor(color);
+
+                this._controlSet.DispatchChanged();
+            });
+
             this._page.SboRm.AddEventListener(Events.InputViewEvents.Changed, (je, eo) => {
                 je.stopPropagation();
                 if (!this._controlSet)

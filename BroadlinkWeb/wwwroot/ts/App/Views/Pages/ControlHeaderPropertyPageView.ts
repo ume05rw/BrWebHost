@@ -19,6 +19,7 @@ namespace App.Views.Pages {
         public HeaderBar: Controls.HeaderBarView;
         public InputPanel: Views.StuckerBoxView;
         public TxtName: Views.TextBoxInputView;
+        public BtnColor: Controls.ItemSelectButtonView;
         public SboRm: Views.SelectBoxInputView;
         public DeleteButton: Controls.ButtonView;
         public TmpRegistButton: Controls.ButtonView;
@@ -29,6 +30,7 @@ namespace App.Views.Pages {
             this.HeaderBar = new Controls.HeaderBarView();
             this.InputPanel = new Views.StuckerBoxView();
             this.TxtName = new Views.TextBoxInputView();
+            this.BtnColor = new Controls.ItemSelectButtonView();
             this.SboRm = new Views.SelectBoxInputView();
             this.DeleteButton = new Controls.ButtonView();
             this.TmpRegistButton = new Controls.ButtonView();
@@ -74,12 +76,24 @@ namespace App.Views.Pages {
             this.InputPanel.Add(this.TxtName);
 
             const lbl2 = new Views.LabelView();
-            lbl2.Text = 'Target';
+            lbl2.Text = 'Color';
             lbl2.TextAlign = Property.TextAlign.Left;
             lbl2.AutoSize = true;
             lbl2.SetAnchor(null, 5, null, null);
             lbl2.Size.Height = 21;
             this.InputPanel.Add(lbl2);
+            this.InputPanel.AddSpacer();
+
+            this.InputPanel.Add(this.BtnColor);
+            this.InputPanel.AddSpacer();
+
+            const lbl3 = new Views.LabelView();
+            lbl3.Text = 'Target';
+            lbl3.TextAlign = Property.TextAlign.Left;
+            lbl3.AutoSize = true;
+            lbl3.SetAnchor(null, 5, null, null);
+            lbl3.Size.Height = 21;
+            this.InputPanel.Add(lbl3);
 
             this.SboRm.SetAnchor(null, 5, 15, null);
             this.SboRm.Size.Height = 30;

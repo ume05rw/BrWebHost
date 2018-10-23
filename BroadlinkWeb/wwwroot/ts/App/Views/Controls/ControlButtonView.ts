@@ -120,7 +120,6 @@ namespace App.Views.Controls {
 
                 if (this._control) {
                     this._control.Color = Color.MainHover;
-                    this._control.HoverColor = Color.MainHover;
                 }
 
             } else {
@@ -130,7 +129,6 @@ namespace App.Views.Controls {
 
                 if (this._control) {
                     this._control.Color = value;
-                    this._control.HoverColor = Color.ButtonHoverColors[idx];
                 }
             }
             this.Refresh();

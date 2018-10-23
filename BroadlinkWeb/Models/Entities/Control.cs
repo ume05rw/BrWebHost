@@ -44,24 +44,19 @@ namespace BroadlinkWeb.Models.Entities
         [Description("Color String")]
         public string Color { get; set; }
 
-        [Required]
         [Column(Order = 6, TypeName = "varchar(255)")]
-        [Description("HoverColor String")]
-        public string HoverColor { get; set; }
-
-        [Column(Order = 7, TypeName = "varchar(255)")]
         [Description("Icon Url")]
         public string IconUrl { get; set; }
 
-        [Column(Order = 8, TypeName = "text")]
+        [Column(Order = 7, TypeName = "text")]
         [Description("IR Code Byte String")]
         public string Code { get; set; }
 
-        [Column(Order = 9, TypeName = "tinyint(1)")]
+        [Column(Order = 8, TypeName = "tinyint(1)")]
         [Description("Toggle assign On")]
         public bool IsAssignToggleOn { get; set; }
 
-        [Column(Order = 10, TypeName = "tinyint(1)")]
+        [Column(Order = 9, TypeName = "tinyint(1)")]
         [Description("Toggle assign Off")]
         public bool IsAssignToggleOff { get; set; }
 

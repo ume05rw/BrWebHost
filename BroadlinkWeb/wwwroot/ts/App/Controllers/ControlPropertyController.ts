@@ -32,6 +32,7 @@ namespace App.Controllers {
             this._control = null;
 
             this._page.TxtName.AddEventListener(Events.InputViewEvents.Changed, (je, eo) => {
+                je.stopPropagation();
                 if (!this._control)
                     return;
 
@@ -40,11 +41,12 @@ namespace App.Controllers {
                 this._control.DispatchChanged();
             });
 
-            this._page.BtnIcon.AddEventListener(Events.ButtonViewEvents.SingleClick, async () => {
+            this._page.BtnIcon.AddEventListener(Events.ButtonViewEvents.SingleClick, async (je) => {
+                je.stopPropagation();
                 if (!this._control)
                     return;
 
-                this.Log('ControlPropertyController.BtnIcon.SingleClick');
+                //this.Log('ControlPropertyController.BtnIcon.SingleClick');
 
                 const ctr = this.Manager.Get('IconSelect') as IconSelectController;
                 const icon: string = await ctr.Select(this);
@@ -59,11 +61,12 @@ namespace App.Controllers {
                 this._control.DispatchChanged();
             });
 
-            this._page.BtnColor.AddEventListener(Events.ButtonViewEvents.SingleClick, async () => {
+            this._page.BtnColor.AddEventListener(Events.ButtonViewEvents.SingleClick, async (je) => {
+                je.stopPropagation();
                 if (!this._control)
                     return;
 
-                this.Log('ControlPropertyController.BtnColor.SingleClick');
+                //this.Log('ControlPropertyController.BtnColor.SingleClick');
 
                 const ctr = this.Manager.Get('ColorSelect') as ColorSelectController;
                 const color: string = await ctr.Select(this);
@@ -77,6 +80,7 @@ namespace App.Controllers {
             });
 
             this._page.TarCode.AddEventListener(Events.InputViewEvents.Changed, (je, eo) => {
+                je.stopPropagation();
                 if (!this._control)
                     return;
 
@@ -86,6 +90,7 @@ namespace App.Controllers {
             });
 
             this._page.ChkToggleOn.AddEventListener(Events.InputViewEvents.Changed, (je, eo) => {
+                je.stopPropagation();
                 if (!this._control)
                     return;
 
@@ -95,6 +100,7 @@ namespace App.Controllers {
             });
 
             this._page.ChkToggleOff.AddEventListener(Events.InputViewEvents.Changed, (je, eo) => {
+                je.stopPropagation();
                 if (!this._control)
                     return;
 
@@ -104,7 +110,8 @@ namespace App.Controllers {
             });
 
 
-            this._page.DeleteButton.AddEventListener(Events.ButtonViewEvents.SingleClick, async () => {
+            this._page.DeleteButton.AddEventListener(Events.ButtonViewEvents.SingleClick, async (je) => {
+                je.stopPropagation();
                 if (!this._control)
                     return;
 

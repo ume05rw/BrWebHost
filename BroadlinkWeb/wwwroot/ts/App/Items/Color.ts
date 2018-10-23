@@ -49,13 +49,28 @@ namespace App.Items {
          * ボタン色配列
          */
         public static ButtonColors: Array<string> = [
+            // gray
             '#9d9e9e',
+
+            // light blue
             '#84bde8',
+
+            // green
             '#81c03b',
+
+            // light green
             '#ccdc4b',
+
+            // orange
             '#fcc91f',
+
+            // red
             '#F92068',
+
+            // purple
             '#6545C6',
+
+            // brown
             '#B5743B',
         ];
 

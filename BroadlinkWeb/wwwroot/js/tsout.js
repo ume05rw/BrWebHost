@@ -2753,13 +2753,21 @@ var App;
              * ボタン色配列
              */
             Color.ButtonColors = [
+                // gray
                 '#9d9e9e',
+                // light blue
                 '#84bde8',
+                // green
                 '#81c03b',
+                // light green
                 '#ccdc4b',
+                // orange
                 '#fcc91f',
+                // red
                 '#F92068',
+                // purple
                 '#6545C6',
+                // brown
                 '#B5743B',
             ];
             /**
@@ -3946,6 +3954,28 @@ var App;
                     _this._controlSet.Name = _this._page.TxtName.Value;
                     _this._controlSet.DispatchChanged();
                 });
+                _this._page.BtnColor.AddEventListener(Events.ButtonViewEvents.SingleClick, function (je) { return __awaiter(_this, void 0, void 0, function () {
+                    var ctr, color;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                je.stopPropagation();
+                                if (!this._controlSet)
+                                    return [2 /*return*/];
+                                this.Log('ControlPropertyController.BtnColor.SingleClick');
+                                ctr = this.Manager.Get('ColorSelect');
+                                return [4 /*yield*/, ctr.Select(this)];
+                            case 1:
+                                color = _a.sent();
+                                this._controlSet.Color = color;
+                                this._page.BtnColor.Color = color;
+                                this._page.BtnColor.BackgroundColor = color;
+                                this._page.BtnColor.HoverColor = App.Items.Color.GetButtonHoverColor(color);
+                                this._controlSet.DispatchChanged();
+                                return [2 /*return*/];
+                        }
+                    });
+                }); });
                 _this._page.SboRm.AddEventListener(Events.InputViewEvents.Changed, function (je, eo) {
                     je.stopPropagation();
                     if (!_this._controlSet)
@@ -4028,20 +4058,21 @@ var App;
                 _this._page = _this.View;
                 _this._control = null;
                 _this._page.TxtName.AddEventListener(Events.InputViewEvents.Changed, function (je, eo) {
+                    je.stopPropagation();
                     if (!_this._control)
                         return;
                     //this.Log('ControlPropertyController.TxtName.Changed');
                     _this._control.Name = _this._page.TxtName.Value;
                     _this._control.DispatchChanged();
                 });
-                _this._page.BtnIcon.AddEventListener(Events.ButtonViewEvents.SingleClick, function () { return __awaiter(_this, void 0, void 0, function () {
+                _this._page.BtnIcon.AddEventListener(Events.ButtonViewEvents.SingleClick, function (je) { return __awaiter(_this, void 0, void 0, function () {
                     var ctr, icon, url;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
+                                je.stopPropagation();
                                 if (!this._control)
                                     return [2 /*return*/];
-                                this.Log('ControlPropertyController.BtnIcon.SingleClick');
                                 ctr = this.Manager.Get('IconSelect');
                                 return [4 /*yield*/, ctr.Select(this)];
                             case 1:
@@ -4056,14 +4087,14 @@ var App;
                         }
                     });
                 }); });
-                _this._page.BtnColor.AddEventListener(Events.ButtonViewEvents.SingleClick, function () { return __awaiter(_this, void 0, void 0, function () {
+                _this._page.BtnColor.AddEventListener(Events.ButtonViewEvents.SingleClick, function (je) { return __awaiter(_this, void 0, void 0, function () {
                     var ctr, color;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
+                                je.stopPropagation();
                                 if (!this._control)
                                     return [2 /*return*/];
-                                this.Log('ControlPropertyController.BtnColor.SingleClick');
                                 ctr = this.Manager.Get('ColorSelect');
                                 return [4 /*yield*/, ctr.Select(this)];
                             case 1:
@@ -4078,6 +4109,7 @@ var App;
                     });
                 }); });
                 _this._page.TarCode.AddEventListener(Events.InputViewEvents.Changed, function (je, eo) {
+                    je.stopPropagation();
                     if (!_this._control)
                         return;
                     //this.Log('ControlPropertyController.TarCode.Changed');
@@ -4085,6 +4117,7 @@ var App;
                     _this._control.DispatchChanged();
                 });
                 _this._page.ChkToggleOn.AddEventListener(Events.InputViewEvents.Changed, function (je, eo) {
+                    je.stopPropagation();
                     if (!_this._control)
                         return;
                     //this.Log('ControlPropertyController.ChkToggleOn.Changed');
@@ -4092,17 +4125,19 @@ var App;
                     _this._control.DispatchChanged();
                 });
                 _this._page.ChkToggleOff.AddEventListener(Events.InputViewEvents.Changed, function (je, eo) {
+                    je.stopPropagation();
                     if (!_this._control)
                         return;
                     //this.Log('ControlPropertyController.ChkToggleOff.Changed');
                     _this._control.IsAssignToggleOff = _this._page.ChkToggleOff.BoolValue;
                     _this._control.DispatchChanged();
                 });
-                _this._page.DeleteButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function () { return __awaiter(_this, void 0, void 0, function () {
+                _this._page.DeleteButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function (je) { return __awaiter(_this, void 0, void 0, function () {
                     var res, ctr;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
+                                je.stopPropagation();
                                 if (!this._control)
                                     return [2 /*return*/];
                                 return [4 /*yield*/, Popup.Confirm.OpenAsync({
@@ -5324,14 +5359,34 @@ var App;
                     _this.Name = '';
                     _this.PositionLeft = 0;
                     _this.PositionTop = 0;
-                    _this.Color = Color.ButtonColors[0];
-                    _this.HoverColor = Color.ButtonHoverColors[0];
                     _this.IconUrl = '';
                     _this.Code = '';
                     _this.IsAssignToggleOn = false;
                     _this.IsAssignToggleOff = false;
+                    _this._color = Color.ButtonColors[0];
+                    _this._hoverColor = Color.ButtonHoverColors[0];
                     return _this;
                 }
+                Object.defineProperty(Control.prototype, "Color", {
+                    get: function () {
+                        return this._color;
+                    },
+                    set: function (value) {
+                        if (this._color !== value) {
+                            this._color = value;
+                            this._hoverColor = Color.GetButtonHoverColor(this._color);
+                        }
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(Control.prototype, "HoverColor", {
+                    get: function () {
+                        return this._hoverColor;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
                 return Control;
             }(Fw.Models.EntityBase));
             Entities.Control = Control;
@@ -5342,12 +5397,14 @@ var App;
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../../Fw/Models/EntityBase.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../Items/Color.ts" />
 var App;
 (function (App) {
     var Models;
     (function (Models) {
         var Entities;
         (function (Entities) {
+            var Color = App.Items.Color;
             var ControlSet = /** @class */ (function (_super) {
                 __extends(ControlSet, _super);
                 function ControlSet() {
@@ -5356,6 +5413,8 @@ var App;
                      * リモコン名
                      */
                     _this.Name = 'New Remote Control';
+                    _this._color = Color.ButtonColors[0];
+                    _this._hoverColor = Color.ButtonHoverColors[0];
                     /**
                      * リモコン配置テンプレートか否か
                      */
@@ -5366,6 +5425,32 @@ var App;
                     _this.Controls = [];
                     return _this;
                 }
+                Object.defineProperty(ControlSet.prototype, "Color", {
+                    /**
+                     * 背景色
+                     */
+                    get: function () {
+                        return this._color;
+                    },
+                    set: function (value) {
+                        if (this._color !== value) {
+                            this._color = value;
+                            this._hoverColor = Color.GetButtonHoverColor(this._color);
+                        }
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(ControlSet.prototype, "HoverColor", {
+                    /**
+                     * ホバー色
+                     */
+                    get: function () {
+                        return this._hoverColor;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
                 return ControlSet;
             }(Fw.Models.EntityBase));
             Entities.ControlSet = ControlSet;
@@ -5673,7 +5758,6 @@ var App;
                         this.HoverColor = Color.MainHover;
                         if (this._control) {
                             this._control.Color = Color.MainHover;
-                            this._control.HoverColor = Color.MainHover;
                         }
                     }
                     else {
@@ -5682,7 +5766,6 @@ var App;
                         this.HoverColor = Color.ButtonHoverColors[idx];
                         if (this._control) {
                             this._control.Color = value;
-                            this._control.HoverColor = Color.ButtonHoverColors[idx];
                         }
                     }
                     this.Refresh();
@@ -5809,6 +5892,7 @@ var App;
                     _this.HeaderBar = new Controls.HeaderBarView();
                     _this.InputPanel = new Views.StuckerBoxView();
                     _this.TxtName = new Views.TextBoxInputView();
+                    _this.BtnColor = new Controls.ItemSelectButtonView();
                     _this.SboRm = new Views.SelectBoxInputView();
                     _this.DeleteButton = new Controls.ButtonView();
                     _this.TmpRegistButton = new Controls.ButtonView();
@@ -5846,12 +5930,22 @@ var App;
                     _this.TxtName.Name = 'Name';
                     _this.InputPanel.Add(_this.TxtName);
                     var lbl2 = new Views.LabelView();
-                    lbl2.Text = 'Target';
+                    lbl2.Text = 'Color';
                     lbl2.TextAlign = Property.TextAlign.Left;
                     lbl2.AutoSize = true;
                     lbl2.SetAnchor(null, 5, null, null);
                     lbl2.Size.Height = 21;
                     _this.InputPanel.Add(lbl2);
+                    _this.InputPanel.AddSpacer();
+                    _this.InputPanel.Add(_this.BtnColor);
+                    _this.InputPanel.AddSpacer();
+                    var lbl3 = new Views.LabelView();
+                    lbl3.Text = 'Target';
+                    lbl3.TextAlign = Property.TextAlign.Left;
+                    lbl3.AutoSize = true;
+                    lbl3.SetAnchor(null, 5, null, null);
+                    lbl3.Size.Height = 21;
+                    _this.InputPanel.Add(lbl3);
                     _this.SboRm.SetAnchor(null, 5, 15, null);
                     _this.SboRm.Size.Height = 30;
                     _this.SboRm.Name = 'Icon';
