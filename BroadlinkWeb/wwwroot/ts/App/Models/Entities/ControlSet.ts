@@ -22,7 +22,7 @@ namespace App.Models.Entities {
         /**
          * リモコン配置テンプレートか否か
          */
-        public IsTemplate: boolean = true;
+        public IsTemplate: boolean = false;
 
         /**
          * コントロールボタン配列

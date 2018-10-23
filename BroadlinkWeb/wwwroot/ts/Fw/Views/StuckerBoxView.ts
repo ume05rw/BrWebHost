@@ -383,6 +383,8 @@ namespace Fw.Views {
             if (replaceView !== null && replaceView !== this._dummyView) {
                 this.Swap(replaceView, this._dummyView);
             }
+
+            this.Refresh();
         }
 
         /**
