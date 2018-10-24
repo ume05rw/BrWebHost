@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -10,14 +10,12 @@ namespace BroadlinkWeb.Models.Stores
 {
     public class BrDeviceStore
     {
-        private static List<BrDevice> _list { get; set; }
-            = new List<BrDevice>();
-
-
+        private static List<BrDevice> _list { get; set; } = new List<BrDevice>();
+        public List<BrDevice> List => BrDeviceStore._list;
 
         private Dbc _dbc;
 
-        public List<BrDevice> List => BrDeviceStore._list;
+        
 
         public BrDeviceStore(Dbc dbc)
         {
@@ -63,8 +61,12 @@ namespace BroadlinkWeb.Models.Stores
             }
 
             // デバイスの認証を通す。
+            var tasks = new List<Task>();
             foreach (var entity in entities.Where(en => en.IsActive))
-                entity.SbDevice.Auth().GetAwaiter().GetResult();
+                tasks.Add(entity.SbDevice.Auth());
+
+            // パラレル実行の終了待ち
+            Task.WaitAll(tasks.ToArray());
 
             // エンティティキャッシュ差し替え
             BrDeviceStore._list.Clear();

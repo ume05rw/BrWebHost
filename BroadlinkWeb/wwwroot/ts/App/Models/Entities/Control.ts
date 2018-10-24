@@ -19,21 +19,10 @@ namespace App.Models.Entities {
         public Code: string = '';
         public IsAssignToggleOn: boolean = false;
         public IsAssignToggleOff: boolean = false;
+        public Color: string = Color.ButtonColors[0];
 
-        private _color: string = Color.ButtonColors[0];
-        public get Color(): string {
-            return this._color;
-        }
-        public set Color(value: string) {
-            if (this._color !== value) {
-                this._color = value;
-                this._hoverColor = Color.GetButtonHoverColor(this._color);
-            }
-        }
-
-        private _hoverColor: string = Color.ButtonHoverColors[0];
         public get HoverColor(): string {
-            return this._hoverColor;
+            return Color.GetButtonHoverColor(this.Color);
         }
     }
 }

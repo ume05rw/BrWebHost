@@ -7,6 +7,9 @@
 /// <reference path="../../Fw/Events/ButtonViewEvents.ts" />
 /// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
 /// <reference path="../Views/Pages/MainPageView.ts" />
+/// <reference path="../Models/Stores/BrDeviceStore.ts" />
+/// <reference path="../Items/Operation.ts" />
+/// <reference path="../Items/ControlSetTemplate.ts" />
 
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
@@ -15,6 +18,9 @@ namespace App.Controllers {
     import Property = Fw.Views.Property;
     import Pages = App.Views.Pages;
     import ButtonEvents = Fw.Events.ButtonViewEvents;
+    import Stores = App.Models.Stores;
+    import Operation = App.Items.Operation;
+    import ControlSetTemplate = App.Items.ControlSetTemplate;
 
     export class MainController extends Fw.Controllers.ControllerBase {
 
@@ -23,6 +29,8 @@ namespace App.Controllers {
 
             this.SetClassName('MainController');
 
+            Dump.Log('Start MainController');
+            this.InitStores(); // awaitしないで続行。
             Dump.Log('SubController Load Start');
             const sub1Ctr = new Sub1Controller();
             const sub2Ctr = new Sub2Controller();
@@ -43,23 +51,35 @@ namespace App.Controllers {
 
             page.HeaderBar.RightButton.AddEventListener(ButtonEvents.SingleClick, async () => {
 
-                // TODO: 仮実装-実際は、シーンorリモコン、リモコン種選択をさせたあと、
-                // リモコン編集画面に遷移。
-
-                //const ctr = this.Manager.Get('ControlSet') as ControlSetController;
-                //ctr.SetEntity(new App.Models.Entities.ControlSet());
-                //ctr.SetModal();
-                ////this.SwitchTo('ControlSet');
-
-
                 const ctr = this.Manager.Get('OperationSelect') as OperationSelectController;
-                const item: App.Itmes.Operation = await ctr.Select(this);
+                const item: Operation = await ctr.Select(this);
+
+                let ctrSet: App.Models.Entities.ControlSet;
+                switch (item) {
+                    case Operation.Scene:
+                        Dump.Log('Not Implemented!!');
+                        return;
+                    case Operation.Tv:
+                        ctrSet = await Stores.ControlSets.GetTemplateClone(ControlSetTemplate.Tv);
+                        break;
+                    case Operation.Av:
+                        ctrSet = await Stores.ControlSets.GetTemplateClone(ControlSetTemplate.Av);
+                        break;
+                    case Operation.Light:
+                        ctrSet = await Stores.ControlSets.GetTemplateClone(ControlSetTemplate.Light);
+                        break;
+                    case Operation.Free:
+                        ctrSet = new App.Models.Entities.ControlSet();
+                        break;
+                    default:
+                        Dump.Log('Not Implemented!!');
+                        return;
+                }
 
                 const ctr2 = this.Manager.Get('ControlSet') as ControlSetController;
-                ctr2.SetEntity(new App.Models.Entities.ControlSet());
+                ctr2.SetEntity(ctrSet);
                 ctr2.SetModal();
-                //this.SwitchTo('ControlSet');
-
+                this.SwitchController(ctr2);
             });
 
             page.BtnGoSub1.AddEventListener(ButtonEvents.SingleClick, () => {
@@ -80,6 +100,18 @@ namespace App.Controllers {
 
                 // TODO: 二回目以降で落ちる。処理後にControllerをDisposeするフローを考える。
             });
+        }
+
+        private async InitStores(): Promise<boolean> {
+            Dump.Log('InitStores Start');
+            await Stores.BrDevices.Discover();
+
+            const sets = await Stores.ControlSets.GetListWithoutTemplates();
+
+
+
+            Dump.Log('InitStores End');
+            return true;
         }
     }
 }

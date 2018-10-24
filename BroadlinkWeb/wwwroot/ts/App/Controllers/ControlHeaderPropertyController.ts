@@ -8,6 +8,8 @@
 /// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
 /// <reference path="../Views/Pages/MainPageView.ts" />
 /// <reference path="../Views/Popup/AlertPopup.ts" />
+/// <reference path="../Models/Entities/BrDevice.ts" />
+/// <reference path="../Models/Stores/BrDeviceStore.ts" />
 
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
@@ -18,6 +20,8 @@ namespace App.Controllers {
     import Controls = App.Views.Controls;
     import EntityEvents = Fw.Events.EntityEvents;
     import Popup = App.Views.Popup;
+    import Stores = App.Models.Stores;
+    import Entities = App.Models.Entities;
 
     export class ControlHeaderPropertyController extends Fw.Controllers.ControllerBase {
 
@@ -100,11 +104,28 @@ namespace App.Controllers {
         }
 
 
-        public SetEntity(entity: App.Models.Entities.ControlSet): void {
+        public SetEntity(entity: Entities.ControlSet): void {
             this._controlSet = entity;
 
+            this.RefreshBrDevices();
+
             this._page.TxtName.Value = this._controlSet.Name;
+
+            this._page.BtnColor.Color = this._controlSet.Color;
+            this._page.BtnColor.BackgroundColor = this._controlSet.Color;
+            this._page.BtnColor.HoverColor = App.Items.Color.GetButtonHoverColor(this._controlSet.Color);
+
             this._page.SboRm.Value = String(this._controlSet.BrDeviceId);
+        }
+
+        private RefreshBrDevices(): void {
+            this._page.SboRm.ClearItems();
+            _.each(Stores.BrDevices.List, (dev: Entities.BrDevice) => {
+                if (dev.DeviceType === 'Rm') {
+                    const name = `${dev.DeviceType} [${dev.IpAddressString}]`;
+                    this._page.SboRm.AddItem(name, String(dev.Id));
+                }
+            });
         }
     }
 }

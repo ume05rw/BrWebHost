@@ -27,12 +27,17 @@ namespace BroadlinkWeb.Models.Entities
         [Description("Taget Broadlink Device ID")]
         public int? BrDeviceId { get; set; }
 
-        [Column(Order = 3, TypeName = "tinyint(1)")]
+        [Column(Order = 3, TypeName = "varchar(255)")]
+        [Description("Icon Url")]
+        public string IconUrl { get; set; }
+
+        [Required]
+        [Column(Order = 4, TypeName = "tinyint(1)")]
         [Description("Taget Broadlink Device ID")]
         public bool IsTemplate { get; set; }
 
         [Required]
-        [Column(Order = 4, TypeName = "varchar(255)")]
+        [Column(Order = 5, TypeName = "varchar(255)")]
         [Description("Color String")]
         public string Color { get; set; }
 

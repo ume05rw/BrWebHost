@@ -19,7 +19,7 @@ namespace App.Controllers {
     import Pages = App.Views.Pages;
     import LabeledButtonView = App.Views.Controls.LabeledButtonView;
     import ButtonEvents = Fw.Events.ButtonViewEvents;
-    import Operation = App.Itmes.Operation;
+    import Operation = App.Items.Operation;
 
     export class OperationSelectController extends ItemSelectControllerBase {
 

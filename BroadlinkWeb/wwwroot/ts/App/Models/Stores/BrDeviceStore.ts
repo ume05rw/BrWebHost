@@ -20,6 +20,11 @@ namespace App.Models.Stores {
             return BrDeviceStore._instance;
         }
 
+        protected constructor() {
+            super();
+            this.EnableLog = true;
+        }
+
         protected GetNewEntity(): BrDevice {
             return new BrDevice();
         }

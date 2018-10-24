@@ -151,6 +151,9 @@ namespace BroadlinkWeb.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(255)");
 
+                    b.Property<string>("IconUrl")
+                        .HasColumnType("varchar(255)");
+
                     b.Property<byte>("IsTemplate")
                         .HasColumnType("tinyint(1)");
 
@@ -168,12 +171,12 @@ namespace BroadlinkWeb.Migrations
                     b.HasAnnotation("MySQL:Collation", "utf8_general_ci ");
 
                     b.HasData(
-                        new { Id = 1, Color = "#fcc91f", IsTemplate = (byte)1, Name = "TV" },
-                        new { Id = 2, Color = "#F92068", IsTemplate = (byte)1, Name = "AV" },
-                        new { Id = 3, Color = "#ccdc4b", IsTemplate = (byte)1, Name = "Light" },
-                        new { Id = 4, Color = "#6545C6", IsTemplate = (byte)1, Name = "Air Complessor" },
-                        new { Id = 5, Color = "#84bde8", IsTemplate = (byte)1, Name = "A1 Sensor" },
-                        new { Id = 6, Color = "#84bde8", IsTemplate = (byte)1, Name = "Sp2 Switch" }
+                        new { Id = 1, Color = "#fcc91f", IconUrl = "images/icons/main_tv.png", IsTemplate = (byte)1, Name = "TV" },
+                        new { Id = 2, Color = "#F92068", IconUrl = "images/icons/main_av.png", IsTemplate = (byte)1, Name = "AV" },
+                        new { Id = 3, Color = "#ccdc4b", IconUrl = "images/icons/main_light.png", IsTemplate = (byte)1, Name = "Light" },
+                        new { Id = 4, Color = "#6545C6", IconUrl = "images/icons/main_aircompressor.png", IsTemplate = (byte)1, Name = "Air Complessor" },
+                        new { Id = 5, Color = "#84bde8", IconUrl = "images/icons/main_a1.png", IsTemplate = (byte)1, Name = "A1 Sensor" },
+                        new { Id = 6, Color = "#84bde8", IconUrl = "images/icons/main_sp2.png", IsTemplate = (byte)1, Name = "Sp2 Switch" }
                     );
                 });
 

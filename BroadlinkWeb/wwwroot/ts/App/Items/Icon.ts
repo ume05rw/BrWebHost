@@ -97,5 +97,15 @@ namespace App.Items {
             'num_aster.png',
             'num_sharp.png',
         ];
+
+        public static Mains: Array<string> = [
+            '',                         // 0 割り当てなし
+            'main_tv.png',              // 1 TV
+            'main_av.png',              // 2 AV
+            'main_light.png',           // 3 Light
+            'main_aircompressor.png',   // 4 Air Compressor
+            'main_a1.png',              // 5 A1 Sensor
+            'main_sp2.png',             // 6 Sp2 Switch
+        ];
     }
 }

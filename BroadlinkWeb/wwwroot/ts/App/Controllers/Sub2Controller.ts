@@ -28,38 +28,38 @@ namespace App.Controllers {
             });
             this.View.Add(header);
 
-            //const btnA1Value = new Fw.Views.ButtonView();
-            //btnA1Value.Text = 'A1 Value';
-            //btnA1Value.SetSize(80, 30);
-            //btnA1Value.SetLeftTop(10, 70);
-            //btnA1Value.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
-            //    this.GetA1Value();
-            //});
-            //this.View.Add(btnA1Value);
+            const btnA1Value = new Fw.Views.ButtonView();
+            btnA1Value.Text = 'A1 Value';
+            btnA1Value.SetSize(80, 30);
+            btnA1Value.SetLeftTop(10, 70);
+            btnA1Value.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
+                this.GetA1Value();
+            });
+            this.View.Add(btnA1Value);
 
 
-            //const btnMove = new Fw.Views.RelocatableButtonView();
-            //btnMove.SetSize(60, 60);
-            //btnMove.Color = '#1188FF';
-            //btnMove.BackgroundColor = '#FF9900';
-            //btnMove.SetLeftTop(10, 120);
+            const btnMove = new Fw.Views.RelocatableButtonView();
+            btnMove.SetSize(60, 60);
+            btnMove.Color = '#1188FF';
+            btnMove.BackgroundColor = '#FF9900';
+            btnMove.SetLeftTop(10, 120);
 
-            //btnMove.Text = '動く？';
-            //btnMove.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
-            //    this.Log('btnMove.SingleClick');
-            //});
-            //this.View.Add(btnMove);
+            btnMove.Text = '動く？';
+            btnMove.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
+                this.Log('btnMove.SingleClick');
+            });
+            this.View.Add(btnMove);
 
-            //const btnReset = new Fw.Views.ButtonView();
-            //btnReset.SetDisplayParams(60, 60, 0, 0, '#1188FF');
-            //btnReset.SetAnchor(70, null, 5, null);
-            //btnReset.Text = 'リセット';
-            //btnReset.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
-            //    this.Log('btnReset.SingleClick');
-            //    if (btnMove.IsRelocatable)
-            //        btnMove.SetRelocatable(false);
-            //});
-            //this.View.Add(btnReset);
+            const btnReset = new Fw.Views.ButtonView();
+            btnReset.SetDisplayParams(60, 60, 0, 0, '#1188FF');
+            btnReset.SetAnchor(70, null, 5, null);
+            btnReset.Text = 'リセット';
+            btnReset.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
+                this.Log('btnReset.SingleClick');
+                if (btnMove.IsRelocatable)
+                    btnMove.SetRelocatable(false);
+            });
+            this.View.Add(btnReset);
         }
 
         private async GetA1Value() {

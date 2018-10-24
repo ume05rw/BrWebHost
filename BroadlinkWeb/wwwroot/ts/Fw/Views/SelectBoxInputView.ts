@@ -28,5 +28,10 @@ namespace Fw.Views {
             option.html(name);
             this.Elem.append(option);
         }
+
+        public ClearItems(): void {
+            this.Elem.find('option').remove();
+            this.AddItem('', '');
+        }
     }
 }

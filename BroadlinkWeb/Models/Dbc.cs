@@ -40,6 +40,7 @@ namespace BroadlinkWeb.Models
                     BrDeviceId = null,
                     Name = "TV",
                     Color = "#fcc91f",
+                    IconUrl = "images/icons/main_tv.png",
                     IsTemplate = true
                 },
                 new ControlSet
@@ -48,6 +49,7 @@ namespace BroadlinkWeb.Models
                     BrDeviceId = null,
                     Name = "AV",
                     Color = "#F92068",
+                    IconUrl = "images/icons/main_av.png",
                     IsTemplate = true
                 },
                 new ControlSet
@@ -56,6 +58,7 @@ namespace BroadlinkWeb.Models
                     BrDeviceId = null,
                     Name = "Light",
                     Color = "#ccdc4b",
+                    IconUrl = "images/icons/main_light.png",
                     IsTemplate = true
                 },
                 new ControlSet
@@ -63,6 +66,7 @@ namespace BroadlinkWeb.Models
                     Id = 4,
                     BrDeviceId = null,
                     Name = "Air Complessor",
+                    IconUrl = "images/icons/main_aircompressor.png",
                     Color = "#6545C6",
                     IsTemplate = true
                 },
@@ -71,6 +75,7 @@ namespace BroadlinkWeb.Models
                     Id = 5,
                     BrDeviceId = null,
                     Name = "A1 Sensor",
+                    IconUrl = "images/icons/main_a1.png",
                     Color = "#84bde8",
                     IsTemplate = true
                 },
@@ -79,6 +84,7 @@ namespace BroadlinkWeb.Models
                     Id = 6,
                     BrDeviceId = null,
                     Name = "Sp2 Switch",
+                    IconUrl = "images/icons/main_sp2.png",
                     Color = "#84bde8",
                     IsTemplate = true
                 }
