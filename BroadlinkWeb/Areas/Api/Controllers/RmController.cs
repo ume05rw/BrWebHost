@@ -23,6 +23,8 @@ namespace BroadlinkWeb.Areas.Api.Controllers
 
         public RmController(Dbc dbc)
         {
+            Xb.Util.Out("RmController.Constructor");
+
             this._dbc = dbc;
             this._store = BrDeviceStore.GetInstance(dbc);
         }
@@ -31,32 +33,33 @@ namespace BroadlinkWeb.Areas.Api.Controllers
         [HttpGet("GetLearnedCode/{id?}")]
         public async Task<XhrResult> GetLearnedCode([FromRoute] int? id)
         {
-            var pair = this.GetRmDevice(id);
-            if (pair.result != null)
-                return pair.result;
-
-            var rm = (Rm)pair.entity.SbDevice;
-
-            await rm.EnterLearning();
-
-            var startTime = DateTime.Now;
-            byte[] bytes = null;
-            while((DateTime.Now - startTime).TotalSeconds <= 30)
-            {
-                var tmpBytes = await rm.CheckData();
-                if (tmpBytes != null && tmpBytes.Length > 0)
-                {
-                    bytes = tmpBytes;
-                    break;
-                }
-                await Task.Delay(1000);
-            }
-
-            if (bytes == null)
-                return XhrResult.CreateError("Learning Fail");
-
+            Xb.Util.Out("RmController.GetLearnedCode");
             try
             {
+                var pair = this.GetRmDevice(id);
+                if (pair.result != null)
+                    return pair.result;
+
+                var rm = (Rm)pair.entity.SbDevice;
+
+                await rm.EnterLearning();
+
+                var startTime = DateTime.Now;
+                byte[] bytes = null;
+                while ((DateTime.Now - startTime).TotalSeconds <= 30)
+                {
+                    var tmpBytes = await rm.CheckData();
+                    if (tmpBytes != null && tmpBytes.Length > 0)
+                    {
+                        bytes = tmpBytes;
+                        break;
+                    }
+                    await Task.Delay(1000);
+                }
+
+                if (bytes == null)
+                    return XhrResult.CreateError("Learning Fail");
+
                 var pBytes = SharpBroadlink.Signals.Broadlink2Pronto(bytes, 38);
                 var pString = SharpBroadlink.Signals.ProntoBytes2String(pBytes);
                 var result = new RmCommand();
@@ -68,45 +71,62 @@ namespace BroadlinkWeb.Areas.Api.Controllers
             {
                 return XhrResult.CreateError(ex);
             }
-
         }
 
         // Post: api/Rm/CancelLearning/5
         [HttpPost("CancelLearning/{id?}")]
         public async Task<XhrResult> CancelLearning([FromRoute] int? id)
         {
-            var pair = this.GetRmDevice(id);
-            if (pair.result != null)
-                return pair.result;
+            Xb.Util.Out("RmController.GetLearnedCode");
+            try
+            {
+                var pair = this.GetRmDevice(id);
+                if (pair.result != null)
+                    return pair.result;
 
-            var rm = (Rm)pair.entity.SbDevice;
-            var result = await rm.CancelLearning();
+                var rm = (Rm)pair.entity.SbDevice;
+                var result = await rm.CancelLearning();
 
-            return (result)
-                ? XhrResult.CreateSucceeded(true)
-                : XhrResult.CreateError("Failed to Cancel");
+                return (result)
+                    ? XhrResult.CreateSucceeded(true)
+                    : XhrResult.CreateError("Failed to Cancel");
+            }
+            catch (Exception ex)
+            {
+                return XhrResult.CreateError(ex);
+            }
         }
 
         // Post: api/Rm/Exec/5
         [HttpPost("Exec/{id?}")]
         public async Task<XhrResult> Exec([FromRoute] int? id, [FromBody] RmCommand rmCommand)
         {
-            var pair = this.GetRmDevice(id);
-            if (pair.result != null)
-                return pair.result;
+            Xb.Util.Out("RmController.GetLearnedCode");
+            try
+            {
+                var pair = this.GetRmDevice(id);
+                if (pair.result != null)
+                    return pair.result;
 
-            var rm = (Rm)pair.entity.SbDevice;
+                var rm = (Rm)pair.entity.SbDevice;
 
-            var pBytes = SharpBroadlink.Signals.String2ProntoBytes(rmCommand.Code);
-            var result = await rm.SendPronto(pBytes);
+                var pBytes = SharpBroadlink.Signals.String2ProntoBytes(rmCommand.Code);
+                var result = await rm.SendPronto(pBytes);
 
-            return (result)
-                ? XhrResult.CreateSucceeded(true)
-                : XhrResult.CreateError("Failed to Send");
+                return (result)
+                    ? XhrResult.CreateSucceeded(true)
+                    : XhrResult.CreateError("Failed to Send");
+            }
+            catch (Exception ex)
+            {
+                return XhrResult.CreateError(ex);
+            }
         }
 
         private (BrDevice entity, XhrResult result) GetRmDevice(int? id)
         {
+            Xb.Util.Out("RmController.GetLearnedCode");
+
             if (!ModelState.IsValid)
                 return (null, XhrResult.CreateError(ModelState));
 

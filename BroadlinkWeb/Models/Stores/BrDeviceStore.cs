@@ -23,7 +23,6 @@ namespace BroadlinkWeb.Models.Stores
         }
 
 
-
         private Dbc _dbc;
 
         private List<SharpBroadlink.Devices.IDevice> _sbDevices
@@ -31,10 +30,13 @@ namespace BroadlinkWeb.Models.Stores
 
         private BrDeviceStore()
         {
+            Xb.Util.Out("BrDeviceStore.Constructor");
         }
 
         public BrDevice Get(int id)
         {
+            Xb.Util.Out("BrDevicesController.Get");
+
             var entity = this._dbc.BrDevices
                 .SingleOrDefault(bd => bd.Id == id);
 
@@ -67,6 +69,8 @@ namespace BroadlinkWeb.Models.Stores
 
         public IEnumerable<BrDevice> GetList()
         {
+            Xb.Util.Out("BrDevicesController.GetList");
+
             // DB登録済みのデバイスエンティティ取得
             var entities = this._dbc.BrDevices.ToList();
 
@@ -89,7 +93,10 @@ namespace BroadlinkWeb.Models.Stores
 
                 // 注)非同期
                 if (!this.IsDeviceAuthed(sbDev))
+                {
+                    Xb.Util.Out("BrDevicesController.GetList - Auth");
                     sbDev.Auth();
+                }
 
                 entity.SbDevice = sbDev;
             }
@@ -99,6 +106,8 @@ namespace BroadlinkWeb.Models.Stores
 
         public IEnumerable<BrDevice> Refresh()
         {
+            Xb.Util.Out("BrDevicesController.Refresh");
+
             var result = new List<BrDevice>();
 
             // LAN上のBroadlinkデバイスオブジェクトを取得

@@ -25,7 +25,17 @@ namespace BroadlinkWeb.Models
         public Dbc(DbContextOptions<Dbc> options)
             : base(options)
         {
+            Xb.Util.Out("Dbc.Constructor");
         }
+
+
+        public override void Dispose()
+        {
+            Xb.Util.Out("Dbc.Dispose");
+            base.Dispose();
+        }
+
+
 
         /// <summary>
         /// シード生成

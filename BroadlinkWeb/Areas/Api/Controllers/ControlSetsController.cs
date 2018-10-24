@@ -18,35 +18,52 @@ namespace BroadlinkWeb.Areas.Api.Controllers
 
         public ControlSetsController(Dbc dbc)
         {
-            _dbc = dbc;
+            Xb.Util.Out("ControlSetsController.Constructor");
+            this._dbc = dbc;
         }
 
         // GET: api/ControlSets
         [HttpGet]
         public XhrResult GetControlSets()
         {
-            if (!ModelState.IsValid)
-                return XhrResult.CreateError(ModelState);
+            Xb.Util.Out("ControlSetsController.GetControlSets");
+            try
+            {
+                if (!ModelState.IsValid)
+                    return XhrResult.CreateError(ModelState);
 
-            var list = _dbc.ControlSets
-                .Include(c => c.Controls)
-                .ToArray();
-            return XhrResult.CreateSucceeded(list);
+                var list = _dbc.ControlSets
+                    .Include(c => c.Controls)
+                    .ToArray();
+                return XhrResult.CreateSucceeded(list);
+            }
+            catch (Exception ex)
+            {
+                return XhrResult.CreateError(ex);
+            }
         }
 
         // GET: api/ControlSets/5
         [HttpGet("{id}")]
         public async Task<XhrResult> GetControlSet([FromRoute] int id)
         {
-            if (!ModelState.IsValid)
-                return XhrResult.CreateError(ModelState);
+            try
+            {
+                if (!ModelState.IsValid)
+                    return XhrResult.CreateError(ModelState);
 
-            var controlSet = await _dbc.ControlSets.SingleOrDefaultAsync(m => m.Id == id);
+                var controlSet = await _dbc.ControlSets
+                    .SingleOrDefaultAsync(m => m.Id == id);
 
-            if (controlSet == null)
-                return XhrResult.CreateError("Entity Not Found");
+                if (controlSet == null)
+                    return XhrResult.CreateError("Entity Not Found");
 
-            return XhrResult.CreateSucceeded(controlSet);
+                return XhrResult.CreateSucceeded(controlSet);
+            }
+            catch (Exception ex)
+            {
+                return XhrResult.CreateError(ex);
+            }
         }
 
         // POST: api/ControlSets
@@ -108,28 +125,35 @@ namespace BroadlinkWeb.Areas.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<XhrResult> DeleteControlSet([FromRoute] int id)
         {
-            if (!ModelState.IsValid)
-                return XhrResult.CreateError(ModelState);
+            try
+            {
+                if (!ModelState.IsValid)
+                    return XhrResult.CreateError(ModelState);
 
-            var controlSet = await this._dbc.ControlSets.SingleOrDefaultAsync(m => m.Id == id);
+                var controlSet = await this._dbc.ControlSets.SingleOrDefaultAsync(m => m.Id == id);
 
-            if (controlSet == null)
-                return XhrResult.CreateError("Entity Not Found");
+                if (controlSet == null)
+                    return XhrResult.CreateError("Entity Not Found");
 
-            // 既存の明細レコードを取得
-            var children = this._dbc.Controls.Where(c => c.ControlSetId == controlSet.Id).ToArray();
+                // 既存の明細レコードを取得
+                var children = this._dbc.Controls.Where(c => c.ControlSetId == controlSet.Id).ToArray();
 
-            // 既存明細レコードを削除指定
-            foreach (var control in children)
-                this._dbc.Controls.Remove(control);
+                // 既存明細レコードを削除指定
+                foreach (var control in children)
+                    this._dbc.Controls.Remove(control);
 
-            // ヘッダレコードを削除指定
-            this._dbc.ControlSets.Remove(controlSet);
+                // ヘッダレコードを削除指定
+                this._dbc.ControlSets.Remove(controlSet);
 
-            // ヘッダ・明細を一括削除
-            await this._dbc.SaveChangesAsync();
+                // ヘッダ・明細を一括削除
+                await this._dbc.SaveChangesAsync();
 
-            return XhrResult.CreateSucceeded();
+                return XhrResult.CreateSucceeded();
+            }
+            catch (Exception ex)
+            {
+                return XhrResult.CreateError(ex);
+            }
         }
 
         //// PUT: api/ControlSets/5
