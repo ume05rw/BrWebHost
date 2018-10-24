@@ -15,8 +15,6 @@ namespace BroadlinkWeb.Models.Stores
 
         private Dbc _dbc;
 
-        
-
         public BrDeviceStore(Dbc dbc)
         {
             this._dbc = dbc;
@@ -65,7 +63,6 @@ namespace BroadlinkWeb.Models.Stores
             foreach (var entity in entities.Where(en => en.IsActive))
                 tasks.Add(entity.SbDevice.Auth());
 
-            // パラレル実行の終了待ち
             Task.WaitAll(tasks.ToArray());
 
             // エンティティキャッシュ差し替え

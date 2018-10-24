@@ -41,23 +41,23 @@ namespace App.Controllers {
             this.SetPageView(new Pages.MainPageView());
             this._page = this.View as Pages.MainPageView;
 
-            this.InitStores(); // awaitしないで続行。
-            Dump.Log('SubController Load Start');
-            const sub1Ctr = new Sub1Controller();
-            const sub2Ctr = new Sub2Controller();
-            const sub3Ctr = new Sub3Controller();
-            const controlSetCtr = new ControlSetController();
-            const controlPropertyCtr = new ControlPropertyController();
-            const controlHeaderPropertyCtr = new ControlHeaderPropertyController();
-            const functionSelectCtr = new OperationSelectController();
-            const iconSelectCtr = new IconSelectController();
-            const colorSelectCtr = new ColorSelectController();
-            Dump.Log('SubController Load End');
+            Dump.Log('Store Initialize Start');
+            this.InitStores()
+                .then(() => {
+                    Dump.Log('SubController Load Start');
+                    const controlSetCtr = new ControlSetController();
+                    const functionSelectCtr = new OperationSelectController();
 
+                    const controlHeaderPropertyCtr = new ControlHeaderPropertyController();
+                    const controlPropertyCtr = new ControlPropertyController();
+                    const iconSelectCtr = new IconSelectController();
+                    const colorSelectCtr = new ColorSelectController();
 
-
-            //this._page.EnableLog = true;
-            //this._page.BottomPanel.EnableLog = true;
+                    const sub1Ctr = new Sub1Controller();
+                    const sub2Ctr = new Sub2Controller();
+                    const sub3Ctr = new Sub3Controller();
+                    Dump.Log('SubController Load End');
+                });
 
             this._page.HeaderBar.RightButton.AddEventListener(ButtonEvents.SingleClick, async () => {
 
@@ -113,11 +113,16 @@ namespace App.Controllers {
         }
 
         private async InitStores(): Promise<boolean> {
-            Dump.Log('InitStores Start');
-            await Stores.BrDevices.Discover();
 
             await this.RefreshControlSets();
-            Dump.Log('InitStores End');
+
+            // こちらはawaitしない。
+            Stores.BrDevices
+                .Discover()
+                .then(() => {
+                    Dump.Log('Store Initialize End');
+                });
+
             return true;
         }
 
