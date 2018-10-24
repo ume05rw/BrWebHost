@@ -4,6 +4,7 @@ using BroadlinkWeb.Models.Stores;
 using Microsoft.AspNetCore.Mvc;
 using SharpBroadlink.Devices;
 using System.Linq;
+using System.Threading.Tasks;
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace BroadlinkWeb.Areas.Api.Controllers
@@ -25,7 +26,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
 
         // GET: api/BrDevices/5
         [HttpGet("GetA1SensorValues/{id?}")] // <- nullableのとき、ここにも?が必要。
-        public XhrResult GetA1SensorValues([FromRoute] int? id)
+        public async Task<XhrResult> GetA1SensorValues([FromRoute] int? id)
         {
             Xb.Util.Out("A1Controller.GetA1SensorValues");
             try
@@ -36,7 +37,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
                 if (id == null)
                     return XhrResult.CreateError("Entity Not Found");
 
-                var entity = this._store.Get((int)id);
+                var entity = await this._store.Get((int)id);
 
                 if (entity == null)
                     return XhrResult.CreateError("Entity Not Found");

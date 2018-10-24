@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using SharpBroadlink.Devices;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace BroadlinkWeb.Areas.Api.Controllers
 {
@@ -24,7 +25,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
 
         // GET: api/BrDevices
         [HttpGet]
-        public XhrResult GetBrDevices()
+        public async Task<XhrResult> GetBrDevices()
         {
             Xb.Util.Out("BrDevicesController.GetBrDevices");
             try
@@ -32,7 +33,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
                 if (!ModelState.IsValid)
                     return XhrResult.CreateError(ModelState);
 
-                var list = this._store.GetList();
+                var list = await this._store.GetList();
                 return XhrResult.CreateSucceeded(list);
             }
             catch (Exception ex)
@@ -43,7 +44,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
 
         // GET: api/BrDevices/5
         [HttpGet("{id}")]
-        public XhrResult GetBrDevice([FromRoute] int id)
+        public async Task<XhrResult> GetBrDevice([FromRoute] int id)
         {
             Xb.Util.Out("BrDevicesController.GetBrDevice");
             try
@@ -51,7 +52,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
                 if (!ModelState.IsValid)
                     return XhrResult.CreateError(ModelState);
 
-                var brDevice = this._store.Get(id);
+                var brDevice = await this._store.Get(id);
 
                 if (brDevice == null)
                     return XhrResult.CreateError("Entity Not Found");
@@ -66,7 +67,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
 
         // GET: api/BrDevices/Discover
         [HttpGet("Discover")]
-        public XhrResult Discover()
+        public async Task<XhrResult> Discover()
         {
             Xb.Util.Out("BrDevicesController.Discover");
             try
@@ -74,7 +75,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
                 if (!ModelState.IsValid)
                     return XhrResult.CreateError(ModelState);
 
-                var result = this._store.Refresh();
+                var result = await this._store.Refresh();
                 return XhrResult.CreateSucceeded(result.ToArray());
             }
             catch (Exception ex)

@@ -36,7 +36,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
             Xb.Util.Out("RmController.GetLearnedCode");
             try
             {
-                var pair = this.GetRmDevice(id);
+                var pair = await this.GetRmDevice(id);
                 if (pair.result != null)
                     return pair.result;
 
@@ -80,7 +80,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
             Xb.Util.Out("RmController.GetLearnedCode");
             try
             {
-                var pair = this.GetRmDevice(id);
+                var pair = await this.GetRmDevice(id);
                 if (pair.result != null)
                     return pair.result;
 
@@ -104,7 +104,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
             Xb.Util.Out("RmController.GetLearnedCode");
             try
             {
-                var pair = this.GetRmDevice(id);
+                var pair = await this.GetRmDevice(id);
                 if (pair.result != null)
                     return pair.result;
 
@@ -123,7 +123,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
             }
         }
 
-        private (BrDevice entity, XhrResult result) GetRmDevice(int? id)
+        private async Task<(BrDevice entity, XhrResult result)> GetRmDevice(int? id)
         {
             Xb.Util.Out("RmController.GetLearnedCode");
 
@@ -133,7 +133,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
             if (id == null)
                 return (null, XhrResult.CreateError("Entity Not Found"));
 
-            var entity = this._store.Get((int)id);
+            var entity = await this._store.Get((int)id);
 
             if (entity == null)
                 return (null, XhrResult.CreateError("Entity Not Found"));

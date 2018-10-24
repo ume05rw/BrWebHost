@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using BroadlinkWeb.Models.Entities;
+using Microsoft.EntityFrameworkCore;
 using SharpBroadlink;
 
 namespace BroadlinkWeb.Models.Stores
@@ -33,12 +34,12 @@ namespace BroadlinkWeb.Models.Stores
             Xb.Util.Out("BrDeviceStore.Constructor");
         }
 
-        public BrDevice Get(int id)
+        public async Task<BrDevice> Get(int id)
         {
             Xb.Util.Out("BrDevicesController.Get");
 
-            var entity = this._dbc.BrDevices
-                .SingleOrDefault(bd => bd.Id == id);
+            var entity = await this._dbc.BrDevices
+                .SingleOrDefaultAsync(bd => bd.Id == id);
 
             if (entity != null)
             {
@@ -59,10 +60,10 @@ namespace BroadlinkWeb.Models.Stores
                 entity.SbDevice = sbDev;
             }
 
-            // 注)非同期
+            // 注)非同期で認証はNG。何故かはまだ追及してない。
             if (!this.IsDeviceAuthed(entity.SbDevice))
             {
-                var res = entity.SbDevice.Auth().GetAwaiter().GetResult();
+                var res = await entity.SbDevice.Auth();
                 Xb.Util.Out("BrDevicesController.Get - Auth: " + res);
                 if (!res)
                     throw new Exception($"BrDevicesController.Get - Auth Failed! {entity.IpAddressString}");
@@ -72,12 +73,13 @@ namespace BroadlinkWeb.Models.Stores
         }
 
 
-        public IEnumerable<BrDevice> GetList()
+        public async Task<IEnumerable<BrDevice>> GetList()
         {
             Xb.Util.Out("BrDevicesController.GetList");
 
             // DB登録済みのデバイスエンティティ取得
-            var entities = this._dbc.BrDevices.ToList();
+            var entities = await this._dbc.BrDevices.ToListAsync();
+            var tasks = new List<Task>();
 
             foreach (var entity in entities)
             {
@@ -96,32 +98,39 @@ namespace BroadlinkWeb.Models.Stores
                     this._sbDevices.Add(sbDev);
                 }
 
-                // 注)非同期
+                // 注)非同期で認証はNG。何故かはまだ追及してない。
                 if (!this.IsDeviceAuthed(sbDev))
                 {
                     //Xb.Util.Out("BrDevicesController.GetList - Auth");
-                    var res = sbDev.Auth().GetAwaiter().GetResult();
-                    Xb.Util.Out("BrDevicesController.GetList - Auth: " + res);
-                    if (!res)
-                        throw new Exception($"BrDevicesController.GetList - Auth Failed! {entity.IpAddressString}");
+                    var task = Task.Run(() => {
+                        var res = sbDev.Auth().GetAwaiter().GetResult();
+                        Xb.Util.Out("BrDevicesController.GetList - Auth: " + res);
+                        if (!res)
+                        {
+                            throw new Exception($"BrDevicesController.GetList - Auth Failed! {entity.IpAddressString}");
+                        }
+                    });
+                    task.ConfigureAwait(false);
+                    tasks.Add(task);
                 }
 
                 entity.SbDevice = sbDev;
             }
 
+            Task.WaitAll(tasks.ToArray());
+
             return entities;
         }
 
-        public IEnumerable<BrDevice> Refresh()
+        public async Task<IEnumerable<BrDevice>> Refresh()
         {
             Xb.Util.Out("BrDevicesController.Refresh");
 
             var result = new List<BrDevice>();
 
             // LAN上のBroadlinkデバイスオブジェクトを取得
-            var broadlinkDevices = Broadlink.Discover(2)
-                .GetAwaiter()
-                .GetResult();
+            var broadlinkDevices = await Broadlink.Discover(2);
+
 
             // キャッシュ上に無いBroadlinkデバイスを追加。
             foreach (var sbDev in broadlinkDevices)
@@ -157,19 +166,25 @@ namespace BroadlinkWeb.Models.Stores
                 this._dbc.SaveChanges();
             }
 
-            // デバイスの認証を通す。
-            //var tasks = new List<Task>();
-            //Task.WaitAll(tasks.ToArray());
+            // 注)非同期で認証はNG。何故かはまだ追及してない。
+            var tasks = new List<Task>();
             foreach (var entity in entities.Where(en => en.IsActive))
             {
                 if (!this.IsDeviceAuthed(entity.SbDevice))
                 {
-                    var res = entity.SbDevice.Auth().GetAwaiter().GetResult();
-                    Xb.Util.Out("BrDevicesController.Refresh - Auth: " + res);
-                    if (!res)
-                        throw new Exception($"BrDevicesController.Refresh - Auth Failed! {entity.IpAddressString}");
+                    var task = Task.Run(() => {
+                        var res = entity.SbDevice.Auth().GetAwaiter().GetResult();
+                        Xb.Util.Out("BrDevicesController.Refresh - Auth: " + res);
+                        if (!res)
+                        {
+                            throw new Exception($"BrDevicesController.Refresh - Auth Failed! {entity.IpAddressString}");
+                        }
+                    });
+                    task.ConfigureAwait(false);
+                    tasks.Add(task);
                 }
             }
+            Task.WaitAll(tasks.ToArray());
 
             return entities;
         }
