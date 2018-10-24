@@ -126,17 +126,40 @@ namespace App.Controllers {
                     btn.SetColor(control.Color);
                     btn.SetImage(control.IconUrl);
 
-                    btn.AddEventListener(ControlButtonViewEvents.EditOrdered, (e, p) => {
+                    btn.AddEventListener(ControlButtonViewEvents.EditOrdered, async (e, p) => {
+                        // 既存ボタンの処理。新規ボタン用に同様のロジックが、下にある。
                         const ctr = this.Manager.Get('ControlProperty') as ControlPropertyController;
                         const button = p.Sender as Controls.ControlButtonView;
                         ctr.SetEntity(button.Control);
                         ctr.SetModal();
+
+                        const id = this._controlSet.BrDeviceId;
+                        if ((id)
+                            && (!button.Control.Code
+                                || button.Control.Code === '')
+                        ) {
+                            const code = await this.GetLearnedCode();
+                            if (code) {
+                                button.Control.Code = code;
+                                ctr.SetEntity(button.Control);
+                            }
+                        }
                     }, this);
 
                     btn.AddEventListener(ControlButtonViewEvents.ExecOrdered, (e, p) => {
                         Dump.Log('Exec');
                         const button = p.Sender as Controls.ControlButtonView;
-                        this.ExecCode(button.Control.Code);
+                        const code = button.Control.Code;
+
+                        if (!code || code === '') {
+                            // コードが無いとき、学習を促す。
+                            Popup.Alert.Open({
+                                Message: 'Learn your Remote Control Button.'
+                            });
+                        } else {
+                            // コードがあるとき、送信する。
+                            this.ExecCode(button.Control.Code);
+                        }
                     }, this);
 
                     this._page.ButtonPanel.Add(btn);
@@ -172,17 +195,41 @@ namespace App.Controllers {
             btn.Control = control;
             btn.SetLeftTop(185, this._page.Size.Height - 90 - 75);
 
-            btn.AddEventListener(ControlButtonViewEvents.EditOrdered, (e, p) => {
+            btn.AddEventListener(ControlButtonViewEvents.EditOrdered, async (e, p) => {
                 // ボタン編集指示
                 const ctr = this.Manager.Get('ControlProperty') as ControlPropertyController;
                 const button = p.Sender as Controls.ControlButtonView;
                 ctr.SetEntity(button.Control);
                 ctr.SetModal();
+
+                const id = this._controlSet.BrDeviceId;
+                if ((id)
+                    && (!button.Control.Code
+                        || button.Control.Code === '')
+                ) {
+                    const code = await this.GetLearnedCode();
+                    if (code) {
+                        button.Control.Code = code;
+                        ctr.SetEntity(button.Control);
+                    }
+                }
+
             }, this);
 
             btn.AddEventListener(ControlButtonViewEvents.ExecOrdered, (e, p) => {
                 // ボタン実行指示
-                this.Log('TODO: コード送信');
+                const button = p.Sender as Controls.ControlButtonView;
+                const code = button.Control.Code;
+
+                if (!code || code === '') {
+                    // コードが無いとき、学習を促す。
+                    Popup.Alert.Open({
+                        Message: 'Learn your Remote Control Button.'
+                    });
+                } else {
+                    // コードがあるとき、送信する。
+                    this.ExecCode(button.Control.Code);
+                }
             }, this);
 
             this._page.ButtonPanel.Add(btn);
@@ -211,21 +258,31 @@ namespace App.Controllers {
         }
 
 
+        /**
+         * 学習指示／コード取得
+         */
         public async GetLearnedCode(): Promise<string> {
 
             const id = this._controlSet.BrDeviceId;
 
             if (!id) {
                 Popup.Alert.Open({
-                    Message: 'Select your Rm-Device'
+                    Message: 'Select your Rm-Device.<br />Click Header.'
                 });
                 return null;
             }
 
-            //Popup.Cancellable.Open({
-            //    Message: 'Set Remote Control to Rm, <br/>Push Button'
-            //});
+            Popup.Cancellable.Open({
+                Message: 'Set Remote Control head to Rm,<br/> and Push target Button.',
+                CallbackCancel: () => {
+                    Popup.Cancellable.Close();
+                    // 放っておいてもタイムアウトするので、以降は何もしない。
+                }
+            });
             const rCmd = await Stores.Rms.GetLearnedCode(id);
+
+            Popup.Cancellable.Close();
+
             if (!rCmd || !rCmd.Code)
                 return null;
 
@@ -233,13 +290,17 @@ namespace App.Controllers {
         }
 
 
+        /**
+         * コード実行
+         * @param code
+         */
         public async ExecCode(code: string): Promise<boolean> {
 
             const id = this._controlSet.BrDeviceId;
 
             if (!id) {
                 Popup.Alert.Open({
-                    Message: 'Select your Rm-Device'
+                    Message: 'Select your Rm-Device,<br/>Click Header.',
                 });
                 return null;
             }

@@ -13,14 +13,18 @@ namespace BroadlinkWeb.Models.Stores
         private static BrDeviceStore _instance = null;
         public static BrDeviceStore GetInstance(Dbc dbc)
         {
+            // TODO: そのうちDI実装する。
             if (BrDeviceStore._instance == null)
                 BrDeviceStore._instance = new BrDeviceStore(dbc);
+            else
+                BrDeviceStore._instance._dbc = dbc;
 
             return BrDeviceStore._instance;
         }
 
-        private Dbc _dbc;
 
+
+        private Dbc _dbc;
 
         private List<BrDevice> _list = new List<BrDevice>();
         public List<BrDevice> List => this._list;
@@ -30,12 +34,14 @@ namespace BroadlinkWeb.Models.Stores
             this._dbc = dbc;
         }
 
+        
+
         public IEnumerable<BrDevice> Refresh()
         {
             var result = new List<BrDevice>();
 
             // LAN上のBroadlinkデバイスオブジェクトを取得
-            var broadlinkDevices = Broadlink.Discover(2)
+            var broadlinkDevices = Broadlink.Discover(4)
                 .GetAwaiter()
                 .GetResult();
 
@@ -75,7 +81,6 @@ namespace BroadlinkWeb.Models.Stores
 
             Task.WaitAll(tasks.ToArray());
 
-            // エンティティキャッシュ差し替え
             this.List.Clear();
             this.List.AddRange(entities);
 

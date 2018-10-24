@@ -46,6 +46,7 @@
     <Content Remove="wwwroot\ts\App\Views\Pages\MainPageView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Pages\Sub3PageView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Popup\AlertPopup.ts" />
+    <Content Remove="wwwroot\ts\App\Views\Popup\Cancellable.ts" />
     <Content Remove="wwwroot\ts\App\Views\Popup\ConfirmPopup.ts" />
     <Content Remove="wwwroot\ts\App\Views\Popup\PopupBase.ts" />
     <Content Remove="wwwroot\ts\Fw\Config.ts" />
@@ -180,6 +181,7 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\MainPageView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\LayoutCheckPageView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Popup\AlertPopup.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Views\Popup\Cancellable.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Popup\ConfirmPopup.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Popup\PopupBase.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Config.ts" />

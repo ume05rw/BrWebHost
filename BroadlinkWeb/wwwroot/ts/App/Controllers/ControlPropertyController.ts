@@ -106,6 +106,23 @@ namespace App.Controllers {
                 this._control.Code = code;
             });
 
+            this._page.BtnSend.AddEventListener(Events.ButtonViewEvents.SingleClick, async (je, eo) => {
+                je.stopPropagation();
+                if (!this._control)
+                    return;
+
+                const code = this._page.TarCode.Value;
+                if (!code || code === '') {
+                    Popup.Alert.Open({
+                        Message: 'Learn your Remote Control Button.'
+                    });
+                    return;
+                }
+
+                const ctr = this.Manager.Get('ControlSet') as ControlSetController;
+                ctr.ExecCode(code);
+            });
+
             this._page.ChkToggleOn.AddEventListener(Events.InputViewEvents.Changed, (je, eo) => {
                 je.stopPropagation();
                 if (!this._control)

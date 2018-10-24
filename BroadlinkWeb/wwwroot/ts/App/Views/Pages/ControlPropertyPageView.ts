@@ -24,6 +24,7 @@ namespace App.Views.Pages {
         public BtnColor: Controls.ItemSelectButtonView;
         public TarCode: Views.TextAreaInputView;
         public BtnLearn: Controls.ButtonView;
+        public BtnSend: Controls.ButtonView;
         public ChkToggleOn: Views.CheckBoxInputView;
         public ChkToggleOff: Views.CheckBoxInputView;
         public DeleteButton: Controls.ButtonView;
@@ -38,6 +39,7 @@ namespace App.Views.Pages {
             this.BtnColor = new Controls.ItemSelectButtonView();
             this.TarCode = new Views.TextAreaInputView();
             this.BtnLearn = new Controls.ButtonView();
+            this.BtnSend = new Controls.ButtonView();
             this.ChkToggleOn = new Views.CheckBoxInputView();
             this.ChkToggleOff = new Views.CheckBoxInputView();
             this.DeleteButton = new Controls.ButtonView();
@@ -112,6 +114,11 @@ namespace App.Views.Pages {
             this.BtnLearn.Size.Height = 30;
             this.BtnLearn.Text = 'Learn Code';
             this.InputPanel.Add(this.BtnLearn);
+
+            this.BtnSend.SetAnchor(null, 5, 15, null);
+            this.BtnSend.Size.Height = 30;
+            this.BtnSend.Text = 'Test Code';
+            this.InputPanel.Add(this.BtnSend);
 
             const lbl5 = new Views.LabelView();
             lbl5.Text = 'Toggle Assigns';
