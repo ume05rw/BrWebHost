@@ -3681,9 +3681,6 @@ var App;
                     _this._labelView.Size.Height = 15;
                     _this._labelView.FontSize = Property.FontSize.Small;
                     _this.Add(_this._labelView);
-                    // ボタンクリックが二回走ることの対策。
-                    _this._buttonView.SuppressEvent(Fw.Events.ButtonViewEvents.SingleClick);
-                    _this._buttonView.SuppressEvent(Fw.Events.ButtonViewEvents.LongClick);
                     return _this;
                 }
                 Object.defineProperty(LabeledButtonView.prototype, "Button", {
@@ -3721,11 +3718,12 @@ var App;
                 };
                 LabeledButtonView.prototype.Dispose = function () {
                     _super.prototype.Dispose.call(this);
+                    this._labelView = null;
                     this._buttonView = null;
                     this.HoverColor = null;
                 };
                 return LabeledButtonView;
-            }(Fw.Views.ControlView));
+            }(Fw.Views.BoxView));
             Controls.LabeledButtonView = LabeledButtonView;
         })(Controls = Views_3.Controls || (Views_3.Controls = {}));
     })(Views = App.Views || (App.Views = {}));
@@ -4517,13 +4515,14 @@ var App;
                 _this._page = _this.View;
                 _this._page.HeaderBar.LeftButton.Hide(0);
                 _this._page.HeaderBar.LeftButton.AddEventListener(ButtonViewEvents.SingleClick, function () { return __awaiter(_this, void 0, void 0, function () {
-                    var controlSet, buttons, isSave, res;
+                    var controlSet, ctr, buttons, isSave, res;
                     var _this = this;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
                                 controlSet = this._controlSet;
-                                this.SwitchTo("Main");
+                                ctr = this.Manager.Get('Main');
+                                this.SwitchController(ctr);
                                 this._controlSet = null;
                                 buttons = Util.Obj.Mirror(this._page.ButtonPanel.Children);
                                 _.each(buttons, function (btn) {
@@ -4544,6 +4543,7 @@ var App;
                                 return [4 /*yield*/, App.Models.Stores.ControlSets.Write(controlSet)];
                             case 3:
                                 res = _a.sent();
+                                ctr.RefreshControlSets();
                                 return [2 /*return*/];
                         }
                     });
@@ -4691,20 +4691,34 @@ var App;
              * リモコン全体を削除する。
              */
             ControlSetController.prototype.RemoveControlSet = function () {
-                var _this = this;
-                if (!this.IsOnEditMode)
-                    return;
-                var buttons = Util.Obj.Mirror(this._page.ButtonPanel.Children);
-                _.each(buttons, function (btn) {
-                    _this._page.ButtonPanel.Remove(btn);
-                    btn.Dispose();
+                return __awaiter(this, void 0, void 0, function () {
+                    var buttons, controlSet, ctr;
+                    var _this = this;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                if (!this.IsOnEditMode)
+                                    return [2 /*return*/];
+                                buttons = Util.Obj.Mirror(this._page.ButtonPanel.Children);
+                                _.each(buttons, function (btn) {
+                                    _this._page.ButtonPanel.Remove(btn);
+                                    btn.Dispose();
+                                });
+                                controlSet = this._controlSet;
+                                ctr = this.Manager.Get('Main');
+                                this.SwitchController(ctr);
+                                this._controlSet = null;
+                                this._page.UnMask();
+                                // 削除メソッド、投げっぱなしの終了確認無しで終わる。
+                                return [4 /*yield*/, App.Models.Stores.ControlSets.Remove(controlSet)];
+                            case 1:
+                                // 削除メソッド、投げっぱなしの終了確認無しで終わる。
+                                _a.sent();
+                                ctr.RefreshControlSets();
+                                return [2 /*return*/];
+                        }
+                    });
                 });
-                var controlSet = this._controlSet;
-                this.SwitchTo("Main");
-                this._controlSet = null;
-                this._page.UnMask();
-                // 削除メソッド、投げっぱなしの終了確認無しで終わる。
-                App.Models.Stores.ControlSets.Remove(controlSet);
             };
             return ControlSetController;
         }(Fw.Controllers.ControllerBase));
@@ -5081,8 +5095,6 @@ var App;
             }
             MainController.prototype.InitStores = function () {
                 return __awaiter(this, void 0, void 0, function () {
-                    var sets;
-                    var _this = this;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
@@ -5090,19 +5102,41 @@ var App;
                                 return [4 /*yield*/, Stores.BrDevices.Discover()];
                             case 1:
                                 _a.sent();
-                                return [4 /*yield*/, Stores.ControlSets.GetListWithoutTemplates()];
+                                return [4 /*yield*/, this.RefreshControlSets()];
                             case 2:
+                                _a.sent();
+                                Dump.Log('InitStores End');
+                                return [2 /*return*/, true];
+                        }
+                    });
+                });
+            };
+            MainController.prototype.RefreshControlSets = function () {
+                return __awaiter(this, void 0, void 0, function () {
+                    var sets, children;
+                    var _this = this;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0: return [4 /*yield*/, Stores.ControlSets.GetListWithoutTemplates()];
+                            case 1:
                                 sets = _a.sent();
+                                children = Fw.Util.Obj.Mirror(this._page.ControlSetPanel.Children);
+                                _.each(children, function (v) {
+                                    _this._page.ControlSetPanel.Remove(v);
+                                    v.Dispose();
+                                });
                                 _.each(sets, function (cs) {
                                     var btn = new ControlSetButtonView(cs);
-                                    btn.AddEventListener(ButtonEvents.SingleClick, function (je, eo) {
+                                    btn.Button.AddEventListener(ButtonEvents.SingleClick, function (je, eo) {
+                                        je.preventDefault();
                                         je.stopPropagation();
-                                        var button = eo.Sender;
+                                        var button = eo.Sender.Parent;
                                         var ctr2 = _this.Manager.Get('ControlSet');
                                         ctr2.SetEntity(button.ControlSet);
                                         ctr2.SetModal();
                                     });
                                     btn.Toggle.AddEventListener(ToggleEvents.Changed, function (je, eo) {
+                                        je.preventDefault();
                                         je.stopPropagation();
                                         var button = eo.Sender.Parent;
                                         Dump.Log('Toggle Changed!!: ' + button.Toggle.Value);
@@ -5110,7 +5144,6 @@ var App;
                                     _this._page.ControlSetPanel.Add(btn);
                                 });
                                 this._page.ControlSetPanel.Refresh();
-                                Dump.Log('InitStores End');
                                 return [2 /*return*/, true];
                         }
                     });
@@ -9118,9 +9151,10 @@ var Fw;
                     _this.SetStyle('backgroundColor', _this.BackgroundColor);
                     _this.Refresh();
                 });
-                _this.AddEventListener(Events.SingleClick, function (e) {
+                _this.AddEventListener(Events.SingleClick, function (je, eo) {
                     //this.Log(`${this.ClassName}.SingleClick`);
-                    e.stopPropagation();
+                    je.stopPropagation();
+                    je.preventDefault();
                     _this.BoolValue = !_this.BoolValue;
                     _this.Refresh();
                 });

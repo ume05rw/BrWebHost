@@ -11,7 +11,7 @@ namespace App.Views.Controls {
     import Property = Fw.Views.Property;
     import Color = App.Items.Color;
 
-    export class LabeledButtonView extends Fw.Views.ControlView {
+    export class LabeledButtonView extends Fw.Views.BoxView {
 
         private _buttonView: Views.ButtonView;
         public get Button(): Views.ButtonView {
@@ -44,10 +44,6 @@ namespace App.Views.Controls {
             this._labelView.Size.Height = 15;
             this._labelView.FontSize = Property.FontSize.Small;
             this.Add(this._labelView);
-
-            // ボタンクリックが二回走ることの対策。
-            this._buttonView.SuppressEvent(Fw.Events.ButtonViewEvents.SingleClick);
-            this._buttonView.SuppressEvent(Fw.Events.ButtonViewEvents.LongClick);
         }
 
         protected InnerRefresh(): void {
@@ -73,6 +69,7 @@ namespace App.Views.Controls {
 
         public Dispose(): void {
             super.Dispose();
+            this._labelView = null;
             this._buttonView = null;
             this.HoverColor = null;
         }

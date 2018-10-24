@@ -116,30 +116,41 @@ namespace App.Controllers {
             Dump.Log('InitStores Start');
             await Stores.BrDevices.Discover();
 
+            await this.RefreshControlSets();
+            Dump.Log('InitStores End');
+            return true;
+        }
+
+        public async RefreshControlSets(): Promise<boolean> {
             const sets = await Stores.ControlSets.GetListWithoutTemplates();
+
+            const children = Fw.Util.Obj.Mirror(this._page.ControlSetPanel.Children);
+            _.each(children, (v: ControlSetButtonView) => {
+                this._page.ControlSetPanel.Remove(v);
+                v.Dispose();
+            });
 
             _.each(sets, (cs: Entities.ControlSet) => {
                 const btn = new ControlSetButtonView(cs);
-                btn.AddEventListener(ButtonEvents.SingleClick, (je, eo) => {
+                btn.Button.AddEventListener(ButtonEvents.SingleClick, (je, eo) => {
+                    je.preventDefault();
                     je.stopPropagation();
-                    const button = eo.Sender as ControlSetButtonView;
+                    const button = (eo.Sender as Fw.Views.IView).Parent as ControlSetButtonView;
                     const ctr2 = this.Manager.Get('ControlSet') as ControlSetController;
                     ctr2.SetEntity(button.ControlSet);
                     ctr2.SetModal();
                 });
                 btn.Toggle.AddEventListener(ToggleEvents.Changed, (je, eo) => {
+                    je.preventDefault();
                     je.stopPropagation();
                     const button = (eo.Sender as Fw.Views.IView).Parent as ControlSetButtonView;
                     Dump.Log('Toggle Changed!!: ' + button.Toggle.Value);
                 });
 
                 this._page.ControlSetPanel.Add(btn);
-
-
             });
             this._page.ControlSetPanel.Refresh();
 
-            Dump.Log('InitStores End');
             return true;
         }
     }

@@ -49,7 +49,8 @@ namespace App.Controllers {
                 // ここでControlSetエンティティを保存する。
 
                 const controlSet = this._controlSet;
-                this.SwitchTo("Main");
+                const ctr = this.Manager.Get('Main') as MainController;
+                this.SwitchController(ctr);
                 this._controlSet = null;
 
                 // View側削除処理、ButtonPanel.Childrenを削除操作するため、要素退避しておく。
@@ -71,6 +72,8 @@ namespace App.Controllers {
                     return;
 
                 const res = await App.Models.Stores.ControlSets.Write(controlSet);
+
+                ctr.RefreshControlSets();
             });
 
             this._page.EditButton.AddEventListener(ButtonViewEvents.SingleClick, () => {
@@ -232,7 +235,7 @@ namespace App.Controllers {
         /**
          * リモコン全体を削除する。
          */
-        public RemoveControlSet(): void {
+        public async RemoveControlSet(): Promise<boolean> {
             if (!this.IsOnEditMode)
                 return;
 
@@ -243,12 +246,15 @@ namespace App.Controllers {
             });
 
             const controlSet = this._controlSet;
-            this.SwitchTo("Main");
+            const ctr = this.Manager.Get('Main') as MainController;
+            this.SwitchController(ctr);
             this._controlSet = null;
             this._page.UnMask();
 
             // 削除メソッド、投げっぱなしの終了確認無しで終わる。
-            App.Models.Stores.ControlSets.Remove(controlSet);
+            await App.Models.Stores.ControlSets.Remove(controlSet);
+
+            ctr.RefreshControlSets();
         }
     }
 }
