@@ -41,6 +41,10 @@ namespace BroadlinkWeb.Models.Entities
         [Description("Color String")]
         public string Color { get; set; }
 
+        [Column(Order = 6, TypeName = "int(11)")]
+        [Description("Position Order")]
+        public int Order { get; set; }
+
         public List<Control> Controls { get; set; }
         public BrDevice BrDevice { get; set; }
     }

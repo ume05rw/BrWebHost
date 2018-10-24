@@ -75,21 +75,21 @@ namespace App.Views.Pages {
             this.ControlSetPanel.ReferencePoint = Property.ReferencePoint.LeftTop;
             this.Add(this.ControlSetPanel);
 
-            for (let i = 0; i < 20; i++) {
-                const btn = new Controls.ControlSetButtonView();
+            //for (let i = 0; i < 20; i++) {
+            //    const btn = new Controls.ControlSetButtonView();
 
-                // 何かひとつ、詳細なログ出力を行う。デバッグ用。
-                //if (i === 0)
-                //    btn.EnableLog = true;
+            //    // 何かひとつ、詳細なログ出力を行う。デバッグ用。
+            //    //if (i === 0)
+            //    //    btn.EnableLog = true;
 
-                const idx = i % Color.ButtonColors.length;
-                btn.Button.BackgroundColor = Color.ButtonColors[idx];
-                btn.Button.Color = Color.ReverseMain;
-                btn.Button.HoverColor = Color.ButtonHoverColors[idx];
-                btn.Label.Text = `Control ${i + 1}`;
-                //btn.Label.Color = Color.ReverseMain;
-                this.ControlSetPanel.Add(btn);
-            }
+            //    const idx = i % Color.ButtonColors.length;
+            //    btn.Button.BackgroundColor = Color.ButtonColors[idx];
+            //    btn.Button.Color = Color.ReverseMain;
+            //    btn.Button.HoverColor = Color.ButtonHoverColors[idx];
+            //    btn.Label.Text = `Control ${i + 1}`;
+            //    //btn.Label.Color = Color.ReverseMain;
+            //    this.ControlSetPanel.Add(btn);
+            //}
 
             this.BottomPanel = new Views.StuckerBoxView();
             this.BottomPanel.HasBorder = true;

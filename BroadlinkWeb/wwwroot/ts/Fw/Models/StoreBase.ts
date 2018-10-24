@@ -1,4 +1,4 @@
-﻿/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../ObjectBase.ts" />
 /// <reference path="IStore.ts" />
@@ -25,7 +25,7 @@ namespace Fw.Models {
          * API応答などのオブジェクトをStoreに入れる。
          * @param entity
          */
-        protected Merge(entity: T): void {
+        protected Merge(entity: T): T {
             if (entity.Id === null || entity.Id === undefined)
                 throw new Error('Entity on Store requires DB-Registed Id.');
 
@@ -35,28 +35,50 @@ namespace Fw.Models {
                 // API応答はJSONから生成されたオブジェクトで、IEntityコンストラクタを通っていない。
                 // 既存要素はIEntity機能の保持が保障されているため、既存要素の値を更新して保持し続ける。
                 const obj = this._list[entity.Id];
-                let changed = false;
-                _.each(entity as any, (val, key) => {
-                    if (typeof val === 'function')
-                        return;
-
-                    if (obj[key] && obj[key] !== val) {
-                        obj[key] = val;
-                        changed = true;
-                    }
-                });
+                let changed = this.ExtendEntity(obj, entity);
 
                 if (changed)
                     obj.DispatchChanged();
 
+                return obj;
             } else {
                 // 新規Entityのとき
                 // API応答はJSONから生成されたオブジェクトで、IEntityコンストラクタを通っていない。
                 // IEntity機能を持たせた状態でStoreに保持するため、新規生成したインスタンスに値をコピーする。
                 const obj = this.GetNewEntity();
-                _.extend(obj, entity);
+                this.ExtendEntity(obj, entity);
                 this._list[obj.Id] = obj;
+                return obj;
             }
+        }
+
+        protected ExtendEntity(target: IEntity, base: IEntity): boolean {
+            let changed = false;
+            _.each(base as any, (val, key) => {
+                const itemName = String(key);
+                const itemType = typeof target[itemName];
+
+                // IObject, IEventable, IEntity のメンバーは上書きしない。
+                if (
+                    itemType === 'function'
+                    || itemName.substr(0, 1) === '_'
+                    || itemName === 'ClassName'
+                    || itemName === 'InstanceId'
+                    || itemName === 'ObjectIdentifier'
+                    || itemName === 'IsDisposed'
+                    || itemName === 'EnableLog'
+                    || itemName === 'Elem'
+                ) {
+                    return;
+                }
+
+                if (target[itemName] !== val) {
+                    changed = true;
+                    target[itemName] = val;
+                }
+            });
+
+            return changed;
         }
 
         protected MergeRange(entities: Array<T>): void {

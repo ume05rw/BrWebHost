@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -71,6 +71,14 @@ namespace BroadlinkWeb.Areas.Api.Controllers
                     // IDを持つEntity = 既存の更新
                     this._context.Entry(controlSet).State = EntityState.Modified;
 
+                    foreach (var control in controlSet.Controls)
+                    {
+                        if (control.Id == default(int))
+                            this._context.Controls.Add(control);
+                        else
+                            this._context.Entry(control).State = EntityState.Modified;
+                    }
+
                     // 既存の明細レコードを取得
                     var children = this._context.Controls.Where(c => c.ControlSetId == controlSet.Id).ToArray();
 
@@ -113,9 +121,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
 
             // 既存明細レコードを削除指定
             foreach (var control in children)
-            {
                 this._context.Controls.Remove(control);
-            }
 
             // ヘッダレコードを削除指定
             this._context.ControlSets.Remove(controlSet);

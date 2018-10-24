@@ -10,7 +10,7 @@
 /// <reference path="../Views/Controls/LabeledButtonView.ts" />
 /// <reference path="../../Fw/Events/ButtonViewEvents.ts" />
 /// <reference path="../Items/Operation.ts" />
-
+/// <reference path="../Items/Color.ts" />
 
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
@@ -20,6 +20,7 @@ namespace App.Controllers {
     import LabeledButtonView = App.Views.Controls.LabeledButtonView;
     import ButtonEvents = Fw.Events.ButtonViewEvents;
     import Operation = App.Items.Operation;
+    import Color = App.Items.Color;
 
     export class OperationSelectController extends ItemSelectControllerBase {
 
@@ -42,6 +43,9 @@ namespace App.Controllers {
             const btn1 = this.GetNewButton();
             btn1.Label.Text = 'Scene';
             btn1.Button.ImageSrc = App.Items.Icon.Scene;
+            btn1.Button.BackgroundColor = Color.MainBackground;
+            btn1.Button.HoverColor = Color.MainHover;
+            btn1.Button.Color = Color.MainHover;
             btn1.AddEventListener(ButtonEvents.SingleClick, () => {
                 this.Commit(Operation.Scene);
             });
@@ -57,6 +61,9 @@ namespace App.Controllers {
             const btn2 = this.GetNewButton();
             btn2.Label.Text = 'TV';
             btn2.Button.ImageSrc = App.Items.Icon.Tv;
+            btn2.Button.BackgroundColor = Color.ButtonColors[4];
+            btn2.Button.HoverColor = Color.ButtonHoverColors[4];
+            btn2.Button.Color = Color.ButtonColors[4];
             btn2.AddEventListener(ButtonEvents.SingleClick, () => {
                 this.Commit(Operation.Tv);
             });
@@ -66,6 +73,9 @@ namespace App.Controllers {
             const btn3 = this.GetNewButton();
             btn3.Label.Text = 'AV';
             btn3.Button.ImageSrc = App.Items.Icon.Av;
+            btn3.Button.BackgroundColor = Color.ButtonColors[5];
+            btn3.Button.HoverColor = Color.ButtonHoverColors[5];
+            btn3.Button.Color = Color.ButtonColors[5];
             btn3.AddEventListener(ButtonEvents.SingleClick, () => {
                 this.Commit(Operation.Av);
             });
@@ -75,6 +85,9 @@ namespace App.Controllers {
             const btn4 = this.GetNewButton();
             btn4.Label.Text = 'Light';
             btn4.Button.ImageSrc = App.Items.Icon.Light;
+            btn4.Button.BackgroundColor = Color.ButtonColors[3];
+            btn4.Button.HoverColor = Color.ButtonHoverColors[3];
+            btn4.Button.Color = Color.ButtonColors[3];
             btn4.AddEventListener(ButtonEvents.SingleClick, () => {
                 this.Commit(Operation.Light);
             });
@@ -84,6 +97,9 @@ namespace App.Controllers {
             const btn5 = this.GetNewButton();
             btn5.Label.Text = 'Free';
             btn5.Button.ImageSrc = App.Items.Icon.Free;
+            btn5.Button.BackgroundColor = Color.ButtonColors[7];
+            btn5.Button.HoverColor = Color.ButtonHoverColors[7];
+            btn5.Button.Color = Color.ButtonColors[7];
             btn5.AddEventListener(ButtonEvents.SingleClick, () => {
                 this.Commit(Operation.Free);
             });

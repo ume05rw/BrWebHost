@@ -74,14 +74,14 @@ namespace App.Models.Stores {
 
                 const list = res.Values as ControlSet[];
                 _.each(list, (entity: ControlSet) => {
-                    this.Merge(entity);
+                    const obj = this.Merge(entity);
 
                     // API応答値を、TS側Entityに整形して保持しておく。
                     if (entity.Controls && entity.Controls.length > 0) {
                         Controls.SetRange(entity.Controls);
-                        entity.Controls = Controls.GetListByControlSetId(entity.Id);
+                        obj.Controls = Controls.GetListByControlSetId(entity.Id);
                     } else {
-                        entity.Controls = [];
+                        obj.Controls = [];
                     }
                 });
 
@@ -97,10 +97,14 @@ namespace App.Models.Stores {
         public async GetListWithoutTemplates(): Promise<ControlSet[]> {
             await this.GetList();
 
-            const result = new Array<ControlSet>();
+            let result = new Array<ControlSet>();
             _.each(this.List, (cs: ControlSet) => {
                 if (!cs.IsTemplate)
                     result.push(cs);
+            });
+
+            result = _.sortBy(result, (cs: ControlSet) => {
+                return cs.Order;
             });
 
             return result;

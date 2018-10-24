@@ -95,6 +95,14 @@ namespace App.Controllers {
          */
         public SetEntity(entity: App.Models.Entities.ControlSet): void {
 
+            // View側削除処理、ButtonPanel.Childrenを削除操作するため、要素退避しておく。
+            const buttons = Util.Obj.Mirror(this._page.ButtonPanel.Children);
+            _.each(buttons, (btn: Fw.Views.IView) => {
+                this._page.ButtonPanel.Remove(btn);
+                btn.Dispose();
+            });
+
+
             if (this._controlSet) {
                 this._controlSet.RemoveEventListener(EntityEvents.Changed, this.ApplyFromEntity, this);
             }

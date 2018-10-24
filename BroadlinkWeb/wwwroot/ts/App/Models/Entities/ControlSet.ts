@@ -34,6 +34,11 @@ namespace App.Models.Entities {
         public Color: string = Color.ButtonColors[0];
 
         /**
+         * メインパネル表示順
+         */
+        public Order: number = 99999;
+
+        /**
          * ホバー色
          */
         public get HoverColor(): string {

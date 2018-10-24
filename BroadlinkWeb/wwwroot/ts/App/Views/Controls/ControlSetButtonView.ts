@@ -5,12 +5,14 @@
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../../Items/Color.ts" />
 /// <reference path="LabeledButtonView.ts" />
+/// <reference path="../../Models/Entities/ControlSet.ts" />
 
 namespace App.Views.Controls {
     import Dump = Fw.Util.Dump;
     import Views = Fw.Views;
     import Property = Fw.Views.Property;
     import Color = App.Items.Color;
+    import ControlSet = App.Models.Entities.ControlSet;
 
     export class ControlSetButtonView extends LabeledButtonView {
 
@@ -19,9 +21,12 @@ namespace App.Views.Controls {
             return this._toggle;
         }
 
-        constructor() {
+        public readonly ControlSet: ControlSet;
+
+        constructor(entity: ControlSet) {
             super()
 
+            this.ControlSet = entity;
             this._toggle = new Views.ToggleButtonInputView();
 
             this.SetSize(150, 170);
@@ -32,7 +37,14 @@ namespace App.Views.Controls {
             this.Button.HoverColor = Color.MainHover;
             this.Button.Color = Color.Main;
 
+            this.Button.BackgroundColor = this.ControlSet.Color;
+            this.Button.Color = this.ControlSet.Color;
+            this.Button.HoverColor = this.ControlSet.HoverColor;
+            this.Button.ImageSrc = this.ControlSet.IconUrl;
+            this.Button.ImageFitPolicy = Property.FitPolicy.Auto;
+
             this.Label.Color = Color.Main;
+            this.Label.Text = this.ControlSet.Name;
 
             this._toggle.SetAnchor(null, 40, 40, 30);
             this._toggle.BackgroundColor = 'transparent';

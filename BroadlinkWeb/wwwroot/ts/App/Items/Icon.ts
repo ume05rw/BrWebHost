@@ -8,22 +8,22 @@ namespace App.Items {
     import Manager = Fw.Controllers.Manager;
 
     export class Icon {
-        public static Scene: string = 'images/icons/target.png';
-        public static Tv: string = 'images/icons/monitor.png';
-        public static Av: string = 'images/icons/sound.png';
-        public static Light: string = 'images/icons/sun.png';
+        public static Scene: string = 'images/icons/operation/scene.png';
+        public static Tv: string = 'images/icons/operation/tv.png';
+        public static Av: string = 'images/icons/operation/av.png';
+        public static Light: string = 'images/icons/operation/light.png';
 
-        public static Free: string = 'images/icons/circle_plus.png';
-        public static WoL: string = 'images/icons/speech.png';
-        public static Script: string = 'images/icons/edit.png';
-        public static Remote: string = 'images/icons/lightning.png';
+        public static Free: string = 'images/icons/operation/free.png';
+        public static WoL: string = 'images/icons/operation/magicpacket.png';
+        public static Script: string = 'images/icons/operation/script.png';
+        public static Remote: string = 'images/icons/operation/remote.png';
 
         // TODO: 以下、ソレっぽいアイコンを用意する。
-        public static Air: string = 'images/icons/layout.png'; 
-        public static BrA1: string = 'images/icons/rocket.png';
-        public static BrSp2: string = 'images/icons/rocket.png';
-        public static BrSc1: string = 'images/icons/rocket.png';
-        public static BrS1c: string = 'images/icons/rocket.png';
+        public static Air: string = 'images/icons/operation/layout.png'; 
+        public static BrA1: string = 'images/icons/operation/rocket.png';
+        public static BrSp2: string = 'images/icons/operation/rocket.png';
+        public static BrSc1: string = 'images/icons/operation/rocket.png';
+        public static BrS1c: string = 'images/icons/operation/rocket.png';
 
 
         public static Names: Array<string> = [
@@ -99,7 +99,7 @@ namespace App.Items {
         ];
 
         public static Mains: Array<string> = [
-            '',                         // 0 割り当てなし
+            'main_free.png',            // 0 自由割当
             'main_tv.png',              // 1 TV
             'main_av.png',              // 2 AV
             'main_light.png',           // 3 Light

@@ -194,7 +194,7 @@ namespace Fw.Views {
             }, this);
 
             _.delay(() => {
-                if (this.IsDisposed)
+                if (this.IsDisposed !== false)
                     return;
 
                 this._refresher.Timeout = Fw.Root.Instance.ViewRefreshInterval;

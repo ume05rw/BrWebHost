@@ -5,9 +5,12 @@
 /// <reference path="../../Fw/Util/Dump.ts" />
 /// <reference path="../../Fw/Events/ControlViewEvents.ts" />
 /// <reference path="../../Fw/Events/ButtonViewEvents.ts" />
+/// <reference path="../../Fw/Events/ToggleButtonInputViewEvents.ts" />
 /// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
 /// <reference path="../Views/Pages/MainPageView.ts" />
+/// <reference path="../Views/Controls/ControlSetButtonView.ts" />
 /// <reference path="../Models/Stores/BrDeviceStore.ts" />
+/// <reference path="../Models/Entities/ControlSet.ts" />
 /// <reference path="../Items/Operation.ts" />
 /// <reference path="../Items/ControlSetTemplate.ts" />
 
@@ -18,18 +21,26 @@ namespace App.Controllers {
     import Property = Fw.Views.Property;
     import Pages = App.Views.Pages;
     import ButtonEvents = Fw.Events.ButtonViewEvents;
+    import ToggleEvents = Fw.Events.ToggleButtonInputViewEvents;
     import Stores = App.Models.Stores;
+    import Entities = App.Models.Entities;
     import Operation = App.Items.Operation;
     import ControlSetTemplate = App.Items.ControlSetTemplate;
+    import ControlSetButtonView = App.Views.Controls.ControlSetButtonView;
 
     export class MainController extends Fw.Controllers.ControllerBase {
+
+        private _page: Pages.MainPageView;
 
         constructor() {
             super('Main');
 
-            this.SetClassName('MainController');
-
             Dump.Log('Start MainController');
+
+            this.SetClassName('MainController');
+            this.SetPageView(new Pages.MainPageView());
+            this._page = this.View as Pages.MainPageView;
+
             this.InitStores(); // awaitしないで続行。
             Dump.Log('SubController Load Start');
             const sub1Ctr = new Sub1Controller();
@@ -43,13 +54,12 @@ namespace App.Controllers {
             const colorSelectCtr = new ColorSelectController();
             Dump.Log('SubController Load End');
 
-            this.SetPageView(new Pages.MainPageView());
-            const page = this.View as Pages.MainPageView;
 
-            //page.EnableLog = true;
-            //page.BottomPanel.EnableLog = true;
 
-            page.HeaderBar.RightButton.AddEventListener(ButtonEvents.SingleClick, async () => {
+            //this._page.EnableLog = true;
+            //this._page.BottomPanel.EnableLog = true;
+
+            this._page.HeaderBar.RightButton.AddEventListener(ButtonEvents.SingleClick, async () => {
 
                 const ctr = this.Manager.Get('OperationSelect') as OperationSelectController;
                 const item: Operation = await ctr.Select(this);
@@ -78,23 +88,23 @@ namespace App.Controllers {
 
                 const ctr2 = this.Manager.Get('ControlSet') as ControlSetController;
                 ctr2.SetEntity(ctrSet);
-                ctr2.SetModal();
+                //ctr2.SetModal();
                 this.SwitchController(ctr2);
             });
 
-            page.BtnGoSub1.AddEventListener(ButtonEvents.SingleClick, () => {
+            this._page.BtnGoSub1.AddEventListener(ButtonEvents.SingleClick, () => {
                 this.SwitchTo("Sub1");
             });
 
-            page.BtnGoSub2.AddEventListener(ButtonEvents.SingleClick, () => {
+            this._page.BtnGoSub2.AddEventListener(ButtonEvents.SingleClick, () => {
                 this.SwitchTo("Sub2");
             });
 
-            page.BtnGoSub3.AddEventListener(ButtonEvents.SingleClick, () => {
+            this._page.BtnGoSub3.AddEventListener(ButtonEvents.SingleClick, () => {
                 this.SwitchTo("Sub3");
             });
 
-            page.BtnGoDynamic.AddEventListener(ButtonEvents.SingleClick, () => {
+            this._page.BtnGoDynamic.AddEventListener(ButtonEvents.SingleClick, () => {
                 const ctr = new LayoutCheckController('LayoutCheck');
                 this.SwitchController(ctr);
 
@@ -108,7 +118,26 @@ namespace App.Controllers {
 
             const sets = await Stores.ControlSets.GetListWithoutTemplates();
 
+            _.each(sets, (cs: Entities.ControlSet) => {
+                const btn = new ControlSetButtonView(cs);
+                btn.AddEventListener(ButtonEvents.SingleClick, (je, eo) => {
+                    je.stopPropagation();
+                    const button = eo.Sender as ControlSetButtonView;
+                    const ctr2 = this.Manager.Get('ControlSet') as ControlSetController;
+                    ctr2.SetEntity(button.ControlSet);
+                    ctr2.SetModal();
+                });
+                btn.Toggle.AddEventListener(ToggleEvents.Changed, (je, eo) => {
+                    je.stopPropagation();
+                    const button = (eo.Sender as Fw.Views.IView).Parent as ControlSetButtonView;
+                    Dump.Log('Toggle Changed!!: ' + button.Toggle.Value);
+                });
 
+                this._page.ControlSetPanel.Add(btn);
+
+
+            });
+            this._page.ControlSetPanel.Refresh();
 
             Dump.Log('InitStores End');
             return true;
