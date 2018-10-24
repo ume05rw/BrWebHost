@@ -53,6 +53,7 @@ namespace App.Models.Stores {
         public Write(entity: BrDevice): void {
             throw new Error('Only Server can add BrDevices.');
         }
+
     }
 
     export const BrDevices: BrDeviceStore = BrDeviceStore.Instance;

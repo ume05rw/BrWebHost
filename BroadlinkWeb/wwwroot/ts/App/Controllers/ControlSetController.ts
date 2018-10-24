@@ -8,7 +8,9 @@
 /// <reference path="../../Fw/Events/ButtonViewEvents.ts" />
 /// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
 /// <reference path="../Views/Pages/MainPageView.ts" />
+/// <reference path="../Views/Popup/AlertPopup.ts" />
 /// <reference path="../Events/Controls/ControlButtonViewEvents.ts" />
+/// <reference path="../Models/Stores/RmStore.ts" />
 
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
@@ -21,6 +23,8 @@ namespace App.Controllers {
     import EntityEvents = Fw.Events.EntityEvents;
     import ButtonViewEvents = Fw.Events.ButtonViewEvents;
     import ControlButtonViewEvents = App.Events.Controls.ControlButtonViewEvents;
+    import Stores = App.Models.Stores;
+    import Popup = App.Views.Popup;
 
     export class ControlSetController extends Fw.Controllers.ControllerBase {
 
@@ -123,7 +127,6 @@ namespace App.Controllers {
                     btn.SetImage(control.IconUrl);
 
                     btn.AddEventListener(ControlButtonViewEvents.EditOrdered, (e, p) => {
-                        this.Log(p);
                         const ctr = this.Manager.Get('ControlProperty') as ControlPropertyController;
                         const button = p.Sender as Controls.ControlButtonView;
                         ctr.SetEntity(button.Control);
@@ -131,7 +134,9 @@ namespace App.Controllers {
                     }, this);
 
                     btn.AddEventListener(ControlButtonViewEvents.ExecOrdered, (e, p) => {
-                        this.Log(p);
+                        Dump.Log('Exec');
+                        const button = p.Sender as Controls.ControlButtonView;
+                        this.ExecCode(button.Control.Code);
                     }, this);
 
                     this._page.ButtonPanel.Add(btn);
@@ -205,6 +210,45 @@ namespace App.Controllers {
             ctr.SetModal();
         }
 
+
+        public async GetLearnedCode(): Promise<string> {
+
+            const id = this._controlSet.BrDeviceId;
+
+            if (!id) {
+                Popup.Alert.Open({
+                    Message: 'Select your Rm-Device'
+                });
+                return null;
+            }
+
+            //Popup.Cancellable.Open({
+            //    Message: 'Set Remote Control to Rm, <br/>Push Button'
+            //});
+            const rCmd = await Stores.Rms.GetLearnedCode(id);
+            if (!rCmd || !rCmd.Code)
+                return null;
+
+            return rCmd.Code;
+        }
+
+
+        public async ExecCode(code: string): Promise<boolean> {
+
+            const id = this._controlSet.BrDeviceId;
+
+            if (!id) {
+                Popup.Alert.Open({
+                    Message: 'Select your Rm-Device'
+                });
+                return null;
+            }
+
+            const result = await Stores.Rms.Exec(id, code);
+            return result;
+        }
+
+
         /**
          * リモコンボタンを一つ削除する。
          * @param control
@@ -252,7 +296,7 @@ namespace App.Controllers {
             this._page.UnMask();
 
             // 削除メソッド、投げっぱなしの終了確認無しで終わる。
-            await App.Models.Stores.ControlSets.Remove(controlSet);
+            await Stores.ControlSets.Remove(controlSet);
 
             ctr.RefreshControlSets();
         }

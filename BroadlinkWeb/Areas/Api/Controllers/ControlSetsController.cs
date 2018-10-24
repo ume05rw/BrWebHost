@@ -14,11 +14,11 @@ namespace BroadlinkWeb.Areas.Api.Controllers
     [Route("api/ControlSets")]
     public class ControlSetsController : Controller
     {
-        private readonly Dbc _context;
+        private readonly Dbc _dbc;
 
-        public ControlSetsController(Dbc context)
+        public ControlSetsController(Dbc dbc)
         {
-            _context = context;
+            _dbc = dbc;
         }
 
         // GET: api/ControlSets
@@ -28,7 +28,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
             if (!ModelState.IsValid)
                 return XhrResult.CreateError(ModelState);
 
-            var list = _context.ControlSets
+            var list = _dbc.ControlSets
                 .Include(c => c.Controls)
                 .ToArray();
             return XhrResult.CreateSucceeded(list);
@@ -41,7 +41,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
             if (!ModelState.IsValid)
                 return XhrResult.CreateError(ModelState);
 
-            var controlSet = await _context.ControlSets.SingleOrDefaultAsync(m => m.Id == id);
+            var controlSet = await _dbc.ControlSets.SingleOrDefaultAsync(m => m.Id == id);
 
             if (controlSet == null)
                 return XhrResult.CreateError("Entity Not Found");
@@ -61,26 +61,26 @@ namespace BroadlinkWeb.Areas.Api.Controllers
                 if (controlSet.Id == default(int))
                 {
                     // IDが無いEntity = 新規
-                    this._context.ControlSets.Add(controlSet);
+                    this._dbc.ControlSets.Add(controlSet);
 
                     // 保存
-                    await _context.SaveChangesAsync();
+                    await _dbc.SaveChangesAsync();
                 }
                 else
                 {
                     // IDを持つEntity = 既存の更新
-                    this._context.Entry(controlSet).State = EntityState.Modified;
+                    this._dbc.Entry(controlSet).State = EntityState.Modified;
 
                     foreach (var control in controlSet.Controls)
                     {
                         if (control.Id == default(int))
-                            this._context.Controls.Add(control);
+                            this._dbc.Controls.Add(control);
                         else
-                            this._context.Entry(control).State = EntityState.Modified;
+                            this._dbc.Entry(control).State = EntityState.Modified;
                     }
 
                     // 既存の明細レコードを取得
-                    var children = this._context.Controls.Where(c => c.ControlSetId == controlSet.Id).ToArray();
+                    var children = this._dbc.Controls.Where(c => c.ControlSetId == controlSet.Id).ToArray();
 
                     // 既存の明細のうち、渡し値に存在しないものを削除。
                     if (children.Length > 0)
@@ -88,12 +88,12 @@ namespace BroadlinkWeb.Areas.Api.Controllers
                         var removes = children.Where(c => !controlSet.Controls.Any(c2 => c2.Id == c.Id));
                         foreach (var control in removes)
                         {
-                            this._context.Controls.Remove(control);
+                            this._dbc.Controls.Remove(control);
                         }
                     }
 
                     // ヘッダと明細を一括保存
-                    await _context.SaveChangesAsync();
+                    await _dbc.SaveChangesAsync();
                 }
 
                 return XhrResult.CreateSucceeded(controlSet);
@@ -111,23 +111,23 @@ namespace BroadlinkWeb.Areas.Api.Controllers
             if (!ModelState.IsValid)
                 return XhrResult.CreateError(ModelState);
 
-            var controlSet = await this._context.ControlSets.SingleOrDefaultAsync(m => m.Id == id);
+            var controlSet = await this._dbc.ControlSets.SingleOrDefaultAsync(m => m.Id == id);
 
             if (controlSet == null)
                 return XhrResult.CreateError("Entity Not Found");
 
             // 既存の明細レコードを取得
-            var children = this._context.Controls.Where(c => c.ControlSetId == controlSet.Id).ToArray();
+            var children = this._dbc.Controls.Where(c => c.ControlSetId == controlSet.Id).ToArray();
 
             // 既存明細レコードを削除指定
             foreach (var control in children)
-                this._context.Controls.Remove(control);
+                this._dbc.Controls.Remove(control);
 
             // ヘッダレコードを削除指定
-            this._context.ControlSets.Remove(controlSet);
+            this._dbc.ControlSets.Remove(controlSet);
 
             // ヘッダ・明細を一括削除
-            await this._context.SaveChangesAsync();
+            await this._dbc.SaveChangesAsync();
 
             return XhrResult.CreateSucceeded();
         }
@@ -187,7 +187,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
 
         private bool ControlSetExists(int id)
         {
-            return _context.ControlSets.Any(e => e.Id == id);
+            return _dbc.ControlSets.Any(e => e.Id == id);
         }
     }
 }

@@ -5,6 +5,7 @@
 /// <reference path="../../Fw/Util/Dump.ts" />
 /// <reference path="../../Fw/Events/ControlViewEvents.ts" />
 /// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
+/// <reference path="../Models/Stores/RmStore.ts" />
 /// <reference path="../Views/Pages/MainPageView.ts" />
 /// <reference path="../Views/Popup/AlertPopup.ts" />
 
@@ -16,6 +17,7 @@ namespace App.Controllers {
     import Pages = App.Views.Pages;
     import Controls = App.Views.Controls;
     import Popup = App.Views.Popup;
+    
 
     export class ControlPropertyController extends Fw.Controllers.ControllerBase {
 
@@ -87,6 +89,21 @@ namespace App.Controllers {
                 //this.Log('ControlPropertyController.TarCode.Changed');
                 this._control.Code = this._page.TarCode.Value;
                 this._control.DispatchChanged();
+            });
+
+            this._page.BtnLearn.AddEventListener(Events.ButtonViewEvents.SingleClick, async (je, eo) => {
+                je.stopPropagation();
+                if (!this._control)
+                    return;
+
+                const ctr = this.Manager.Get('ControlSet') as ControlSetController;
+                const code = await ctr.GetLearnedCode();
+
+                if (!code)
+                    return;
+
+                this._page.TarCode.Value = code;
+                this._control.Code = code;
             });
 
             this._page.ChkToggleOn.AddEventListener(Events.InputViewEvents.Changed, (je, eo) => {

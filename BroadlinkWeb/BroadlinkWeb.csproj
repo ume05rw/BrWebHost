@@ -26,9 +26,11 @@
     <Content Remove="wwwroot\ts\App\Models\Entities\BrDevice.ts" />
     <Content Remove="wwwroot\ts\App\Models\Entities\Control.ts" />
     <Content Remove="wwwroot\ts\App\Models\Entities\ControlSet.ts" />
+    <Content Remove="wwwroot\ts\App\Models\Entities\RmCommand.ts" />
     <Content Remove="wwwroot\ts\App\Models\Stores\BrDeviceStore.ts" />
     <Content Remove="wwwroot\ts\App\Models\Stores\ControlSetStore.ts" />
     <Content Remove="wwwroot\ts\App\Models\Stores\ControlStore.ts" />
+    <Content Remove="wwwroot\ts\App\Models\Stores\RmStore.ts" />
     <Content Remove="wwwroot\ts\App\Views\Controls\ButtonView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Controls\ControlButtonView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Controls\ControlSetButtonView.ts" />
@@ -127,7 +129,8 @@
     <PackageReference Include="MySql.Data" Version="8.0.13" />
     <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="8.0.13" />
     <PackageReference Include="MySql.Data.EntityFrameworkCore.Design" Version="8.0.13" />
-    <PackageReference Include="SharpBroadlink" Version="1.0.1" />
+    <PackageReference Include="SharpBroadlink" Version="1.0.1.3" />
+    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -157,9 +160,11 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\BrDevice.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\Control.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\ControlSet.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\RmCommand.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\BrDeviceStore.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\ControlSetStore.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\ControlStore.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\RmStore.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\ButtonView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\ControlButtonView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\HeaderBarView.ts" />

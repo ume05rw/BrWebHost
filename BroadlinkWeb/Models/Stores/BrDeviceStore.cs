@@ -10,12 +10,22 @@ namespace BroadlinkWeb.Models.Stores
 {
     public class BrDeviceStore
     {
-        private static List<BrDevice> _list { get; set; } = new List<BrDevice>();
-        public List<BrDevice> List => BrDeviceStore._list;
+        private static BrDeviceStore _instance = null;
+        public static BrDeviceStore GetInstance(Dbc dbc)
+        {
+            if (BrDeviceStore._instance == null)
+                BrDeviceStore._instance = new BrDeviceStore(dbc);
+
+            return BrDeviceStore._instance;
+        }
 
         private Dbc _dbc;
 
-        public BrDeviceStore(Dbc dbc)
+
+        private List<BrDevice> _list = new List<BrDevice>();
+        public List<BrDevice> List => this._list;
+
+        private BrDeviceStore(Dbc dbc)
         {
             this._dbc = dbc;
         }
@@ -66,8 +76,8 @@ namespace BroadlinkWeb.Models.Stores
             Task.WaitAll(tasks.ToArray());
 
             // エンティティキャッシュ差し替え
-            BrDeviceStore._list.Clear();
-            BrDeviceStore._list.AddRange(entities);
+            this.List.Clear();
+            this.List.AddRange(entities);
 
             return entities;
         }

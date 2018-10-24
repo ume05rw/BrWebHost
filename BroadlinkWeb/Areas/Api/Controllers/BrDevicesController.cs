@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,14 +17,13 @@ namespace BroadlinkWeb.Areas.Api.Controllers
     [Route("api/BrDevices")]
     public class BrDevicesController : Controller
     {
-        private readonly Dbc _context;
-
+        private readonly Dbc _dbc;
         private BrDeviceStore _store;
 
-        public BrDevicesController(Dbc context)
+        public BrDevicesController(Dbc dbc)
         {
-            this._context = context;
-            this._store = new BrDeviceStore(this._context);
+            this._dbc = dbc;
+            this._store = BrDeviceStore.GetInstance(dbc);
         }
 
         // GET: api/BrDevices/Discover
@@ -48,9 +47,11 @@ namespace BroadlinkWeb.Areas.Api.Controllers
 
             BrDevice entity;
             if (id == null)
-                entity = this._store.List.FirstOrDefault(bd => bd.SbDevice?.DeviceType == SharpBroadlink.Devices.DeviceType.A1);
+                entity = this._store.List
+                    .FirstOrDefault(bd => bd.SbDevice?.DeviceType == DeviceType.A1);
             else
-                entity = this._store.List.FirstOrDefault(bd => bd.Id == id);
+                entity = this._store.List
+                    .FirstOrDefault(bd => bd.Id == id);
 
             if (entity == null)
                 return XhrResult.CreateError("Entity Not Found");
@@ -75,7 +76,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
             if (!ModelState.IsValid)
                 return XhrResult.CreateError(ModelState);
 
-            var list = _context.BrDevices.ToArray();
+            var list = _dbc.BrDevices.ToArray();
             return XhrResult.CreateSucceeded(list);
         }
 
@@ -86,7 +87,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
             if (!ModelState.IsValid)
                 return XhrResult.CreateError(ModelState);
 
-            var brDevice = await _context.BrDevices.SingleOrDefaultAsync(m => m.Id == id);
+            var brDevice = await _dbc.BrDevices.SingleOrDefaultAsync(m => m.Id == id);
 
             if (brDevice == null)
                 return XhrResult.CreateError("Entity Not Found");
@@ -167,7 +168,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
 
         private bool BrDeviceExists(int id)
         {
-            return _context.BrDevices.Any(e => e.Id == id);
+            return _dbc.BrDevices.Any(e => e.Id == id);
         }
     }
 }

@@ -2711,7 +2711,7 @@ var Fw;
                         _this.SetLeftTop(0, 0);
                         //this.Position.X = 0;
                         //this.Position.Y = 0;
-                        //this.Refresh();
+                        _this.Refresh();
                         _this.DispatchEvent(Events.Hidden);
                     };
                     animator.Invoke(duration);
@@ -2744,7 +2744,7 @@ var Fw;
                         _this.SetLeftTop(0, 0);
                         //this.Position.X = 0;
                         //this.Position.Y = 0;
-                        //this.Refresh();
+                        _this.Refresh();
                         _this.DispatchEvent(Events.Hidden);
                     };
                     animator.Invoke(duration);
@@ -2755,7 +2755,7 @@ var Fw;
                 //this.Log(`${this.ClassName}.Mask`);
                 this._isMasked = true;
                 Fw.Root.Instance.Mask();
-                //this.Dom.style.zIndex = '-1';
+                this.Dom.style.zIndex = '-1';
                 this.SetStyle('zIndex', '-1');
                 this.Refresh();
             };
@@ -2763,7 +2763,7 @@ var Fw;
                 //this.Log(`${this.ClassName}.UnMask`);
                 this._isMasked = false;
                 Fw.Root.Instance.UnMask();
-                //this.Dom.style.zIndex = '0';
+                this.Dom.style.zIndex = '0';
                 this.SetStyle('zIndex', '0');
                 this.Refresh();
             };
@@ -4526,6 +4526,124 @@ var App;
         Controllers.ControlHeaderPropertyController = ControlHeaderPropertyController;
     })(Controllers = App.Controllers || (App.Controllers = {}));
 })(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/StoreBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../../Fw/Util/Xhr/Query.ts" />
+/// <reference path="../Entities/BrDevice.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Stores;
+        (function (Stores) {
+            var BrDevice = App.Models.Entities.BrDevice;
+            var Xhr = Fw.Util.Xhr;
+            var RmStore = /** @class */ (function (_super) {
+                __extends(RmStore, _super);
+                function RmStore() {
+                    var _this = _super.call(this) || this;
+                    _this.EnableLog = true;
+                    return _this;
+                }
+                Object.defineProperty(RmStore, "Instance", {
+                    get: function () {
+                        if (RmStore._instance === null)
+                            RmStore._instance = new RmStore();
+                        return RmStore._instance;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                RmStore.prototype.GetLearnedCode = function (brDeviceId) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var params, res, rCom;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    params = new Xhr.Params("Rm/GetLearnedCode/" + brDeviceId, Xhr.MethodType.Get);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        rCom = res.Values;
+                                        return [2 /*return*/, rCom];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, null];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
+                RmStore.prototype.CancelLearning = function (brDeviceId) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var params, res, result;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    params = new Xhr.Params("Rm/CancelLearning/" + brDeviceId, Xhr.MethodType.Post);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        result = res.Values;
+                                        return [2 /*return*/, result];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, null];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
+                RmStore.prototype.Exec = function (brDeviceId, code) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var params, res, result;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    params = new Xhr.Params("Rm/Exec/" + brDeviceId, Xhr.MethodType.Post, {
+                                        Code: code
+                                    });
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        result = res.Values;
+                                        return [2 /*return*/, result];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, null];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
+                RmStore.prototype.GetNewEntity = function () {
+                    return new BrDevice();
+                };
+                RmStore.prototype.Write = function (entity) {
+                    throw new Error('Only Server can add BrDevices.');
+                };
+                RmStore._instance = null;
+                return RmStore;
+            }(Fw.Models.StoreBase));
+            Stores.RmStore = RmStore;
+            Stores.Rms = RmStore.Instance;
+        })(Stores = Models.Stores || (Models.Stores = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Fw/Controllers/ControllerBase.ts" />
@@ -4533,6 +4651,7 @@ var App;
 /// <reference path="../../Fw/Util/Dump.ts" />
 /// <reference path="../../Fw/Events/ControlViewEvents.ts" />
 /// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
+/// <reference path="../Models/Stores/RmStore.ts" />
 /// <reference path="../Views/Pages/MainPageView.ts" />
 /// <reference path="../Views/Popup/AlertPopup.ts" />
 var App;
@@ -4609,6 +4728,26 @@ var App;
                     _this._control.Code = _this._page.TarCode.Value;
                     _this._control.DispatchChanged();
                 });
+                _this._page.BtnLearn.AddEventListener(Events.ButtonViewEvents.SingleClick, function (je, eo) { return __awaiter(_this, void 0, void 0, function () {
+                    var ctr, code;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                je.stopPropagation();
+                                if (!this._control)
+                                    return [2 /*return*/];
+                                ctr = this.Manager.Get('ControlSet');
+                                return [4 /*yield*/, ctr.GetLearnedCode()];
+                            case 1:
+                                code = _a.sent();
+                                if (!code)
+                                    return [2 /*return*/];
+                                this._page.TarCode.Value = code;
+                                this._control.Code = code;
+                                return [2 /*return*/];
+                        }
+                    });
+                }); });
                 _this._page.ChkToggleOn.AddEventListener(Events.InputViewEvents.Changed, function (je, eo) {
                     je.stopPropagation();
                     if (!_this._control)
@@ -4676,17 +4815,22 @@ var App;
 /// <reference path="../../Fw/Events/ButtonViewEvents.ts" />
 /// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
 /// <reference path="../Views/Pages/MainPageView.ts" />
+/// <reference path="../Views/Popup/AlertPopup.ts" />
 /// <reference path="../Events/Controls/ControlButtonViewEvents.ts" />
+/// <reference path="../Models/Stores/RmStore.ts" />
 var App;
 (function (App) {
     var Controllers;
     (function (Controllers) {
+        var Dump = Fw.Util.Dump;
         var Pages = App.Views.Pages;
         var Controls = App.Views.Controls;
         var Util = Fw.Util;
         var EntityEvents = Fw.Events.EntityEvents;
         var ButtonViewEvents = Fw.Events.ButtonViewEvents;
         var ControlButtonViewEvents = App.Events.Controls.ControlButtonViewEvents;
+        var Stores = App.Models.Stores;
+        var Popup = App.Views.Popup;
         var ControlSetController = /** @class */ (function (_super) {
             __extends(ControlSetController, _super);
             function ControlSetController() {
@@ -4779,14 +4923,15 @@ var App;
                         btn.SetColor(control.Color);
                         btn.SetImage(control.IconUrl);
                         btn.AddEventListener(ControlButtonViewEvents.EditOrdered, function (e, p) {
-                            _this.Log(p);
                             var ctr = _this.Manager.Get('ControlProperty');
                             var button = p.Sender;
                             ctr.SetEntity(button.Control);
                             ctr.SetModal();
                         }, _this);
                         btn.AddEventListener(ControlButtonViewEvents.ExecOrdered, function (e, p) {
-                            _this.Log(p);
+                            Dump.Log('Exec');
+                            var button = p.Sender;
+                            _this.ExecCode(button.Control.Code);
                         }, _this);
                         _this._page.ButtonPanel.Add(btn);
                     });
@@ -4844,6 +4989,50 @@ var App;
                 ctr.SetEntity(this._controlSet);
                 ctr.SetModal();
             };
+            ControlSetController.prototype.GetLearnedCode = function () {
+                return __awaiter(this, void 0, void 0, function () {
+                    var id, rCmd;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                id = this._controlSet.BrDeviceId;
+                                if (!id) {
+                                    Popup.Alert.Open({
+                                        Message: 'Select your Rm-Device'
+                                    });
+                                    return [2 /*return*/, null];
+                                }
+                                return [4 /*yield*/, Stores.Rms.GetLearnedCode(id)];
+                            case 1:
+                                rCmd = _a.sent();
+                                if (!rCmd || !rCmd.Code)
+                                    return [2 /*return*/, null];
+                                return [2 /*return*/, rCmd.Code];
+                        }
+                    });
+                });
+            };
+            ControlSetController.prototype.ExecCode = function (code) {
+                return __awaiter(this, void 0, void 0, function () {
+                    var id, result;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                id = this._controlSet.BrDeviceId;
+                                if (!id) {
+                                    Popup.Alert.Open({
+                                        Message: 'Select your Rm-Device'
+                                    });
+                                    return [2 /*return*/, null];
+                                }
+                                return [4 /*yield*/, Stores.Rms.Exec(id, code)];
+                            case 1:
+                                result = _a.sent();
+                                return [2 /*return*/, result];
+                        }
+                    });
+                });
+            };
             /**
              * リモコンボタンを一つ削除する。
              * @param control
@@ -4891,7 +5080,7 @@ var App;
                                 this._controlSet = null;
                                 this._page.UnMask();
                                 // 削除メソッド、投げっぱなしの終了確認無しで終わる。
-                                return [4 /*yield*/, App.Models.Stores.ControlSets.Remove(controlSet)];
+                                return [4 /*yield*/, Stores.ControlSets.Remove(controlSet)];
                             case 1:
                                 // 削除メソッド、投げっぱなしの終了確認無しで終わる。
                                 _a.sent();
@@ -8057,6 +8246,29 @@ var App;
                 return Control;
             }(Fw.Models.EntityBase));
             Entities.Control = Control;
+        })(Entities = Models.Entities || (Models.Entities = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/EntityBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Entities;
+        (function (Entities) {
+            var RmCommand = /** @class */ (function (_super) {
+                __extends(RmCommand, _super);
+                function RmCommand() {
+                    var _this = _super !== null && _super.apply(this, arguments) || this;
+                    _this.Code = '';
+                    return _this;
+                }
+                return RmCommand;
+            }(Fw.Models.EntityBase));
+            Entities.RmCommand = RmCommand;
         })(Entities = Models.Entities || (Models.Entities = {}));
     })(Models = App.Models || (App.Models = {}));
 })(App || (App = {}));
