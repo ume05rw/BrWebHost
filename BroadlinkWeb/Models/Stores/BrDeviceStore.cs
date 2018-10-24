@@ -61,7 +61,12 @@ namespace BroadlinkWeb.Models.Stores
 
             // 注)非同期
             if (!this.IsDeviceAuthed(entity.SbDevice))
-                entity.SbDevice.Auth();
+            {
+                var res = entity.SbDevice.Auth().GetAwaiter().GetResult();
+                Xb.Util.Out("BrDevicesController.Get - Auth: " + res);
+                if (!res)
+                    throw new Exception($"BrDevicesController.Get - Auth Failed! {entity.IpAddressString}");
+            }
 
             return entity;
         }
@@ -94,8 +99,11 @@ namespace BroadlinkWeb.Models.Stores
                 // 注)非同期
                 if (!this.IsDeviceAuthed(sbDev))
                 {
-                    Xb.Util.Out("BrDevicesController.GetList - Auth");
-                    sbDev.Auth();
+                    //Xb.Util.Out("BrDevicesController.GetList - Auth");
+                    var res = sbDev.Auth().GetAwaiter().GetResult();
+                    Xb.Util.Out("BrDevicesController.GetList - Auth: " + res);
+                    if (!res)
+                        throw new Exception($"BrDevicesController.GetList - Auth Failed! {entity.IpAddressString}");
                 }
 
                 entity.SbDevice = sbDev;
@@ -153,8 +161,15 @@ namespace BroadlinkWeb.Models.Stores
             //var tasks = new List<Task>();
             //Task.WaitAll(tasks.ToArray());
             foreach (var entity in entities.Where(en => en.IsActive))
+            {
                 if (!this.IsDeviceAuthed(entity.SbDevice))
-                    entity.SbDevice.Auth();
+                {
+                    var res = entity.SbDevice.Auth().GetAwaiter().GetResult();
+                    Xb.Util.Out("BrDevicesController.Refresh - Auth: " + res);
+                    if (!res)
+                        throw new Exception($"BrDevicesController.Refresh - Auth Failed! {entity.IpAddressString}");
+                }
+            }
 
             return entities;
         }
