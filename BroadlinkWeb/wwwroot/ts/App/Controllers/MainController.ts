@@ -118,7 +118,7 @@ namespace App.Controllers {
 
             // こちらはawaitしない。
             Stores.BrDevices
-                .Discover()
+                .GetListAndRefresh()
                 .then(() => {
                     Dump.Log('Store Initialize End');
                 });

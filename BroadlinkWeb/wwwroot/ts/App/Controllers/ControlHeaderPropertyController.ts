@@ -114,7 +114,9 @@ namespace App.Controllers {
         private RefreshBrDevices(): void {
             this._page.SboRm.ClearItems();
             _.each(Stores.BrDevices.List, (dev: Entities.BrDevice) => {
-                if (dev.DeviceType === 'Rm') {
+                if (dev.DeviceType === 'Rm'
+                    || dev.DeviceType === 'Rm2Pro'
+                ) {
                     const name = `${dev.DeviceType} [${dev.IpAddressString}]`;
                     this._page.SboRm.AddItem(name, String(dev.Id));
                 }

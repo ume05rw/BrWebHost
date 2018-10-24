@@ -29,6 +29,30 @@ namespace App.Models.Stores {
             return new BrDevice();
         }
 
+        public async GetListAndRefresh(): Promise<BrDevice[]> {
+            const params = new Xhr.Params(
+                'BrDevices',
+                Xhr.MethodType.Get
+            );
+
+            const res = await Xhr.Query.Invoke(params);
+
+            if (res.Succeeded) {
+                for (let i = 0; i < res.Values.length; i++)
+                    this.Merge(res.Values[i] as BrDevice);
+
+                // 非同期実行、待機しない。
+                this.Discover();
+
+                return _.values(this.List);
+            } else {
+                this.Log('Query Fail');
+                this.Log(res.Errors);
+                return null;
+            }
+        }
+
+
         public async Discover(): Promise<BrDevice[]> {
 
             const params = new Xhr.Params(
@@ -41,6 +65,8 @@ namespace App.Models.Stores {
             if (res.Succeeded) {
                 for (let i = 0; i < res.Values.length; i++)
                     this.Merge(res.Values[i] as BrDevice);
+
+                Dump.Log(res.Values);
 
                 return res.Values as BrDevice[];
             } else {

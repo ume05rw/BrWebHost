@@ -15,9 +15,9 @@ namespace BroadlinkWeb.Models.Stores
         {
             // TODO: そのうちDI実装する。
             if (BrDeviceStore._instance == null)
-                BrDeviceStore._instance = new BrDeviceStore(dbc);
-            else
-                BrDeviceStore._instance._dbc = dbc;
+                BrDeviceStore._instance = new BrDeviceStore();
+
+            BrDeviceStore._instance._dbc = dbc;
 
             return BrDeviceStore._instance;
         }
@@ -26,31 +26,97 @@ namespace BroadlinkWeb.Models.Stores
 
         private Dbc _dbc;
 
-        private List<BrDevice> _list = new List<BrDevice>();
-        public List<BrDevice> List => this._list;
+        private List<SharpBroadlink.Devices.IDevice> _sbDevices
+            = new List<SharpBroadlink.Devices.IDevice>();
 
-        private BrDeviceStore(Dbc dbc)
+        private BrDeviceStore()
         {
-            this._dbc = dbc;
         }
 
-        
+        public BrDevice Get(int id)
+        {
+            var entity = this._dbc.BrDevices
+                .SingleOrDefault(bd => bd.Id == id);
+
+            if (entity != null)
+            {
+                var sbDev = this._sbDevices
+                    .FirstOrDefault(sd => this.IsDeviceMatch(entity, sd));
+
+                if (sbDev == null)
+                {
+                    var mac = entity.MacAddressString
+                        .Split('-')
+                        .Select(s => (byte)Convert.ToInt32(s, 16))
+                        .ToArray();
+                    var ep = new IPEndPoint(IPAddress.Parse(entity.IpAddressString), entity.Port);
+
+                    sbDev = Broadlink.Create(entity.DeviceTypeDetailNumber, mac, ep);
+                }
+
+                entity.SbDevice = sbDev;
+            }
+
+            // 注)非同期
+            if (!this.IsDeviceAuthed(entity.SbDevice))
+                entity.SbDevice.Auth();
+
+            return entity;
+        }
+
+
+        public IEnumerable<BrDevice> GetList()
+        {
+            // DB登録済みのデバイスエンティティ取得
+            var entities = this._dbc.BrDevices.ToList();
+
+            foreach (var entity in entities)
+            {
+                var sbDev = this._sbDevices
+                    .FirstOrDefault(sd => this.IsDeviceMatch(entity, sd));
+
+                if (sbDev == null)
+                {
+                    var mac = entity.MacAddressString
+                        .Split('-')
+                        .Select(s => (byte)Convert.ToInt32(s, 16))
+                        .ToArray();
+                    var ep = new IPEndPoint(IPAddress.Parse(entity.IpAddressString), entity.Port);
+
+                    sbDev = Broadlink.Create(entity.DeviceTypeDetailNumber, mac, ep);
+                    this._sbDevices.Add(sbDev);
+                }
+
+                // 注)非同期
+                if (!this.IsDeviceAuthed(sbDev))
+                    sbDev.Auth();
+
+                entity.SbDevice = sbDev;
+            }
+
+            return entities;
+        }
 
         public IEnumerable<BrDevice> Refresh()
         {
             var result = new List<BrDevice>();
 
             // LAN上のBroadlinkデバイスオブジェクトを取得
-            var broadlinkDevices = Broadlink.Discover(4)
+            var broadlinkDevices = Broadlink.Discover(2)
                 .GetAwaiter()
                 .GetResult();
+
+            // キャッシュ上に無いBroadlinkデバイスを追加。
+            foreach (var sbDev in broadlinkDevices)
+                if (!this._sbDevices.Any(sb => this.IsDeviceMatch(sb, sbDev)))
+                    this._sbDevices.Add(sbDev);
 
             // DB登録済みのデバイスエンティティ取得
             var entities = this._dbc.BrDevices.ToList();
 
             // デバイスエンティティにBroadlinkデバイスオブジェクトをセット。
             foreach (var entity in entities)
-                entity.SbDevice = broadlinkDevices
+                entity.SbDevice = this._sbDevices
                     .FirstOrDefault(bd => this.IsDeviceMatch(entity, bd));
 
             // DB未登録デバイスオブジェクトのEntityを生成
@@ -75,14 +141,11 @@ namespace BroadlinkWeb.Models.Stores
             }
 
             // デバイスの認証を通す。
-            var tasks = new List<Task>();
+            //var tasks = new List<Task>();
+            //Task.WaitAll(tasks.ToArray());
             foreach (var entity in entities.Where(en => en.IsActive))
-                tasks.Add(entity.SbDevice.Auth());
-
-            Task.WaitAll(tasks.ToArray());
-
-            this.List.Clear();
-            this.List.AddRange(entities);
+                if (!this.IsDeviceAuthed(entity.SbDevice))
+                    entity.SbDevice.Auth();
 
             return entities;
         }
@@ -101,6 +164,24 @@ namespace BroadlinkWeb.Models.Stores
             return (brDev.IpAddressString == sbDev.Host.Address.ToString()
                     && brDev.Port == sbDev.Host.Port
                     && brDev.DeviceTypeDetailNumber == sbDev.DevType);
+        }
+
+        private bool IsDeviceMatch(SharpBroadlink.Devices.IDevice sbDev1, SharpBroadlink.Devices.IDevice sbDev2)
+        {
+            if (sbDev1 == null || sbDev2 == null)
+                return false;
+
+            return (sbDev1.Host.Address.ToString() == sbDev2.Host.Address.ToString()
+                    && sbDev1.Host.Port == sbDev2.Host.Port
+                    && sbDev1.DevType == sbDev2.DevType);
+        }
+
+        private bool IsDeviceAuthed(SharpBroadlink.Devices.IDevice sbDev)
+        {
+            return (sbDev.Id[0] != 0
+                    || sbDev.Id[1] != 0
+                    || sbDev.Id[2] != 0
+                    || sbDev.Id[3] != 0);
         }
     }
 }

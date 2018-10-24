@@ -14,6 +14,10 @@ namespace Fw.Models {
             return this._list;
         }
 
+        public get Length(): number {
+            return Object.keys(this._list).length;
+        }
+
         /**
          * Storeは基本的にSingletonであるべき、の方向で。
          */

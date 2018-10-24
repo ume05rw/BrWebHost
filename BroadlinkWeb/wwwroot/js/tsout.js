@@ -4016,6 +4016,13 @@ var Fw;
                 enumerable: true,
                 configurable: true
             });
+            Object.defineProperty(StoreBase.prototype, "Length", {
+                get: function () {
+                    return Object.keys(this._list).length;
+                },
+                enumerable: true,
+                configurable: true
+            });
             /**
              * API応答などのオブジェクトをStoreに入れる。
              * @param entity
@@ -4173,6 +4180,7 @@ var App;
     (function (Models) {
         var Stores;
         (function (Stores) {
+            var Dump = Fw.Util.Dump;
             var BrDevice = App.Models.Entities.BrDevice;
             var Xhr = Fw.Util.Xhr;
             var BrDeviceStore = /** @class */ (function (_super) {
@@ -4194,6 +4202,33 @@ var App;
                 BrDeviceStore.prototype.GetNewEntity = function () {
                     return new BrDevice();
                 };
+                BrDeviceStore.prototype.GetListAndRefresh = function () {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var params, res, i;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    params = new Xhr.Params('BrDevices', Xhr.MethodType.Get);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        for (i = 0; i < res.Values.length; i++)
+                                            this.Merge(res.Values[i]);
+                                        // 非同期実行、待機しない。
+                                        this.Discover();
+                                        return [2 /*return*/, _.values(this.List)];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, null];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
                 BrDeviceStore.prototype.Discover = function () {
                     return __awaiter(this, void 0, void 0, function () {
                         var params, res, i;
@@ -4207,6 +4242,7 @@ var App;
                                     if (res.Succeeded) {
                                         for (i = 0; i < res.Values.length; i++)
                                             this.Merge(res.Values[i]);
+                                        Dump.Log(res.Values);
                                         return [2 /*return*/, res.Values];
                                     }
                                     else {
@@ -4334,7 +4370,8 @@ var App;
                 var _this = this;
                 this._page.SboRm.ClearItems();
                 _.each(Stores.BrDevices.List, function (dev) {
-                    if (dev.DeviceType === 'Rm') {
+                    if (dev.DeviceType === 'Rm'
+                        || dev.DeviceType === 'Rm2Pro') {
                         var name_1 = dev.DeviceType + " [" + dev.IpAddressString + "]";
                         _this._page.SboRm.AddItem(name_1, String(dev.Id));
                     }
@@ -5383,7 +5420,7 @@ var App;
                                 _a.sent();
                                 // こちらはawaitしない。
                                 Stores.BrDevices
-                                    .Discover()
+                                    .GetListAndRefresh()
                                     .then(function () {
                                     Dump.Log('Store Initialize End');
                                 });

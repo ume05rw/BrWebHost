@@ -110,7 +110,10 @@ namespace BroadlinkWeb.Areas.Api.Controllers
             if (!ModelState.IsValid)
                 return (null, XhrResult.CreateError(ModelState));
 
-            var entity = this._store.List.FirstOrDefault(m => m.Id == id);
+            if (id == null)
+                return (null, XhrResult.CreateError("Entity Not Found"));
+
+            var entity = this._store.Get((int)id);
 
             if (entity == null)
                 return (null, XhrResult.CreateError("Entity Not Found"));

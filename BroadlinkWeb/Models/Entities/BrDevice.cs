@@ -1,4 +1,4 @@
-﻿using MySql.Data.EntityFrameworkCore.DataAnnotations;
+using MySql.Data.EntityFrameworkCore.DataAnnotations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

@@ -26,6 +26,32 @@ namespace BroadlinkWeb.Areas.Api.Controllers
             this._store = BrDeviceStore.GetInstance(dbc);
         }
 
+        // GET: api/BrDevices
+        [HttpGet]
+        public XhrResult GetBrDevices()
+        {
+            if (!ModelState.IsValid)
+                return XhrResult.CreateError(ModelState);
+
+            var list = this._store.GetList();
+            return XhrResult.CreateSucceeded(list);
+        }
+
+        // GET: api/BrDevices/5
+        [HttpGet("{id}")]
+        public XhrResult GetBrDevice([FromRoute] int id)
+        {
+            if (!ModelState.IsValid)
+                return XhrResult.CreateError(ModelState);
+
+            var brDevice = this._store.Get(id);
+
+            if (brDevice == null)
+                return XhrResult.CreateError("Entity Not Found");
+
+            return XhrResult.CreateSucceeded(brDevice);
+        }
+
         // GET: api/BrDevices/Discover
         [HttpGet("Discover")]
         public XhrResult Discover()
@@ -33,7 +59,6 @@ namespace BroadlinkWeb.Areas.Api.Controllers
             if (!ModelState.IsValid)
                 return XhrResult.CreateError(ModelState);
 
-            //IEnumerable<BrDevice>
             var result = this._store.Refresh();
             return XhrResult.CreateSucceeded(result.ToArray());
         }
@@ -45,13 +70,10 @@ namespace BroadlinkWeb.Areas.Api.Controllers
             if (!ModelState.IsValid)
                 return XhrResult.CreateError(ModelState);
 
-            BrDevice entity;
             if (id == null)
-                entity = this._store.List
-                    .FirstOrDefault(bd => bd.SbDevice?.DeviceType == DeviceType.A1);
-            else
-                entity = this._store.List
-                    .FirstOrDefault(bd => bd.Id == id);
+                return XhrResult.CreateError("Entity Not Found");
+
+            var entity = this._store.Get((int)id);
 
             if (entity == null)
                 return XhrResult.CreateError("Entity Not Found");
@@ -69,31 +91,9 @@ namespace BroadlinkWeb.Areas.Api.Controllers
             return XhrResult.CreateSucceeded(result);
         }
 
-        // GET: api/BrDevices
-        [HttpGet]
-        public XhrResult GetBrDevices()
-        {
-            if (!ModelState.IsValid)
-                return XhrResult.CreateError(ModelState);
 
-            var list = _dbc.BrDevices.ToArray();
-            return XhrResult.CreateSucceeded(list);
-        }
 
-        // GET: api/BrDevices/5
-        [HttpGet("{id}")]
-        public async Task<XhrResult> GetBrDevice([FromRoute] int id)
-        {
-            if (!ModelState.IsValid)
-                return XhrResult.CreateError(ModelState);
 
-            var brDevice = await _dbc.BrDevices.SingleOrDefaultAsync(m => m.Id == id);
-
-            if (brDevice == null)
-                return XhrResult.CreateError("Entity Not Found");
-
-            return XhrResult.CreateSucceeded(brDevice);
-        }
 
         //// PUT: api/BrDevices/5
         //[HttpPut("{id}")]
