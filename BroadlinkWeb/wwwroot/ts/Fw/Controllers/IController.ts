@@ -15,11 +15,15 @@ namespace Fw.Controllers {
 
         SetPageView(view: Views.PageView): void;
         //SetPageViewByJQuery(elem: JQuery): void;
+        Show(): void;
+        Hide(): void;
+
+        ShowModal(): void;
+        HideModal(): void;
+
+        ToUnmodal(): void;
 
         SwitchTo(id: string): void;
         SwitchController(controller: IController): void;
-        SetModal(): void;
-        HideModal(): void;
-        SetUnmodal(): void;
     }
 }

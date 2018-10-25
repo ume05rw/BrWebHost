@@ -497,11 +497,10 @@ var Fw;
                 });
             };
             Manager.prototype.Set = function (id) {
-                var target = this._controllers[id];
-                if (!target)
+                var controller = this._controllers[id];
+                if (!controller)
                     throw new Error("id not found: " + id);
-                this.Reset(target);
-                target.View.Show();
+                this.SetController(controller);
             };
             Manager.prototype.SetController = function (controller) {
                 this.Reset(controller);
@@ -1364,26 +1363,26 @@ var Fw;
             ControllerBase.prototype.SetPageView = function (view) {
                 this._view = view;
             };
-            //public SetPageViewByJQuery(elem: JQuery): void {
-            //    this._view = new Fw.Views.PageView(elem);
-            //    this.IsDefaultView = (this.View.Elem.attr(Config.DefaultPageAttribute) === "true");
-            //    if (this.IsDefaultView)
-            //        this.View.Show();
-            //}
-            ControllerBase.prototype.SwitchTo = function (id) {
-                this.Manager.Set(id);
+            ControllerBase.prototype.Show = function () {
+                this.Manager.SetController(this);
             };
-            ControllerBase.prototype.SwitchController = function (controller) {
-                this.Manager.SetController(controller);
+            ControllerBase.prototype.Hide = function () {
+                this.View.Hide();
             };
-            ControllerBase.prototype.SetModal = function () {
+            ControllerBase.prototype.ShowModal = function () {
                 this.Manager.SetModal(this.Id);
             };
             ControllerBase.prototype.HideModal = function () {
                 this.View.HideModal();
             };
-            ControllerBase.prototype.SetUnmodal = function () {
+            ControllerBase.prototype.ToUnmodal = function () {
                 this.Manager.SetUnmodal(this.Id);
+            };
+            ControllerBase.prototype.SwitchTo = function (id) {
+                this.Manager.Set(id);
+            };
+            ControllerBase.prototype.SwitchController = function (controller) {
+                this.Manager.SetController(controller);
             };
             ControllerBase.prototype.Dispose = function () {
                 _super.prototype.Dispose.call(this);
@@ -4932,7 +4931,7 @@ var App;
                     });
                 }); });
                 _this._page.EditButton.AddEventListener(ButtonViewEvents.SingleClick, function () {
-                    _this.SetUnmodal();
+                    _this.ToUnmodal();
                 });
                 _this._page.HeaderBar.RightButton.AddEventListener(ButtonViewEvents.SingleClick, function (e) {
                     _this.OnOrderedNewControl(e);
@@ -4988,7 +4987,7 @@ var App;
                                         ctr = this.Manager.Get('ControlProperty');
                                         button = e.Sender;
                                         ctr.SetEntity(button.Control);
-                                        ctr.SetModal();
+                                        ctr.ShowModal();
                                         id = this._controlSet.BrDeviceId;
                                         if (!((id)
                                             && (!button.Control.Code
@@ -5053,7 +5052,7 @@ var App;
                                 ctr = this.Manager.Get('ControlProperty');
                                 button = e.Sender;
                                 ctr.SetEntity(button.Control);
-                                ctr.SetModal();
+                                ctr.ShowModal();
                                 id = this._controlSet.BrDeviceId;
                                 if (!((id)
                                     && (!button.Control.Code
@@ -5102,7 +5101,7 @@ var App;
                     throw new Error('ControlSet Not Found');
                 var ctr = this.Manager.Get('ControlHeaderProperty');
                 ctr.SetEntity(this._controlSet);
-                ctr.SetModal();
+                ctr.ShowModal();
             };
             /**
              * 学習指示／コード取得
@@ -5594,7 +5593,6 @@ var App;
                             case 11:
                                 ctr2 = this.Manager.Get('ControlSet');
                                 ctr2.SetEntity(ctrSet);
-                                //ctr2.SetModal();
                                 this.SwitchController(ctr2);
                                 return [2 /*return*/];
                         }
@@ -5651,12 +5649,14 @@ var App;
                                 _.each(sets, function (cs) {
                                     var btn = new ControlSetButtonView(cs);
                                     btn.Button.AddEventListener(ButtonEvents.SingleClick, function (e) {
+                                        // メインボタンクリック - リモコンをスライドイン表示する。
                                         var button = e.Sender.Parent;
                                         var ctr2 = _this.Manager.Get('ControlSet');
                                         ctr2.SetEntity(button.ControlSet);
-                                        ctr2.SetModal();
+                                        ctr2.ShowModal();
                                     });
                                     btn.Toggle.AddEventListener(ToggleEvents.Changed, function (e) {
+                                        // トグルクリック
                                         var button = e.Sender.Parent;
                                         var cset = button.ControlSet;
                                         var toggleValue = button.Toggle.BoolValue;
@@ -5701,6 +5701,7 @@ var App;
                                         }
                                     });
                                     cs.AddEventListener(Events.EntityEvents.Changed, function (e) {
+                                        // ボタンに乗せたControlSetEntityの値変更イベント
                                         var cset = e.Sender;
                                         var btn = _.find(_this._page.ControlSetPanel.Children, function (b) {
                                             var csetBtn = b;

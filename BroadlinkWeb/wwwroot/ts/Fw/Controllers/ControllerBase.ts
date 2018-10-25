@@ -51,13 +51,25 @@ namespace Fw.Controllers {
             this._view = view;
         }
 
-        //public SetPageViewByJQuery(elem: JQuery): void {
-        //    this._view = new Fw.Views.PageView(elem);
-        //    this.IsDefaultView = (this.View.Elem.attr(Config.DefaultPageAttribute) === "true");
+        public Show(): void {
+            this.Manager.SetController(this);
+        }
+        public Hide(): void {
+            this.View.Hide();
+        }
 
-        //    if (this.IsDefaultView)
-        //        this.View.Show();
-        //}
+        public ShowModal(): void {
+            this.Manager.SetModal(this.Id);
+        }
+
+        public HideModal(): void {
+            this.View.HideModal();
+        }
+
+        public ToUnmodal(): void {
+            this.Manager.SetUnmodal(this.Id);
+        }
+
 
         public SwitchTo(id: string): void {
             this.Manager.Set(id);
@@ -67,17 +79,6 @@ namespace Fw.Controllers {
             this.Manager.SetController(controller);
         }
 
-        public SetModal(): void {
-            this.Manager.SetModal(this.Id);
-        }
-
-        public HideModal(): void {
-            (this.View as Views.PageView).HideModal();
-        }
-
-        public SetUnmodal(): void {
-            this.Manager.SetUnmodal(this.Id);
-        }
 
         public Dispose(): void {
             super.Dispose();

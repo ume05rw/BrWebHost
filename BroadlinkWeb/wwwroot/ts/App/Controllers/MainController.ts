@@ -60,7 +60,7 @@ namespace App.Controllers {
                 });
 
             this._page.HeaderBar.RightButton.AddEventListener(ButtonEvents.SingleClick, async () => {
-
+                // ヘッダの追加ボタンクリック - 新規リモコンのテンプレート選択後に編集画面へ。
                 const ctr = this.Manager.Get('OperationSelect') as OperationSelectController;
                 const item: Operation = await ctr.Select(this);
 
@@ -88,7 +88,6 @@ namespace App.Controllers {
 
                 const ctr2 = this.Manager.Get('ControlSet') as ControlSetController;
                 ctr2.SetEntity(ctrSet);
-                //ctr2.SetModal();
                 this.SwitchController(ctr2);
             });
 
@@ -138,12 +137,14 @@ namespace App.Controllers {
             _.each(sets, (cs: Entities.ControlSet) => {
                 const btn = new ControlSetButtonView(cs);
                 btn.Button.AddEventListener(ButtonEvents.SingleClick, (e) => {
+                    // メインボタンクリック - リモコンをスライドイン表示する。
                     const button = (e.Sender as Fw.Views.IView).Parent as ControlSetButtonView;
                     const ctr2 = this.Manager.Get('ControlSet') as ControlSetController;
                     ctr2.SetEntity(button.ControlSet);
-                    ctr2.SetModal();
+                    ctr2.ShowModal();
                 });
                 btn.Toggle.AddEventListener(ToggleEvents.Changed, (e) => {
+                    // トグルクリック
                     const button = (e.Sender as Fw.Views.IView).Parent as ControlSetButtonView;
                     const cset = button.ControlSet;
                     const toggleValue = button.Toggle.BoolValue;
@@ -198,6 +199,7 @@ namespace App.Controllers {
                 });
 
                 cs.AddEventListener(Events.EntityEvents.Changed, (e) => {
+                    // ボタンに乗せたControlSetEntityの値変更イベント
                     const cset = e.Sender as Entities.ControlSet
                     const btn: ControlSetButtonView = _.find(this._page.ControlSetPanel.Children, (b) => {
                         const csetBtn = b as ControlSetButtonView;

@@ -62,12 +62,11 @@ namespace Fw.Controllers {
         }
 
         public Set(id: string): void {
-            const target = this._controllers[id];
-            if (!target)
+            const controller = this._controllers[id];
+            if (!controller)
                 throw new Error("id not found: " + id);
 
-            this.Reset(target);
-            target.View.Show();
+            this.SetController(controller);
         }
 
         public SetController(controller: IController): void {

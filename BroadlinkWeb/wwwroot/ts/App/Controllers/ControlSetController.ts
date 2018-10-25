@@ -81,7 +81,7 @@ namespace App.Controllers {
             });
 
             this._page.EditButton.AddEventListener(ButtonViewEvents.SingleClick, () => {
-                this.SetUnmodal();
+                this.ToUnmodal();
             });
 
             this._page.HeaderBar.RightButton.AddEventListener(ButtonViewEvents.SingleClick, (e) => {
@@ -131,7 +131,7 @@ namespace App.Controllers {
                         const ctr = this.Manager.Get('ControlProperty') as ControlPropertyController;
                         const button = e.Sender as Controls.ControlButtonView;
                         ctr.SetEntity(button.Control);
-                        ctr.SetModal();
+                        ctr.ShowModal();
 
                         const id = this._controlSet.BrDeviceId;
                         if ((id)
@@ -199,7 +199,7 @@ namespace App.Controllers {
                 const ctr = this.Manager.Get('ControlProperty') as ControlPropertyController;
                 const button = e.Sender as Controls.ControlButtonView;
                 ctr.SetEntity(button.Control);
-                ctr.SetModal();
+                ctr.ShowModal();
 
                 const id = this._controlSet.BrDeviceId;
                 if ((id)
@@ -253,7 +253,7 @@ namespace App.Controllers {
 
             const ctr = this.Manager.Get('ControlHeaderProperty') as ControlHeaderPropertyController;
             ctr.SetEntity(this._controlSet);
-            ctr.SetModal();
+            ctr.ShowModal();
         }
 
 
