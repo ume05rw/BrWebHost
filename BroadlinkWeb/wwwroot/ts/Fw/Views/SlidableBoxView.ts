@@ -76,6 +76,7 @@ namespace Fw.Views {
             this.BorderRadius = 0;
 
             this._innerBox.HasBorder = false;
+            this._innerBox.Position.Policy = Property.PositionPolicy.LeftTop;
             this._innerBox.SetTransAnimation(false);
             this._innerBox.SetParent(this);
             this.Elem.append(this._innerBox.Elem);

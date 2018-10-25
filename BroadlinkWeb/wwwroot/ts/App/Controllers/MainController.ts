@@ -88,7 +88,7 @@ namespace App.Controllers {
 
                 const ctr2 = this.Manager.Get('ControlSet') as ControlSetController;
                 ctr2.SetEntity(ctrSet);
-                this.SwitchController(ctr2);
+                ctr2.Show();
             });
 
             this._page.BtnGoSub1.AddEventListener(ButtonEvents.SingleClick, () => {
@@ -105,7 +105,7 @@ namespace App.Controllers {
 
             this._page.BtnGoDynamic.AddEventListener(ButtonEvents.SingleClick, () => {
                 const ctr = new LayoutCheckController('LayoutCheck');
-                this.SwitchController(ctr);
+                ctr.Show();
 
                 // TODO: 二回目以降で落ちる。処理後にControllerをDisposeするフローを考える。
             });
@@ -136,6 +136,7 @@ namespace App.Controllers {
 
             _.each(sets, (cs: Entities.ControlSet) => {
                 const btn = new ControlSetButtonView(cs);
+
                 btn.Button.AddEventListener(ButtonEvents.SingleClick, (e) => {
                     // メインボタンクリック - リモコンをスライドイン表示する。
                     const button = (e.Sender as Fw.Views.IView).Parent as ControlSetButtonView;
@@ -143,12 +144,12 @@ namespace App.Controllers {
                     ctr2.SetEntity(button.ControlSet);
                     ctr2.ShowModal();
                 });
+
                 btn.Toggle.AddEventListener(ToggleEvents.Changed, (e) => {
                     // トグルクリック
                     const button = (e.Sender as Fw.Views.IView).Parent as ControlSetButtonView;
                     const cset = button.ControlSet;
                     const toggleValue = button.Toggle.BoolValue;
-                    const ctr = this.Manager.Get('ControlSet') as ControlSetController;
 
                     Dump.Log('Toggle Changed!!: ' + button.Toggle.Value);
 

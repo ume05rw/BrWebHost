@@ -4967,6 +4967,7 @@ var App;
                     _this._page.ButtonPanel.Remove(btn);
                     btn.Dispose();
                 });
+                this._page.ButtonPanel.InnerLength = this._page.ButtonPanel.Size.Height;
                 if (this._controlSet) {
                     this._controlSet.RemoveEventListener(EntityEvents.Changed, this.ApplyFromEntity, this);
                 }
@@ -5593,7 +5594,7 @@ var App;
                             case 11:
                                 ctr2 = this.Manager.Get('ControlSet');
                                 ctr2.SetEntity(ctrSet);
-                                this.SwitchController(ctr2);
+                                ctr2.Show();
                                 return [2 /*return*/];
                         }
                     });
@@ -5609,7 +5610,7 @@ var App;
                 });
                 _this._page.BtnGoDynamic.AddEventListener(ButtonEvents.SingleClick, function () {
                     var ctr = new Controllers.LayoutCheckController('LayoutCheck');
-                    _this.SwitchController(ctr);
+                    ctr.Show();
                     // TODO: 二回目以降で落ちる。処理後にControllerをDisposeするフローを考える。
                 });
                 return _this;
@@ -5660,7 +5661,6 @@ var App;
                                         var button = e.Sender.Parent;
                                         var cset = button.ControlSet;
                                         var toggleValue = button.Toggle.BoolValue;
-                                        var ctr = _this.Manager.Get('ControlSet');
                                         Dump.Log('Toggle Changed!!: ' + button.Toggle.Value);
                                         if (!cset)
                                             return;
@@ -7108,6 +7108,7 @@ var Fw;
                 _this.HasBorder = false;
                 _this.BorderRadius = 0;
                 _this._innerBox.HasBorder = false;
+                _this._innerBox.Position.Policy = Property.PositionPolicy.LeftTop;
                 _this._innerBox.SetTransAnimation(false);
                 _this._innerBox.SetParent(_this);
                 _this.Elem.append(_this._innerBox.Elem);

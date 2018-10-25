@@ -108,6 +108,7 @@ namespace App.Controllers {
                 this._page.ButtonPanel.Remove(btn);
                 btn.Dispose();
             });
+            this._page.ButtonPanel.InnerLength = this._page.ButtonPanel.Size.Height;
 
 
             if (this._controlSet) {
