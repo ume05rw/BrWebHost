@@ -147,7 +147,6 @@ namespace App.Controllers {
                     }, this);
 
                     btn.AddEventListener(ControlButtonViewEvents.ExecOrdered, (e, p) => {
-                        //alert('ControlSetController.ExecOrdered');
                         const button = p.Sender as Controls.ControlButtonView;
                         const code = button.Control.Code;
 
@@ -157,7 +156,6 @@ namespace App.Controllers {
                                 Message: 'Learn your Remote Control Button.'
                             });
                         } else {
-                            //alert('ControlSetController.ExecOrdered - 2');
                             // コードがあるとき、送信する。
                             this.ExecCode(button.Control.Code);
                         }

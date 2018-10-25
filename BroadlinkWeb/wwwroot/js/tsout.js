@@ -3395,19 +3395,18 @@ var Fw;
                     }
                     else {
                         _this._isDragging = true;
-                        var ml = MouseLocation.Create(e);
-                        _this._dragStartMousePosition.X = ml.PageX;
-                        _this._dragStartMousePosition.Y = ml.PageY;
-                        _this._mouseDownTime = new Date();
-                        if (_this.Position.Policy === Views.Property.PositionPolicy.Centering) {
-                            _this._dragStartViewPosition.X = _this.Position.X;
-                            _this._dragStartViewPosition.Y = _this.Position.Y;
-                        }
-                        else {
-                            _this._dragStartViewPosition.X = _this.Position.Left;
-                            _this._dragStartViewPosition.Y = _this.Position.Top;
-                        }
-                        _this.Refresh();
+                    }
+                    _this._mouseDownTime = new Date();
+                    var ml = MouseLocation.Create(e);
+                    _this._dragStartMousePosition.X = ml.PageX;
+                    _this._dragStartMousePosition.Y = ml.PageY;
+                    if (_this.Position.Policy === Views.Property.PositionPolicy.Centering) {
+                        _this._dragStartViewPosition.X = _this.Position.X;
+                        _this._dragStartViewPosition.Y = _this.Position.Y;
+                    }
+                    else {
+                        _this._dragStartViewPosition.X = _this.Position.Left;
+                        _this._dragStartViewPosition.Y = _this.Position.Top;
                     }
                 });
                 // ↓mouseoutイベントは捕捉しない。途切れまくるので。
@@ -3427,29 +3426,29 @@ var Fw;
                             _this.Position.Left = (Math.round(_this.Position.Left / _this.GridSize) * _this.GridSize) + _this._margin;
                             _this.Position.Top = (Math.round(_this.Position.Top / _this.GridSize) * _this.GridSize) + _this._margin;
                         }
-                        // SingleClick判定
-                        if (_this._mouseDownTime) {
-                            var elapsed = ((new Date()).getTime() - _this._mouseDownTime.getTime());
-                            var ml = MouseLocation.Create(e);
-                            var addX = ml.PageX - _this._dragStartMousePosition.X;
-                            var addY = ml.PageY - _this._dragStartMousePosition.Y;
-                            //this.Log({
-                            //    name: 'RelButton.SlickDetection',
-                            //    _mouseDownTime: this._mouseDownTime,
-                            //    elapsed: elapsed,
-                            //    addX: addX,
-                            //    addY: addY,
-                            //    add: (Math.abs(addX) + Math.abs(addY))
-                            //});
-                            if ((Math.abs(addX) + Math.abs(addY)) < 10
-                                && elapsed < 500) {
-                                //this.Log('Fire.SingleClick');
-                                if (_this.IsSuppressedEvent(Events.SingleClick))
-                                    _this.ResumeEvent(Events.SingleClick);
-                                _this.DispatchEvent(Events.SingleClick);
-                            }
-                        }
                         _this.Refresh();
+                    }
+                    // SingleClick判定
+                    if (_this._mouseDownTime) {
+                        var elapsed = ((new Date()).getTime() - _this._mouseDownTime.getTime());
+                        var ml = MouseLocation.Create(e);
+                        var addX = ml.PageX - _this._dragStartMousePosition.X;
+                        var addY = ml.PageY - _this._dragStartMousePosition.Y;
+                        //this.Log({
+                        //    name: 'RelButton.SlickDetection',
+                        //    _mouseDownTime: this._mouseDownTime,
+                        //    elapsed: elapsed,
+                        //    addX: addX,
+                        //    addY: addY,
+                        //    add: (Math.abs(addX) + Math.abs(addY))
+                        //});
+                        if ((Math.abs(addX) + Math.abs(addY)) < 10
+                            && elapsed < 500) {
+                            //this.Log('Fire.SingleClick');
+                            if (_this.IsSuppressedEvent(Events.SingleClick))
+                                _this.ResumeEvent(Events.SingleClick);
+                            _this.DispatchEvent(Events.SingleClick);
+                        }
                     }
                 });
                 var onMouseMove = _this.OnMouseMove.bind(_this);
@@ -4812,7 +4811,6 @@ var App;
                             });
                         }); }, _this);
                         btn.AddEventListener(ControlButtonViewEvents.ExecOrdered, function (e, p) {
-                            //alert('ControlSetController.ExecOrdered');
                             var button = p.Sender;
                             var code = button.Control.Code;
                             if (!code || code === '') {
@@ -4822,7 +4820,6 @@ var App;
                                 });
                             }
                             else {
-                                //alert('ControlSetController.ExecOrdered - 2');
                                 // コードがあるとき、送信する。
                                 _this.ExecCode(button.Control.Code);
                             }
@@ -6390,7 +6387,6 @@ var App;
                     configurable: true
                 });
                 ControlButtonView.prototype.OnSingleClicked = function (e) {
-                    //alert('ControlButton.SingleClick');
                     if (this.IsRelocatable) {
                         // 編集モードのとき
                         //this.Log('Edit');
@@ -6399,7 +6395,6 @@ var App;
                     else {
                         // 実行モードのとき
                         //this.Log('Exec');
-                        //alert('ControlButton.Exec');
                         this.DispatchEvent(Events.ExecOrdered, this.Code);
                     }
                 };

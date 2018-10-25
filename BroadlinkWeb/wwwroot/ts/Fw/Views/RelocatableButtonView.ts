@@ -69,22 +69,20 @@ namespace Fw.Views {
                     this._isDragging = false;
                 } else {
                     this._isDragging = true;
+                }
 
-                    const ml = MouseLocation.Create(e);
-                    this._dragStartMousePosition.X = ml.PageX;
-                    this._dragStartMousePosition.Y = ml.PageY;
+                this._mouseDownTime = new Date();
 
-                    this._mouseDownTime = new Date();
+                const ml = MouseLocation.Create(e);
+                this._dragStartMousePosition.X = ml.PageX;
+                this._dragStartMousePosition.Y = ml.PageY;
 
-                    if (this.Position.Policy === Property.PositionPolicy.Centering) {
-                        this._dragStartViewPosition.X = this.Position.X;
-                        this._dragStartViewPosition.Y = this.Position.Y;
-                    } else {
-                        this._dragStartViewPosition.X = this.Position.Left;
-                        this._dragStartViewPosition.Y = this.Position.Top;
-                    }
-
-                    this.Refresh();
+                if (this.Position.Policy === Property.PositionPolicy.Centering) {
+                    this._dragStartViewPosition.X = this.Position.X;
+                    this._dragStartViewPosition.Y = this.Position.Y;
+                } else {
+                    this._dragStartViewPosition.X = this.Position.Left;
+                    this._dragStartViewPosition.Y = this.Position.Top;
                 }
             });
 
@@ -106,35 +104,36 @@ namespace Fw.Views {
                         this.Position.Top = (Math.round(this.Position.Top     / this.GridSize) * this.GridSize) + this._margin;
                     }
 
-                    // SingleClick判定
-                    if (this._mouseDownTime) {
-                        const elapsed = ((new Date()).getTime() - this._mouseDownTime.getTime());
-
-                        const ml = MouseLocation.Create(e);
-                        const addX = ml.PageX - this._dragStartMousePosition.X;
-                        const addY = ml.PageY - this._dragStartMousePosition.Y;
-
-                        //this.Log({
-                        //    name: 'RelButton.SlickDetection',
-                        //    _mouseDownTime: this._mouseDownTime,
-                        //    elapsed: elapsed,
-                        //    addX: addX,
-                        //    addY: addY,
-                        //    add: (Math.abs(addX) + Math.abs(addY))
-                        //});
-
-                        if (
-                            (Math.abs(addX) + Math.abs(addY)) < 10
-                            && elapsed < 500
-                        ) {
-                            //this.Log('Fire.SingleClick');
-                            if (this.IsSuppressedEvent(Events.SingleClick))
-                                this.ResumeEvent(Events.SingleClick);
-                            this.DispatchEvent(Events.SingleClick);
-                        }
-                    }
-
                     this.Refresh();
+                }
+
+                // SingleClick判定
+                if (this._mouseDownTime) {
+                    const elapsed = ((new Date()).getTime() - this._mouseDownTime.getTime());
+
+                    const ml = MouseLocation.Create(e);
+                    const addX = ml.PageX - this._dragStartMousePosition.X;
+                    const addY = ml.PageY - this._dragStartMousePosition.Y;
+
+                    //this.Log({
+                    //    name: 'RelButton.SlickDetection',
+                    //    _mouseDownTime: this._mouseDownTime,
+                    //    elapsed: elapsed,
+                    //    addX: addX,
+                    //    addY: addY,
+                    //    add: (Math.abs(addX) + Math.abs(addY))
+                    //});
+
+                    if (
+                        (Math.abs(addX) + Math.abs(addY)) < 10
+                        && elapsed < 500
+                    ) {
+                        //this.Log('Fire.SingleClick');
+                        if (this.IsSuppressedEvent(Events.SingleClick))
+                            this.ResumeEvent(Events.SingleClick);
+
+                        this.DispatchEvent(Events.SingleClick);
+                    }
                 }
             });
 
