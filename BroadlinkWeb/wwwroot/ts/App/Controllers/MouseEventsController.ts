@@ -35,7 +35,7 @@ namespace App.Controllers {
 
             this.HeaderBar.LeftButton.Hide(0);
             this.HeaderBar.LeftButton.AddEventListener(Events.ButtonViewEvents.SingleClick, () => {
-                this.SwitchTo("Main");
+                this.Manager.Get("Main").Show();
             });
 
             this.View.Elem.on('click', (e) => {

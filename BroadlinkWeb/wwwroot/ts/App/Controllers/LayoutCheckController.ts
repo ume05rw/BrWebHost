@@ -30,12 +30,12 @@ namespace App.Controllers {
 
             page.BtnGoSub1.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
                 // イベント通知でなく、参照保持でよいか？
-                this.SwitchTo("Sub1");
+                this.Manager.Get("Sub1").Show();
             });
 
             page.BtnGoSub2.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
                 // イベント通知でなく、参照保持でよいか？
-                this.SwitchTo("Sub2");
+                this.Manager.Get("Sub2").Show();
             });
 
             page.TmpCtl.AddEventListener(Events.ControlViewEvents.SingleClick, () => {

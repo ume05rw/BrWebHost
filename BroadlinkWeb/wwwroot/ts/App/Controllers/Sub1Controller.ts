@@ -28,7 +28,7 @@ namespace App.Controllers {
             header.Text = 'ヘッダ';
             header.RightButton.Hide(0);
             header.LeftButton.AddEventListener(Events.ButtonViewEvents.SingleClick, () => {
-                this.SwitchTo("Main");
+                this.Manager.Get("Main").Show();
             });
             this.View.Add(header);
 

@@ -54,7 +54,7 @@ namespace App.Controllers {
 
                 const controlSet = this._controlSet;
                 const ctr = this.Manager.Get('Main') as MainController;
-                this.SwitchController(ctr);
+                ctr.Show();
                 this._controlSet = null;
 
                 // View側削除処理、ButtonPanel.Childrenを削除操作するため、要素退避しておく。
@@ -372,7 +372,8 @@ namespace App.Controllers {
 
             const controlSet = this._controlSet;
             const ctr = this.Manager.Get('Main') as MainController;
-            this.SwitchController(ctr);
+            ctr.Show();
+
             this._controlSet = null;
             this._page.UnMask();
 

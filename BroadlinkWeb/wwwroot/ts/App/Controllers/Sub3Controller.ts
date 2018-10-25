@@ -22,7 +22,7 @@ namespace App.Controllers {
             const page = this.View as App.Views.Pages.Sub3PageView;
 
             page.HeaderBar.LeftButton.AddEventListener(Events.ControlViewEvents.SingleClick, () => {
-                this.SwitchTo("Main");
+                this.Manager.Get("Main").Show();
             });
 
 

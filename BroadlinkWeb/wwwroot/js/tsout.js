@@ -1378,12 +1378,14 @@ var Fw;
             ControllerBase.prototype.ToUnmodal = function () {
                 this.Manager.SetUnmodal(this.Id);
             };
-            ControllerBase.prototype.SwitchTo = function (id) {
-                this.Manager.Set(id);
-            };
-            ControllerBase.prototype.SwitchController = function (controller) {
-                this.Manager.SetController(controller);
-            };
+            // ↓Showメソッドに移行。
+            // ↓呼び出されたコントローラ側で、呼び出しタイミングが分かりにくいので。
+            //public SwitchTo(id: string): void {
+            //    this.Manager.Set(id);
+            //}
+            //public SwitchController(controller: IController): void {
+            //    this.Manager.SetController(controller);
+            //}
             ControllerBase.prototype.Dispose = function () {
                 _super.prototype.Dispose.call(this);
                 this._manager.Remove(this.Id);
@@ -4904,7 +4906,7 @@ var App;
                             case 0:
                                 controlSet = this._controlSet;
                                 ctr = this.Manager.Get('Main');
-                                this.SwitchController(ctr);
+                                ctr.Show();
                                 this._controlSet = null;
                                 buttons = Util.Obj.Mirror(this._page.ButtonPanel.Children);
                                 _.each(buttons, function (btn) {
@@ -5222,7 +5224,7 @@ var App;
                                 });
                                 controlSet = this._controlSet;
                                 ctr = this.Manager.Get('Main');
-                                this.SwitchController(ctr);
+                                ctr.Show();
                                 this._controlSet = null;
                                 this._page.UnMask();
                                 // 削除メソッド、投げっぱなしの終了確認無しで終わる。
@@ -5308,11 +5310,11 @@ var App;
                 var page = this.View;
                 page.BtnGoSub1.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
                     // イベント通知でなく、参照保持でよいか？
-                    _this.SwitchTo("Sub1");
+                    _this.Manager.Get("Sub1").Show();
                 });
                 page.BtnGoSub2.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
                     // イベント通知でなく、参照保持でよいか？
-                    _this.SwitchTo("Sub2");
+                    _this.Manager.Get("Sub2").Show();
                 });
                 page.TmpCtl.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
                     _this.Log(_this.ClassName + ".SingleClick1");
@@ -5600,13 +5602,13 @@ var App;
                     });
                 }); });
                 _this._page.BtnGoSub1.AddEventListener(ButtonEvents.SingleClick, function () {
-                    _this.SwitchTo("Sub1");
+                    _this.Manager.Get("Sub1").Show();
                 });
                 _this._page.BtnGoSub2.AddEventListener(ButtonEvents.SingleClick, function () {
-                    _this.SwitchTo("Sub2");
+                    _this.Manager.Get("Sub2").Show();
                 });
                 _this._page.BtnGoSub3.AddEventListener(ButtonEvents.SingleClick, function () {
-                    _this.SwitchTo("Sub3");
+                    _this.Manager.Get("Sub3").Show();
                 });
                 _this._page.BtnGoDynamic.AddEventListener(ButtonEvents.SingleClick, function () {
                     var ctr = new Controllers.LayoutCheckController('LayoutCheck');
@@ -5751,7 +5753,7 @@ var App;
                 _this.View.Add(_this.HeaderBar);
                 _this.HeaderBar.LeftButton.Hide(0);
                 _this.HeaderBar.LeftButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
-                    _this.SwitchTo("Main");
+                    _this.Manager.Get("Main").Show();
                 });
                 _this.View.Elem.on('click', function (e) {
                     _this.Log('click');
@@ -5944,7 +5946,7 @@ var App;
                 header.Text = 'ヘッダ';
                 header.RightButton.Hide(0);
                 header.LeftButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
-                    _this.SwitchTo("Main");
+                    _this.Manager.Get("Main").Show();
                 });
                 _this.View.Add(header);
                 var devices = new Fw.Views.ButtonView();
@@ -6040,7 +6042,7 @@ var App;
                 header.Text = 'A1 Sensor';
                 header.RightButton.Hide(0);
                 header.LeftButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
-                    _this.SwitchTo("Main");
+                    _this.Manager.Get("Main").Show();
                 });
                 _this.View.Add(header);
                 var btnA1Value = new Fw.Views.ButtonView();
@@ -6114,7 +6116,7 @@ var App;
                 _this.SetPageView(new App.Views.Pages.Sub3PageView());
                 var page = _this.View;
                 page.HeaderBar.LeftButton.AddEventListener(Events.ControlViewEvents.SingleClick, function () {
-                    _this.SwitchTo("Main");
+                    _this.Manager.Get("Main").Show();
                 });
                 return _this;
             }

@@ -23,7 +23,7 @@ namespace Fw.Controllers {
 
         ToUnmodal(): void;
 
-        SwitchTo(id: string): void;
-        SwitchController(controller: IController): void;
+        //SwitchTo(id: string): void;
+        //SwitchController(controller: IController): void;
     }
 }

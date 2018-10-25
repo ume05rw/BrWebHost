@@ -70,14 +70,14 @@ namespace Fw.Controllers {
             this.Manager.SetUnmodal(this.Id);
         }
 
-
-        public SwitchTo(id: string): void {
-            this.Manager.Set(id);
-        }
-
-        public SwitchController(controller: IController): void {
-            this.Manager.SetController(controller);
-        }
+        // ↓Showメソッドに移行。
+        // ↓呼び出されたコントローラ側で、呼び出しタイミングが分かりにくいので。
+        //public SwitchTo(id: string): void {
+        //    this.Manager.Set(id);
+        //}
+        //public SwitchController(controller: IController): void {
+        //    this.Manager.SetController(controller);
+        //}
 
 
         public Dispose(): void {

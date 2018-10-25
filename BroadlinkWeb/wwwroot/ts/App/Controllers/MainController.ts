@@ -92,15 +92,15 @@ namespace App.Controllers {
             });
 
             this._page.BtnGoSub1.AddEventListener(ButtonEvents.SingleClick, () => {
-                this.SwitchTo("Sub1");
+                this.Manager.Get("Sub1").Show();
             });
 
             this._page.BtnGoSub2.AddEventListener(ButtonEvents.SingleClick, () => {
-                this.SwitchTo("Sub2");
+                this.Manager.Get("Sub2").Show();
             });
 
             this._page.BtnGoSub3.AddEventListener(ButtonEvents.SingleClick, () => {
-                this.SwitchTo("Sub3");
+                this.Manager.Get("Sub3").Show();
             });
 
             this._page.BtnGoDynamic.AddEventListener(ButtonEvents.SingleClick, () => {
