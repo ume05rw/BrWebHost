@@ -274,8 +274,12 @@ namespace App.Controllers {
             Popup.Cancellable.Open({
                 Message: 'Set Remote Control head to Rm,<br/> and Push target Button.',
                 CallbackCancel: () => {
+                    // キャンセル指示を送信
+                    Stores.Rms.CancelLearning(id);
+                    // ポップアップを閉じる。
                     Popup.Cancellable.Close();
-                    // 放っておいてもタイムアウトするので、以降は何もしない。
+
+                    // 放っておいてもタイムアウトするので、以降は何もしない。でいい。はず。だ。
                 }
             });
             const rCmd = await Stores.Rms.GetLearnedCode(id);
