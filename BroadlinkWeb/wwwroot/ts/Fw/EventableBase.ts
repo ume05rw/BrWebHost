@@ -105,7 +105,11 @@ namespace Fw {
 
             _.each(this._eventHandlers, (er: EventReference) => {
                 if (er.Name === name) {
-                    er.BindedHandler(eo);
+                    try {
+                        er.BindedHandler(eo);
+                    } catch (e) {
+                        Dump.ErrorLog(e);
+                    }
                 }
             });
         }

@@ -4,12 +4,14 @@
 /// <reference path="../../../Fw/Views/Property/Anchor.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../../Items/Color.ts" />
+/// <reference path="../../Events/Controls/ControlButtonViewEvents.ts" />
 
 namespace App.Views.Controls {
     import Dump = Fw.Util.Dump;
     import Views = Fw.Views;
     import Property = Fw.Views.Property;
     import Color = App.Items.Color;
+    import ControlButtonViewEvents = App.Events.Controls.ControlButtonViewEvents;
 
     export class LabeledButtonView extends Fw.Views.BoxView {
 
@@ -44,6 +46,10 @@ namespace App.Views.Controls {
             this._labelView.Size.Height = 15;
             this._labelView.FontSize = Property.FontSize.Small;
             this.Add(this._labelView);
+
+            this._buttonView.AddEventListener(ControlButtonViewEvents.LongClick, (e) => {
+                this.DispatchEvent(ControlButtonViewEvents.LongClick);
+            }, this);
         }
 
         protected InnerRefresh(): void {

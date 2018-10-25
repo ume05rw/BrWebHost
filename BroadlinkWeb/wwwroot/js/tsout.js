@@ -1541,6 +1541,7 @@ var Fw;
 /// <reference path="Events/EventableEvents.ts" />
 var Fw;
 (function (Fw) {
+    var Dump = Fw.Util.Dump;
     var EventReference = Fw.Events.EventReference;
     var EventableBase = /** @class */ (function (_super) {
         __extends(EventableBase, _super);
@@ -1613,7 +1614,12 @@ var Fw;
             var eo = new Fw.Events.EventObject(this, name, params);
             _.each(this._eventHandlers, function (er) {
                 if (er.Name === name) {
-                    er.BindedHandler(eo);
+                    try {
+                        er.BindedHandler(eo);
+                    }
+                    catch (e) {
+                        Dump.ErrorLog(e);
+                    }
                 }
             });
         };
@@ -3141,6 +3147,7 @@ var Fw;
 (function (Fw) {
     var Views;
     (function (Views) {
+        var Dump = Fw.Util.Dump;
         var Events = Fw.Events.ControlViewEvents;
         var ControlView = /** @class */ (function (_super) {
             __extends(ControlView, _super);
@@ -3162,7 +3169,7 @@ var Fw;
                     _this._clickEventTimer = setTimeout(function () {
                         // ロングタップイベント
                         _this._clickEventTimer = null;
-                        //this.Log('longtapped');
+                        Dump.Log('longtapped');
                         _this.DispatchEvent(Events.LongClick);
                     }, 1000);
                 });
@@ -3652,6 +3659,7 @@ var Fw;
 /// <reference path="../../../Fw/Views/Property/Anchor.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../../Items/Color.ts" />
+/// <reference path="../../Events/Controls/ControlButtonViewEvents.ts" />
 var App;
 (function (App) {
     var Views;
@@ -3661,6 +3669,7 @@ var App;
             var Dump = Fw.Util.Dump;
             var Views = Fw.Views;
             var Property = Fw.Views.Property;
+            var ControlButtonViewEvents = App.Events.Controls.ControlButtonViewEvents;
             var LabeledButtonView = /** @class */ (function (_super) {
                 __extends(LabeledButtonView, _super);
                 function LabeledButtonView() {
@@ -3675,6 +3684,9 @@ var App;
                     _this._labelView.Size.Height = 15;
                     _this._labelView.FontSize = Property.FontSize.Small;
                     _this.Add(_this._labelView);
+                    _this._buttonView.AddEventListener(ControlButtonViewEvents.LongClick, function (e) {
+                        _this.DispatchEvent(ControlButtonViewEvents.LongClick);
+                    }, _this);
                     return _this;
                 }
                 Object.defineProperty(LabeledButtonView.prototype, "Button", {
@@ -9013,7 +9025,7 @@ var Fw;
              * @param e1
              */
             StuckerBoxView.prototype.OnChildLongClick = function (e) {
-                //this.Log(`${this.ClassName}.OnChildLongClick`);
+                Dump.Log(this.ClassName + ".OnChildLongClick");
                 this.StartRelocation();
             };
             StuckerBoxView.prototype.StartRelocation = function () {

@@ -263,7 +263,7 @@ namespace Fw.Views {
          * @param e1
          */
         private OnChildLongClick(e: Fw.Events.EventObject): void {
-            //this.Log(`${this.ClassName}.OnChildLongClick`);
+            Dump.Log(`${this.ClassName}.OnChildLongClick`);
             this.StartRelocation();
         }
 

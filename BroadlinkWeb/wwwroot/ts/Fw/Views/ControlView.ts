@@ -45,7 +45,7 @@ namespace Fw.Views {
                     // ロングタップイベント
                     this._clickEventTimer = null;
 
-                    //this.Log('longtapped');
+                    Dump.Log('longtapped');
                     this.DispatchEvent(Events.LongClick);
                 }, 1000);
             });
