@@ -22,8 +22,5 @@ namespace Fw.Controllers {
         HideModal(): void;
 
         ToUnmodal(): void;
-
-        //SwitchTo(id: string): void;
-        //SwitchController(controller: IController): void;
     }
 }

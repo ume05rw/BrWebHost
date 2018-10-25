@@ -75,38 +75,38 @@ namespace Fw.Controllers {
         }
 
         public SetModal(id: string): void {
-            const target = this._controllers[id];
-            if (!target)
+            const controller = this._controllers[id];
+            if (!controller)
                 throw new Error("id not found: " + id);
 
             _.each(this._controllers, function (c) {
-                if (c !== target && c.View.IsVisible)
+                if (c !== controller && c.View.IsVisible)
                     (c.View as Views.PageView).Mask();
             });
 
-            (target.View as Views.PageView).ShowModal();
+            (controller.View as Views.PageView).ShowModal();
         }
 
         public HideModal(id: string): void {
-            const target = this._controllers[id];
-            if (!target)
+            const controller = this._controllers[id];
+            if (!controller)
                 throw new Error("id not found: " + id);
 
             _.each(this._controllers, function (c) {
-                if (c !== target && c.View.IsVisible)
+                if (c !== controller && c.View.IsVisible)
                     (c.View as Views.PageView).UnMask();
             });
 
-            (target.View as Views.PageView).HideModal();
+            (controller.View as Views.PageView).HideModal();
         }
 
         public SetUnmodal(id: string): void {
-            const target = this._controllers[id];
-            if (!target)
+            const controller = this._controllers[id];
+            if (!controller)
                 throw new Error("id not found: " + id);
 
-            this.Reset(target);
-            (target.View as Views.PageView).SetUnmodal();
+            this.Reset(controller);
+            (controller.View as Views.PageView).SetUnmodal();
         }
     }
 }

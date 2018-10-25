@@ -19,6 +19,7 @@ namespace App.Views.Pages {
 
         public HeaderBar: Controls.HeaderBarView;
         public EditButton: Controls.ButtonView;
+        public HeaderLeftLabel: Views.LabelView;
         public ButtonPanel: Views.SlidableBoxView;
 
         constructor() {
@@ -26,6 +27,7 @@ namespace App.Views.Pages {
 
             this.HeaderBar = new Controls.HeaderBarView();
             this.EditButton = new Controls.ButtonView();
+            this.HeaderLeftLabel = new Views.LabelView();
             this.ButtonPanel = new Views.SlidableBoxView(Property.Direction.Vertical);
 
 
@@ -48,6 +50,11 @@ namespace App.Views.Pages {
             this.EditButton.Text = '@';
             this.EditButton.SetAnchor(null, 255, null, null);
             this.HeaderBar.Add(this.EditButton);
+
+            this.HeaderLeftLabel.FontSize = Property.FontSize.Large;
+            this.HeaderLeftLabel.Color = Color.Main;
+            this.HeaderLeftLabel.SetAnchor(null, 5, null, null);
+            this.HeaderBar.Add(this.HeaderLeftLabel);
 
 
             this.ButtonPanel.Position.Policy = Property.PositionPolicy.LeftTop;
@@ -85,9 +92,11 @@ namespace App.Views.Pages {
         public SetEditMode(): void {
             const left = (this.Size.Width / 2) - (this.ButtonPanel.Size.Width / 2);
             this.ButtonPanel.Position.Left = left;
+            this.HeaderBar.Label.Show(0);
             this.HeaderBar.LeftButton.Show(0);
             this.HeaderBar.RightButton.Show(0);
             this.EditButton.Hide(0);
+            this.HeaderLeftLabel.Hide(0);
 
             _.each(this.ButtonPanel.Children, (v) => {
                 if (v instanceof Controls.ControlButtonView) 
@@ -98,9 +107,11 @@ namespace App.Views.Pages {
         public SetOperateMode(): void {
             const left = 10;
             this.ButtonPanel.Position.Left = left;
+            this.HeaderBar.Label.Hide(0);
             this.HeaderBar.LeftButton.Hide(0);
             this.HeaderBar.RightButton.Hide(0);
             this.EditButton.Show(0);
+            this.HeaderLeftLabel.Show(0);
 
             _.each(this.ButtonPanel.Children, (v) => {
                 if (v instanceof Controls.ControlButtonView)

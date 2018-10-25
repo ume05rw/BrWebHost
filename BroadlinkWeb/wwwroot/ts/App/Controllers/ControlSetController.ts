@@ -174,6 +174,7 @@ namespace App.Controllers {
                 return;
 
             this._page.HeaderBar.Text = this._controlSet.Name;
+            this._page.HeaderLeftLabel.Text = this._controlSet.Name;
         }
 
         /**
