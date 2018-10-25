@@ -48,6 +48,7 @@ namespace App.Views.Controls {
 
             this._toggle.SetAnchor(null, 40, 40, 30);
             this._toggle.BackgroundColor = 'transparent';
+            this._toggle.SetBoolValue(entity.ToggleState);
             this.Add(this._toggle);
         }
     }

@@ -197,9 +197,18 @@ namespace App.Controllers {
                     }
                 });
 
-                //cs.AddEventListener(Events.EntityEvents.Changed, () => {
+                cs.AddEventListener(Events.EntityEvents.Changed, (e) => {
+                    const cset = e.Sender as Entities.ControlSet
+                    const btn: ControlSetButtonView = _.find(this._page.ControlSetPanel.Children, (b) => {
+                        const csetBtn = b as ControlSetButtonView;
+                        return (csetBtn.ControlSet === cset);
+                    }) as ControlSetButtonView;
+                    if (!btn)
+                        return;
 
-                //});
+                    if (cset.ToggleState !== btn.Toggle.BoolValue)
+                        btn.Toggle.SetBoolValue(cset.ToggleState, false);
+                });
 
                 this._page.ControlSetPanel.Add(btn);
             });

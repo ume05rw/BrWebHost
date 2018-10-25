@@ -39,8 +39,12 @@ namespace Fw.Views {
         }
 
         public SetValue(value: string, eventDispatch: boolean = true): void {
-            const changed = (this._boolValue !== (value === 'true'));
-            this._boolValue = (value === 'true');
+            this.SetBoolValue((value === 'true'), eventDispatch);
+        }
+
+        public SetBoolValue(value: boolean, eventDispatch: boolean = true): void {
+            const changed = (this._boolValue !== value);
+            this._boolValue = value;
             this.Refresh();
 
             if (changed && eventDispatch) {

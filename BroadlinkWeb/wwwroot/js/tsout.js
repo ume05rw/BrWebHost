@@ -5292,6 +5292,7 @@ var App;
                     _this.Label.Text = _this.ControlSet.Name;
                     _this._toggle.SetAnchor(null, 40, 40, 30);
                     _this._toggle.BackgroundColor = 'transparent';
+                    _this._toggle.SetBoolValue(entity.ToggleState);
                     _this.Add(_this._toggle);
                     return _this;
                 }
@@ -5330,6 +5331,7 @@ var App;
     var Controllers;
     (function (Controllers) {
         var Dump = Fw.Util.Dump;
+        var Events = Fw.Events;
         var Pages = App.Views.Pages;
         var ButtonEvents = Fw.Events.ButtonViewEvents;
         var ToggleEvents = Fw.Events.ToggleButtonInputViewEvents;
@@ -5507,8 +5509,17 @@ var App;
                                             Stores.Rms.Exec(cset.BrDeviceId, cTarget.Code);
                                         }
                                     });
-                                    //cs.AddEventListener(Events.EntityEvents.Changed, () => {
-                                    //});
+                                    cs.AddEventListener(Events.EntityEvents.Changed, function (e) {
+                                        var cset = e.Sender;
+                                        var btn = _.find(_this._page.ControlSetPanel.Children, function (b) {
+                                            var csetBtn = b;
+                                            return (csetBtn.ControlSet === cset);
+                                        });
+                                        if (!btn)
+                                            return;
+                                        if (cset.ToggleState !== btn.Toggle.BoolValue)
+                                            btn.Toggle.SetBoolValue(cset.ToggleState, false);
+                                    });
                                     _this._page.ControlSetPanel.Add(btn);
                                 });
                                 this._page.ControlSetPanel.Refresh();
@@ -7843,8 +7854,12 @@ var Fw;
             });
             CheckBoxInputView.prototype.SetValue = function (value, eventDispatch) {
                 if (eventDispatch === void 0) { eventDispatch = true; }
-                var changed = (this._boolValue !== (value === 'true'));
-                this._boolValue = (value === 'true');
+                this.SetBoolValue((value === 'true'), eventDispatch);
+            };
+            CheckBoxInputView.prototype.SetBoolValue = function (value, eventDispatch) {
+                if (eventDispatch === void 0) { eventDispatch = true; }
+                var changed = (this._boolValue !== value);
+                this._boolValue = value;
                 this._input.prop('checked', this._boolValue);
                 if (changed && eventDispatch) {
                     this.DispatchEvent(Events.Changed, this.Value);
@@ -9653,8 +9668,12 @@ var Fw;
             });
             ToggleButtonInputView.prototype.SetValue = function (value, eventDispatch) {
                 if (eventDispatch === void 0) { eventDispatch = true; }
-                var changed = (this._boolValue !== (value === 'true'));
-                this._boolValue = (value === 'true');
+                this.SetBoolValue((value === 'true'), eventDispatch);
+            };
+            ToggleButtonInputView.prototype.SetBoolValue = function (value, eventDispatch) {
+                if (eventDispatch === void 0) { eventDispatch = true; }
+                var changed = (this._boolValue !== value);
+                this._boolValue = value;
                 this.Refresh();
                 if (changed && eventDispatch) {
                     this.DispatchEvent(Events.Changed, this.Value);
