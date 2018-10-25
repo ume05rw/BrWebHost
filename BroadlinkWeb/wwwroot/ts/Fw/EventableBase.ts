@@ -25,10 +25,9 @@ namespace Fw {
         }
 
 
-
         public AddEventListener(
             name: string,
-            handler: (je: JQueryEventObject, eo: Fw.Events.EventObject) => void,
+            handler: (eo: Fw.Events.EventObject) => void,
             bindObject: IObject = null
         ): void {
             if (!bindObject)
@@ -48,7 +47,7 @@ namespace Fw {
 
         public RemoveEventListener(
             name: string,
-            handler?: (je: JQueryEventObject, eo: Fw.Events.EventObject) => void,
+            handler?: (eo: Fw.Events.EventObject) => void,
             bindObject: IObject = null
         ): void {
             if (!bindObject)
@@ -104,16 +103,11 @@ namespace Fw {
             this.Log(`DispatchEvent: ${name}`);
             const eo = new Fw.Events.EventObject(this, name, params);
 
-
             _.each(this._eventHandlers, (er: EventReference) => {
                 if (er.Name === name) {
-                    const je = $.Event(name);
-                    je.stopPropagation();
-                    er.BindedHandler(je, eo);
+                    er.BindedHandler(eo);
                 }
             });
-
-            //this.Elem.trigger(name, eo);
         }
 
         public SuppressEvent(name: string): void {

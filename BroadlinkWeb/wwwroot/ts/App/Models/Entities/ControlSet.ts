@@ -29,6 +29,11 @@ namespace App.Models.Entities {
         public IconUrl: string = 'images/icons/main_av.png';
 
         /**
+         * トグルボタン状態
+         */
+        public ToggleState: boolean = false;
+
+        /**
          * 背景色
          */
         public Color: string = Color.ButtonColors[0];

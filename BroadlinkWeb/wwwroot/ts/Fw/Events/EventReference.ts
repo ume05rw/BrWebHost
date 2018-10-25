@@ -4,7 +4,7 @@
 namespace Fw.Events {
     export class EventReference {
         public Name: string;
-        public Handler: (je: JQueryEventObject, eo: Fw.Events.EventObject) => void;
+        public Handler: (eo: Fw.Events.EventObject) => void;
         public BindedHandler: any;
         public BindObject: any;
     }

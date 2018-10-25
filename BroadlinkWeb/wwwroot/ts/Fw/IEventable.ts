@@ -15,7 +15,7 @@ namespace Fw {
          */
         AddEventListener(
             name: string,
-            handler: (je: JQueryEventObject, eo: Fw.Events.EventObject) => void,
+            handler: (eo: Fw.Events.EventObject) => void,
             bindObject?: any
         ): void;
 
@@ -27,7 +27,7 @@ namespace Fw {
          */
         RemoveEventListener(
             name: string,
-            handler?: (je: JQueryEventObject, eo: Fw.Events.EventObject) => void,
+            handler?: (eo: Fw.Events.EventObject) => void,
             bindObject?: any
         ): void;
 

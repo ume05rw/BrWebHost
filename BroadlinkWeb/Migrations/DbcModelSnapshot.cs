@@ -163,6 +163,9 @@ namespace BroadlinkWeb.Migrations
                     b.Property<int>("Order")
                         .HasColumnType("int(11)");
 
+                    b.Property<byte>("ToggleState")
+                        .HasColumnType("tinyint(1)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("BrDeviceId");
@@ -174,12 +177,12 @@ namespace BroadlinkWeb.Migrations
                     b.HasAnnotation("MySQL:Collation", "utf8_general_ci ");
 
                     b.HasData(
-                        new { Id = 1, Color = "#fcc91f", IconUrl = "images/icons/controlset/tv.png", IsTemplate = (byte)1, Name = "TV", Order = 0 },
-                        new { Id = 2, Color = "#F92068", IconUrl = "images/icons/controlset/av.png", IsTemplate = (byte)1, Name = "AV", Order = 0 },
-                        new { Id = 3, Color = "#ccdc4b", IconUrl = "images/icons/controlset/light.png", IsTemplate = (byte)1, Name = "Light", Order = 0 },
-                        new { Id = 4, Color = "#6545C6", IconUrl = "images/icons/controlset/aircompressor.png", IsTemplate = (byte)1, Name = "Air Complessor", Order = 0 },
-                        new { Id = 5, Color = "#84bde8", IconUrl = "images/icons/controlset/a1.png", IsTemplate = (byte)1, Name = "A1 Sensor", Order = 0 },
-                        new { Id = 6, Color = "#84bde8", IconUrl = "images/icons/controlset/sp2.png", IsTemplate = (byte)1, Name = "Sp2 Switch", Order = 0 }
+                        new { Id = 1, Color = "#fcc91f", IconUrl = "images/icons/controlset/tv.png", IsTemplate = (byte)1, Name = "TV", Order = 0, ToggleState = (byte)0 },
+                        new { Id = 2, Color = "#F92068", IconUrl = "images/icons/controlset/av.png", IsTemplate = (byte)1, Name = "AV", Order = 0, ToggleState = (byte)0 },
+                        new { Id = 3, Color = "#ccdc4b", IconUrl = "images/icons/controlset/light.png", IsTemplate = (byte)1, Name = "Light", Order = 0, ToggleState = (byte)0 },
+                        new { Id = 4, Color = "#6545C6", IconUrl = "images/icons/controlset/aircompressor.png", IsTemplate = (byte)1, Name = "Air Complessor", Order = 0, ToggleState = (byte)0 },
+                        new { Id = 5, Color = "#84bde8", IconUrl = "images/icons/controlset/a1.png", IsTemplate = (byte)1, Name = "A1 Sensor", Order = 0, ToggleState = (byte)0 },
+                        new { Id = 6, Color = "#84bde8", IconUrl = "images/icons/controlset/sp2.png", IsTemplate = (byte)1, Name = "Sp2 Switch", Order = 0, ToggleState = (byte)0 }
                     );
                 });
 

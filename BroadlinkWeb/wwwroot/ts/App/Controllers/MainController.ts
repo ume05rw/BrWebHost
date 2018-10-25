@@ -137,18 +137,14 @@ namespace App.Controllers {
 
             _.each(sets, (cs: Entities.ControlSet) => {
                 const btn = new ControlSetButtonView(cs);
-                btn.Button.AddEventListener(ButtonEvents.SingleClick, (je, eo) => {
-                    je.preventDefault();
-                    je.stopPropagation();
-                    const button = (eo.Sender as Fw.Views.IView).Parent as ControlSetButtonView;
+                btn.Button.AddEventListener(ButtonEvents.SingleClick, (e) => {
+                    const button = (e.Sender as Fw.Views.IView).Parent as ControlSetButtonView;
                     const ctr2 = this.Manager.Get('ControlSet') as ControlSetController;
                     ctr2.SetEntity(button.ControlSet);
                     ctr2.SetModal();
                 });
-                btn.Toggle.AddEventListener(ToggleEvents.Changed, (je, eo) => {
-                    je.preventDefault();
-                    je.stopPropagation();
-                    const button = (eo.Sender as Fw.Views.IView).Parent as ControlSetButtonView;
+                btn.Toggle.AddEventListener(ToggleEvents.Changed, (e) => {
+                    const button = (e.Sender as Fw.Views.IView).Parent as ControlSetButtonView;
                     const cset = button.ControlSet;
                     const toggleValue = button.Toggle.BoolValue;
                     const ctr = this.Manager.Get('ControlSet') as ControlSetController;
@@ -200,6 +196,10 @@ namespace App.Controllers {
                         Stores.Rms.Exec(cset.BrDeviceId, cTarget.Code);
                     }
                 });
+
+                //cs.AddEventListener(Events.EntityEvents.Changed, () => {
+
+                //});
 
                 this._page.ControlSetPanel.Add(btn);
             });

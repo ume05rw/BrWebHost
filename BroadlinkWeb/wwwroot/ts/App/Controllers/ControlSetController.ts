@@ -126,10 +126,10 @@ namespace App.Controllers {
                     btn.SetColor(control.Color);
                     btn.SetImage(control.IconUrl);
 
-                    btn.AddEventListener(ControlButtonViewEvents.EditOrdered, async (e, p) => {
+                    btn.AddEventListener(ControlButtonViewEvents.EditOrdered, async (e) => {
                         // 既存ボタンの処理。新規ボタン用に同様のロジックが、下にある。
                         const ctr = this.Manager.Get('ControlProperty') as ControlPropertyController;
-                        const button = p.Sender as Controls.ControlButtonView;
+                        const button = e.Sender as Controls.ControlButtonView;
                         ctr.SetEntity(button.Control);
                         ctr.SetModal();
 
@@ -146,8 +146,8 @@ namespace App.Controllers {
                         }
                     }, this);
 
-                    btn.AddEventListener(ControlButtonViewEvents.ExecOrdered, (e, p) => {
-                        const button = p.Sender as Controls.ControlButtonView;
+                    btn.AddEventListener(ControlButtonViewEvents.ExecOrdered, (e) => {
+                        const button = e.Sender as Controls.ControlButtonView;
                         const code = button.Control.Code;
 
                         if (!code || code === '') {
@@ -179,7 +179,7 @@ namespace App.Controllers {
          * リモコンボタン追加指示
          * @param e
          */
-        private OnOrderedNewControl(e: JQueryEventObject): void {
+        private OnOrderedNewControl(e: Fw.Events.EventObject): void {
             if (!this.IsOnEditMode)
                 return;
 
@@ -194,10 +194,10 @@ namespace App.Controllers {
             btn.Control = control;
             btn.SetLeftTop(185, this._page.Size.Height - 90 - 75);
 
-            btn.AddEventListener(ControlButtonViewEvents.EditOrdered, async (e, p) => {
+            btn.AddEventListener(ControlButtonViewEvents.EditOrdered, async (e) => {
                 // ボタン編集指示
                 const ctr = this.Manager.Get('ControlProperty') as ControlPropertyController;
-                const button = p.Sender as Controls.ControlButtonView;
+                const button = e.Sender as Controls.ControlButtonView;
                 ctr.SetEntity(button.Control);
                 ctr.SetModal();
 
@@ -215,9 +215,9 @@ namespace App.Controllers {
 
             }, this);
 
-            btn.AddEventListener(ControlButtonViewEvents.ExecOrdered, (e, p) => {
+            btn.AddEventListener(ControlButtonViewEvents.ExecOrdered, (e) => {
                 // ボタン実行指示
-                const button = p.Sender as Controls.ControlButtonView;
+                const button = e.Sender as Controls.ControlButtonView;
                 const code = button.Control.Code;
 
                 if (!code || code === '') {

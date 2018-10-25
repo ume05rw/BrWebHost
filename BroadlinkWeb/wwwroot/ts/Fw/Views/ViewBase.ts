@@ -162,29 +162,23 @@ namespace Fw.Views {
             this._applyStyler.Name = 'ApplyStyler';
 
             this.AddEventListener(Events.SizeChanged, (e) => {
-                e.stopPropagation();
                 this.Refresh();
             });
             this.AddEventListener(Events.PositionChanged, (e) => {
-                e.stopPropagation();
                 this.Refresh();
             });
             this.AddEventListener(Events.AnchorChanged, (e) => {
-                e.stopPropagation();
                 this.Refresh();
             });
             this.AddEventListener(Events.Attached, (e) => {
-                e.stopPropagation();
                 this.InitPage();
                 this.InitHasAnchor();
             });
             this.AddEventListener(Events.Detached, (e) => {
-                e.stopPropagation();
                 this._page = null;
                 this.InitHasAnchor();
             });
             this.AddEventListener(Events.Initialized, (e) => {
-                e.stopPropagation();
                 this.InitPage();
                 this.InitHasAnchor();
             });

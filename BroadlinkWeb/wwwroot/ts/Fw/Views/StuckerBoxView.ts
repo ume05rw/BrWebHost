@@ -262,9 +262,8 @@ namespace Fw.Views {
          * 子要素がロングクリックされたとき
          * @param e1
          */
-        private OnChildLongClick(e: JQueryEventObject): void {
+        private OnChildLongClick(e: Fw.Events.EventObject): void {
             //this.Log(`${this.ClassName}.OnChildLongClick`);
-            e.stopPropagation();
             this.StartRelocation();
         }
 

@@ -42,6 +42,7 @@ namespace App.Models.Stores {
             const result = new ControlSet();
             result.Name = tpl.Name;
             result.IconUrl = tpl.IconUrl;
+            result.ToggleState = tpl.ToggleState;
             result.Color = tpl.Color;
             result.IsTemplate = false;
 

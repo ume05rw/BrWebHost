@@ -38,8 +38,7 @@ namespace App.Controllers {
             this._page = this.View as Pages.ControlHeaderPropertyPageView;
             this._controlSet = null;
 
-            this._page.TxtName.AddEventListener(Events.InputViewEvents.Changed, (je, eo) => {
-                je.stopPropagation();
+            this._page.TxtName.AddEventListener(Events.InputViewEvents.Changed, (e) => {
                 if (!this._controlSet)
                     return;
 
@@ -47,8 +46,7 @@ namespace App.Controllers {
                 this._controlSet.DispatchChanged();
             });
 
-            this._page.BtnColor.AddEventListener(Events.ButtonViewEvents.SingleClick, async (je) => {
-                je.stopPropagation();
+            this._page.BtnColor.AddEventListener(Events.ButtonViewEvents.SingleClick, async (e) => {
                 if (!this._controlSet)
                     return;
 
@@ -65,8 +63,7 @@ namespace App.Controllers {
                 this._controlSet.DispatchChanged();
             });
 
-            this._page.SboRm.AddEventListener(Events.InputViewEvents.Changed, (je, eo) => {
-                je.stopPropagation();
+            this._page.SboRm.AddEventListener(Events.InputViewEvents.Changed, (e) => {
                 if (!this._controlSet)
                     return;
 
@@ -76,8 +73,7 @@ namespace App.Controllers {
                 }
             });
 
-            this._page.DeleteButton.AddEventListener(Events.ButtonViewEvents.SingleClick, async (je) => {
-                je.stopPropagation();
+            this._page.DeleteButton.AddEventListener(Events.ButtonViewEvents.SingleClick, async (e) => {
                 if (!this._controlSet)
                     return;
 

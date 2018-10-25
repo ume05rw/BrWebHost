@@ -38,8 +38,8 @@ namespace App.Controllers {
                 const btn = new ItemSelectButtonView();
                 btn.Value = name;
                 btn.ImageSrc = 'images/icons/' + name;
-                btn.AddEventListener(ButtonEvents.SingleClick, (je, eo) => {
-                    const button = eo.Sender as ItemSelectButtonView;
+                btn.AddEventListener(ButtonEvents.SingleClick, (e) => {
+                    const button = e.Sender as ItemSelectButtonView;
                     this.Commit(button.Value);
                 });
                 this._page.SelectorPanel.Add(btn);

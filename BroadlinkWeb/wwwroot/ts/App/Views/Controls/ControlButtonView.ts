@@ -66,7 +66,7 @@ namespace App.Views.Controls {
             this._name = '';
 
             this.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, (e) => {
-                this.OnSingleClicked(e);
+                this.OnSingleClicked();
             });
 
             this.AddEventListener(Events.PositionChanged, () => {
@@ -77,7 +77,7 @@ namespace App.Views.Controls {
             });
         }
 
-        private OnSingleClicked(e: JQueryEventObject): void {
+        private OnSingleClicked(): void {
             if (this.IsRelocatable) {
                 // 編集モードのとき
                 //this.Log('Edit');

@@ -39,14 +39,7 @@ namespace Fw.Views {
             return (this._boolValue === true);
         }
         public set BoolValue(value: boolean) {
-            const changed = (this._boolValue !== (value === true));
-            this._boolValue = (value === true);
-            this._input.prop('checked', this._boolValue);
-
-            if (changed) {
-                //this.Log('CheckBoxInputView.Changed');
-                this.DispatchEvent(Events.Changed, this.Value);
-            }
+            this.SetValue(value === true ? 'true' : 'false');
         }
 
         public get Value(): string {
@@ -55,9 +48,17 @@ namespace Fw.Views {
                 : 'false';
         }
         public set Value(value: string) {
-            this.BoolValue = (value === 'true')
-                ? true
-                : false;
+            this.SetValue(value);
+        }
+
+        public SetValue(value: string, eventDispatch: boolean = true): void {
+            const changed = (this._boolValue !== (value === 'true'));
+            this._boolValue = (value === 'true');
+            this._input.prop('checked', this._boolValue);
+
+            if (changed && eventDispatch) {
+                this.DispatchEvent(Events.Changed, this.Value);
+            }
         }
 
         private _input: JQuery;

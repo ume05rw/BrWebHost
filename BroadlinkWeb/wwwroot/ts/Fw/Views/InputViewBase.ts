@@ -12,17 +12,6 @@ namespace Fw.Views {
 
     export abstract class InputViewBase extends ViewBase implements IInputView {
 
-        private _value: string;
-        public get Value(): string {
-            this._value = this.Elem.val();
-            return this._value;
-        }
-        public set Value(value: string) {
-            this.Elem.val(value);
-            this._value = this.Elem.val();
-            this.Refresh();
-        }
-
         private _name: string;
         public get Name(): string {
             return this._name;
@@ -30,6 +19,26 @@ namespace Fw.Views {
         public set Name(value: string) {
             this._name = value;
             this.Elem.attr('name', this._name);
+        }
+
+        private _value: string;
+        public get Value(): string {
+            this._value = this.Elem.val();
+            return this._value;
+        }
+        public set Value(value: string) {
+            this.SetValue(value);
+        }
+
+        public SetValue(value: string, eventDispatch: boolean = true): void {
+            const changed = (this._value !== value);
+            this.Elem.val(value);
+            this._value = this.Elem.val();
+            this.Refresh();
+
+            if (changed && eventDispatch) {
+                this.DispatchEvent(Events.Changed, this.Value);
+            }
         }
 
         constructor(jqueryElem: JQuery) {

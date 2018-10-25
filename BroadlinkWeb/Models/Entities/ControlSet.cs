@@ -33,15 +33,20 @@ namespace BroadlinkWeb.Models.Entities
 
         [Required]
         [Column(Order = 4, TypeName = "tinyint(1)")]
+        [Description("ToggleButton State")]
+        public bool ToggleState { get; set; }
+
+        [Required]
+        [Column(Order = 5, TypeName = "tinyint(1)")]
         [Description("Taget Broadlink Device ID")]
         public bool IsTemplate { get; set; }
 
         [Required]
-        [Column(Order = 5, TypeName = "varchar(255)")]
+        [Column(Order = 6, TypeName = "varchar(255)")]
         [Description("Color String")]
         public string Color { get; set; }
 
-        [Column(Order = 6, TypeName = "int(11)")]
+        [Column(Order = 7, TypeName = "int(11)")]
         [Description("Position Order")]
         public int Order { get; set; }
 

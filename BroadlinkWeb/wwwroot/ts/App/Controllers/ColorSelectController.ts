@@ -40,8 +40,8 @@ namespace App.Controllers {
                 btn.Color = color;
                 btn.BackgroundColor = color;
                 btn.HoverColor = App.Items.Color.ButtonHoverColors[idx];
-                btn.AddEventListener(ButtonEvents.SingleClick, (je, eo) => {
-                    const button = eo.Sender as ItemSelectButtonView;
+                btn.AddEventListener(ButtonEvents.SingleClick, (e) => {
+                    const button = e.Sender as ItemSelectButtonView;
                     this.Commit(button.Value);
                 });
                 this._page.SelectorPanel.Add(btn);
