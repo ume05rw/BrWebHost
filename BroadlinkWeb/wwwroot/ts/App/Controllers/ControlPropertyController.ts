@@ -131,6 +131,11 @@ namespace App.Controllers {
                 //this.Log('ControlPropertyController.ChkToggleOn.Changed');
                 this._control.IsAssignToggleOn = this._page.ChkToggleOn.BoolValue;
                 this._control.DispatchChanged();
+
+                if (this._control.IsAssignToggleOn === true) {
+                    const ctr = this.Manager.Get('ControlSet') as ControlSetController;
+                    ctr.ResetToggleAssign(this._control, true);
+                }
             });
 
             this._page.ChkToggleOff.AddEventListener(Events.InputViewEvents.Changed, (je, eo) => {
@@ -141,6 +146,11 @@ namespace App.Controllers {
                 //this.Log('ControlPropertyController.ChkToggleOff.Changed');
                 this._control.IsAssignToggleOff = this._page.ChkToggleOff.BoolValue;
                 this._control.DispatchChanged();
+
+                if (this._control.IsAssignToggleOff === true) {
+                    const ctr = this.Manager.Get('ControlSet') as ControlSetController;
+                    ctr.ResetToggleAssign(this._control, false);
+                }
             });
 
 

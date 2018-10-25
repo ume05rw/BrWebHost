@@ -48,15 +48,18 @@ namespace Fw.Views {
             this.Add(this._imageView);
 
             this.Elem.hover(() => {
-                //this.Log(`${this.ClassName}.hover: color = ${this.HoverColor}`);
                 this.Dom.style.backgroundColor = this.HoverColor;
-                //this.SetStyle('backgroundColor', this.HoverColor);
-                //this.Refresh();
             }, () => {
                 this.Dom.style.backgroundColor = this.BackgroundColor;
-                //this.SetStyle('backgroundColor', this.BackgroundColor);
-                //this.Refresh();
             });
+
+            this.AddEventListener(Events.SingleClick, () => {
+                this.SetAnimatedJello();
+            });
+            this.AddEventListener(Events.LongClick, () => {
+                this.SetAnimatedJello();
+            });
+
         }
 
         public CalcLayout(): void {

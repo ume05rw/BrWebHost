@@ -308,6 +308,22 @@ namespace App.Controllers {
             return result;
         }
 
+        public ResetToggleAssign(control: App.Models.Entities.Control, targetState: boolean): void {
+            if (!this.IsOnEditMode)
+                return;
+
+            const propName = (targetState)
+                ? 'IsAssignToggleOn'
+                : 'IsAssignToggleOff';
+
+            _.each(this._controlSet.Controls, (c: App.Models.Entities.Control) => {
+                if (c === control)
+                    return;
+
+                if (c[propName] === true)
+                    c[propName] = false;
+            });
+        }
 
         /**
          * リモコンボタンを一つ削除する。

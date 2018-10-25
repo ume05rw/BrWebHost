@@ -32,6 +32,7 @@ namespace Fw.Views {
             if (changed) {
                 //this.Log('ToggleButtonInputView.Changed');
                 this.DispatchEvent(Events.Changed, this.Value);
+                this.Refresh();
             }
         }
 

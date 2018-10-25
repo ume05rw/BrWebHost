@@ -149,7 +149,56 @@ namespace App.Controllers {
                     je.preventDefault();
                     je.stopPropagation();
                     const button = (eo.Sender as Fw.Views.IView).Parent as ControlSetButtonView;
+                    const cset = button.ControlSet;
+                    const toggleValue = button.Toggle.BoolValue;
+                    const ctr = this.Manager.Get('ControlSet') as ControlSetController;
+
                     Dump.Log('Toggle Changed!!: ' + button.Toggle.Value);
+
+                    if (!cset)
+                        return;
+
+                    const cOn: Entities.Control = _.find(cset.Controls as any, (c) => {
+                        const ct = c as Entities.Control;
+                        return ct.IsAssignToggleOn;;
+                    });
+                    const cOff: Entities.Control = _.find(cset.Controls as any, (c) => {
+                        const ct = c as Entities.Control;
+                        return ct.IsAssignToggleOff;
+                    });
+
+                    if (cOn === cOff) {
+                        // オン、オフともに同じボタンにアサインされているとき
+
+                        // オフ動作のときは何もしない。
+                        if (toggleValue === false)
+                            return;
+
+                        // オンのアサインが無いとき、何もしない。
+                        if (!cOn || !cOn.Code || cOn.Code === '')
+                            return;
+
+                        // コードを実行する。
+                        Stores.Rms.Exec(cset.BrDeviceId, cOn.Code);
+
+                        // 時間をおいてトグルを戻す。
+                        _.delay(() => {
+                            button.Toggle.BoolValue = false;
+                        }, 1000);
+
+                    } else {
+                        // オン、オフが異なるボタンのとき
+                        const cTarget = (toggleValue)
+                            ? cOn
+                            : cOff;
+
+                        // ボタンのアサインが無いとき、何もしない。
+                        if (!cTarget || !cTarget.Code || cTarget.Code === '')
+                            return;
+
+                        // コードを実行する。
+                        Stores.Rms.Exec(cset.BrDeviceId, cTarget.Code);
+                    }
                 });
 
                 this._page.ControlSetPanel.Add(btn);
