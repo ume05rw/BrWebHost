@@ -52,5 +52,6 @@ namespace Fw.Views {
 
         Show(duration?: number): void;
         Hide(duration?: number): void;
+        SetAnimatedClass(name: string): void;
     }
 }

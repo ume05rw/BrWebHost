@@ -678,6 +678,23 @@ namespace Fw.Views {
             }
         }
 
+        private _removeAnimatedClass: () => void = null;
+        public SetAnimatedClass(name: string): void {
+            if (this._removeAnimatedClass)
+                return;
+
+            const classes = `animated ${name}`;
+            const animationEndEvents = 'animationend oAnimationEnd mozAnimationEnd webkitAnimationEnd';
+            this._removeAnimatedClass = () => {
+                this.Elem.removeClass(classes);
+                this.Elem.off(animationEndEvents, this._removeAnimatedClass);
+                this._removeAnimatedClass = null;
+            };
+            this._removeAnimatedClass.bind(this);
+            this.Elem.on(animationEndEvents, this._removeAnimatedClass);
+            this.Elem.addClass(classes);
+        }
+
         public Dispose(): void {
             super.Dispose();
 

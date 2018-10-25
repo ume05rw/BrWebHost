@@ -51,6 +51,7 @@ namespace Fw.Views {
                         return;
 
                     //this.Log('longtapped');
+                    this.SetAnimatedJello();
                     this.DispatchEvent(Events.LongClick);
                 }, 1000);
             });
@@ -68,6 +69,7 @@ namespace Fw.Views {
 
                     // 以降、シングルタップイベント処理
                     //this.Log('singletapped');
+                    this.SetAnimatedJello();
                     this.DispatchEvent(Events.SingleClick);
                 } else {
                 }
@@ -81,6 +83,10 @@ namespace Fw.Views {
                     //this.Log('tap canceled');
                 }
             });
+        }
+
+        public SetAnimatedJello(): void {
+            this.SetAnimatedClass('jello');
         }
 
         public Dispose(): void {

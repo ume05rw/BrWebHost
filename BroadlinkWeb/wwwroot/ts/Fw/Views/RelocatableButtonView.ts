@@ -132,6 +132,7 @@ namespace Fw.Views {
                         if (this.IsSuppressedEvent(Events.SingleClick))
                             this.ResumeEvent(Events.SingleClick);
 
+                        this.SetAnimatedJello();
                         this.DispatchEvent(Events.SingleClick);
                     }
                 }

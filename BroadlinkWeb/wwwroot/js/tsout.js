@@ -1704,6 +1704,7 @@ var Fw;
                 _this._innerApplyCount = 0;
                 _this._latestStyles = {};
                 _this._newStyles = {};
+                _this._removeAnimatedClass = null;
                 //this.Log('ViewBase.Constructor');
                 _this.SetElem(jqueryElem);
                 _this.SetClassName('ViewBase');
@@ -2292,6 +2293,21 @@ var Fw;
                     };
                     animator.Invoke(duration);
                 }
+            };
+            ViewBase.prototype.SetAnimatedClass = function (name) {
+                var _this = this;
+                if (this._removeAnimatedClass)
+                    return;
+                var classes = "animated " + name;
+                var animationEndEvents = 'animationend oAnimationEnd mozAnimationEnd webkitAnimationEnd';
+                this._removeAnimatedClass = function () {
+                    _this.Elem.removeClass(classes);
+                    _this.Elem.off(animationEndEvents, _this._removeAnimatedClass);
+                    _this._removeAnimatedClass = null;
+                };
+                this._removeAnimatedClass.bind(this);
+                this.Elem.on(animationEndEvents, this._removeAnimatedClass);
+                this.Elem.addClass(classes);
             };
             ViewBase.prototype.Dispose = function () {
                 var _this = this;
@@ -3158,6 +3174,7 @@ var Fw;
                         if (_this._cvMouseSuppressor)
                             return;
                         //this.Log('longtapped');
+                        _this.SetAnimatedJello();
                         _this.DispatchEvent(Events.LongClick);
                     }, 1000);
                 });
@@ -3172,6 +3189,7 @@ var Fw;
                             return;
                         // 以降、シングルタップイベント処理
                         //this.Log('singletapped');
+                        _this.SetAnimatedJello();
                         _this.DispatchEvent(Events.SingleClick);
                     }
                     else {
@@ -3198,6 +3216,9 @@ var Fw;
                 enumerable: true,
                 configurable: true
             });
+            ControlView.prototype.SetAnimatedJello = function () {
+                this.SetAnimatedClass('jello');
+            };
             ControlView.prototype.Dispose = function () {
                 _super.prototype.Dispose.call(this);
                 this._label = null;
@@ -3447,6 +3468,7 @@ var Fw;
                             //this.Log('Fire.SingleClick');
                             if (_this.IsSuppressedEvent(Events.SingleClick))
                                 _this.ResumeEvent(Events.SingleClick);
+                            _this.SetAnimatedJello();
                             _this.DispatchEvent(Events.SingleClick);
                         }
                     }
