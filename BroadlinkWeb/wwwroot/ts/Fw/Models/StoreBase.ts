@@ -23,6 +23,8 @@ namespace Fw.Models {
          */
         protected constructor() {
             super();
+
+            this.EnableLog = true;
         }
 
         /**

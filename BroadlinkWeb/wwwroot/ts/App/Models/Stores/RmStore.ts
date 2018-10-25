@@ -69,7 +69,7 @@ namespace App.Models.Stores {
         }
 
         public async Exec(brDeviceId: number, code: string): Promise<boolean> {
-
+            this.Log('Exec');
             const params = new Xhr.Params(
                 `Rm/Exec/${brDeviceId}`,
                 Xhr.MethodType.Post,

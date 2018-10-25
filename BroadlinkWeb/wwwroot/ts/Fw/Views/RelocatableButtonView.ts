@@ -18,6 +18,7 @@ namespace Fw.Views {
         }
 
         private _shadow: JQuery;
+        private _clickEventLocalTimer: number = null;
         private _isMouseMoveEventListened: boolean = false;
         private _isDragging: boolean = false;
         private _dragStartMousePosition: Property.Position;
@@ -60,17 +61,14 @@ namespace Fw.Views {
                     this.SetRelocatable(true);
             });
 
-            this.Elem.on('mousedown touchstart', (e) => {
-                //this.Log('RelocatableButtonView.mousedown');
+            this.Elem.off('mousedown mouseup mouseout');
+
+            this.Elem.on('mousedown', (e) => {
                 e.preventDefault();
 
-                if (!this._isRelocatable) {
-                    this._isDragging = false;
-                } else {
-                    this._isDragging = true;
-                }
-
-                this._mouseDownTime = new Date();
+                this._isDragging = (this._isRelocatable)
+                    ? true
+                    : false;
 
                 const ml = MouseLocation.Create(e);
                 this._dragStartMousePosition.X = ml.PageX;
@@ -83,11 +81,22 @@ namespace Fw.Views {
                     this._dragStartViewPosition.X = this.Position.Left;
                     this._dragStartViewPosition.Y = this.Position.Top;
                 }
+
+                if (this._clickEventLocalTimer != null)
+                    clearTimeout(this._clickEventLocalTimer);
+
+                this._clickEventLocalTimer = setTimeout(() => {
+                    // ロングタップイベント
+                    this._clickEventLocalTimer = null;
+
+                    if (!this._isRelocatable) {
+                        this.DispatchEvent(Events.LongClick);
+                    }
+                }, 1000);
             });
 
             // ↓mouseoutイベントは捕捉しない。途切れまくるので。
-            this.Elem.on('mouseup touchend', (e) => {
-                //this.Log('RelocatableButtonView.mouseup');
+            this.Elem.on('mouseup', (e) => {
                 e.preventDefault();
 
                 if (!this._isRelocatable) {
@@ -106,34 +115,26 @@ namespace Fw.Views {
                     this.Refresh();
                 }
 
-                // SingleClick判定
-                if (this._mouseDownTime) {
-                    const elapsed = ((new Date()).getTime() - this._mouseDownTime.getTime());
+                if (this._clickEventLocalTimer != null) {
+                    // ロングタップ検出中のとき
+                    clearTimeout(this._clickEventLocalTimer);
+                    this._clickEventLocalTimer = null;
 
                     const ml = MouseLocation.Create(e);
                     const addX = ml.PageX - this._dragStartMousePosition.X;
                     const addY = ml.PageY - this._dragStartMousePosition.Y;
 
-                    //this.Log({
-                    //    name: 'RelButton.SlickDetection',
-                    //    _mouseDownTime: this._mouseDownTime,
-                    //    elapsed: elapsed,
-                    //    addX: addX,
-                    //    addY: addY,
-                    //    add: (Math.abs(addX) + Math.abs(addY))
-                    //});
-
-                    if (
-                        (Math.abs(addX) + Math.abs(addY)) < 10
-                        && elapsed < 500
-                    ) {
-                        //this.Log('Fire.SingleClick');
-                        if (this.IsSuppressedEvent(Events.SingleClick))
-                            this.ResumeEvent(Events.SingleClick);
-
-                        this.SetAnimatedJello();
+                    if ((Math.abs(addX) + Math.abs(addY)) < 10) {
                         this.DispatchEvent(Events.SingleClick);
                     }
+                }
+            });
+
+            this.Elem.on('mouseout', (e) => {
+                if (this._clickEventLocalTimer != null) {
+                    // ロングタップ検出中のとき
+                    clearTimeout(this._clickEventLocalTimer);
+                    this._clickEventLocalTimer = null;
                 }
             });
 

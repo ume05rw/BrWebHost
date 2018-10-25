@@ -13,7 +13,6 @@ namespace Fw.Views {
         // properties
         private _label: JQuery;
         private _clickEventTimer: number = null;
-        private _cvMouseSuppressor = false;
 
         public get Text(): string {
             return this._label.html();
@@ -46,10 +45,6 @@ namespace Fw.Views {
                     // ロングタップイベント
                     this._clickEventTimer = null;
 
-                    // Pageのドラッグ処理中のとき、クリックイベントを抑制する。
-                    if (this._cvMouseSuppressor)
-                        return;
-
                     //this.Log('longtapped');
                     this.DispatchEvent(Events.LongClick);
                 }, 1000);
@@ -62,14 +57,9 @@ namespace Fw.Views {
                     clearTimeout(this._clickEventTimer);
                     this._clickEventTimer = null;
 
-                    // Pageのドラッグ処理中のとき、クリックイベントを抑制する。
-                    if (this._cvMouseSuppressor)
-                        return;
-
                     // 以降、シングルタップイベント処理
                     //this.Log('singletapped');
                     this.DispatchEvent(Events.SingleClick);
-                } else {
                 }
             });
 
@@ -92,7 +82,6 @@ namespace Fw.Views {
 
             this._label = null;
             this._clickEventTimer = null;
-            this._cvMouseSuppressor = null;
         }
     }
 }

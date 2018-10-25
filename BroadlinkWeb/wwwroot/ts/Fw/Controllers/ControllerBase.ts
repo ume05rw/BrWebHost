@@ -45,6 +45,8 @@ namespace Fw.Controllers {
             this._view = null;
             this._manager = Fw.Controllers.Manager.Instance;
             this._manager.Add(this);
+
+            this.EnableLog = true;
         }
 
         public SetPageView(view: Views.PageView): void {

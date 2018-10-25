@@ -954,6 +954,7 @@ var Fw;
                 _this._view = null;
                 _this._manager = Fw.Controllers.Manager.Instance;
                 _this._manager.Add(_this);
+                _this.EnableLog = true;
                 return _this;
             }
             Object.defineProperty(ControllerBase.prototype, "Id", {
@@ -3146,7 +3147,6 @@ var Fw;
             function ControlView() {
                 var _this = _super.call(this) || this;
                 _this._clickEventTimer = null;
-                _this._cvMouseSuppressor = false;
                 _this._label = $('<span class="ControlViewProperty"></span>');
                 _this.SetClassName('ControlView');
                 _this.Elem.addClass(_this.ClassName);
@@ -3162,9 +3162,6 @@ var Fw;
                     _this._clickEventTimer = setTimeout(function () {
                         // ロングタップイベント
                         _this._clickEventTimer = null;
-                        // Pageのドラッグ処理中のとき、クリックイベントを抑制する。
-                        if (_this._cvMouseSuppressor)
-                            return;
                         //this.Log('longtapped');
                         _this.DispatchEvent(Events.LongClick);
                     }, 1000);
@@ -3175,14 +3172,9 @@ var Fw;
                         // ロングタップ検出中のとき
                         clearTimeout(_this._clickEventTimer);
                         _this._clickEventTimer = null;
-                        // Pageのドラッグ処理中のとき、クリックイベントを抑制する。
-                        if (_this._cvMouseSuppressor)
-                            return;
                         // 以降、シングルタップイベント処理
                         //this.Log('singletapped');
                         _this.DispatchEvent(Events.SingleClick);
-                    }
-                    else {
                     }
                 });
                 _this.Elem.on('mouseout', function (e) {
@@ -3213,7 +3205,6 @@ var Fw;
                 _super.prototype.Dispose.call(this);
                 this._label = null;
                 this._clickEventTimer = null;
-                this._cvMouseSuppressor = null;
             };
             return ControlView;
         }(Views.BoxView));
@@ -3381,6 +3372,7 @@ var Fw;
             function RelocatableButtonView() {
                 var _this = _super.call(this) || this;
                 _this._isRelocatable = false;
+                _this._clickEventLocalTimer = null;
                 _this._isMouseMoveEventListened = false;
                 _this._isDragging = false;
                 _this._mouseDownTime = null;
@@ -3399,16 +3391,12 @@ var Fw;
                     if (!_this._isRelocatable)
                         _this.SetRelocatable(true);
                 });
-                _this.Elem.on('mousedown touchstart', function (e) {
-                    //this.Log('RelocatableButtonView.mousedown');
+                _this.Elem.off('mousedown mouseup mouseout');
+                _this.Elem.on('mousedown', function (e) {
                     e.preventDefault();
-                    if (!_this._isRelocatable) {
-                        _this._isDragging = false;
-                    }
-                    else {
-                        _this._isDragging = true;
-                    }
-                    _this._mouseDownTime = new Date();
+                    _this._isDragging = (_this._isRelocatable)
+                        ? true
+                        : false;
                     var ml = MouseLocation.Create(e);
                     _this._dragStartMousePosition.X = ml.PageX;
                     _this._dragStartMousePosition.Y = ml.PageY;
@@ -3420,10 +3408,18 @@ var Fw;
                         _this._dragStartViewPosition.X = _this.Position.Left;
                         _this._dragStartViewPosition.Y = _this.Position.Top;
                     }
+                    if (_this._clickEventLocalTimer != null)
+                        clearTimeout(_this._clickEventLocalTimer);
+                    _this._clickEventLocalTimer = setTimeout(function () {
+                        // ロングタップイベント
+                        _this._clickEventLocalTimer = null;
+                        if (!_this._isRelocatable) {
+                            _this.DispatchEvent(Events.LongClick);
+                        }
+                    }, 1000);
                 });
                 // ↓mouseoutイベントは捕捉しない。途切れまくるので。
-                _this.Elem.on('mouseup touchend', function (e) {
-                    //this.Log('RelocatableButtonView.mouseup');
+                _this.Elem.on('mouseup', function (e) {
                     e.preventDefault();
                     if (!_this._isRelocatable) {
                         _this._isDragging = false;
@@ -3440,28 +3436,23 @@ var Fw;
                         }
                         _this.Refresh();
                     }
-                    // SingleClick判定
-                    if (_this._mouseDownTime) {
-                        var elapsed = ((new Date()).getTime() - _this._mouseDownTime.getTime());
+                    if (_this._clickEventLocalTimer != null) {
+                        // ロングタップ検出中のとき
+                        clearTimeout(_this._clickEventLocalTimer);
+                        _this._clickEventLocalTimer = null;
                         var ml = MouseLocation.Create(e);
                         var addX = ml.PageX - _this._dragStartMousePosition.X;
                         var addY = ml.PageY - _this._dragStartMousePosition.Y;
-                        //this.Log({
-                        //    name: 'RelButton.SlickDetection',
-                        //    _mouseDownTime: this._mouseDownTime,
-                        //    elapsed: elapsed,
-                        //    addX: addX,
-                        //    addY: addY,
-                        //    add: (Math.abs(addX) + Math.abs(addY))
-                        //});
-                        if ((Math.abs(addX) + Math.abs(addY)) < 10
-                            && elapsed < 500) {
-                            //this.Log('Fire.SingleClick');
-                            if (_this.IsSuppressedEvent(Events.SingleClick))
-                                _this.ResumeEvent(Events.SingleClick);
-                            _this.SetAnimatedJello();
+                        if ((Math.abs(addX) + Math.abs(addY)) < 10) {
                             _this.DispatchEvent(Events.SingleClick);
                         }
+                    }
+                });
+                _this.Elem.on('mouseout', function (e) {
+                    if (_this._clickEventLocalTimer != null) {
+                        // ロングタップ検出中のとき
+                        clearTimeout(_this._clickEventLocalTimer);
+                        _this._clickEventLocalTimer = null;
                     }
                 });
                 var onMouseMove = _this.OnMouseMove.bind(_this);
@@ -4010,6 +4001,7 @@ var Fw;
             function StoreBase() {
                 var _this = _super.call(this) || this;
                 _this._list = {};
+                _this.EnableLog = true;
                 return _this;
             }
             Object.defineProperty(StoreBase.prototype, "List", {
@@ -4465,6 +4457,7 @@ var App;
                         return __generator(this, function (_a) {
                             switch (_a.label) {
                                 case 0:
+                                    this.Log('Exec');
                                     params = new Xhr.Params("Rm/Exec/" + brDeviceId, Xhr.MethodType.Post, {
                                         Code: code
                                     });
@@ -4820,6 +4813,7 @@ var App;
                             });
                         }); }, _this);
                         btn.AddEventListener(ControlButtonViewEvents.ExecOrdered, function (e) {
+                            _this.Log('ControlButtonViewEvents.ExecOrdered');
                             var button = e.Sender;
                             var code = button.Control.Code;
                             if (!code || code === '') {
@@ -4966,6 +4960,7 @@ var App;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
+                                this.Log('ExecCode');
                                 id = this._controlSet.BrDeviceId;
                                 if (!id) {
                                     Popup.Alert.Open({
@@ -6428,6 +6423,7 @@ var App;
                     _this.Code = '';
                     _this._name = '';
                     _this.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, function (e) {
+                        //Dump.Log('ControlButtonView.SingileClick');
                         _this.OnSingleClicked();
                     });
                     _this.AddEventListener(Events.PositionChanged, function () {

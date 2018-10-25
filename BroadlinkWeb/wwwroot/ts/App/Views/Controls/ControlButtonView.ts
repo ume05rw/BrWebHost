@@ -66,6 +66,7 @@ namespace App.Views.Controls {
             this._name = '';
 
             this.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, (e) => {
+                //Dump.Log('ControlButtonView.SingileClick');
                 this.OnSingleClicked();
             });
 

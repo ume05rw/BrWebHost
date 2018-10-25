@@ -148,6 +148,7 @@ namespace App.Controllers {
                     }, this);
 
                     btn.AddEventListener(ControlButtonViewEvents.ExecOrdered, (e) => {
+                        this.Log('ControlButtonViewEvents.ExecOrdered');
                         const button = e.Sender as Controls.ControlButtonView;
                         const code = button.Control.Code;
 
@@ -300,7 +301,7 @@ namespace App.Controllers {
          * @param code
          */
         public async ExecCode(code: string): Promise<boolean> {
-
+            this.Log('ExecCode');
             const id = this._controlSet.BrDeviceId;
 
             if (!id) {
