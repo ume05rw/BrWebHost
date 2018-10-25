@@ -8,11 +8,6 @@ namespace Fw {
     export interface IEventable extends IObject {
 
         /**
-         * イベント処理／View制御用JQueryオブジェクト
-         */
-        readonly Elem: JQuery;
-
-        /**
          * イベントハンドラをバインドする。
          * @param name
          * @param handler

@@ -9,6 +9,7 @@ namespace Fw.Views {
     import Property = Fw.Views.Property;
 
     export interface IView extends IEventable {
+        readonly Elem: JQuery;
         readonly Dom: HTMLElement;
         readonly Page: PageView;
         readonly Parent: IView;

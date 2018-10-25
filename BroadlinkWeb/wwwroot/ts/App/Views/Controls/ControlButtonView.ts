@@ -78,13 +78,15 @@ namespace App.Views.Controls {
         }
 
         private OnSingleClicked(e: JQueryEventObject): void {
+            //alert('ControlButton.SingleClick');
             if (this.IsRelocatable) {
                 // 編集モードのとき
-                this.Log('Edit');
+                //this.Log('Edit');
                 this.DispatchEvent(Events.EditOrdered);
             } else {
                 // 実行モードのとき
-                this.Log('Exec');
+                //this.Log('Exec');
+                //alert('ControlButton.Exec');
                 this.DispatchEvent(Events.ExecOrdered, this.Code);
             }
         }

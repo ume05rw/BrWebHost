@@ -20,6 +20,11 @@ namespace Fw.Views {
 
     export abstract class ViewBase extends EventableBase implements IView {
         // Properties
+        private _elem: JQuery;
+        public get Elem(): JQuery {
+            return this._elem;
+        }
+
         private _dom: HTMLElement = null;
         public get Dom(): HTMLElement {
             return this._dom;
@@ -210,12 +215,13 @@ namespace Fw.Views {
         }
 
         protected SetElem(jqueryElem: JQuery): void {
-            //this.Log('ViewBase.SetElem');
-
             if (!jqueryElem)
                 return;
 
-            super.SetElem(jqueryElem);
+            if (this._elem)
+                this._elem.remove();
+
+            this._elem = jqueryElem;
             this._dom = jqueryElem.get(0) as HTMLElement;
         }
 
@@ -674,6 +680,17 @@ namespace Fw.Views {
 
         public Dispose(): void {
             super.Dispose();
+
+            // イベントバインドを全削除
+            this._elem.off();
+
+            try {
+                this._elem.remove();
+            } catch (e) {
+                Dump.ErrorLog(e, this.ClassName);
+            }
+
+            this._elem = null;
 
             var ary = Util.Obj.Mirror(this.Children);
             _.each(ary, (view: Fw.Views.IView) => {

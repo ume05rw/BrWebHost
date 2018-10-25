@@ -46,7 +46,7 @@ namespace App.Controllers {
             btn1.Button.BackgroundColor = Color.MainBackground;
             btn1.Button.HoverColor = Color.MainHover;
             btn1.Button.Color = Color.MainHover;
-            btn1.AddEventListener(ButtonEvents.SingleClick, () => {
+            btn1.Button.AddEventListener(ButtonEvents.SingleClick, () => {
                 this.Commit(Operation.Scene);
             });
             this._page.SelectorPanel.Add(btn1);
@@ -64,7 +64,7 @@ namespace App.Controllers {
             btn2.Button.BackgroundColor = Color.ButtonColors[4];
             btn2.Button.HoverColor = Color.ButtonHoverColors[4];
             btn2.Button.Color = Color.ButtonColors[4];
-            btn2.AddEventListener(ButtonEvents.SingleClick, () => {
+            btn2.Button.AddEventListener(ButtonEvents.SingleClick, () => {
                 this.Commit(Operation.Tv);
             });
             this._page.SelectorPanel.Add(btn2);
@@ -76,7 +76,7 @@ namespace App.Controllers {
             btn3.Button.BackgroundColor = Color.ButtonColors[5];
             btn3.Button.HoverColor = Color.ButtonHoverColors[5];
             btn3.Button.Color = Color.ButtonColors[5];
-            btn3.AddEventListener(ButtonEvents.SingleClick, () => {
+            btn3.Button.AddEventListener(ButtonEvents.SingleClick, () => {
                 this.Commit(Operation.Av);
             });
             this._page.SelectorPanel.Add(btn3);
@@ -88,7 +88,7 @@ namespace App.Controllers {
             btn4.Button.BackgroundColor = Color.ButtonColors[3];
             btn4.Button.HoverColor = Color.ButtonHoverColors[3];
             btn4.Button.Color = Color.ButtonColors[3];
-            btn4.AddEventListener(ButtonEvents.SingleClick, () => {
+            btn4.Button.AddEventListener(ButtonEvents.SingleClick, () => {
                 this.Commit(Operation.Light);
             });
             this._page.SelectorPanel.Add(btn4);
@@ -100,7 +100,7 @@ namespace App.Controllers {
             btn5.Button.BackgroundColor = Color.ButtonColors[7];
             btn5.Button.HoverColor = Color.ButtonHoverColors[7];
             btn5.Button.Color = Color.ButtonColors[7];
-            btn5.AddEventListener(ButtonEvents.SingleClick, () => {
+            btn5.Button.AddEventListener(ButtonEvents.SingleClick, () => {
                 this.Commit(Operation.Free);
             });
             this._page.SelectorPanel.Add(btn5);

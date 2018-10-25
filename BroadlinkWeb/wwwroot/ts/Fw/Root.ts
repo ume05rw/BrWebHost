@@ -25,7 +25,10 @@ namespace Fw {
             Root._instance = new Root($(selectorString));
         }
 
-
+        private _elem: JQuery;
+        public get Elem(): JQuery {
+            return this._elem;
+        }
         private _dom: HTMLElement;
         public get Dom(): HTMLElement {
             return this._dom;
@@ -45,13 +48,14 @@ namespace Fw {
         private constructor(jqueryElem: JQuery) {
             super();
 
-            this.SetElem(jqueryElem);
             this.SetClassName('Root');
+            this._elem = jqueryElem;
+            this._dom = jqueryElem.get(0) as HTMLElement;
 
             this._size = new Property.Size();
             this._size.Width = this.Elem.width();
             this._size.Height = this.Elem.height();
-            this._dom = jqueryElem.get(0) as HTMLElement;
+            
 
             this._masked = false;
 
