@@ -1,4 +1,4 @@
-﻿/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../../Fw/Models/EntityBase.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
@@ -13,6 +13,6 @@ namespace App.Models.Entities {
         public DeviceTypeDetailNumber: number;
         public IsActive: boolean;
         public DeviceTypeDetal: string;
-        public DeviceType: string;
+        public DeviceType: App.Items.BrDeviceType;
     }
 }

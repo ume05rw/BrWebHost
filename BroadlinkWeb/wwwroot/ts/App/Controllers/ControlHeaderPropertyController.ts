@@ -110,10 +110,13 @@ namespace App.Controllers {
         private RefreshBrDevices(): void {
             this._page.SboRm.ClearItems();
             _.each(Stores.BrDevices.List, (dev: Entities.BrDevice) => {
-                if (dev.DeviceType === 'Rm'
-                    || dev.DeviceType === 'Rm2Pro'
+                if (dev.DeviceType === App.Items.BrDeviceType.Rm
+                    || dev.DeviceType === App.Items.BrDeviceType.Rm2Pro
                 ) {
-                    const name = `${dev.DeviceType} [${dev.IpAddressString}]`;
+                    const devName = (dev.DeviceType === App.Items.BrDeviceType.Rm)
+                        ? 'Rm'
+                        : 'Rm2Pro';
+                    const name = `${devName} [${dev.IpAddressString}]`;
                     this._page.SboRm.AddItem(name, String(dev.Id));
                 }
             });

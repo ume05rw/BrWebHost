@@ -47,7 +47,9 @@ namespace BroadlinkWeb.Models.Entities
         public string DeviceTypeDetal => this.DeviceTypeDetailNumber.ToString("x2");
 
         [NotMapped] // DBカラムとのマッピングを行わない。
-        public string DeviceType => this.SbDevice?.DeviceType.ToString();
+        public SharpBroadlink.Devices.DeviceType DeviceType => (this.SbDevice == null)
+            ? SharpBroadlink.Devices.DeviceType.Unknown
+            : this.SbDevice.DeviceType;
 
         [IgnoreDataMember] // JSONシリアライズ対象にしない。
         [NotMapped] // DBカラムとのマッピングを行わない。

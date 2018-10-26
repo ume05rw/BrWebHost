@@ -14,6 +14,19 @@ namespace BroadlinkWeb.Models.Entities
     [MySqlCollation("utf8_general_ci ")]
     public class ControlSet
     {
+        /// <summary>
+        /// シード登録済みテンプレート
+        /// </summary>
+        public enum Template
+        {
+            Tv = 1,
+            Av = 2,
+            Light = 3,
+            AirCompressor = 4,
+            A1Sensor = 5,
+            Sp2Switch = 6
+        }
+
         [Key]
         [Column(Order = 0, TypeName = "int(11)")] // Orderプロパティは、EFCore未サポート
         [Description("Control-Set ID")] // Description属性は、EFCore未サポート
@@ -32,23 +45,39 @@ namespace BroadlinkWeb.Models.Entities
         public string IconUrl { get; set; }
 
         [Required]
-        [Column(Order = 4, TypeName = "tinyint(1)")]
-        [Description("ToggleButton State")]
-        public bool ToggleState { get; set; }
-
-        [Required]
-        [Column(Order = 5, TypeName = "tinyint(1)")]
-        [Description("Taget Broadlink Device ID")]
-        public bool IsTemplate { get; set; }
-
-        [Required]
-        [Column(Order = 6, TypeName = "varchar(255)")]
+        [Column(Order = 4, TypeName = "varchar(255)")]
         [Description("Color String")]
         public string Color { get; set; }
 
-        [Column(Order = 7, TypeName = "int(11)")]
+        [Column(Order = 5, TypeName = "int(11)")]
         [Description("Position Order")]
         public int Order { get; set; }
+
+        [Required]
+        [Column(Order = 6, TypeName = "tinyint(1)")]
+        [Description("ToggleButton State")]
+        public bool ToggleState { get; set; }
+
+
+        [Required]
+        [Column(Order = 7, TypeName = "tinyint(1)")]
+        [Description("MainPanel Visibility Flag")]
+        public bool IsMainPanelReady { get; set; }
+
+        [Required]
+        [Column(Order = 8, TypeName = "tinyint(1)")]
+        [Description("Toggle-Enable Flag")]
+        public bool IsTogglable { get; set; }
+
+        [Required]
+        [Column(Order = 9, TypeName = "tinyint(1)")]
+        [Description("Broadlink-Device Flag")]
+        public bool IsBrDevice { get; set; }
+
+        [Required]
+        [Column(Order = 10, TypeName = "tinyint(1)")]
+        [Description("Taget Broadlink Device ID")]
+        public bool IsTemplate { get; set; }
 
         public List<Control> Controls { get; set; }
         public BrDevice BrDevice { get; set; }

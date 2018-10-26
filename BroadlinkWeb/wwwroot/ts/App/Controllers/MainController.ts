@@ -128,6 +128,7 @@ namespace App.Controllers {
         public async RefreshControlSets(): Promise<boolean> {
             const sets = await Stores.ControlSets.GetListWithoutTemplates();
 
+            // 既存メインボタンを全削除。そのうち改善する。
             const children = Fw.Util.Obj.Mirror(this._page.ControlSetPanel.Children);
             _.each(children, (v: ControlSetButtonView) => {
                 this._page.ControlSetPanel.Remove(v);
@@ -135,7 +136,15 @@ namespace App.Controllers {
             });
 
             _.each(sets, (cs: Entities.ControlSet) => {
+
+                if (!cs.IsMainPanelReady)
+                    return;
+
                 const btn = new ControlSetButtonView(cs);
+
+                if (!cs.IsTogglable) {
+                    btn.Toggle.Hide(0);
+                }
 
                 btn.Button.AddEventListener(ButtonEvents.SingleClick, (e) => {
                     // メインボタンクリック - リモコンをスライドイン表示する。

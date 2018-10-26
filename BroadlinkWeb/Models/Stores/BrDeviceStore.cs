@@ -189,6 +189,10 @@ namespace BroadlinkWeb.Models.Stores
                     tasks.Add(task);
                 }
             }
+            var taskCsets = ControlSetStore.GetInstance(this._dbc).EnsureBrControlSets(entities);
+            taskCsets.ConfigureAwait(false);
+            tasks.Add(taskCsets);
+
             Task.WaitAll(tasks.ToArray());
 
             return entities;

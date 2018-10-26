@@ -13,25 +13,20 @@ namespace App.Models.Entities {
     export class ControlSet extends Fw.Models.EntityBase {
 
         /**
+         * リモコン名
+         */
+        public Name: string = 'New Remote Control';
+
+        /**
          * BrDeviceID: null もセットしないでおく。
          * 何もセットしないことで、インスタンスにプロパティが存在しない状態を維持する。
          */
         public BrDeviceId: number; 
 
         /**
-         * リモコン名
-         */
-        public Name: string = 'New Remote Control';
-
-        /**
          * メインパネルボタン用アイコンURL
          */
         public IconUrl: string = 'images/icons/main_av.png';
-
-        /**
-         * トグルボタン状態
-         */
-        public ToggleState: boolean = false;
 
         /**
          * 背景色
@@ -44,16 +39,37 @@ namespace App.Models.Entities {
         public Order: number = 99999;
 
         /**
-         * ホバー色
+         * トグルボタン状態
          */
-        public get HoverColor(): string {
-            return Color.GetButtonHoverColor(this.Color);
-        }
+        public ToggleState: boolean = false;
+
+
+        /**
+         * メインパネルにボタンを表示するか否か
+         */
+        public IsMainPanelReady: boolean = false;
+
+        /**
+         * メインパネルボタンにトグルを表示するか否か
+         */
+        public IsTogglable: boolean = false;
+
+        /**
+         * Broadlinkデバイスか否か(≒ ボタン編集可否)
+         */
+        public IsBrDevice: boolean = false;
 
         /**
          * リモコン配置テンプレートか否か
          */
         public IsTemplate: boolean = false;
+
+        /**
+         * ホバー色
+         */
+        public get HoverColor(): string {
+            return Color.GetButtonHoverColor(this.Color);
+        }
 
         /**
          * コントロールボタン配列
