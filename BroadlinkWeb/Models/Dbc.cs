@@ -682,7 +682,7 @@ namespace BroadlinkWeb.Models
                 new Control
                 {
                     Id = 39,
-                    Code = "",
+                    Code = "Temp",
                     Color = "#F92068",
                     ControlSetId = 5,
                     IconUrl = "",
@@ -695,7 +695,7 @@ namespace BroadlinkWeb.Models
                 new Control
                 {
                     Id = 40,
-                    Code = "",
+                    Code = "Humidity",
                     Color = "#84bde8",
                     ControlSetId = 5,
                     IconUrl = "",
@@ -708,7 +708,7 @@ namespace BroadlinkWeb.Models
                 new Control
                 {
                     Id = 41,
-                    Code = "",
+                    Code = "Voc",
                     Color = "#81c03b",
                     ControlSetId = 5,
                     IconUrl = "",
@@ -721,7 +721,7 @@ namespace BroadlinkWeb.Models
                 new Control
                 {
                     Id = 42,
-                    Code = "",
+                    Code = "Light",
                     Color = "#fcc91f",
                     ControlSetId = 5,
                     IconUrl = "",
@@ -734,7 +734,7 @@ namespace BroadlinkWeb.Models
                 new Control
                 {
                     Id = 43,
-                    Code = "",
+                    Code = "Noise",
                     Color = "#B5743B",
                     ControlSetId = 5,
                     IconUrl = "",
@@ -749,7 +749,7 @@ namespace BroadlinkWeb.Models
                 new Control
                 {
                     Id = 44,
-                    Code = "",
+                    Code = "PowerOn",
                     Color = "#F92068",
                     ControlSetId = 6,
                     IconUrl = "",
@@ -762,7 +762,7 @@ namespace BroadlinkWeb.Models
                 new Control
                 {
                     Id = 45,
-                    Code = "",
+                    Code = "PowerOff",
                     Color = "#9d9e9e",
                     ControlSetId = 6,
                     IconUrl = "",
@@ -775,7 +775,7 @@ namespace BroadlinkWeb.Models
                 new Control
                 {
                     Id = 46,
-                    Code = "",
+                    Code = "LightOn",
                     Color = "#6545C6",
                     ControlSetId = 6,
                     IconUrl = "",
@@ -788,7 +788,7 @@ namespace BroadlinkWeb.Models
                 new Control
                 {
                     Id = 47,
-                    Code = "",
+                    Code = "LightOff",
                     Color = "#9d9e9e",
                     ControlSetId = 6,
                     IconUrl = "",
@@ -803,7 +803,7 @@ namespace BroadlinkWeb.Models
                 new Control
                 {
                     Id = 48,
-                    Code = "",
+                    Code = "PowerOn",
                     Color = "#F92068",
                     ControlSetId = 7,
                     IconUrl = "",
@@ -816,7 +816,7 @@ namespace BroadlinkWeb.Models
                 new Control
                 {
                     Id = 49,
-                    Code = "",
+                    Code = "PowerOff",
                     Color = "#9d9e9e",
                     ControlSetId = 7,
                     IconUrl = "",
@@ -831,7 +831,7 @@ namespace BroadlinkWeb.Models
                 new Control
                 {
                     Id = 50,
-                    Code = "",
+                    Code = "Control",
                     Color = "#9d9e9e",
                     ControlSetId = 8,
                     IconUrl = "",

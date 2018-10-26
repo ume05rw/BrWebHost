@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using SharpBroadlink.Devices;
 using System.Linq;
 using System.Threading.Tasks;
-// For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace BroadlinkWeb.Areas.Api.Controllers
 {
@@ -24,8 +23,8 @@ namespace BroadlinkWeb.Areas.Api.Controllers
             this._store = BrDeviceStore.GetInstance(dbc);
         }
 
-        // GET: api/BrDevices/5
-        [HttpGet("GetA1SensorValues/{id?}")] // <- nullableのとき、ここにも?が必要。
+        // GET: api/A1/5
+        [HttpGet("{id?}")] // <- nullableのとき、ここにも?が必要。
         public async Task<XhrResult> GetA1SensorValues([FromRoute] int? id)
         {
             Xb.Util.Out("A1Controller.GetA1SensorValues");
@@ -47,10 +46,16 @@ namespace BroadlinkWeb.Areas.Api.Controllers
                     return XhrResult.CreateError("Device is not A1 Sensor");
 
                 var a1Dev = (A1)entity.SbDevice;
+                var a1Res = await a1Dev.CheckSensorsRaw();
 
-                var result = a1Dev.CheckSensorsRaw()
-                    .GetAwaiter()
-                    .GetResult();
+                var result = new A1Values()
+                {
+                    Temperature = a1Res.Temperature,
+                    Humidity = a1Res.Humidity,
+                    Voc = a1Res.AirQuality,
+                    Light = a1Res.Light,
+                    Noise = a1Res.Noise
+                };
 
                 return XhrResult.CreateSucceeded(result);
             }

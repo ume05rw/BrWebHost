@@ -175,52 +175,54 @@ namespace App.Controllers {
 
             this._controlSet = entity;
 
-            if (this._controlSet) {
-                this._controlSet.AddEventListener(EntityEvents.Changed, this.ApplyFromEntity, this);
+            if (!this._controlSet)
+                return
 
-                _.each(this._controlSet.Controls, (control) => {
-                    const btn = new Controls.ControlButtonView();
-                    btn.Control = control;
-                    btn.SetLeftTop(control.PositionLeft, control.PositionTop);
-                    btn.SetColor(control.Color);
-                    btn.SetImage(control.IconUrl);
 
-                    btn.AddEventListener(ControlButtonViewEvents.EditOrdered, async (e) => {
-                        // 既存ボタンの処理。新規ボタン用に同様のロジックが、下にある。
+            this._controlSet.AddEventListener(EntityEvents.Changed, this.ApplyFromEntity, this);
 
-                        // Broadlinkデバイスはボタン編集禁止
-                        if (this._controlSet.IsBrDevice)
-                            return;
+            _.each(this._controlSet.Controls, (control) => {
+                const btn = new Controls.ControlButtonView();
+                btn.Control = control;
+                btn.SetLeftTop(control.PositionLeft, control.PositionTop);
+                btn.SetColor(control.Color);
+                btn.SetImage(control.IconUrl);
 
-                        const ctr = this.Manager.Get('ControlProperty') as ControlPropertyController;
-                        const button = e.Sender as Controls.ControlButtonView;
-                        ctr.SetEntity(button.Control);
-                        ctr.ShowModal();
+                btn.AddEventListener(ControlButtonViewEvents.EditOrdered, async (e) => {
+                    // 既存ボタンの処理。新規ボタン用に同様のロジックが、下にある。
 
-                        // クリック時にコードが空のものは、自動で学習モードにする。
-                        const id = this._controlSet.BrDeviceId;
-                        if ((id)
-                            && (!this._controlSet.IsBrDevice)
-                            && (!button.Control.Code
-                                || button.Control.Code === '')
-                        ) {
-                            const code = await this.GetLearnedCode();
-                            if (code) {
-                                button.Control.Code = code;
-                                ctr.SetEntity(button.Control);
-                            }
+                    // Broadlinkデバイスはボタン編集禁止
+                    if (this._controlSet.IsBrDevice)
+                        return;
+
+                    const ctr = this.Manager.Get('ControlProperty') as ControlPropertyController;
+                    const button = e.Sender as Controls.ControlButtonView;
+                    ctr.SetEntity(button.Control);
+                    ctr.ShowModal();
+
+                    // クリック時にコードが空のものは、自動で学習モードにする。
+                    const id = this._controlSet.BrDeviceId;
+                    if ((id)
+                        && (!this._controlSet.IsBrDevice)
+                        && (!button.Control.Code
+                            || button.Control.Code === '')
+                    ) {
+                        const code = await this.GetLearnedCode();
+                        if (code) {
+                            button.Control.Code = code;
+                            ctr.SetEntity(button.Control);
                         }
-                    }, this);
+                    }
+                }, this);
 
-                    btn.AddEventListener(ControlButtonViewEvents.ExecOrdered, (e) => {
-                        this.Log('ControlButtonViewEvents.ExecOrdered');
-                        const button = e.Sender as Controls.ControlButtonView;
-                        this.ExecCode(button.Control);
-                    }, this);
+                btn.AddEventListener(ControlButtonViewEvents.ExecOrdered, (e) => {
+                    this.Log('ControlButtonViewEvents.ExecOrdered');
+                    const button = e.Sender as Controls.ControlButtonView;
+                    this.ExecCode(button.Control);
+                }, this);
 
-                    this._page.ButtonPanel.Add(btn);
-                });
-            }
+                this._page.ButtonPanel.Add(btn);
+            });
 
             this.ApplyFromEntity();
         }
@@ -232,6 +234,83 @@ namespace App.Controllers {
             this._page.HeaderBar.Text = this._controlSet.Name;
             this._page.HeaderLeftLabel.Text = this._controlSet.Name;
             this._page.Refresh();
+
+            _.each(this._page.ButtonPanel.Children, (btn: Controls.ControlButtonView) => {
+                const control = btn.Control;
+
+                if (btn.Color !== control.Color)
+                    btn.SetColor(control.Color);
+
+                if (btn.ImageSrc !== control.IconUrl)
+                    btn.SetImage(control.IconUrl);
+
+                if (this._controlSet.IsBrDevice
+                    && (control.Value)
+                    && control.Value !== ''
+                ) {
+                    const brDev = Stores.BrDevices.Get(this._controlSet.BrDeviceId);
+                    switch (brDev.DeviceType) {
+                        case App.Items.BrDeviceType.A1:
+                            // センサ値をボタンに表示する。
+                            btn.HoverEnable = false;
+                            switch (control.Code) {
+                                case 'Temp':
+                                    btn.Name = 'Temp.<br/>' + control.Value;
+                                    break;
+                                case 'Humidity':
+                                    btn.Name = 'Humidity<br/>' + control.Value;
+                                    break;
+                                case 'Voc':
+                                    btn.Name = 'VOC<br/>' + control.Value;
+                                    break;
+                                case 'Light':
+                                    btn.Name = 'Light<br/>' + control.Value;
+                                    break;
+                                case 'Noise':
+                                    btn.Name = 'Noise<br/>' + control.Value;
+                                    break;
+                                default:
+                                    break;
+                            }
+                            break;
+
+                        case App.Items.BrDeviceType.Sp2:
+                            // 電源/電灯の状態を表示する。
+                            btn.HoverEnable = false;
+                            if (control.Value === 'true') {
+                                btn.IsActive = true;
+                            } else {
+                                btn.IsActive = false;
+                            }
+                            break;
+
+                        case App.Items.BrDeviceType.Rm2Pro:
+                            // 温度値をボタンに表示する。
+                            btn.HoverEnable = false;
+                            break;
+
+                        case App.Items.BrDeviceType.Sp1:
+                            // 電源の状態を表示する。
+                            btn.HoverEnable = false;
+                            if (control.Value === 'true') {
+                                btn.IsActive = true;
+                            } else {
+                                btn.IsActive = false;
+                            }
+                            break;
+
+                        // 以降、未対応。
+                        case App.Items.BrDeviceType.Rm:
+                        case App.Items.BrDeviceType.Dooya:
+                        case App.Items.BrDeviceType.Hysen:
+                        case App.Items.BrDeviceType.Mp1:
+                        case App.Items.BrDeviceType.S1c:
+                        case App.Items.BrDeviceType.Unknown:
+                        default:
+                            break;
+                    }
+                }
+            });
         }
 
         /**
@@ -358,20 +437,26 @@ namespace App.Controllers {
             const id = this._controlSet.BrDeviceId;
 
             if (!this._controlSet.BrDeviceId) {
+                const guide = (this.IsOnEditMode)
+                    ? 'Click Header.'
+                    : 'Go Edit.';
                 Popup.Alert.Open({
-                    Message: 'Select your Rm-Device,<br/>Click Header.',
+                    Message: 'Select your Rm-Device,<br/>' + guide,
                 });
                 return null;
             }
 
             if (!control.Code || control.Code === '') {
+                const guide = (this.IsOnEditMode)
+                    ? 'Click Learn-Button.'
+                    : 'Go Edit.';
                 Popup.Alert.Open({
-                    Message: 'Learn your Remote Control Button.'
+                    Message: 'Learn your Remote Control Button.<br/>' + guide,
                 });
                 return null;
             }
 
-            const result = await Stores.Rms.Exec(id, control.Code);
+            const result = await Stores.BrDevices.Exec(this._controlSet, control);
 
             if (result) {
                 if (control.IsAssignToggleOn === true

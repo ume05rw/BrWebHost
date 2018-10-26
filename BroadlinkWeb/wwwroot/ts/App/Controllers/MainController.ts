@@ -114,14 +114,12 @@ namespace App.Controllers {
 
         private async InitStores(): Promise<boolean> {
 
+            await Stores.BrDevices.GetList();
+
             await this.RefreshControlSets();
 
-            // こちらはawaitしない。
-            Stores.BrDevices
-                .GetListAndRefresh()
-                .then(() => {
-                    Dump.Log('Store Initialize End');
-                });
+            // これはawaitしない。
+            //Stores.BrDevices.Discover();
 
             return true;
         }
@@ -162,52 +160,19 @@ namespace App.Controllers {
                     const cset = button.ControlSet;
                     const toggleValue = button.Toggle.BoolValue;
 
-                    Dump.Log('Toggle Changed!!: ' + button.Toggle.Value);
-
-                    if (!cset)
-                        return;
-
-                    const cOn: Entities.Control = _.find(cset.Controls as any, (c) => {
+                    const controlOn: Entities.Control = _.find(cset.Controls as any, (c) => {
                         const ct = c as Entities.Control;
                         return ct.IsAssignToggleOn;;
                     });
-                    const cOff: Entities.Control = _.find(cset.Controls as any, (c) => {
+                    const controlOff: Entities.Control = _.find(cset.Controls as any, (c) => {
                         const ct = c as Entities.Control;
                         return ct.IsAssignToggleOff;
                     });
+                    const targetControl = (toggleValue)
+                        ? controlOn
+                        : controlOff;
 
-                    if (cOn === cOff) {
-                        // オン、オフともに同じボタンにアサインされているとき
-
-                        // オフ動作のときは何もしない。
-                        if (toggleValue === false)
-                            return;
-
-                        // オンのアサインが無いとき、何もしない。
-                        if (!cOn || !cOn.Code || cOn.Code === '')
-                            return;
-
-                        // コードを実行する。
-                        Stores.Rms.Exec(cset.BrDeviceId, cOn.Code);
-
-                        // 時間をおいてトグルを戻す。
-                        _.delay(() => {
-                            button.Toggle.BoolValue = false;
-                        }, 1000);
-
-                    } else {
-                        // オン、オフが異なるボタンのとき
-                        const cTarget = (toggleValue)
-                            ? cOn
-                            : cOff;
-
-                        // ボタンのアサインが無いとき、何もしない。
-                        if (!cTarget || !cTarget.Code || cTarget.Code === '')
-                            return;
-
-                        // コードを実行する。
-                        Stores.Rms.Exec(cset.BrDeviceId, cTarget.Code);
-                    }
+                    Stores.BrDevices.Exec(cset, targetControl);
                 });
 
                 cs.AddEventListener(Events.EntityEvents.Changed, (e) => {
@@ -217,6 +182,7 @@ namespace App.Controllers {
                         const csetBtn = b as ControlSetButtonView;
                         return (csetBtn.ControlSet === cset);
                     }) as ControlSetButtonView;
+
                     if (!btn)
                         return;
 
@@ -237,6 +203,50 @@ namespace App.Controllers {
                 });
 
                 this._page.ControlSetPanel.Add(btn);
+
+                if (cs.IsBrDevice) {
+                    // Broadlinkデバイスのとき
+                    // 現在の値を取得する。
+
+                    // 対応するデバイスを取得
+                    const pairedDev = Stores.BrDevices.Get(cs.BrDeviceId);
+                    const delay = 5000;
+
+                    switch (pairedDev.DeviceType) {
+                        case App.Items.BrDeviceType.A1:
+                            // コマンドは一つだけ - 現在の値を取得
+                            _.delay(() => {
+                                Stores.A1s.Get(cs);
+                            }, delay);
+                            break;
+
+                        case App.Items.BrDeviceType.Sp2:
+                            // コマンドはControlごとに。
+                            _.delay(() => {
+                                Stores.Sp2s.Get(cs);
+                            }, delay);
+                            break;
+
+                        case App.Items.BrDeviceType.Rm2Pro:
+                            // コマンドは一つだけ - 現在の値を取得
+                            _.delay(() => {
+                                Stores.Rm2Pros.GetTemperature(cs);
+                            }, delay);
+                            break;
+
+
+                        // 以降、未対応。
+                        case App.Items.BrDeviceType.Rm:
+                        case App.Items.BrDeviceType.Dooya:
+                        case App.Items.BrDeviceType.Hysen:
+                        case App.Items.BrDeviceType.Mp1:
+                        case App.Items.BrDeviceType.S1c:
+                        case App.Items.BrDeviceType.Sp1:
+                        case App.Items.BrDeviceType.Unknown:
+                        default:
+                            break;
+                    }
+                }
             });
             this._page.ControlSetPanel.Refresh();
 

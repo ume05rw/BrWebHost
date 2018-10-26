@@ -11,15 +11,18 @@ namespace App.Models.Entities {
     export class Control extends Fw.Models.EntityBase {
         public ControlSetId: number;
         public Name: string = '';
+
         public PositionLeft: number = 0;
         public PositionTop: number = 0;
-        
-        
         public IconUrl: string = '';
+        public Color: string = Color.ButtonColors[0];
+
         public Code: string = '';
+        public Value: string = '';
+
         public IsAssignToggleOn: boolean = false;
         public IsAssignToggleOff: boolean = false;
-        public Color: string = Color.ButtonColors[0];
+        
 
         public get HoverColor(): string {
             return Color.GetButtonHoverColor(this.Color);

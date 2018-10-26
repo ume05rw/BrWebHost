@@ -75,5 +75,18 @@ namespace App.Models.Entities {
          * コントロールボタン配列
          */
         public Controls: Array<Control> = [];
+
+
+        public GetControlByCode(code: string): Control {
+            const result = _.find(this.Controls, (c: Control) => {
+                return (c.Code === code);
+            });
+
+            if (!result) {
+                //throw new Error('Not Found');
+            }
+
+            return result;
+        }
     }
 }

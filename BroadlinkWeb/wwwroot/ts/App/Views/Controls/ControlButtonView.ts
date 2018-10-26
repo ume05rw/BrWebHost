@@ -29,7 +29,53 @@ namespace App.Views.Controls {
             if (this.ImageSrc === '')
                 this.Text = value;
         }
-        public Code: string;
+
+        private _hoverEnable: boolean = true;
+        public get HoverEnable(): boolean {
+            return this._hoverEnable;
+        }
+        public set HoverEnable(value: boolean) {
+            this._hoverEnable = value;
+
+            // 一旦、Hover関連イベントを削除する。
+            this.Elem.off('mouseenter mouseleave');
+
+            if (this._hoverEnable) {
+                // Hoverを有効にするとき
+                this.Elem.on('mouseenter', () => {
+                    this.Dom.style.backgroundColor = this.HoverColor;
+                });
+                this.Elem.on('mouseleave', () => {
+                    this.Dom.style.backgroundColor = this.BackgroundColor;
+                });
+            } else {
+                // Hoverを無効にするとき
+                // なにもしない。
+            }
+        }
+
+        private _isActive: boolean = false;
+        public get IsActive(): boolean {
+            return this._isActive;
+        }
+        public set IsActive(value: boolean) {
+            if (this._hoverEnable)
+                throw new Error('Hover is Enable, Cannot Active-Control.');
+
+            this._isActive = value;
+            if (this._isActive) {
+                // 有効化
+                this.BackgroundColor = Color.GetButtonHoverColor(this.Color);
+                this.Dom.style.backgroundColor = this.BackgroundColor;
+                
+                
+            } else {
+                // 無効化
+                this.BackgroundColor = Color.MainBackground;
+                this.Dom.style.backgroundColor = this.BackgroundColor;
+            }
+        }
+
 
         private _control: App.Models.Entities.Control;
         public get Control(): App.Models.Entities.Control {
@@ -62,8 +108,8 @@ namespace App.Views.Controls {
             this.HoverColor = Color.ButtonHoverColors[0];
             this.Color = Color.ButtonColors[0];
             this.ImageFitPolicy = Property.FitPolicy.Auto;
-            this.Code = '';
             this._name = '';
+            this._hoverEnable = true;
 
             this.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, (e) => {
                 //Dump.Log('ControlButtonView.SingileClick');
@@ -86,7 +132,7 @@ namespace App.Views.Controls {
             } else {
                 // 実行モードのとき
                 //this.Log('Exec');
-                this.DispatchEvent(Events.ExecOrdered, this.Code);
+                this.DispatchEvent(Events.ExecOrdered);
             }
         }
 
@@ -95,7 +141,6 @@ namespace App.Views.Controls {
                 return;
 
             this.Name = this._control.Name;
-            this.Code = this._control.Code;
             this.SetImage(this._control.IconUrl);
             this.SetColor(this._control.Color);
             this.Refresh();
@@ -141,8 +186,6 @@ namespace App.Views.Controls {
             }
             this._control = null;
             this._name = null;
-            this.Code = null;
-
 
             super.Dispose();
         }

@@ -128,18 +128,18 @@ namespace BroadlinkWeb.Migrations
                         new { Id = 36, Code = "", Color = "#9d9e9e", ControlSetId = 4, IconUrl = "images/icons/settings2.png", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "Select", PositionLeft = 5, PositionTop = 185 },
                         new { Id = 37, Code = "", Color = "#9d9e9e", ControlSetId = 4, IconUrl = "images/icons/arrow2_up.png", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "Up", PositionLeft = 185, PositionTop = 95 },
                         new { Id = 38, Code = "", Color = "#9d9e9e", ControlSetId = 4, IconUrl = "images/icons/arrow2_down.png", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "Down", PositionLeft = 185, PositionTop = 185 },
-                        new { Id = 39, Code = "", Color = "#F92068", ControlSetId = 5, IconUrl = "", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "Temp.", PositionLeft = 185, PositionTop = 5 },
-                        new { Id = 40, Code = "", Color = "#84bde8", ControlSetId = 5, IconUrl = "", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "Humidity", PositionLeft = 5, PositionTop = 5 },
-                        new { Id = 41, Code = "", Color = "#81c03b", ControlSetId = 5, IconUrl = "", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "VOC", PositionLeft = 95, PositionTop = 95 },
-                        new { Id = 42, Code = "", Color = "#fcc91f", ControlSetId = 5, IconUrl = "", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "Light", PositionLeft = 5, PositionTop = 185 },
-                        new { Id = 43, Code = "", Color = "#B5743B", ControlSetId = 5, IconUrl = "", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "Noise", PositionLeft = 185, PositionTop = 185 },
-                        new { Id = 44, Code = "", Color = "#F92068", ControlSetId = 6, IconUrl = "", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)1, Name = "Power On", PositionLeft = 5, PositionTop = 5 },
-                        new { Id = 45, Code = "", Color = "#9d9e9e", ControlSetId = 6, IconUrl = "", IsAssignToggleOff = (byte)1, IsAssignToggleOn = (byte)0, Name = "Power Off", PositionLeft = 185, PositionTop = 5 },
-                        new { Id = 46, Code = "", Color = "#6545C6", ControlSetId = 6, IconUrl = "", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "Light On", PositionLeft = 5, PositionTop = 95 },
-                        new { Id = 47, Code = "", Color = "#9d9e9e", ControlSetId = 6, IconUrl = "", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "Light Off", PositionLeft = 185, PositionTop = 95 },
-                        new { Id = 48, Code = "", Color = "#F92068", ControlSetId = 7, IconUrl = "", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)1, Name = "Power On", PositionLeft = 5, PositionTop = 5 },
-                        new { Id = 49, Code = "", Color = "#9d9e9e", ControlSetId = 7, IconUrl = "", IsAssignToggleOff = (byte)1, IsAssignToggleOn = (byte)0, Name = "Power Off", PositionLeft = 185, PositionTop = 5 },
-                        new { Id = 50, Code = "", Color = "#9d9e9e", ControlSetId = 8, IconUrl = "", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "Control", PositionLeft = 95, PositionTop = 5 }
+                        new { Id = 39, Code = "Temp", Color = "#F92068", ControlSetId = 5, IconUrl = "", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "Temp.", PositionLeft = 185, PositionTop = 5 },
+                        new { Id = 40, Code = "Humidity", Color = "#84bde8", ControlSetId = 5, IconUrl = "", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "Humidity", PositionLeft = 5, PositionTop = 5 },
+                        new { Id = 41, Code = "Voc", Color = "#81c03b", ControlSetId = 5, IconUrl = "", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "VOC", PositionLeft = 95, PositionTop = 95 },
+                        new { Id = 42, Code = "Light", Color = "#fcc91f", ControlSetId = 5, IconUrl = "", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "Light", PositionLeft = 5, PositionTop = 185 },
+                        new { Id = 43, Code = "Noise", Color = "#B5743B", ControlSetId = 5, IconUrl = "", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "Noise", PositionLeft = 185, PositionTop = 185 },
+                        new { Id = 44, Code = "PowerOn", Color = "#F92068", ControlSetId = 6, IconUrl = "", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)1, Name = "Power On", PositionLeft = 5, PositionTop = 5 },
+                        new { Id = 45, Code = "PowerOff", Color = "#9d9e9e", ControlSetId = 6, IconUrl = "", IsAssignToggleOff = (byte)1, IsAssignToggleOn = (byte)0, Name = "Power Off", PositionLeft = 185, PositionTop = 5 },
+                        new { Id = 46, Code = "LightOn", Color = "#6545C6", ControlSetId = 6, IconUrl = "", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "Light On", PositionLeft = 5, PositionTop = 95 },
+                        new { Id = 47, Code = "LightOff", Color = "#9d9e9e", ControlSetId = 6, IconUrl = "", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "Light Off", PositionLeft = 185, PositionTop = 95 },
+                        new { Id = 48, Code = "PowerOn", Color = "#F92068", ControlSetId = 7, IconUrl = "", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)1, Name = "Power On", PositionLeft = 5, PositionTop = 5 },
+                        new { Id = 49, Code = "PowerOff", Color = "#9d9e9e", ControlSetId = 7, IconUrl = "", IsAssignToggleOff = (byte)1, IsAssignToggleOn = (byte)0, Name = "Power Off", PositionLeft = 185, PositionTop = 5 },
+                        new { Id = 50, Code = "Control", Color = "#9d9e9e", ControlSetId = 8, IconUrl = "", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "Control", PositionLeft = 95, PositionTop = 5 }
                     );
                 });
 

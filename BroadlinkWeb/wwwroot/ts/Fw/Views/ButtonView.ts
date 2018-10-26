@@ -47,9 +47,10 @@ namespace Fw.Views {
             this._imageView.FitPolicy = Property.FitPolicy.Contain;
             this.Add(this._imageView);
 
-            this.Elem.hover(() => {
+            this.Elem.on('mouseenter', () => {
                 this.Dom.style.backgroundColor = this.HoverColor;
-            }, () => {
+            });
+            this.Elem.on('mouseleave', () => {
                 this.Dom.style.backgroundColor = this.BackgroundColor;
             });
 

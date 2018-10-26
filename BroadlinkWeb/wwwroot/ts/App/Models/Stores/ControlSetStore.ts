@@ -27,6 +27,8 @@ namespace App.Models.Stores {
 
         protected constructor() {
             super();
+
+            this.SetClassName('ControlSetStore');
             this.EnableLog = true;
         }
 

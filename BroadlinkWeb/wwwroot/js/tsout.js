@@ -3241,9 +3241,10 @@ var Fw;
                 _this._imageView.Src = '';
                 _this._imageView.FitPolicy = Views.Property.FitPolicy.Contain;
                 _this.Add(_this._imageView);
-                _this.Elem.hover(function () {
+                _this.Elem.on('mouseenter', function () {
                     _this.Dom.style.backgroundColor = _this.HoverColor;
-                }, function () {
+                });
+                _this.Elem.on('mouseleave', function () {
                     _this.Dom.style.backgroundColor = _this.BackgroundColor;
                 });
                 _this.AddEventListener(Events.SingleClick, function () {
@@ -4175,12 +4176,155 @@ var Fw;
         })(Xhr = Util.Xhr || (Util.Xhr = {}));
     })(Util = Fw.Util || (Fw.Util = {}));
 })(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+var App;
+(function (App) {
+    var Items;
+    (function (Items) {
+        var ControlSetTemplate;
+        (function (ControlSetTemplate) {
+            ControlSetTemplate[ControlSetTemplate["Tv"] = 1] = "Tv";
+            ControlSetTemplate[ControlSetTemplate["Av"] = 2] = "Av";
+            ControlSetTemplate[ControlSetTemplate["Light"] = 3] = "Light";
+            ControlSetTemplate[ControlSetTemplate["AirComplessor"] = 4] = "AirComplessor";
+            ControlSetTemplate[ControlSetTemplate["A1Sensor"] = 5] = "A1Sensor";
+            ControlSetTemplate[ControlSetTemplate["Sp2Switch"] = 6] = "Sp2Switch";
+        })(ControlSetTemplate = Items.ControlSetTemplate || (Items.ControlSetTemplate = {}));
+    })(Items = App.Items || (App.Items = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/EntityBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../Items/Color.ts" />
+/// <reference path="../../Items/ControlSetTemplate.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Entities;
+        (function (Entities) {
+            var Color = App.Items.Color;
+            var ControlSet = /** @class */ (function (_super) {
+                __extends(ControlSet, _super);
+                function ControlSet() {
+                    var _this = _super !== null && _super.apply(this, arguments) || this;
+                    /**
+                     * リモコン名
+                     */
+                    _this.Name = 'New Remote Control';
+                    /**
+                     * メインパネルボタン用アイコンURL
+                     */
+                    _this.IconUrl = 'images/icons/main_av.png';
+                    /**
+                     * 背景色
+                     */
+                    _this.Color = Color.ButtonColors[0];
+                    /**
+                     * メインパネル表示順
+                     */
+                    _this.Order = 99999;
+                    /**
+                     * トグルボタン状態
+                     */
+                    _this.ToggleState = false;
+                    /**
+                     * メインパネルにボタンを表示するか否か
+                     */
+                    _this.IsMainPanelReady = false;
+                    /**
+                     * メインパネルボタンにトグルを表示するか否か
+                     */
+                    _this.IsTogglable = false;
+                    /**
+                     * Broadlinkデバイスか否か(≒ ボタン編集可否)
+                     */
+                    _this.IsBrDevice = false;
+                    /**
+                     * リモコン配置テンプレートか否か
+                     */
+                    _this.IsTemplate = false;
+                    /**
+                     * コントロールボタン配列
+                     */
+                    _this.Controls = [];
+                    return _this;
+                }
+                Object.defineProperty(ControlSet.prototype, "HoverColor", {
+                    /**
+                     * ホバー色
+                     */
+                    get: function () {
+                        return Color.GetButtonHoverColor(this.Color);
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                ControlSet.prototype.GetControlByCode = function (code) {
+                    var result = _.find(this.Controls, function (c) {
+                        return (c.Code === code);
+                    });
+                    if (!result) {
+                        //throw new Error('Not Found');
+                    }
+                    return result;
+                };
+                return ControlSet;
+            }(Fw.Models.EntityBase));
+            Entities.ControlSet = ControlSet;
+        })(Entities = Models.Entities || (Models.Entities = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/EntityBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../Items/Color.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Entities;
+        (function (Entities) {
+            var Color = App.Items.Color;
+            var Control = /** @class */ (function (_super) {
+                __extends(Control, _super);
+                function Control() {
+                    var _this = _super !== null && _super.apply(this, arguments) || this;
+                    _this.Name = '';
+                    _this.PositionLeft = 0;
+                    _this.PositionTop = 0;
+                    _this.IconUrl = '';
+                    _this.Color = Color.ButtonColors[0];
+                    _this.Code = '';
+                    _this.Value = '';
+                    _this.IsAssignToggleOn = false;
+                    _this.IsAssignToggleOff = false;
+                    return _this;
+                }
+                Object.defineProperty(Control.prototype, "HoverColor", {
+                    get: function () {
+                        return Color.GetButtonHoverColor(this.Color);
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                return Control;
+            }(Fw.Models.EntityBase));
+            Entities.Control = Control;
+        })(Entities = Models.Entities || (Models.Entities = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../../Fw/Models/StoreBase.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../../../Fw/Util/Xhr/Query.ts" />
 /// <reference path="../Entities/BrDevice.ts" />
+/// <reference path="../Entities/ControlSet.ts" />
+/// <reference path="../Entities/Control.ts" />
 var App;
 (function (App) {
     var Models;
@@ -4194,6 +4338,7 @@ var App;
                 __extends(BrDeviceStore, _super);
                 function BrDeviceStore() {
                     var _this = _super.call(this) || this;
+                    _this.SetClassName('BrDeviceStore');
                     _this.EnableLog = true;
                     return _this;
                 }
@@ -4206,8 +4351,37 @@ var App;
                     enumerable: true,
                     configurable: true
                 });
-                BrDeviceStore.prototype.GetNewEntity = function () {
-                    return new BrDevice();
+                BrDeviceStore.prototype.Get = function (id) {
+                    var entity = _.find(this.List, function (br) {
+                        return (br.Id === id);
+                    });
+                    return entity;
+                };
+                BrDeviceStore.prototype.GetList = function () {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var params, res, i;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    this.Log('GetList');
+                                    params = new Xhr.Params('BrDevices', Xhr.MethodType.Get);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        for (i = 0; i < res.Values.length; i++)
+                                            this.Merge(res.Values[i]);
+                                        return [2 /*return*/, _.values(this.List)];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, null];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
                 };
                 BrDeviceStore.prototype.GetListAndRefresh = function () {
                     return __awaiter(this, void 0, void 0, function () {
@@ -4215,6 +4389,7 @@ var App;
                         return __generator(this, function (_a) {
                             switch (_a.label) {
                                 case 0:
+                                    this.Log('GetListAndRefresh');
                                     params = new Xhr.Params('BrDevices', Xhr.MethodType.Get);
                                     return [4 /*yield*/, Xhr.Query.Invoke(params)];
                                 case 1:
@@ -4242,6 +4417,7 @@ var App;
                         return __generator(this, function (_a) {
                             switch (_a.label) {
                                 case 0:
+                                    this.Log('Discover');
                                     params = new Xhr.Params('BrDevices/Discover', Xhr.MethodType.Get);
                                     return [4 /*yield*/, Xhr.Query.Invoke(params)];
                                 case 1:
@@ -4261,6 +4437,102 @@ var App;
                             }
                         });
                     });
+                };
+                BrDeviceStore.prototype.Exec = function (controlSet, control) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var result, pairedDev, _a, res1, res2, res3;
+                        return __generator(this, function (_b) {
+                            switch (_b.label) {
+                                case 0:
+                                    this.Log('Exec');
+                                    // 渡し値がヘン
+                                    if (!controlSet
+                                        || !controlSet.BrDeviceId
+                                        || !control
+                                        || !control.Code
+                                        || control.Code === '') {
+                                        return [2 /*return*/, false];
+                                    }
+                                    result = false;
+                                    if (!controlSet.IsBrDevice) return [3 /*break*/, 9];
+                                    pairedDev = this.Get(controlSet.BrDeviceId);
+                                    _a = pairedDev.DeviceType;
+                                    switch (_a) {
+                                        case 4 /* A1 */: return [3 /*break*/, 1];
+                                        case 2 /* Sp2 */: return [3 /*break*/, 3];
+                                        case 9 /* Rm2Pro */: return [3 /*break*/, 5];
+                                        case 3 /* Rm */: return [3 /*break*/, 7];
+                                        case 8 /* Dooya */: return [3 /*break*/, 7];
+                                        case 6 /* Hysen */: return [3 /*break*/, 7];
+                                        case 5 /* Mp1 */: return [3 /*break*/, 7];
+                                        case 7 /* S1c */: return [3 /*break*/, 7];
+                                        case 1 /* Sp1 */: return [3 /*break*/, 7];
+                                        case 0 /* Unknown */: return [3 /*break*/, 7];
+                                    }
+                                    return [3 /*break*/, 7];
+                                case 1: return [4 /*yield*/, Stores.A1s.Get(controlSet)];
+                                case 2:
+                                    res1 = _b.sent();
+                                    result = (res1 !== null);
+                                    return [3 /*break*/, 8];
+                                case 3: return [4 /*yield*/, Stores.Sp2s.Set(controlSet, control)];
+                                case 4:
+                                    res2 = _b.sent();
+                                    result = (res2 !== null);
+                                    return [3 /*break*/, 8];
+                                case 5: return [4 /*yield*/, Stores.Rm2Pros.GetTemperature(controlSet)];
+                                case 6:
+                                    res3 = _b.sent();
+                                    result = (res3 !== null);
+                                    return [3 /*break*/, 8];
+                                case 7:
+                                    result = false;
+                                    return [3 /*break*/, 8];
+                                case 8: return [3 /*break*/, 11];
+                                case 9: return [4 /*yield*/, Stores.Rms.Exec(controlSet, control)];
+                                case 10:
+                                    // Brデバイスでないとき
+                                    // リモコンコードを実行する。
+                                    result = _b.sent();
+                                    _b.label = 11;
+                                case 11:
+                                    // コマンド送信成功、かつトグルがアサインされているとき
+                                    if (result === true
+                                        && (control.IsAssignToggleOn || control.IsAssignToggleOff)) {
+                                        if (control.IsAssignToggleOn && control.IsAssignToggleOff) {
+                                            // On/Off 両方アサインされているボタンのとき
+                                            // 一旦Onにし、しばらく置いてOffに戻す。
+                                            controlSet.ToggleState = true;
+                                            controlSet.DispatchChanged();
+                                            _.delay(function () {
+                                                controlSet.ToggleState = false;
+                                                controlSet.DispatchChanged();
+                                            }, 1000);
+                                        }
+                                        else if (control.IsAssignToggleOn) {
+                                            // Onだけがアサインされているボタンのとき
+                                            // トグルをOnにする。
+                                            controlSet.ToggleState = true;
+                                            controlSet.DispatchChanged();
+                                        }
+                                        else if (control.IsAssignToggleOff) {
+                                            // Offだけがアサインされているボタンのとき
+                                            // トグルをOffにする。
+                                            controlSet.ToggleState = false;
+                                            controlSet.DispatchChanged();
+                                        }
+                                        else {
+                                            // ここには来ない
+                                            throw new Error('そんなばかなー！');
+                                        }
+                                    }
+                                    return [2 /*return*/, result];
+                            }
+                        });
+                    });
+                };
+                BrDeviceStore.prototype.GetNewEntity = function () {
+                    return new BrDevice();
                 };
                 BrDeviceStore.prototype.Write = function (entity) {
                     throw new Error('Only Server can add BrDevices.');
@@ -4412,22 +4684,49 @@ var App;
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/EntityBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Entities;
+        (function (Entities) {
+            var RmCommand = /** @class */ (function (_super) {
+                __extends(RmCommand, _super);
+                function RmCommand() {
+                    var _this = _super !== null && _super.apply(this, arguments) || this;
+                    _this.Code = '';
+                    return _this;
+                }
+                return RmCommand;
+            }(Fw.Models.EntityBase));
+            Entities.RmCommand = RmCommand;
+        })(Entities = Models.Entities || (Models.Entities = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../../Fw/Models/StoreBase.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../../../Fw/Util/Xhr/Query.ts" />
 /// <reference path="../Entities/BrDevice.ts" />
+/// <reference path="../Entities/ControlSet.ts" />
+/// <reference path="../Entities/Control.ts" />
+/// <reference path="../Entities/RmCommand.ts" />
 var App;
 (function (App) {
     var Models;
     (function (Models) {
         var Stores;
         (function (Stores) {
-            var BrDevice = App.Models.Entities.BrDevice;
+            var RmCommand = App.Models.Entities.RmCommand;
             var Xhr = Fw.Util.Xhr;
             var RmStore = /** @class */ (function (_super) {
                 __extends(RmStore, _super);
                 function RmStore() {
                     var _this = _super.call(this) || this;
+                    _this.SetClassName('RmStore');
                     _this.EnableLog = true;
                     return _this;
                 }
@@ -4442,17 +4741,18 @@ var App;
                 });
                 RmStore.prototype.GetLearnedCode = function (brDeviceId) {
                     return __awaiter(this, void 0, void 0, function () {
-                        var params, res, rCom;
+                        var params, res, rmCommand;
                         return __generator(this, function (_a) {
                             switch (_a.label) {
                                 case 0:
+                                    this.Log('GetLearnedCode');
                                     params = new Xhr.Params("Rm/GetLearnedCode/" + brDeviceId, Xhr.MethodType.Get);
                                     return [4 /*yield*/, Xhr.Query.Invoke(params)];
                                 case 1:
                                     res = _a.sent();
                                     if (res.Succeeded) {
-                                        rCom = res.Values;
-                                        return [2 /*return*/, rCom];
+                                        rmCommand = this.Merge(res.Values);
+                                        return [2 /*return*/, rmCommand];
                                     }
                                     else {
                                         this.Log('Query Fail');
@@ -4470,6 +4770,7 @@ var App;
                         return __generator(this, function (_a) {
                             switch (_a.label) {
                                 case 0:
+                                    this.Log('CancelLearning');
                                     params = new Xhr.Params("Rm/CancelLearning/" + brDeviceId, Xhr.MethodType.Post);
                                     return [4 /*yield*/, Xhr.Query.Invoke(params)];
                                 case 1:
@@ -4488,15 +4789,15 @@ var App;
                         });
                     });
                 };
-                RmStore.prototype.Exec = function (brDeviceId, code) {
+                RmStore.prototype.Exec = function (controlSet, control) {
                     return __awaiter(this, void 0, void 0, function () {
                         var params, res, result;
                         return __generator(this, function (_a) {
                             switch (_a.label) {
                                 case 0:
                                     this.Log('Exec');
-                                    params = new Xhr.Params("Rm/Exec/" + brDeviceId, Xhr.MethodType.Post, {
-                                        Code: code
+                                    params = new Xhr.Params("Rm/Exec/" + controlSet.BrDeviceId, Xhr.MethodType.Post, {
+                                        Code: control.Code
                                     });
                                     return [4 /*yield*/, Xhr.Query.Invoke(params)];
                                 case 1:
@@ -4516,10 +4817,10 @@ var App;
                     });
                 };
                 RmStore.prototype.GetNewEntity = function () {
-                    return new BrDevice();
+                    return new RmCommand();
                 };
                 RmStore.prototype.Write = function (entity) {
-                    throw new Error('Only Server can add BrDevices.');
+                    throw new Error('Not Supported');
                 };
                 RmStore._instance = null;
                 return RmStore;
@@ -4702,98 +5003,6 @@ var App;
 })(App || (App = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
-var App;
-(function (App) {
-    var Items;
-    (function (Items) {
-        var ControlSetTemplate;
-        (function (ControlSetTemplate) {
-            ControlSetTemplate[ControlSetTemplate["Tv"] = 1] = "Tv";
-            ControlSetTemplate[ControlSetTemplate["Av"] = 2] = "Av";
-            ControlSetTemplate[ControlSetTemplate["Light"] = 3] = "Light";
-            ControlSetTemplate[ControlSetTemplate["AirComplessor"] = 4] = "AirComplessor";
-            ControlSetTemplate[ControlSetTemplate["A1Sensor"] = 5] = "A1Sensor";
-            ControlSetTemplate[ControlSetTemplate["Sp2Switch"] = 6] = "Sp2Switch";
-        })(ControlSetTemplate = Items.ControlSetTemplate || (Items.ControlSetTemplate = {}));
-    })(Items = App.Items || (App.Items = {}));
-})(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Models/EntityBase.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-/// <reference path="../../Items/Color.ts" />
-/// <reference path="../../Items/ControlSetTemplate.ts" />
-var App;
-(function (App) {
-    var Models;
-    (function (Models) {
-        var Entities;
-        (function (Entities) {
-            var Color = App.Items.Color;
-            var ControlSet = /** @class */ (function (_super) {
-                __extends(ControlSet, _super);
-                function ControlSet() {
-                    var _this = _super !== null && _super.apply(this, arguments) || this;
-                    /**
-                     * リモコン名
-                     */
-                    _this.Name = 'New Remote Control';
-                    /**
-                     * メインパネルボタン用アイコンURL
-                     */
-                    _this.IconUrl = 'images/icons/main_av.png';
-                    /**
-                     * 背景色
-                     */
-                    _this.Color = Color.ButtonColors[0];
-                    /**
-                     * メインパネル表示順
-                     */
-                    _this.Order = 99999;
-                    /**
-                     * トグルボタン状態
-                     */
-                    _this.ToggleState = false;
-                    /**
-                     * メインパネルにボタンを表示するか否か
-                     */
-                    _this.IsMainPanelReady = false;
-                    /**
-                     * メインパネルボタンにトグルを表示するか否か
-                     */
-                    _this.IsTogglable = false;
-                    /**
-                     * Broadlinkデバイスか否か(≒ ボタン編集可否)
-                     */
-                    _this.IsBrDevice = false;
-                    /**
-                     * リモコン配置テンプレートか否か
-                     */
-                    _this.IsTemplate = false;
-                    /**
-                     * コントロールボタン配列
-                     */
-                    _this.Controls = [];
-                    return _this;
-                }
-                Object.defineProperty(ControlSet.prototype, "HoverColor", {
-                    /**
-                     * ホバー色
-                     */
-                    get: function () {
-                        return Color.GetButtonHoverColor(this.Color);
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                return ControlSet;
-            }(Fw.Models.EntityBase));
-            Entities.ControlSet = ControlSet;
-        })(Entities = Models.Entities || (Models.Entities = {}));
-    })(Models = App.Models || (App.Models = {}));
-})(App || (App = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Fw/Controllers/ControllerBase.ts" />
 /// <reference path="../../Fw/Controllers/Manager.ts" />
 /// <reference path="../../Fw/Util/Dump.ts" />
@@ -4955,60 +5164,131 @@ var App;
                     this._controlSet.RemoveEventListener(EntityEvents.Changed, this.ApplyFromEntity, this);
                 }
                 this._controlSet = entity;
-                if (this._controlSet) {
-                    this._controlSet.AddEventListener(EntityEvents.Changed, this.ApplyFromEntity, this);
-                    _.each(this._controlSet.Controls, function (control) {
-                        var btn = new Controls.ControlButtonView();
-                        btn.Control = control;
-                        btn.SetLeftTop(control.PositionLeft, control.PositionTop);
-                        btn.SetColor(control.Color);
-                        btn.SetImage(control.IconUrl);
-                        btn.AddEventListener(ControlButtonViewEvents.EditOrdered, function (e) { return __awaiter(_this, void 0, void 0, function () {
-                            var ctr, button, id, code;
-                            return __generator(this, function (_a) {
-                                switch (_a.label) {
-                                    case 0:
-                                        // 既存ボタンの処理。新規ボタン用に同様のロジックが、下にある。
-                                        // Broadlinkデバイスはボタン編集禁止
-                                        if (this._controlSet.IsBrDevice)
-                                            return [2 /*return*/];
-                                        ctr = this.Manager.Get('ControlProperty');
-                                        button = e.Sender;
+                if (!this._controlSet)
+                    return;
+                this._controlSet.AddEventListener(EntityEvents.Changed, this.ApplyFromEntity, this);
+                _.each(this._controlSet.Controls, function (control) {
+                    var btn = new Controls.ControlButtonView();
+                    btn.Control = control;
+                    btn.SetLeftTop(control.PositionLeft, control.PositionTop);
+                    btn.SetColor(control.Color);
+                    btn.SetImage(control.IconUrl);
+                    btn.AddEventListener(ControlButtonViewEvents.EditOrdered, function (e) { return __awaiter(_this, void 0, void 0, function () {
+                        var ctr, button, id, code;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    // 既存ボタンの処理。新規ボタン用に同様のロジックが、下にある。
+                                    // Broadlinkデバイスはボタン編集禁止
+                                    if (this._controlSet.IsBrDevice)
+                                        return [2 /*return*/];
+                                    ctr = this.Manager.Get('ControlProperty');
+                                    button = e.Sender;
+                                    ctr.SetEntity(button.Control);
+                                    ctr.ShowModal();
+                                    id = this._controlSet.BrDeviceId;
+                                    if (!((id)
+                                        && (!this._controlSet.IsBrDevice)
+                                        && (!button.Control.Code
+                                            || button.Control.Code === ''))) return [3 /*break*/, 2];
+                                    return [4 /*yield*/, this.GetLearnedCode()];
+                                case 1:
+                                    code = _a.sent();
+                                    if (code) {
+                                        button.Control.Code = code;
                                         ctr.SetEntity(button.Control);
-                                        ctr.ShowModal();
-                                        id = this._controlSet.BrDeviceId;
-                                        if (!((id)
-                                            && (!this._controlSet.IsBrDevice)
-                                            && (!button.Control.Code
-                                                || button.Control.Code === ''))) return [3 /*break*/, 2];
-                                        return [4 /*yield*/, this.GetLearnedCode()];
-                                    case 1:
-                                        code = _a.sent();
-                                        if (code) {
-                                            button.Control.Code = code;
-                                            ctr.SetEntity(button.Control);
-                                        }
-                                        _a.label = 2;
-                                    case 2: return [2 /*return*/];
-                                }
-                            });
-                        }); }, _this);
-                        btn.AddEventListener(ControlButtonViewEvents.ExecOrdered, function (e) {
-                            _this.Log('ControlButtonViewEvents.ExecOrdered');
-                            var button = e.Sender;
-                            _this.ExecCode(button.Control);
-                        }, _this);
-                        _this._page.ButtonPanel.Add(btn);
-                    });
-                }
+                                    }
+                                    _a.label = 2;
+                                case 2: return [2 /*return*/];
+                            }
+                        });
+                    }); }, _this);
+                    btn.AddEventListener(ControlButtonViewEvents.ExecOrdered, function (e) {
+                        _this.Log('ControlButtonViewEvents.ExecOrdered');
+                        var button = e.Sender;
+                        _this.ExecCode(button.Control);
+                    }, _this);
+                    _this._page.ButtonPanel.Add(btn);
+                });
                 this.ApplyFromEntity();
             };
             ControlSetController.prototype.ApplyFromEntity = function () {
+                var _this = this;
                 if (!this._controlSet)
                     return;
                 this._page.HeaderBar.Text = this._controlSet.Name;
                 this._page.HeaderLeftLabel.Text = this._controlSet.Name;
                 this._page.Refresh();
+                _.each(this._page.ButtonPanel.Children, function (btn) {
+                    var control = btn.Control;
+                    if (btn.Color !== control.Color)
+                        btn.SetColor(control.Color);
+                    if (btn.ImageSrc !== control.IconUrl)
+                        btn.SetImage(control.IconUrl);
+                    if (_this._controlSet.IsBrDevice
+                        && (control.Value)
+                        && control.Value !== '') {
+                        var brDev = Stores.BrDevices.Get(_this._controlSet.BrDeviceId);
+                        switch (brDev.DeviceType) {
+                            case 4 /* A1 */:
+                                // センサ値をボタンに表示する。
+                                btn.HoverEnable = false;
+                                switch (control.Code) {
+                                    case 'Temp':
+                                        btn.Name = 'Temp.<br/>' + control.Value;
+                                        break;
+                                    case 'Humidity':
+                                        btn.Name = 'Humidity<br/>' + control.Value;
+                                        break;
+                                    case 'Voc':
+                                        btn.Name = 'VOC<br/>' + control.Value;
+                                        break;
+                                    case 'Light':
+                                        btn.Name = 'Light<br/>' + control.Value;
+                                        break;
+                                    case 'Noise':
+                                        btn.Name = 'Noise<br/>' + control.Value;
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                break;
+                            case 2 /* Sp2 */:
+                                // 電源/電灯の状態を表示する。
+                                btn.HoverEnable = false;
+                                if (control.Value === 'true') {
+                                    btn.IsActive = true;
+                                }
+                                else {
+                                    btn.IsActive = false;
+                                }
+                                break;
+                            case 9 /* Rm2Pro */:
+                                // 温度値をボタンに表示する。
+                                btn.HoverEnable = false;
+                                break;
+                            case 1 /* Sp1 */:
+                                // 電源の状態を表示する。
+                                btn.HoverEnable = false;
+                                if (control.Value === 'true') {
+                                    btn.IsActive = true;
+                                }
+                                else {
+                                    btn.IsActive = false;
+                                }
+                                break;
+                            // 以降、未対応。
+                            case 3 /* Rm */:
+                            case 8 /* Dooya */:
+                            case 6 /* Hysen */:
+                            case 5 /* Mp1 */:
+                            case 7 /* S1c */:
+                            case 0 /* Unknown */:
+                            default:
+                                break;
+                        }
+                    }
+                });
             };
             /**
              * リモコンボタン追加指示
@@ -5123,25 +5403,31 @@ var App;
              */
             ControlSetController.prototype.ExecCode = function (control) {
                 return __awaiter(this, void 0, void 0, function () {
-                    var id, result;
+                    var id, guide, guide, result;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
                                 this.Log('ExecCode');
                                 id = this._controlSet.BrDeviceId;
                                 if (!this._controlSet.BrDeviceId) {
+                                    guide = (this.IsOnEditMode)
+                                        ? 'Click Header.'
+                                        : 'Go Edit.';
                                     Popup.Alert.Open({
-                                        Message: 'Select your Rm-Device,<br/>Click Header.',
+                                        Message: 'Select your Rm-Device,<br/>' + guide,
                                     });
                                     return [2 /*return*/, null];
                                 }
                                 if (!control.Code || control.Code === '') {
+                                    guide = (this.IsOnEditMode)
+                                        ? 'Click Learn-Button.'
+                                        : 'Go Edit.';
                                     Popup.Alert.Open({
-                                        Message: 'Learn your Remote Control Button.'
+                                        Message: 'Learn your Remote Control Button.<br/>' + guide,
                                     });
                                     return [2 /*return*/, null];
                                 }
-                                return [4 /*yield*/, Stores.Rms.Exec(id, control.Code)];
+                                return [4 /*yield*/, Stores.BrDevices.Exec(this._controlSet, control)];
                             case 1:
                                 result = _a.sent();
                                 if (result) {
@@ -5545,15 +5831,14 @@ var App;
                 return __awaiter(this, void 0, void 0, function () {
                     return __generator(this, function (_a) {
                         switch (_a.label) {
-                            case 0: return [4 /*yield*/, this.RefreshControlSets()];
+                            case 0: return [4 /*yield*/, Stores.BrDevices.GetList()];
                             case 1:
                                 _a.sent();
-                                // こちらはawaitしない。
-                                Stores.BrDevices
-                                    .GetListAndRefresh()
-                                    .then(function () {
-                                    Dump.Log('Store Initialize End');
-                                });
+                                return [4 /*yield*/, this.RefreshControlSets()];
+                            case 2:
+                                _a.sent();
+                                // これはawaitしない。
+                                //Stores.BrDevices.Discover();
                                 return [2 /*return*/, true];
                         }
                     });
@@ -5593,44 +5878,19 @@ var App;
                                         var button = e.Sender.Parent;
                                         var cset = button.ControlSet;
                                         var toggleValue = button.Toggle.BoolValue;
-                                        Dump.Log('Toggle Changed!!: ' + button.Toggle.Value);
-                                        if (!cset)
-                                            return;
-                                        var cOn = _.find(cset.Controls, function (c) {
+                                        var controlOn = _.find(cset.Controls, function (c) {
                                             var ct = c;
                                             return ct.IsAssignToggleOn;
                                             ;
                                         });
-                                        var cOff = _.find(cset.Controls, function (c) {
+                                        var controlOff = _.find(cset.Controls, function (c) {
                                             var ct = c;
                                             return ct.IsAssignToggleOff;
                                         });
-                                        if (cOn === cOff) {
-                                            // オン、オフともに同じボタンにアサインされているとき
-                                            // オフ動作のときは何もしない。
-                                            if (toggleValue === false)
-                                                return;
-                                            // オンのアサインが無いとき、何もしない。
-                                            if (!cOn || !cOn.Code || cOn.Code === '')
-                                                return;
-                                            // コードを実行する。
-                                            Stores.Rms.Exec(cset.BrDeviceId, cOn.Code);
-                                            // 時間をおいてトグルを戻す。
-                                            _.delay(function () {
-                                                button.Toggle.BoolValue = false;
-                                            }, 1000);
-                                        }
-                                        else {
-                                            // オン、オフが異なるボタンのとき
-                                            var cTarget = (toggleValue)
-                                                ? cOn
-                                                : cOff;
-                                            // ボタンのアサインが無いとき、何もしない。
-                                            if (!cTarget || !cTarget.Code || cTarget.Code === '')
-                                                return;
-                                            // コードを実行する。
-                                            Stores.Rms.Exec(cset.BrDeviceId, cTarget.Code);
-                                        }
+                                        var targetControl = (toggleValue)
+                                            ? controlOn
+                                            : controlOff;
+                                        Stores.BrDevices.Exec(cset, targetControl);
                                     });
                                     cs.AddEventListener(Events.EntityEvents.Changed, function (e) {
                                         // ボタンに乗せたControlSetEntityの値変更イベント
@@ -5654,6 +5914,43 @@ var App;
                                             btn.Button.ImageSrc = cset.IconUrl;
                                     });
                                     _this._page.ControlSetPanel.Add(btn);
+                                    if (cs.IsBrDevice) {
+                                        // Broadlinkデバイスのとき
+                                        // 現在の値を取得する。
+                                        // 対応するデバイスを取得
+                                        var pairedDev = Stores.BrDevices.Get(cs.BrDeviceId);
+                                        var delay = 5000;
+                                        switch (pairedDev.DeviceType) {
+                                            case 4 /* A1 */:
+                                                // コマンドは一つだけ - 現在の値を取得
+                                                _.delay(function () {
+                                                    Stores.A1s.Get(cs);
+                                                }, delay);
+                                                break;
+                                            case 2 /* Sp2 */:
+                                                // コマンドはControlごとに。
+                                                _.delay(function () {
+                                                    Stores.Sp2s.Get(cs);
+                                                }, delay);
+                                                break;
+                                            case 9 /* Rm2Pro */:
+                                                // コマンドは一つだけ - 現在の値を取得
+                                                _.delay(function () {
+                                                    Stores.Rm2Pros.GetTemperature(cs);
+                                                }, delay);
+                                                break;
+                                            // 以降、未対応。
+                                            case 3 /* Rm */:
+                                            case 8 /* Dooya */:
+                                            case 6 /* Hysen */:
+                                            case 5 /* Mp1 */:
+                                            case 7 /* S1c */:
+                                            case 1 /* Sp1 */:
+                                            case 0 /* Unknown */:
+                                            default:
+                                                break;
+                                        }
+                                    }
                                 });
                                 this._page.ControlSetPanel.Refresh();
                                 return [2 /*return*/, true];
@@ -6173,68 +6470,6 @@ var App;
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Models/EntityBase.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-/// <reference path="../../Items/Color.ts" />
-var App;
-(function (App) {
-    var Models;
-    (function (Models) {
-        var Entities;
-        (function (Entities) {
-            var Color = App.Items.Color;
-            var Control = /** @class */ (function (_super) {
-                __extends(Control, _super);
-                function Control() {
-                    var _this = _super !== null && _super.apply(this, arguments) || this;
-                    _this.Name = '';
-                    _this.PositionLeft = 0;
-                    _this.PositionTop = 0;
-                    _this.IconUrl = '';
-                    _this.Code = '';
-                    _this.IsAssignToggleOn = false;
-                    _this.IsAssignToggleOff = false;
-                    _this.Color = Color.ButtonColors[0];
-                    return _this;
-                }
-                Object.defineProperty(Control.prototype, "HoverColor", {
-                    get: function () {
-                        return Color.GetButtonHoverColor(this.Color);
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                return Control;
-            }(Fw.Models.EntityBase));
-            Entities.Control = Control;
-        })(Entities = Models.Entities || (Models.Entities = {}));
-    })(Models = App.Models || (App.Models = {}));
-})(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Models/EntityBase.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-var App;
-(function (App) {
-    var Models;
-    (function (Models) {
-        var Entities;
-        (function (Entities) {
-            var RmCommand = /** @class */ (function (_super) {
-                __extends(RmCommand, _super);
-                function RmCommand() {
-                    var _this = _super !== null && _super.apply(this, arguments) || this;
-                    _this.Code = '';
-                    return _this;
-                }
-                return RmCommand;
-            }(Fw.Models.EntityBase));
-            Entities.RmCommand = RmCommand;
-        })(Entities = Models.Entities || (Models.Entities = {}));
-    })(Models = App.Models || (App.Models = {}));
-})(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../../Fw/Models/StoreBase.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../../../Fw/Util/Xhr/Query.ts" />
@@ -6249,7 +6484,10 @@ var App;
             var ControlStore = /** @class */ (function (_super) {
                 __extends(ControlStore, _super);
                 function ControlStore() {
-                    return _super !== null && _super.apply(this, arguments) || this;
+                    var _this = _super.call(this) || this;
+                    _this.SetClassName('ControlStore');
+                    _this.EnableLog = true;
+                    return _this;
                 }
                 Object.defineProperty(ControlStore, "Instance", {
                     get: function () {
@@ -6313,6 +6551,7 @@ var App;
                 __extends(ControlSetStore, _super);
                 function ControlSetStore() {
                     var _this = _super.call(this) || this;
+                    _this.SetClassName('ControlSetStore');
                     _this.EnableLog = true;
                     return _this;
                 }
@@ -6548,6 +6787,8 @@ var App;
                 __extends(ControlButtonView, _super);
                 function ControlButtonView() {
                     var _this = _super.call(this) || this;
+                    _this._hoverEnable = true;
+                    _this._isActive = false;
                     _this.SetSize(70, 75);
                     _this.GridSize = 90;
                     _this.Margin = 5;
@@ -6558,8 +6799,8 @@ var App;
                     _this.HoverColor = Color.ButtonHoverColors[0];
                     _this.Color = Color.ButtonColors[0];
                     _this.ImageFitPolicy = Property.FitPolicy.Auto;
-                    _this.Code = '';
                     _this._name = '';
+                    _this._hoverEnable = true;
                     _this.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, function (e) {
                         //Dump.Log('ControlButtonView.SingileClick');
                         _this.OnSingleClicked();
@@ -6580,6 +6821,54 @@ var App;
                         this._name = value;
                         if (this.ImageSrc === '')
                             this.Text = value;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(ControlButtonView.prototype, "HoverEnable", {
+                    get: function () {
+                        return this._hoverEnable;
+                    },
+                    set: function (value) {
+                        var _this = this;
+                        this._hoverEnable = value;
+                        // 一旦、Hover関連イベントを削除する。
+                        this.Elem.off('mouseenter mouseleave');
+                        if (this._hoverEnable) {
+                            // Hoverを有効にするとき
+                            this.Elem.on('mouseenter', function () {
+                                _this.Dom.style.backgroundColor = _this.HoverColor;
+                            });
+                            this.Elem.on('mouseleave', function () {
+                                _this.Dom.style.backgroundColor = _this.BackgroundColor;
+                            });
+                        }
+                        else {
+                            // Hoverを無効にするとき
+                            // なにもしない。
+                        }
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(ControlButtonView.prototype, "IsActive", {
+                    get: function () {
+                        return this._isActive;
+                    },
+                    set: function (value) {
+                        if (this._hoverEnable)
+                            throw new Error('Hover is Enable, Cannot Active-Control.');
+                        this._isActive = value;
+                        if (this._isActive) {
+                            // 有効化
+                            this.BackgroundColor = Color.GetButtonHoverColor(this.Color);
+                            this.Dom.style.backgroundColor = this.BackgroundColor;
+                        }
+                        else {
+                            // 無効化
+                            this.BackgroundColor = Color.MainBackground;
+                            this.Dom.style.backgroundColor = this.BackgroundColor;
+                        }
                     },
                     enumerable: true,
                     configurable: true
@@ -6610,14 +6899,13 @@ var App;
                     else {
                         // 実行モードのとき
                         //this.Log('Exec');
-                        this.DispatchEvent(Events.ExecOrdered, this.Code);
+                        this.DispatchEvent(Events.ExecOrdered);
                     }
                 };
                 ControlButtonView.prototype.ApplyFromEntity = function () {
                     if (!this._control)
                         return;
                     this.Name = this._control.Name;
-                    this.Code = this._control.Code;
                     this.SetImage(this._control.IconUrl);
                     this.SetColor(this._control.Color);
                     this.Refresh();
@@ -6658,7 +6946,6 @@ var App;
                     }
                     this._control = null;
                     this._name = null;
-                    this.Code = null;
                     _super.prototype.Dispose.call(this);
                 };
                 return ControlButtonView;
@@ -10182,4 +10469,393 @@ var Fw;
         })(Property = Views.Property || (Views.Property = {}));
     })(Views = Fw.Views || (Fw.Views = {}));
 })(Fw || (Fw = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/StoreBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../../Fw/Util/Xhr/Query.ts" />
+/// <reference path="../Entities/BrDevice.ts" />
+/// <reference path="../Entities/ControlSet.ts" />
+/// <reference path="../Entities/Control.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Stores;
+        (function (Stores) {
+            var RmCommand = App.Models.Entities.RmCommand;
+            var Xhr = Fw.Util.Xhr;
+            var Rm2ProStore = /** @class */ (function (_super) {
+                __extends(Rm2ProStore, _super);
+                function Rm2ProStore() {
+                    var _this = _super.call(this) || this;
+                    _this.SetClassName('Rm2ProStore');
+                    _this.EnableLog = true;
+                    return _this;
+                }
+                Object.defineProperty(Rm2ProStore, "Instance", {
+                    get: function () {
+                        if (Rm2ProStore._instance === null)
+                            Rm2ProStore._instance = new Rm2ProStore();
+                        return Rm2ProStore._instance;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Rm2ProStore.prototype.GetTemperature = function (controlSet) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var params, res, result;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    this.Log('GetTemperature');
+                                    params = new Xhr.Params("Rm2Pro/GetTemperature/" + controlSet.BrDeviceId, Xhr.MethodType.Get);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        result = res.Values;
+                                        controlSet.Controls[0].Value = String(result);
+                                        controlSet.DispatchChanged();
+                                        return [2 /*return*/, result];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, null];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
+                /**
+                 * !未実装!
+                 * @param brDeviceId
+                 */
+                Rm2ProStore.prototype.GetRfLearnedCode = function (brDeviceId) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var params, res, rmCommand;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    this.Log('GetRfLearnedCode');
+                                    params = new Xhr.Params("Rm2Pro/GetRfLearnedCode/" + brDeviceId, Xhr.MethodType.Get);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        rmCommand = this.Merge(res.Values);
+                                        return [2 /*return*/, rmCommand];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, null];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
+                /**
+                 * !未実装!
+                 * @param brDeviceId
+                 */
+                Rm2ProStore.prototype.CancelLearning = function (brDeviceId) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var params, res, result;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    this.Log('CancelLearning');
+                                    params = new Xhr.Params("Rm/CancelLearning/" + brDeviceId, Xhr.MethodType.Post);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        result = res.Values;
+                                        return [2 /*return*/, result];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, null];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
+                Rm2ProStore.prototype.GetNewEntity = function () {
+                    return new RmCommand();
+                };
+                Rm2ProStore.prototype.Write = function (entity) {
+                    throw new Error('Not Supported');
+                };
+                Rm2ProStore._instance = null;
+                return Rm2ProStore;
+            }(Fw.Models.StoreBase));
+            Stores.Rm2ProStore = Rm2ProStore;
+            Stores.Rm2Pros = Rm2ProStore.Instance;
+        })(Stores = Models.Stores || (Models.Stores = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/EntityBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Entities;
+        (function (Entities) {
+            var A1Values = /** @class */ (function (_super) {
+                __extends(A1Values, _super);
+                function A1Values() {
+                    var _this = _super !== null && _super.apply(this, arguments) || this;
+                    _this.Temperature = 0;
+                    _this.Humidity = 0;
+                    _this.Voc = 0;
+                    _this.Light = 0;
+                    _this.Noise = 0;
+                    return _this;
+                }
+                return A1Values;
+            }(Fw.Models.EntityBase));
+            Entities.A1Values = A1Values;
+        })(Entities = Models.Entities || (Models.Entities = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/StoreBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../../Fw/Util/Xhr/Query.ts" />
+/// <reference path="../Entities/ControlSet.ts" />
+/// <reference path="../Entities/Control.ts" />
+/// <reference path="../Entities/A1Values.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Stores;
+        (function (Stores) {
+            var A1Values = App.Models.Entities.A1Values;
+            var Xhr = Fw.Util.Xhr;
+            var A1Store = /** @class */ (function (_super) {
+                __extends(A1Store, _super);
+                function A1Store() {
+                    var _this = _super.call(this) || this;
+                    _this.SetClassName('A1Store');
+                    _this.EnableLog = true;
+                    return _this;
+                }
+                Object.defineProperty(A1Store, "Instance", {
+                    get: function () {
+                        if (A1Store._instance === null)
+                            A1Store._instance = new A1Store();
+                        return A1Store._instance;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                A1Store.prototype.Get = function (controlSet) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var params, res, result;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    this.Log('Get');
+                                    params = new Xhr.Params("A1/" + controlSet.BrDeviceId, Xhr.MethodType.Get);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        result = res.Values;
+                                        controlSet.GetControlByCode('Temp').Value = String(result.Temperature);
+                                        controlSet.GetControlByCode('Humidity').Value = String(result.Humidity);
+                                        controlSet.GetControlByCode('Voc').Value = String(result.Voc);
+                                        controlSet.GetControlByCode('Light').Value = String(result.Light);
+                                        controlSet.GetControlByCode('Noise').Value = String(result.Noise);
+                                        controlSet.DispatchChanged();
+                                        return [2 /*return*/, result];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, null];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
+                A1Store.prototype.GetNewEntity = function () {
+                    return new A1Values();
+                };
+                A1Store.prototype.Write = function (entity) {
+                    throw new Error('Not Supported');
+                };
+                A1Store._instance = null;
+                return A1Store;
+            }(Fw.Models.StoreBase));
+            Stores.A1Store = A1Store;
+            Stores.A1s = A1Store.Instance;
+        })(Stores = Models.Stores || (Models.Stores = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/EntityBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Entities;
+        (function (Entities) {
+            var Sp2Status = /** @class */ (function (_super) {
+                __extends(Sp2Status, _super);
+                function Sp2Status() {
+                    var _this = _super !== null && _super.apply(this, arguments) || this;
+                    _this.Power = false;
+                    _this.NightLight = false;
+                    return _this;
+                }
+                return Sp2Status;
+            }(Fw.Models.EntityBase));
+            Entities.Sp2Status = Sp2Status;
+        })(Entities = Models.Entities || (Models.Entities = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/StoreBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../../Fw/Util/Xhr/Query.ts" />
+/// <reference path="../Entities/ControlSet.ts" />
+/// <reference path="../Entities/Control.ts" />
+/// <reference path="../Entities/Sp2Status.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Stores;
+        (function (Stores) {
+            var Sp2Status = App.Models.Entities.Sp2Status;
+            var Xhr = Fw.Util.Xhr;
+            var Sp2Store = /** @class */ (function (_super) {
+                __extends(Sp2Store, _super);
+                function Sp2Store() {
+                    var _this = _super.call(this) || this;
+                    _this.SetClassName('Sp2Store');
+                    _this.EnableLog = true;
+                    return _this;
+                }
+                Object.defineProperty(Sp2Store, "Instance", {
+                    get: function () {
+                        if (Sp2Store._instance === null)
+                            Sp2Store._instance = new Sp2Store();
+                        return Sp2Store._instance;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Sp2Store.prototype.Get = function (controlSet) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var params, res, result;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    this.Log('Get');
+                                    params = new Xhr.Params("Sp2/" + controlSet.BrDeviceId, Xhr.MethodType.Get);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        result = res.Values;
+                                        controlSet.GetControlByCode('PowerOn').Value = (result.Power) ? 'true' : 'false';
+                                        controlSet.GetControlByCode('PowerOff').Value = (result.Power) ? 'false' : 'true';
+                                        controlSet.GetControlByCode('LightOn').Value = (result.NightLight) ? 'true' : 'false';
+                                        controlSet.GetControlByCode('LightOff').Value = (result.NightLight) ? 'false' : 'true';
+                                        controlSet.ToggleState = result.Power;
+                                        controlSet.DispatchChanged();
+                                        return [2 /*return*/, result];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, null];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
+                Sp2Store.prototype.Set = function (controlSet, control) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var status, params, res, result;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    this.Log('Set');
+                                    status = new Sp2Status();
+                                    status.Power = (controlSet.GetControlByCode('PowerOn').Value === 'true');
+                                    status.NightLight = (controlSet.GetControlByCode('LightOn').Value === 'true');
+                                    switch (control.Code) {
+                                        case 'PowerOn':
+                                            status.Power = true;
+                                            break;
+                                        case 'PowerOff':
+                                            status.Power = false;
+                                            break;
+                                        case 'LightOn':
+                                            status.NightLight = true;
+                                            break;
+                                        case 'LightOff':
+                                            status.NightLight = false;
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                    params = new Xhr.Params("Sp2/" + controlSet.BrDeviceId, Xhr.MethodType.Post, status);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        result = res.Values;
+                                        controlSet.GetControlByCode('PowerOn').Value = (result.Power) ? 'true' : 'false';
+                                        controlSet.GetControlByCode('PowerOff').Value = (result.Power) ? 'false' : 'true';
+                                        controlSet.GetControlByCode('LightOn').Value = (result.NightLight) ? 'true' : 'false';
+                                        controlSet.GetControlByCode('LightOff').Value = (result.NightLight) ? 'false' : 'true';
+                                        controlSet.ToggleState = result.Power;
+                                        controlSet.DispatchChanged();
+                                        return [2 /*return*/, result];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, null];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
+                Sp2Store.prototype.GetNewEntity = function () {
+                    return new Sp2Status();
+                };
+                Sp2Store.prototype.Write = function (entity) {
+                    throw new Error('Not Supported');
+                };
+                Sp2Store._instance = null;
+                return Sp2Store;
+            }(Fw.Models.StoreBase));
+            Stores.Sp2Store = Sp2Store;
+            Stores.Sp2s = Sp2Store.Instance;
+        })(Stores = Models.Stores || (Models.Stores = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
 //# sourceMappingURL=tsout.js.map

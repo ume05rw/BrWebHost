@@ -1,4 +1,4 @@
-﻿/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../../Fw/Models/StoreBase.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
@@ -18,6 +18,14 @@ namespace App.Models.Stores {
                 ControlStore._instance = new ControlStore();
 
             return ControlStore._instance;
+        }
+
+
+        protected constructor() {
+            super();
+
+            this.SetClassName('ControlStore');
+            this.EnableLog = true;
         }
 
         protected GetNewEntity(): Control {
