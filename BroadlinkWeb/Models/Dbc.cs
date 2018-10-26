@@ -129,10 +129,54 @@ namespace BroadlinkWeb.Models
                     IsBrDevice = true,
                     Color = "#84bde8",
                     IsTemplate = true
+                },
+                new ControlSet
+                {
+                    Id = 7,
+                    BrDeviceId = null,
+                    Name = "Sp1 Switch",
+                    IconUrl = "images/icons/controlset/sp2.png",
+                    Order = 99999,
+                    ToggleState = false,
+                    IsMainPanelReady = true,
+                    IsTogglable = true,
+                    IsBrDevice = true,
+                    Color = "#84bde8",
+                    IsTemplate = true
+                },
+                new ControlSet
+                {
+                    Id = 8,
+                    BrDeviceId = null,
+                    Name = "Single Control",
+                    IconUrl = "images/icons/controlset/sp2.png",
+                    Order = 99999,
+                    ToggleState = false,
+                    IsMainPanelReady = true,
+                    IsTogglable = true,
+                    IsBrDevice = true,
+                    Color = "#84bde8",
+                    IsTemplate = true
+                },
+                new ControlSet
+                {
+                    Id = 9,
+                    BrDeviceId = null,
+                    Name = "No Control",
+                    IconUrl = "images/icons/controlset/sp2.png",
+                    Order = 99999,
+                    ToggleState = false,
+                    IsMainPanelReady = true,
+                    IsTogglable = true,
+                    IsBrDevice = true,
+                    Color = "#84bde8",
+                    IsTemplate = true
                 }
             );
 
             modelBuilder.Entity<Control>().HasData(
+
+                // 1.TV
                 new Control
                 {
                     Id = 1,
@@ -367,6 +411,8 @@ namespace BroadlinkWeb.Models
                     PositionLeft = 185,
                     PositionTop = 545
                 },
+
+                // 2.AV
                 new Control
                 {
                     Id = 19,
@@ -497,6 +543,8 @@ namespace BroadlinkWeb.Models
                     PositionLeft = 95,
                     PositionTop = 365
                 },
+
+                // 3.Light
                 new Control
                 {
                     Id = 29,
@@ -549,6 +597,8 @@ namespace BroadlinkWeb.Models
                     PositionLeft = 95,
                     PositionTop = 185
                 },
+
+                // 4.Air Compressor
                 new Control
                 {
                     Id = 33,
@@ -627,6 +677,8 @@ namespace BroadlinkWeb.Models
                     PositionLeft = 185,
                     PositionTop = 185
                 },
+
+                // 5.A1 Sensor
                 new Control
                 {
                     Id = 39,
@@ -692,6 +744,8 @@ namespace BroadlinkWeb.Models
                     PositionLeft = 185,
                     PositionTop = 185
                 },
+
+                // 6.SP2 Switch
                 new Control
                 {
                     Id = 44,
@@ -700,23 +754,92 @@ namespace BroadlinkWeb.Models
                     ControlSetId = 6,
                     IconUrl = "",
                     IsAssignToggleOff = false,
-                    IsAssignToggleOn = false,
-                    Name = "Power",
-                    PositionLeft = 95,
+                    IsAssignToggleOn = true,
+                    Name = "Power On",
+                    PositionLeft = 5,
                     PositionTop = 5
                 },
                 new Control
                 {
                     Id = 45,
                     Code = "",
+                    Color = "#84bde8",
+                    ControlSetId = 6,
+                    IconUrl = "",
+                    IsAssignToggleOff = true,
+                    IsAssignToggleOn = false,
+                    Name = "Power Off",
+                    PositionLeft = 185,
+                    PositionTop = 5
+                },
+                new Control
+                {
+                    Id = 46,
+                    Code = "",
+                    Color = "#6545C6",
+                    ControlSetId = 6,
+                    IconUrl = "",
+                    IsAssignToggleOff = false,
+                    IsAssignToggleOn = false,
+                    Name = "Light On",
+                    PositionLeft = 5,
+                    PositionTop = 95
+                },
+                new Control
+                {
+                    Id = 47,
+                    Code = "",
                     Color = "#9d9e9e",
                     ControlSetId = 6,
                     IconUrl = "",
                     IsAssignToggleOff = false,
                     IsAssignToggleOn = false,
-                    Name = "Night light",
-                    PositionLeft = 95,
+                    Name = "Light Off",
+                    PositionLeft = 185,
                     PositionTop = 95
+                },
+
+                // 7. Sp1 Switch
+                new Control
+                {
+                    Id = 48,
+                    Code = "",
+                    Color = "#F92068",
+                    ControlSetId = 7,
+                    IconUrl = "",
+                    IsAssignToggleOff = false,
+                    IsAssignToggleOn = true,
+                    Name = "Power On",
+                    PositionLeft = 5,
+                    PositionTop = 5
+                },
+                new Control
+                {
+                    Id = 49,
+                    Code = "",
+                    Color = "#84bde8",
+                    ControlSetId = 7,
+                    IconUrl = "",
+                    IsAssignToggleOff = true,
+                    IsAssignToggleOn = false,
+                    Name = "Power Off",
+                    PositionLeft = 185,
+                    PositionTop = 5
+                },
+
+                // 8.Single Control
+                new Control
+                {
+                    Id = 50,
+                    Code = "",
+                    Color = "#9d9e9e",
+                    ControlSetId = 8,
+                    IconUrl = "",
+                    IsAssignToggleOff = false,
+                    IsAssignToggleOn = false,
+                    Name = "Control",
+                    PositionLeft = 95,
+                    PositionTop = 5
                 }
             );
         }

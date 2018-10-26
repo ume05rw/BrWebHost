@@ -101,9 +101,8 @@ namespace BroadlinkWeb.Models.Stores
 
         private async Task<ControlSet> EnsureControlSetRm2Pro()
         {
-            var cset = await this.GetNewByTemplate(ControlSet.Template.Sp2Switch);
-            cset.Controls.First(c => c.Name == "Power").Name = "Temp.";
-            cset.Controls.Remove(cset.Controls.First(c => c.Name == "Night light"));
+            var cset = await this.GetNewByTemplate(ControlSet.Template.SingleControl);
+            cset.Controls[0].Name = "Temp.";
 
             cset.Name = "Rm2Pro";
             cset.IsBrDevice = true;
@@ -116,8 +115,7 @@ namespace BroadlinkWeb.Models.Stores
 
         private async Task<ControlSet> EnsureControlSetRm()
         {
-            var cset = await this.GetNewByTemplate(ControlSet.Template.Sp2Switch);
-            cset.Controls.RemoveRange(0, cset.Controls.Count);
+            var cset = await this.GetNewByTemplate(ControlSet.Template.NoControl);
 
             cset.Name = "Rm";
             cset.IsBrDevice = true;
@@ -139,10 +137,8 @@ namespace BroadlinkWeb.Models.Stores
 
         private async Task<ControlSet> EnsureControlSetSp1()
         {
-            var cset = await this.GetNewByTemplate(ControlSet.Template.Sp2Switch);
-            cset.Controls.Remove(cset.Controls.First(c => c.Name == "Night light"));
+            var cset = await this.GetNewByTemplate(ControlSet.Template.Sp1Switch);
 
-            cset.Name = "SP1";
             cset.IsBrDevice = true;
             cset.IsMainPanelReady = false;
             cset.IsTogglable = true;
@@ -162,8 +158,7 @@ namespace BroadlinkWeb.Models.Stores
 
         private async Task<ControlSet> EnsureControlSetS1c()
         {
-            var cset = await this.GetNewByTemplate(ControlSet.Template.Sp2Switch);
-            cset.Controls.RemoveRange(0, cset.Controls.Count);
+            var cset = await this.GetNewByTemplate(ControlSet.Template.NoControl);
 
             cset.Name = "S1C";
             cset.IsBrDevice = true;
@@ -209,8 +204,7 @@ namespace BroadlinkWeb.Models.Stores
         private async Task<ControlSet> EnsureControlSetAny()
         {
             // なんか知らんデバイス
-            var cset = await this.GetNewByTemplate(ControlSet.Template.Sp2Switch);
-            cset.Controls.RemoveRange(0, cset.Controls.Count);
+            var cset = await this.GetNewByTemplate(ControlSet.Template.NoControl);
 
             cset.Name = "";
             cset.IsBrDevice = true;

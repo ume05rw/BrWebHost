@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BroadlinkWeb.Migrations
 {
     [DbContext(typeof(Dbc))]
-    [Migration("20181024005901_AddIconUrlToControlSet")]
-    partial class AddIconUrlToControlSet
+    [Migration("20181026093215_InitCreate")]
+    partial class InitCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -135,8 +135,13 @@ namespace BroadlinkWeb.Migrations
                         new { Id = 41, Code = "", Color = "#81c03b", ControlSetId = 5, IconUrl = "", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "VOC", PositionLeft = 95, PositionTop = 95 },
                         new { Id = 42, Code = "", Color = "#fcc91f", ControlSetId = 5, IconUrl = "", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "Light", PositionLeft = 5, PositionTop = 185 },
                         new { Id = 43, Code = "", Color = "#B5743B", ControlSetId = 5, IconUrl = "", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "Noise", PositionLeft = 185, PositionTop = 185 },
-                        new { Id = 44, Code = "", Color = "#F92068", ControlSetId = 6, IconUrl = "", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "Power", PositionLeft = 95, PositionTop = 5 },
-                        new { Id = 45, Code = "", Color = "#9d9e9e", ControlSetId = 6, IconUrl = "", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "Night light", PositionLeft = 95, PositionTop = 95 }
+                        new { Id = 44, Code = "", Color = "#F92068", ControlSetId = 6, IconUrl = "", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)1, Name = "Power On", PositionLeft = 5, PositionTop = 5 },
+                        new { Id = 45, Code = "", Color = "#84bde8", ControlSetId = 6, IconUrl = "", IsAssignToggleOff = (byte)1, IsAssignToggleOn = (byte)0, Name = "Power Off", PositionLeft = 185, PositionTop = 5 },
+                        new { Id = 46, Code = "", Color = "#6545C6", ControlSetId = 6, IconUrl = "", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "Light On", PositionLeft = 5, PositionTop = 95 },
+                        new { Id = 47, Code = "", Color = "#9d9e9e", ControlSetId = 6, IconUrl = "", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "Light Off", PositionLeft = 185, PositionTop = 95 },
+                        new { Id = 48, Code = "", Color = "#F92068", ControlSetId = 7, IconUrl = "", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)1, Name = "Power On", PositionLeft = 5, PositionTop = 5 },
+                        new { Id = 49, Code = "", Color = "#84bde8", ControlSetId = 7, IconUrl = "", IsAssignToggleOff = (byte)1, IsAssignToggleOn = (byte)0, Name = "Power Off", PositionLeft = 185, PositionTop = 5 },
+                        new { Id = 50, Code = "", Color = "#9d9e9e", ControlSetId = 8, IconUrl = "", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "Control", PositionLeft = 95, PositionTop = 5 }
                     );
                 });
 
@@ -156,11 +161,26 @@ namespace BroadlinkWeb.Migrations
                     b.Property<string>("IconUrl")
                         .HasColumnType("varchar(255)");
 
+                    b.Property<byte>("IsBrDevice")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<byte>("IsMainPanelReady")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<byte>("IsTemplate")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<byte>("IsTogglable")
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Name")
                         .HasColumnType("varchar(50)");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int(11)");
+
+                    b.Property<byte>("ToggleState")
+                        .HasColumnType("tinyint(1)");
 
                     b.HasKey("Id");
 
@@ -173,12 +193,15 @@ namespace BroadlinkWeb.Migrations
                     b.HasAnnotation("MySQL:Collation", "utf8_general_ci ");
 
                     b.HasData(
-                        new { Id = 1, Color = "#fcc91f", IsTemplate = (byte)1, Name = "TV" },
-                        new { Id = 2, Color = "#F92068", IsTemplate = (byte)1, Name = "AV" },
-                        new { Id = 3, Color = "#ccdc4b", IsTemplate = (byte)1, Name = "Light" },
-                        new { Id = 4, Color = "#6545C6", IsTemplate = (byte)1, Name = "Air Complessor" },
-                        new { Id = 5, Color = "#84bde8", IsTemplate = (byte)1, Name = "A1 Sensor" },
-                        new { Id = 6, Color = "#84bde8", IsTemplate = (byte)1, Name = "Sp2 Switch" }
+                        new { Id = 1, Color = "#fcc91f", IconUrl = "images/icons/controlset/tv.png", IsBrDevice = (byte)0, IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "TV", Order = 99999, ToggleState = (byte)0 },
+                        new { Id = 2, Color = "#F92068", IconUrl = "images/icons/controlset/av.png", IsBrDevice = (byte)0, IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "AV", Order = 99999, ToggleState = (byte)0 },
+                        new { Id = 3, Color = "#ccdc4b", IconUrl = "images/icons/controlset/light.png", IsBrDevice = (byte)0, IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "Light", Order = 99999, ToggleState = (byte)0 },
+                        new { Id = 4, Color = "#6545C6", IconUrl = "images/icons/controlset/aircompressor.png", IsBrDevice = (byte)0, IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "Air Complessor", Order = 99999, ToggleState = (byte)0 },
+                        new { Id = 5, Color = "#84bde8", IconUrl = "images/icons/controlset/a1.png", IsBrDevice = (byte)1, IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)0, Name = "A1 Sensor", Order = 99999, ToggleState = (byte)0 },
+                        new { Id = 6, Color = "#84bde8", IconUrl = "images/icons/controlset/sp2.png", IsBrDevice = (byte)1, IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "Sp2 Switch", Order = 99999, ToggleState = (byte)0 },
+                        new { Id = 7, Color = "#84bde8", IconUrl = "images/icons/controlset/sp2.png", IsBrDevice = (byte)1, IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "Sp1 Switch", Order = 99999, ToggleState = (byte)0 },
+                        new { Id = 8, Color = "#84bde8", IconUrl = "images/icons/controlset/sp2.png", IsBrDevice = (byte)1, IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "Single Control", Order = 99999, ToggleState = (byte)0 },
+                        new { Id = 9, Color = "#84bde8", IconUrl = "images/icons/controlset/sp2.png", IsBrDevice = (byte)1, IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "No Control", Order = 99999, ToggleState = (byte)0 }
                     );
                 });
 

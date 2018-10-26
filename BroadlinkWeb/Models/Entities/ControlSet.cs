@@ -24,7 +24,10 @@ namespace BroadlinkWeb.Models.Entities
             Light = 3,
             AirCompressor = 4,
             A1Sensor = 5,
-            Sp2Switch = 6
+            Sp2Switch = 6,
+            Sp1Switch = 7,
+            SingleControl = 8,
+            NoControl = 9,
         }
 
         [Key]
