@@ -10,6 +10,7 @@
 /// <reference path="../Views/Pages/MainPageView.ts" />
 /// <reference path="../Views/Popup/AlertPopup.ts" />
 /// <reference path="../Events/Controls/ControlButtonViewEvents.ts" />
+/// <reference path="../Models/Entities/ControlSet.ts" />
 /// <reference path="../Models/Stores/RmStore.ts" />
 
 namespace App.Controllers {
@@ -19,6 +20,7 @@ namespace App.Controllers {
     import Property = Fw.Views.Property;
     import Pages = App.Views.Pages;
     import Controls = App.Views.Controls;
+    import Entities = App.Models.Entities;
     import Util = Fw.Util;
     import EntityEvents = Fw.Events.EntityEvents;
     import ButtonViewEvents = Fw.Events.ButtonViewEvents;
@@ -29,7 +31,7 @@ namespace App.Controllers {
     export class ControlSetController extends Fw.Controllers.ControllerBase {
 
         private _page: Pages.ControlSetPageView;
-        private _controlSet: App.Models.Entities.ControlSet;
+        private _controlSet: Entities.ControlSet;
 
         /**
          * 現在リモコン編集中か否か
@@ -100,7 +102,7 @@ namespace App.Controllers {
          * 操作対象リモコンEnttiyをセットする。
          * @param entity
          */
-        public SetEntity(entity: App.Models.Entities.ControlSet): void {
+        public SetEntity(entity: Entities.ControlSet): void {
 
             // View側削除処理、ButtonPanel.Childrenを削除操作するため、要素退避しておく。
             const buttons = Util.Obj.Mirror(this._page.ButtonPanel.Children);
@@ -150,17 +152,7 @@ namespace App.Controllers {
                     btn.AddEventListener(ControlButtonViewEvents.ExecOrdered, (e) => {
                         this.Log('ControlButtonViewEvents.ExecOrdered');
                         const button = e.Sender as Controls.ControlButtonView;
-                        const code = button.Control.Code;
-
-                        if (!code || code === '') {
-                            // コードが無いとき、学習を促す。
-                            Popup.Alert.Open({
-                                Message: 'Learn your Remote Control Button.'
-                            });
-                        } else {
-                            // コードがあるとき、送信する。
-                            this.ExecCode(button.Control.Code);
-                        }
+                        this.ExecCode(button.Control);
                     }, this);
 
                     this._page.ButtonPanel.Add(btn);
@@ -176,6 +168,7 @@ namespace App.Controllers {
 
             this._page.HeaderBar.Text = this._controlSet.Name;
             this._page.HeaderLeftLabel.Text = this._controlSet.Name;
+            this._page.Refresh();
         }
 
         /**
@@ -189,7 +182,7 @@ namespace App.Controllers {
             if (!this._controlSet)
                 throw new Error('ControlSet Not Found');
 
-            const control = new App.Models.Entities.Control();
+            const control = new Entities.Control();
             control.ControlSetId = this._controlSet.Id;
             this._controlSet.Controls.push(control);
 
@@ -221,17 +214,7 @@ namespace App.Controllers {
             btn.AddEventListener(ControlButtonViewEvents.ExecOrdered, (e) => {
                 // ボタン実行指示
                 const button = e.Sender as Controls.ControlButtonView;
-                const code = button.Control.Code;
-
-                if (!code || code === '') {
-                    // コードが無いとき、学習を促す。
-                    Popup.Alert.Open({
-                        Message: 'Learn your Remote Control Button.'
-                    });
-                } else {
-                    // コードがあるとき、送信する。
-                    this.ExecCode(button.Control.Code);
-                }
+                this.ExecCode(button.Control);
             }, this);
 
             this._page.ButtonPanel.Add(btn);
@@ -300,22 +283,45 @@ namespace App.Controllers {
          * コード実行
          * @param code
          */
-        public async ExecCode(code: string): Promise<boolean> {
+        public async ExecCode(control: Entities.Control): Promise<boolean> {
             this.Log('ExecCode');
             const id = this._controlSet.BrDeviceId;
 
-            if (!id) {
+            if (!this._controlSet.BrDeviceId) {
                 Popup.Alert.Open({
                     Message: 'Select your Rm-Device,<br/>Click Header.',
                 });
                 return null;
             }
 
-            const result = await Stores.Rms.Exec(id, code);
+            if (!control.Code || control.Code === '') {
+                Popup.Alert.Open({
+                    Message: 'Learn your Remote Control Button.'
+                });
+                return null;
+            }
+
+            const result = await Stores.Rms.Exec(id, control.Code);
+
+            if (result) {
+                if (control.IsAssignToggleOn) {
+                    this._controlSet.ToggleState = true;
+                    this._controlSet.DispatchChanged();
+                } else if (control.IsAssignToggleOff) {
+                    this._controlSet.ToggleState = false;
+                    this._controlSet.DispatchChanged();
+                }
+            }
+
             return result;
         }
 
-        public ResetToggleAssign(control: App.Models.Entities.Control, targetState: boolean): void {
+        /**
+         * Controlのトグルアサイン状態を唯一選択に保つ
+         * @param control アサイン指定されたControl
+         * @param targetState On/Offアサインのどちらかを示す
+         */
+        public ResetToggleAssign(control: Entities.Control, targetState: boolean): void {
             if (!this.IsOnEditMode)
                 return;
 
@@ -323,7 +329,7 @@ namespace App.Controllers {
                 ? 'IsAssignToggleOn'
                 : 'IsAssignToggleOff';
 
-            _.each(this._controlSet.Controls, (c: App.Models.Entities.Control) => {
+            _.each(this._controlSet.Controls, (c: Entities.Control) => {
                 if (c === control)
                     return;
 
@@ -336,7 +342,7 @@ namespace App.Controllers {
          * リモコンボタンを一つ削除する。
          * @param control
          */
-        public RemoveControl(control: App.Models.Entities.Control): void {
+        public RemoveControl(control: Entities.Control): void {
             if (!this.IsOnEditMode)
                 return;
 

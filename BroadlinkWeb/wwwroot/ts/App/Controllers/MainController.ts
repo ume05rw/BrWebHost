@@ -211,6 +211,18 @@ namespace App.Controllers {
 
                     if (cset.ToggleState !== btn.Toggle.BoolValue)
                         btn.Toggle.SetBoolValue(cset.ToggleState, false);
+
+                    if (cset.Name !== btn.Label.Text)
+                        btn.Label.Text = cset.Name;
+
+                    if (cset.Color !== btn.Button.Color) {
+                        btn.Button.BackgroundColor = cset.Color;
+                        btn.Button.Color = cset.Color;
+                        btn.Button.HoverColor = cset.HoverColor;
+                    }
+
+                    if (cset.IconUrl !== btn.Button.ImageSrc)
+                        btn.Button.ImageSrc = cset.IconUrl;
                 });
 
                 this._page.ControlSetPanel.Add(btn);

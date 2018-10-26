@@ -105,16 +105,8 @@ namespace App.Controllers {
                 if (!this._control)
                     return;
 
-                const code = this._page.TarCode.Value;
-                if (!code || code === '') {
-                    Popup.Alert.Open({
-                        Message: 'Learn your Remote Control Button.'
-                    });
-                    return;
-                }
-
                 const ctr = this.Manager.Get('ControlSet') as ControlSetController;
-                ctr.ExecCode(code);
+                ctr.ExecCode(this._control);
             });
 
             this._page.ChkToggleOn.AddEventListener(Events.InputViewEvents.Changed, (e) => {

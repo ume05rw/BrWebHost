@@ -4604,19 +4604,12 @@ var App;
                     });
                 }); });
                 _this._page.BtnSend.AddEventListener(Events.ButtonViewEvents.SingleClick, function (e) { return __awaiter(_this, void 0, void 0, function () {
-                    var code, ctr;
+                    var ctr;
                     return __generator(this, function (_a) {
                         if (!this._control)
                             return [2 /*return*/];
-                        code = this._page.TarCode.Value;
-                        if (!code || code === '') {
-                            Popup.Alert.Open({
-                                Message: 'Learn your Remote Control Button.'
-                            });
-                            return [2 /*return*/];
-                        }
                         ctr = this.Manager.Get('ControlSet');
-                        ctr.ExecCode(code);
+                        ctr.ExecCode(this._control);
                         return [2 /*return*/];
                     });
                 }); });
@@ -4684,6 +4677,86 @@ var App;
 })(App || (App = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
+var App;
+(function (App) {
+    var Items;
+    (function (Items) {
+        var ControlSetTemplate;
+        (function (ControlSetTemplate) {
+            ControlSetTemplate[ControlSetTemplate["Tv"] = 1] = "Tv";
+            ControlSetTemplate[ControlSetTemplate["Av"] = 2] = "Av";
+            ControlSetTemplate[ControlSetTemplate["Light"] = 3] = "Light";
+            ControlSetTemplate[ControlSetTemplate["AirComplessor"] = 4] = "AirComplessor";
+            ControlSetTemplate[ControlSetTemplate["A1Sensor"] = 5] = "A1Sensor";
+            ControlSetTemplate[ControlSetTemplate["Sp2Switch"] = 6] = "Sp2Switch";
+        })(ControlSetTemplate = Items.ControlSetTemplate || (Items.ControlSetTemplate = {}));
+    })(Items = App.Items || (App.Items = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/EntityBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../Items/Color.ts" />
+/// <reference path="../../Items/ControlSetTemplate.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Entities;
+        (function (Entities) {
+            var Color = App.Items.Color;
+            var ControlSet = /** @class */ (function (_super) {
+                __extends(ControlSet, _super);
+                function ControlSet() {
+                    var _this = _super !== null && _super.apply(this, arguments) || this;
+                    /**
+                     * リモコン名
+                     */
+                    _this.Name = 'New Remote Control';
+                    /**
+                     * メインパネルボタン用アイコンURL
+                     */
+                    _this.IconUrl = 'images/icons/main_av.png';
+                    /**
+                     * トグルボタン状態
+                     */
+                    _this.ToggleState = false;
+                    /**
+                     * 背景色
+                     */
+                    _this.Color = Color.ButtonColors[0];
+                    /**
+                     * メインパネル表示順
+                     */
+                    _this.Order = 99999;
+                    /**
+                     * リモコン配置テンプレートか否か
+                     */
+                    _this.IsTemplate = false;
+                    /**
+                     * コントロールボタン配列
+                     */
+                    _this.Controls = [];
+                    return _this;
+                }
+                Object.defineProperty(ControlSet.prototype, "HoverColor", {
+                    /**
+                     * ホバー色
+                     */
+                    get: function () {
+                        return Color.GetButtonHoverColor(this.Color);
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                return ControlSet;
+            }(Fw.Models.EntityBase));
+            Entities.ControlSet = ControlSet;
+        })(Entities = Models.Entities || (Models.Entities = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Fw/Controllers/ControllerBase.ts" />
 /// <reference path="../../Fw/Controllers/Manager.ts" />
 /// <reference path="../../Fw/Util/Dump.ts" />
@@ -4694,6 +4767,7 @@ var App;
 /// <reference path="../Views/Pages/MainPageView.ts" />
 /// <reference path="../Views/Popup/AlertPopup.ts" />
 /// <reference path="../Events/Controls/ControlButtonViewEvents.ts" />
+/// <reference path="../Models/Entities/ControlSet.ts" />
 /// <reference path="../Models/Stores/RmStore.ts" />
 var App;
 (function (App) {
@@ -4701,6 +4775,7 @@ var App;
     (function (Controllers) {
         var Pages = App.Views.Pages;
         var Controls = App.Views.Controls;
+        var Entities = App.Models.Entities;
         var Util = Fw.Util;
         var EntityEvents = Fw.Events.EntityEvents;
         var ButtonViewEvents = Fw.Events.ButtonViewEvents;
@@ -4827,17 +4902,7 @@ var App;
                         btn.AddEventListener(ControlButtonViewEvents.ExecOrdered, function (e) {
                             _this.Log('ControlButtonViewEvents.ExecOrdered');
                             var button = e.Sender;
-                            var code = button.Control.Code;
-                            if (!code || code === '') {
-                                // コードが無いとき、学習を促す。
-                                Popup.Alert.Open({
-                                    Message: 'Learn your Remote Control Button.'
-                                });
-                            }
-                            else {
-                                // コードがあるとき、送信する。
-                                _this.ExecCode(button.Control.Code);
-                            }
+                            _this.ExecCode(button.Control);
                         }, _this);
                         _this._page.ButtonPanel.Add(btn);
                     });
@@ -4849,6 +4914,7 @@ var App;
                     return;
                 this._page.HeaderBar.Text = this._controlSet.Name;
                 this._page.HeaderLeftLabel.Text = this._controlSet.Name;
+                this._page.Refresh();
             };
             /**
              * リモコンボタン追加指示
@@ -4860,7 +4926,7 @@ var App;
                     return;
                 if (!this._controlSet)
                     throw new Error('ControlSet Not Found');
-                var control = new App.Models.Entities.Control();
+                var control = new Entities.Control();
                 control.ControlSetId = this._controlSet.Id;
                 this._controlSet.Controls.push(control);
                 var btn = new Controls.ControlButtonView();
@@ -4894,17 +4960,7 @@ var App;
                 btn.AddEventListener(ControlButtonViewEvents.ExecOrdered, function (e) {
                     // ボタン実行指示
                     var button = e.Sender;
-                    var code = button.Control.Code;
-                    if (!code || code === '') {
-                        // コードが無いとき、学習を促す。
-                        Popup.Alert.Open({
-                            Message: 'Learn your Remote Control Button.'
-                        });
-                    }
-                    else {
-                        // コードがあるとき、送信する。
-                        _this.ExecCode(button.Control.Code);
-                    }
+                    _this.ExecCode(button.Control);
                 }, this);
                 this._page.ButtonPanel.Add(btn);
                 // 再配置可能指示はパネルにaddした後で。
@@ -4966,7 +5022,7 @@ var App;
              * コード実行
              * @param code
              */
-            ControlSetController.prototype.ExecCode = function (code) {
+            ControlSetController.prototype.ExecCode = function (control) {
                 return __awaiter(this, void 0, void 0, function () {
                     var id, result;
                     return __generator(this, function (_a) {
@@ -4974,20 +5030,41 @@ var App;
                             case 0:
                                 this.Log('ExecCode');
                                 id = this._controlSet.BrDeviceId;
-                                if (!id) {
+                                if (!this._controlSet.BrDeviceId) {
                                     Popup.Alert.Open({
                                         Message: 'Select your Rm-Device,<br/>Click Header.',
                                     });
                                     return [2 /*return*/, null];
                                 }
-                                return [4 /*yield*/, Stores.Rms.Exec(id, code)];
+                                if (!control.Code || control.Code === '') {
+                                    Popup.Alert.Open({
+                                        Message: 'Learn your Remote Control Button.'
+                                    });
+                                    return [2 /*return*/, null];
+                                }
+                                return [4 /*yield*/, Stores.Rms.Exec(id, control.Code)];
                             case 1:
                                 result = _a.sent();
+                                if (result) {
+                                    if (control.IsAssignToggleOn) {
+                                        this._controlSet.ToggleState = true;
+                                        this._controlSet.DispatchChanged();
+                                    }
+                                    else if (control.IsAssignToggleOff) {
+                                        this._controlSet.ToggleState = false;
+                                        this._controlSet.DispatchChanged();
+                                    }
+                                }
                                 return [2 /*return*/, result];
                         }
                     });
                 });
             };
+            /**
+             * Controlのトグルアサイン状態を唯一選択に保つ
+             * @param control アサイン指定されたControl
+             * @param targetState On/Offアサインのどちらかを示す
+             */
             ControlSetController.prototype.ResetToggleAssign = function (control, targetState) {
                 if (!this.IsOnEditMode)
                     return;
@@ -5187,86 +5264,6 @@ var Fw;
         Events.ToggleButtonInputViewEvents = new ToggleButtonInputViewEventsClass();
     })(Events = Fw.Events || (Fw.Events = {}));
 })(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-var App;
-(function (App) {
-    var Items;
-    (function (Items) {
-        var ControlSetTemplate;
-        (function (ControlSetTemplate) {
-            ControlSetTemplate[ControlSetTemplate["Tv"] = 1] = "Tv";
-            ControlSetTemplate[ControlSetTemplate["Av"] = 2] = "Av";
-            ControlSetTemplate[ControlSetTemplate["Light"] = 3] = "Light";
-            ControlSetTemplate[ControlSetTemplate["AirComplessor"] = 4] = "AirComplessor";
-            ControlSetTemplate[ControlSetTemplate["A1Sensor"] = 5] = "A1Sensor";
-            ControlSetTemplate[ControlSetTemplate["Sp2Switch"] = 6] = "Sp2Switch";
-        })(ControlSetTemplate = Items.ControlSetTemplate || (Items.ControlSetTemplate = {}));
-    })(Items = App.Items || (App.Items = {}));
-})(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Models/EntityBase.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-/// <reference path="../../Items/Color.ts" />
-/// <reference path="../../Items/ControlSetTemplate.ts" />
-var App;
-(function (App) {
-    var Models;
-    (function (Models) {
-        var Entities;
-        (function (Entities) {
-            var Color = App.Items.Color;
-            var ControlSet = /** @class */ (function (_super) {
-                __extends(ControlSet, _super);
-                function ControlSet() {
-                    var _this = _super !== null && _super.apply(this, arguments) || this;
-                    /**
-                     * リモコン名
-                     */
-                    _this.Name = 'New Remote Control';
-                    /**
-                     * メインパネルボタン用アイコンURL
-                     */
-                    _this.IconUrl = 'images/icons/main_av.png';
-                    /**
-                     * トグルボタン状態
-                     */
-                    _this.ToggleState = false;
-                    /**
-                     * 背景色
-                     */
-                    _this.Color = Color.ButtonColors[0];
-                    /**
-                     * メインパネル表示順
-                     */
-                    _this.Order = 99999;
-                    /**
-                     * リモコン配置テンプレートか否か
-                     */
-                    _this.IsTemplate = false;
-                    /**
-                     * コントロールボタン配列
-                     */
-                    _this.Controls = [];
-                    return _this;
-                }
-                Object.defineProperty(ControlSet.prototype, "HoverColor", {
-                    /**
-                     * ホバー色
-                     */
-                    get: function () {
-                        return Color.GetButtonHoverColor(this.Color);
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                return ControlSet;
-            }(Fw.Models.EntityBase));
-            Entities.ControlSet = ControlSet;
-        })(Entities = Models.Entities || (Models.Entities = {}));
-    })(Models = App.Models || (App.Models = {}));
-})(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../../Fw/Views/ButtonView.ts" />
@@ -5533,6 +5530,15 @@ var App;
                                             return;
                                         if (cset.ToggleState !== btn.Toggle.BoolValue)
                                             btn.Toggle.SetBoolValue(cset.ToggleState, false);
+                                        if (cset.Name !== btn.Label.Text)
+                                            btn.Label.Text = cset.Name;
+                                        if (cset.Color !== btn.Button.Color) {
+                                            btn.Button.BackgroundColor = cset.Color;
+                                            btn.Button.Color = cset.Color;
+                                            btn.Button.HoverColor = cset.HoverColor;
+                                        }
+                                        if (cset.IconUrl !== btn.Button.ImageSrc)
+                                            btn.Button.ImageSrc = cset.IconUrl;
                                     });
                                     _this._page.ControlSetPanel.Add(btn);
                                 });
