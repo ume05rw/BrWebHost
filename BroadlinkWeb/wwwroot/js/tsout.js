@@ -4751,7 +4751,7 @@ var App;
                                 case 1:
                                     res = _a.sent();
                                     if (res.Succeeded) {
-                                        rmCommand = this.Merge(res.Values);
+                                        rmCommand = res.Values;
                                         return [2 /*return*/, rmCommand];
                                     }
                                     else {
@@ -5838,7 +5838,7 @@ var App;
                             case 2:
                                 _a.sent();
                                 // これはawaitしない。
-                                //Stores.BrDevices.Discover();
+                                Stores.BrDevices.Discover();
                                 return [2 /*return*/, true];
                         }
                     });
@@ -10545,7 +10545,7 @@ var App;
                                 case 1:
                                     res = _a.sent();
                                     if (res.Succeeded) {
-                                        rmCommand = this.Merge(res.Values);
+                                        rmCommand = res.Values;
                                         return [2 /*return*/, rmCommand];
                                     }
                                     else {

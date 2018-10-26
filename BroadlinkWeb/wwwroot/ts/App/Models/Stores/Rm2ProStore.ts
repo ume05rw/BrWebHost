@@ -73,7 +73,7 @@ namespace App.Models.Stores {
             const res = await Xhr.Query.Invoke(params);
 
             if (res.Succeeded) {
-                var rmCommand = this.Merge(res.Values);
+                var rmCommand = res.Values as RmCommand;
 
                 return rmCommand;
             } else {

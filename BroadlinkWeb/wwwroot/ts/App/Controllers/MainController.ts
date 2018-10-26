@@ -119,7 +119,7 @@ namespace App.Controllers {
             await this.RefreshControlSets();
 
             // これはawaitしない。
-            //Stores.BrDevices.Discover();
+            Stores.BrDevices.Discover();
 
             return true;
         }
