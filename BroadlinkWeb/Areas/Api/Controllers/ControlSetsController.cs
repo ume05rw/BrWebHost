@@ -156,59 +156,6 @@ namespace BroadlinkWeb.Areas.Api.Controllers
             }
         }
 
-        //// PUT: api/ControlSets/5
-        //[HttpPut("{id}")]
-        //public async Task<IActionResult> PutControlSet(
-        //    [FromRoute] int id, 
-        //    [FromBody] ControlSet controlSet
-        //)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-
-        //    if (id != controlSet.Id)
-        //    {
-        //        return BadRequest();
-        //    }
-
-        //    _context.Entry(controlSet).State = EntityState.Modified;
-
-        //    try
-        //    {
-        //        await _context.SaveChangesAsync();
-        //    }
-        //    catch (DbUpdateConcurrencyException)
-        //    {
-        //        if (!ControlSetExists(id))
-        //        {
-        //            return NotFound();
-        //        }
-        //        else
-        //        {
-        //            throw;
-        //        }
-        //    }
-
-        //    return NoContent();
-        //}
-
-        //// POST: api/ControlSets
-        //[HttpPost]
-        //public async Task<IActionResult> PostControlSet([FromBody] ControlSet controlSet)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-
-        //    _context.ControlSets.Add(controlSet);
-        //    await _context.SaveChangesAsync();
-
-        //    return CreatedAtAction("GetControlSet", new { id = controlSet.Id }, controlSet);
-        //}
-
         private bool ControlSetExists(int id)
         {
             return _dbc.ControlSets.Any(e => e.Id == id);

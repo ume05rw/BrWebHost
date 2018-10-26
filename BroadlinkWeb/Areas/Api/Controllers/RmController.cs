@@ -139,7 +139,8 @@ namespace BroadlinkWeb.Areas.Api.Controllers
                 return (null, XhrResult.CreateError("Entity Not Found"));
             else if (!entity.IsActive)
                 return (entity, XhrResult.CreateError("Device is not Active"));
-            else if (entity.SbDevice.DeviceType != SharpBroadlink.Devices.DeviceType.Rm)
+            else if (entity.SbDevice.DeviceType != DeviceType.Rm
+                     && entity.SbDevice.DeviceType != DeviceType.Rm2Pro)
                 return (entity, XhrResult.CreateError("Device is not Rm"));
 
             return (entity, null);
