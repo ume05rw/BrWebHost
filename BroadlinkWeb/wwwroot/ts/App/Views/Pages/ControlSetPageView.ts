@@ -60,7 +60,6 @@ namespace App.Views.Pages {
             this.ButtonPanel.Position.Policy = Property.PositionPolicy.LeftTop;
             this.ButtonPanel.Size.Width = 280;
             this.ButtonPanel.SetAnchor(70, null, null, 10);
-            this.SetOperateMode();
             this.Add(this.ButtonPanel);
 
             this.HeaderBar.Elem.hover(() => {
@@ -85,53 +84,6 @@ namespace App.Views.Pages {
                 });
                 this.HeaderBar.ApplyStyles();
             });
-        }
-
-        // 以下、Controllerにあるべき？Viewの制御なのでViewに書くのでよいか？
-
-        public SetEditMode(): void {
-            const left = (this.Size.Width / 2) - (this.ButtonPanel.Size.Width / 2);
-            this.ButtonPanel.Position.Left = left;
-            this.HeaderBar.Label.Show(0);
-            this.HeaderBar.LeftButton.Show(0);
-            this.HeaderBar.RightButton.Show(0);
-            this.EditButton.Hide(0);
-            this.HeaderLeftLabel.Hide(0);
-
-            _.each(this.ButtonPanel.Children, (v) => {
-                if (v instanceof Controls.ControlButtonView) 
-                    (v as Controls.ControlButtonView).SetRelocatable(true);
-            });
-        }
-
-        public SetOperateMode(): void {
-            const left = 10;
-            this.ButtonPanel.Position.Left = left;
-            this.HeaderBar.Label.Hide(0);
-            this.HeaderBar.LeftButton.Hide(0);
-            this.HeaderBar.RightButton.Hide(0);
-            this.EditButton.Show(0);
-            this.HeaderLeftLabel.Show(0);
-
-            _.each(this.ButtonPanel.Children, (v) => {
-                if (v instanceof Controls.ControlButtonView)
-                    (v as Controls.ControlButtonView).SetRelocatable(false);
-            });
-        }
-
-        public ShowModal(duration: number = 200, width: number = 300): void {
-            this.SetOperateMode();
-            super.ShowModal(duration, width);
-        }
-
-        public SetUnmodal(duration: number = 200): void {
-            this.SetEditMode();
-            super.SetUnmodal();
-        }
-
-        public Show(duration: number = 200): void {
-            this.SetEditMode();
-            super.Show(duration);
         }
     }
 }

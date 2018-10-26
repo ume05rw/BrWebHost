@@ -19,7 +19,9 @@ namespace App.Views.Pages {
         public HeaderBar: Controls.HeaderBarView;
         public InputPanel: Views.StuckerBoxView;
         public TxtName: Views.TextBoxInputView;
+        public LabelColor: Views.LabelView;
         public BtnColor: Controls.ItemSelectButtonView;
+        public LabelRm: Views.LabelView;
         public SboRm: Views.SelectBoxInputView;
         public DeleteButton: Controls.ButtonView;
 
@@ -29,7 +31,9 @@ namespace App.Views.Pages {
             this.HeaderBar = new Controls.HeaderBarView();
             this.InputPanel = new Views.StuckerBoxView();
             this.TxtName = new Views.TextBoxInputView();
+            this.LabelColor = new Views.LabelView();
             this.BtnColor = new Controls.ItemSelectButtonView();
+            this.LabelRm = new Views.LabelView();
             this.SboRm = new Views.SelectBoxInputView();
             this.DeleteButton = new Controls.ButtonView();
 
@@ -73,25 +77,26 @@ namespace App.Views.Pages {
             this.TxtName.Name = 'Name';
             this.InputPanel.Add(this.TxtName);
 
-            const lbl2 = new Views.LabelView();
-            lbl2.Text = 'Color';
-            lbl2.TextAlign = Property.TextAlign.Left;
-            lbl2.AutoSize = true;
-            lbl2.SetAnchor(null, 5, null, null);
-            lbl2.Size.Height = 21;
-            this.InputPanel.Add(lbl2);
+
+            this.LabelColor = new Views.LabelView();
+            this.LabelColor.Text = 'Color';
+            this.LabelColor.TextAlign = Property.TextAlign.Left;
+            this.LabelColor.AutoSize = true;
+            this.LabelColor.SetAnchor(null, 5, null, null);
+            this.LabelColor.Size.Height = 21;
+            this.InputPanel.Add(this.LabelColor);
             this.InputPanel.AddSpacer();
 
             this.InputPanel.Add(this.BtnColor);
             this.InputPanel.AddSpacer();
 
-            const lbl3 = new Views.LabelView();
-            lbl3.Text = 'Target';
-            lbl3.TextAlign = Property.TextAlign.Left;
-            lbl3.AutoSize = true;
-            lbl3.SetAnchor(null, 5, null, null);
-            lbl3.Size.Height = 21;
-            this.InputPanel.Add(lbl3);
+            this.LabelRm = new Views.LabelView();
+            this.LabelRm.Text = 'Target';
+            this.LabelRm.TextAlign = Property.TextAlign.Left;
+            this.LabelRm.AutoSize = true;
+            this.LabelRm.SetAnchor(null, 5, null, null);
+            this.LabelRm.Size.Height = 21;
+            this.InputPanel.Add(this.LabelRm);
 
             this.SboRm.SetAnchor(null, 5, 15, null);
             this.SboRm.Size.Height = 30;

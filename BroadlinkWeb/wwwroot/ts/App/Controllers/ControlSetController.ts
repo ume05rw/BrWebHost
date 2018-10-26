@@ -83,6 +83,7 @@ namespace App.Controllers {
             });
 
             this._page.EditButton.AddEventListener(ButtonViewEvents.SingleClick, () => {
+                this.SetEditMode();
                 this.ToUnmodal();
             });
 
@@ -95,6 +96,61 @@ namespace App.Controllers {
             });
             this._page.HeaderBar.Label.Elem.on('click', (e) => {
                 this.OnOrderedHeader(e);
+            });
+        }
+
+        public SetEditMode(): void {
+            const left = (this._page.Size.Width / 2) - (this._page.ButtonPanel.Size.Width / 2);
+            this._page.ButtonPanel.Position.Left = left;
+            this._page.HeaderBar.Label.Show(0);
+            this._page.HeaderBar.LeftButton.Show(0);
+            this._page.HeaderLeftLabel.Hide(0);
+            this._page.EditButton.Hide(0);
+
+            // 追加ボタン - 表示制御対象
+            if (!this._controlSet) {
+                // ControlSetエンティティが見当たらない
+                this._page.HeaderBar.RightButton.Hide(0);
+            } else if (this._controlSet.IsBrDevice) {
+                // ControlSetは、Broadlinkデバイス = 編集不能
+                this._page.HeaderBar.RightButton.Hide(0);
+            } else {
+                // その他 - ユーザー追加デバイス = 編集可
+                this._page.HeaderBar.RightButton.Show(0);
+            }
+
+            _.each(this._page.ButtonPanel.Children, (v) => {
+                if (v instanceof Controls.ControlButtonView)
+                    (v as Controls.ControlButtonView).SetRelocatable(true);
+            });
+        }
+
+        public SetOperateMode(): void {
+            const left = 10;
+            this._page.ButtonPanel.Position.Left = left;
+            this._page.HeaderBar.Label.Hide(0);
+            this._page.HeaderBar.LeftButton.Hide(0);
+            this._page.HeaderBar.RightButton.Hide(0);
+            this._page.HeaderLeftLabel.Show(0);
+            this._page.EditButton.Show(0);
+
+            // 編集自体は許可する。
+            // 編集項目を、名称だけに制限する。
+            //// 編集ボタン - 表示制御対象
+            //if (!this._controlSet) {
+            //    // ControlSetエンティティが見当たらない
+            //    this._page.EditButton.Hide(0);
+            //} else if (this._controlSet.IsBrDevice) {
+            //    // ControlSetは、Broadlinkデバイス = 編集不能
+            //    this._page.EditButton.Hide(0);
+            //} else {
+            //    // その他 - ユーザー追加デバイス = 編集可
+            //    this._page.EditButton.Show(0);
+            //}
+
+            _.each(this._page.ButtonPanel.Children, (v) => {
+                if (v instanceof Controls.ControlButtonView)
+                    (v as Controls.ControlButtonView).SetRelocatable(false);
             });
         }
 
@@ -131,13 +187,20 @@ namespace App.Controllers {
 
                     btn.AddEventListener(ControlButtonViewEvents.EditOrdered, async (e) => {
                         // 既存ボタンの処理。新規ボタン用に同様のロジックが、下にある。
+
+                        // Broadlinkデバイスはボタン編集禁止
+                        if (this._controlSet.IsBrDevice)
+                            return;
+
                         const ctr = this.Manager.Get('ControlProperty') as ControlPropertyController;
                         const button = e.Sender as Controls.ControlButtonView;
                         ctr.SetEntity(button.Control);
                         ctr.ShowModal();
 
+                        // クリック時にコードが空のものは、自動で学習モードにする。
                         const id = this._controlSet.BrDeviceId;
                         if ((id)
+                            && (!this._controlSet.IsBrDevice)
                             && (!button.Control.Code
                                 || button.Control.Code === '')
                         ) {
@@ -192,13 +255,20 @@ namespace App.Controllers {
 
             btn.AddEventListener(ControlButtonViewEvents.EditOrdered, async (e) => {
                 // ボタン編集指示
+
+                // Broadlinkデバイスはボタン編集禁止
+                if (this._controlSet.IsBrDevice)
+                    return;
+
                 const ctr = this.Manager.Get('ControlProperty') as ControlPropertyController;
                 const button = e.Sender as Controls.ControlButtonView;
                 ctr.SetEntity(button.Control);
                 ctr.ShowModal();
 
+                // クリック時にコードが空のものは、自動で学習モードにする。
                 const id = this._controlSet.BrDeviceId;
                 if ((id)
+                    && (!this._controlSet.IsBrDevice)
                     && (!button.Control.Code
                         || button.Control.Code === '')
                 ) {
@@ -304,10 +374,17 @@ namespace App.Controllers {
             const result = await Stores.Rms.Exec(id, control.Code);
 
             if (result) {
-                if (control.IsAssignToggleOn) {
+                if (control.IsAssignToggleOn === true
+                    && control.IsAssignToggleOff === true
+                ) {
+                    // ボタンにトグルOn/Off両方アサインされているとき、
+                    // 表示制御しない。
+                } else if (control.IsAssignToggleOn) {
+                    // ボタンにトグルOnがアサインされているとき
                     this._controlSet.ToggleState = true;
                     this._controlSet.DispatchChanged();
                 } else if (control.IsAssignToggleOff) {
+                    // ボタンにトグルOffがアサインされているとき
                     this._controlSet.ToggleState = false;
                     this._controlSet.DispatchChanged();
                 }

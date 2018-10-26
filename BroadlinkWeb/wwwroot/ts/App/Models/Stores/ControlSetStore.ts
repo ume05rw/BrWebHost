@@ -44,6 +44,11 @@ namespace App.Models.Stores {
             result.IconUrl = tpl.IconUrl;
             result.ToggleState = tpl.ToggleState;
             result.Color = tpl.Color;
+            result.Order = tpl.Order;
+            result.ToggleState = tpl.ToggleState;
+            result.IsMainPanelReady = tpl.IsMainPanelReady;
+            result.IsTogglable = tpl.IsTogglable;
+            result.IsBrDevice = tpl.IsBrDevice;
             result.IsTemplate = false;
 
             _.each(tpl.Controls, (ctpl: App.Models.Entities.Control) => {

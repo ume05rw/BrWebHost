@@ -114,6 +114,9 @@ namespace Fw.Views {
 
         protected InnerRefresh(): void {
             try {
+                if (this.IsDisposed !== false)
+                    return;
+
                 super.InnerRefresh();
 
                 this.SetStyles({

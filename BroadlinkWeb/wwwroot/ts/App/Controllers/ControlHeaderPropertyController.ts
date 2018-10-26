@@ -50,6 +50,9 @@ namespace App.Controllers {
                 if (!this._controlSet)
                     return;
 
+                if (this._controlSet.IsBrDevice)
+                    return;
+
                 this.Log('ControlPropertyController.BtnColor.SingleClick');
 
                 const ctr = this.Manager.Get('ColorSelect') as ColorSelectController;
@@ -67,6 +70,9 @@ namespace App.Controllers {
                 if (!this._controlSet)
                     return;
 
+                if (this._controlSet.IsBrDevice)
+                    return;
+
                 if ($.isNumeric(this._page.SboRm.Value)) {
                     this._controlSet.BrDeviceId = parseInt(this._page.SboRm.Value, 10);
                     this._controlSet.DispatchChanged();
@@ -75,6 +81,9 @@ namespace App.Controllers {
 
             this._page.DeleteButton.AddEventListener(Events.ButtonViewEvents.SingleClick, async (e) => {
                 if (!this._controlSet)
+                    return;
+
+                if (this._controlSet.IsBrDevice)
                     return;
 
                 const res = await Popup.Confirm.OpenAsync({
@@ -96,15 +105,32 @@ namespace App.Controllers {
         public SetEntity(entity: Entities.ControlSet): void {
             this._controlSet = entity;
 
+            if (!this._controlSet)
+                return;
+
             this.RefreshBrDevices();
 
             this._page.TxtName.Value = this._controlSet.Name;
 
-            this._page.BtnColor.Color = this._controlSet.Color;
-            this._page.BtnColor.BackgroundColor = this._controlSet.Color;
-            this._page.BtnColor.HoverColor = App.Items.Color.GetButtonHoverColor(this._controlSet.Color);
+            if (this._controlSet.IsBrDevice) {
+                this._page.LabelColor.Hide(0);
+                this._page.BtnColor.Hide(0);
+                this._page.LabelRm.Hide(0);
+                this._page.SboRm.Hide(0);
+                this._page.DeleteButton.Hide(0);
 
-            this._page.SboRm.Value = String(this._controlSet.BrDeviceId);
+            } else {
+                this._page.LabelColor.Show(0);
+                this._page.BtnColor.Show(0);
+                this._page.LabelRm.Show(0);
+                this._page.SboRm.Show(0);
+                this._page.DeleteButton.Show(0);
+
+                this._page.BtnColor.Color = this._controlSet.Color;
+                this._page.BtnColor.BackgroundColor = this._controlSet.Color;
+                this._page.BtnColor.HoverColor = App.Items.Color.GetButtonHoverColor(this._controlSet.Color);
+                this._page.SboRm.Value = String(this._controlSet.BrDeviceId);
+            }
         }
 
         private RefreshBrDevices(): void {

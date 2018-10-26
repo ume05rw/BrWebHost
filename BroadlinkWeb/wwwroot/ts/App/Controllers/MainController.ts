@@ -88,6 +88,7 @@ namespace App.Controllers {
 
                 const ctr2 = this.Manager.Get('ControlSet') as ControlSetController;
                 ctr2.SetEntity(ctrSet);
+                ctr2.SetEditMode();
                 ctr2.Show();
             });
 
@@ -149,9 +150,10 @@ namespace App.Controllers {
                 btn.Button.AddEventListener(ButtonEvents.SingleClick, (e) => {
                     // メインボタンクリック - リモコンをスライドイン表示する。
                     const button = (e.Sender as Fw.Views.IView).Parent as ControlSetButtonView;
-                    const ctr2 = this.Manager.Get('ControlSet') as ControlSetController;
-                    ctr2.SetEntity(button.ControlSet);
-                    ctr2.ShowModal();
+                    const ctr = this.Manager.Get('ControlSet') as ControlSetController;
+                    ctr.SetEntity(button.ControlSet);
+                    ctr.SetOperateMode();
+                    ctr.ShowModal();
                 });
 
                 btn.Toggle.AddEventListener(ToggleEvents.Changed, (e) => {

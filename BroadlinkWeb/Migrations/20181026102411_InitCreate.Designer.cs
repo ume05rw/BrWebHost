@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BroadlinkWeb.Migrations
 {
     [DbContext(typeof(Dbc))]
-    [Migration("20181026093215_InitCreate")]
+    [Migration("20181026102411_InitCreate")]
     partial class InitCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -92,7 +92,7 @@ namespace BroadlinkWeb.Migrations
                     b.HasAnnotation("MySQL:Collation", "utf8_general_ci ");
 
                     b.HasData(
-                        new { Id = 1, Code = "", Color = "#F92068", ControlSetId = 1, IconUrl = "images/icons/power.png", IsAssignToggleOff = (byte)1, IsAssignToggleOn = (byte)1, Name = "Power", PositionLeft = 185, PositionTop = 5 },
+                        new { Id = 1, Code = "", Color = "#F92068", ControlSetId = 1, IconUrl = "images/icons/power.png", IsAssignToggleOff = (byte)1, IsAssignToggleOn = (byte)1, Name = "Power", PositionLeft = 5, PositionTop = 5 },
                         new { Id = 2, Code = "", Color = "#9d9e9e", ControlSetId = 1, IconUrl = "images/icons/num_0.png", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "Ch.0", PositionLeft = 95, PositionTop = 545 },
                         new { Id = 3, Code = "", Color = "#9d9e9e", ControlSetId = 1, IconUrl = "images/icons/num_9.png", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "Ch.9", PositionLeft = 185, PositionTop = 455 },
                         new { Id = 4, Code = "", Color = "#9d9e9e", ControlSetId = 1, IconUrl = "images/icons/num_8.png", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "Ch.8", PositionLeft = 95, PositionTop = 455 },
@@ -107,7 +107,7 @@ namespace BroadlinkWeb.Migrations
                         new { Id = 13, Code = "", Color = "#9d9e9e", ControlSetId = 1, IconUrl = "images/icons/circle_plus.png", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "Vol.Up", PositionLeft = 5, PositionTop = 95 },
                         new { Id = 14, Code = "", Color = "#9d9e9e", ControlSetId = 1, IconUrl = "images/icons/arrow2_down.png", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "Ch.Down", PositionLeft = 185, PositionTop = 185 },
                         new { Id = 15, Code = "", Color = "#9d9e9e", ControlSetId = 1, IconUrl = "images/icons/arrow2_up.png", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "Ch.Up", PositionLeft = 185, PositionTop = 95 },
-                        new { Id = 16, Code = "", Color = "#84bde8", ControlSetId = 1, IconUrl = "images/icons/settings2.png", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "Input Select", PositionLeft = 5, PositionTop = 5 },
+                        new { Id = 16, Code = "", Color = "#84bde8", ControlSetId = 1, IconUrl = "images/icons/settings2.png", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "Input Select", PositionLeft = 185, PositionTop = 5 },
                         new { Id = 17, Code = "", Color = "#9d9e9e", ControlSetId = 1, IconUrl = "images/icons/num_aster.png", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "Ch.Aster", PositionLeft = 5, PositionTop = 545 },
                         new { Id = 18, Code = "", Color = "#9d9e9e", ControlSetId = 1, IconUrl = "images/icons/num_sharp.png", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "Ch.Sharp", PositionLeft = 185, PositionTop = 545 },
                         new { Id = 19, Code = "", Color = "#F92068", ControlSetId = 2, IconUrl = "images/icons/power.png", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)1, Name = "Power On", PositionLeft = 5, PositionTop = 5 },
@@ -136,11 +136,11 @@ namespace BroadlinkWeb.Migrations
                         new { Id = 42, Code = "", Color = "#fcc91f", ControlSetId = 5, IconUrl = "", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "Light", PositionLeft = 5, PositionTop = 185 },
                         new { Id = 43, Code = "", Color = "#B5743B", ControlSetId = 5, IconUrl = "", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "Noise", PositionLeft = 185, PositionTop = 185 },
                         new { Id = 44, Code = "", Color = "#F92068", ControlSetId = 6, IconUrl = "", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)1, Name = "Power On", PositionLeft = 5, PositionTop = 5 },
-                        new { Id = 45, Code = "", Color = "#84bde8", ControlSetId = 6, IconUrl = "", IsAssignToggleOff = (byte)1, IsAssignToggleOn = (byte)0, Name = "Power Off", PositionLeft = 185, PositionTop = 5 },
+                        new { Id = 45, Code = "", Color = "#9d9e9e", ControlSetId = 6, IconUrl = "", IsAssignToggleOff = (byte)1, IsAssignToggleOn = (byte)0, Name = "Power Off", PositionLeft = 185, PositionTop = 5 },
                         new { Id = 46, Code = "", Color = "#6545C6", ControlSetId = 6, IconUrl = "", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "Light On", PositionLeft = 5, PositionTop = 95 },
                         new { Id = 47, Code = "", Color = "#9d9e9e", ControlSetId = 6, IconUrl = "", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "Light Off", PositionLeft = 185, PositionTop = 95 },
                         new { Id = 48, Code = "", Color = "#F92068", ControlSetId = 7, IconUrl = "", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)1, Name = "Power On", PositionLeft = 5, PositionTop = 5 },
-                        new { Id = 49, Code = "", Color = "#84bde8", ControlSetId = 7, IconUrl = "", IsAssignToggleOff = (byte)1, IsAssignToggleOn = (byte)0, Name = "Power Off", PositionLeft = 185, PositionTop = 5 },
+                        new { Id = 49, Code = "", Color = "#9d9e9e", ControlSetId = 7, IconUrl = "", IsAssignToggleOff = (byte)1, IsAssignToggleOn = (byte)0, Name = "Power Off", PositionLeft = 185, PositionTop = 5 },
                         new { Id = 50, Code = "", Color = "#9d9e9e", ControlSetId = 8, IconUrl = "", IsAssignToggleOff = (byte)0, IsAssignToggleOn = (byte)0, Name = "Control", PositionLeft = 95, PositionTop = 5 }
                     );
                 });

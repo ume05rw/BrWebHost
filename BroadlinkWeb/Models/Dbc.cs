@@ -187,7 +187,7 @@ namespace BroadlinkWeb.Models
                     IsAssignToggleOff = true,
                     IsAssignToggleOn = true,
                     Name = "Power",
-                    PositionLeft = 185,
+                    PositionLeft = 5,
                     PositionTop = 5
                 },
                 new Control
@@ -382,7 +382,7 @@ namespace BroadlinkWeb.Models
                     IsAssignToggleOff = false,
                     IsAssignToggleOn = false,
                     Name = "Input Select",
-                    PositionLeft = 5,
+                    PositionLeft = 185,
                     PositionTop = 5
                 },
                 new Control
@@ -763,7 +763,7 @@ namespace BroadlinkWeb.Models
                 {
                     Id = 45,
                     Code = "",
-                    Color = "#84bde8",
+                    Color = "#9d9e9e",
                     ControlSetId = 6,
                     IconUrl = "",
                     IsAssignToggleOff = true,
@@ -817,7 +817,7 @@ namespace BroadlinkWeb.Models
                 {
                     Id = 49,
                     Code = "",
-                    Color = "#84bde8",
+                    Color = "#9d9e9e",
                     ControlSetId = 7,
                     IconUrl = "",
                     IsAssignToggleOff = true,
