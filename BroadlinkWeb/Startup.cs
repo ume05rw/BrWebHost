@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,6 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Serialization;
+using BroadlinkWeb.Extensions;
+using BroadlinkWeb.Models.Stores;
 
 namespace BroadlinkWeb
 {
@@ -23,8 +25,8 @@ namespace BroadlinkWeb
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-public void ConfigureServices(IServiceCollection services)
-{
+        public void ConfigureServices(IServiceCollection services)
+        {
             // 追加済みのサービスの中から、ILoggerFactoryのインスタンスを取得する。
             var logService = services
                 .FirstOrDefault(s => s.ServiceType == typeof(ILoggerFactory));
@@ -64,6 +66,11 @@ public void ConfigureServices(IServiceCollection services)
                     options.SerializerSettings.ReferenceLoopHandling
                         = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
                 });
+
+            // DI対象にStoreを追加。
+            services
+                .AddDbStore<BrDeviceStore>()
+                .AddDbStore<ControlSetStore>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -92,6 +99,43 @@ public void ConfigureServices(IServiceCollection services)
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
+            });
+
+
+            // 起動時に、同期的に1回、LAN上のBroadlinkデバイスをスキャンする。
+            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                var store = serviceScope.ServiceProvider.GetService<BrDeviceStore>();
+                store.Refresh().GetAwaiter().GetResult();
+            }
+
+            // 恐らくこれは危険な実装な気がする。
+            // 代替案はあるか？
+            BrDeviceStore.Provider = app.ApplicationServices;
+            BrDeviceStore.LoopScan = Task.Run(async () =>
+            {
+                // 5分に1回、LAN上のBroadlinkデバイスをスキャンする。
+                while (true)
+                {
+                    try
+                    {
+                        using (var serviceScope = BrDeviceStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+                        {
+                            await Task.Delay(1000 * 60 * 5);
+
+                            Xb.Util.Out("Regularly Broadlink Device Scan");
+                            var store = serviceScope.ServiceProvider.GetService<BrDeviceStore>();
+                            await store.Refresh();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Xb.Util.Out(ex);
+                        Xb.Util.Out("FUUUUUUUUUUUUUUUUUUUUUUCK!!!");
+                        Xb.Util.Out("Regularly Scan FAIL!!!!!!!!!!!!");
+                        throw;
+                    }
+                }
             });
         }
     }

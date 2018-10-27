@@ -6025,8 +6025,11 @@ var App;
                                 return [4 /*yield*/, this.RefreshControlSets()];
                             case 2:
                                 _a.sent();
-                                // これはawaitしない。
-                                Stores.BrDevices.Discover();
+                                // 10秒後に実行を試した。これでも遅い。
+                                // 原因は、BrDevices.GetList() の戻りが遅いこと。
+                                _.delay(function () {
+                                    Stores.BrDevices.Discover();
+                                }, 5000);
                                 return [2 /*return*/, true];
                         }
                     });

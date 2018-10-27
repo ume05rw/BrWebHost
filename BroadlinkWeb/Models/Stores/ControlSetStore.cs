@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using BroadlinkWeb.Models.Entities;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SharpBroadlink;
 using SharpBroadlink.Devices;
@@ -12,25 +13,14 @@ namespace BroadlinkWeb.Models.Stores
 {
     public class ControlSetStore
     {
-        private static ControlSetStore _instance = null;
-        public static ControlSetStore GetInstance(Dbc dbc)
-        {
-            // TODO: そのうちDI実装する。
-            if (ControlSetStore._instance == null)
-                ControlSetStore._instance = new ControlSetStore();
-
-            ControlSetStore._instance._dbc = dbc;
-
-            return ControlSetStore._instance;
-        }
-
-
         private Dbc _dbc;
 
-
-        private ControlSetStore()
+        public ControlSetStore(
+            [FromServices] Dbc dbc
+        )
         {
             Xb.Util.Out("ControlSetStore.Constructor");
+            this._dbc = dbc;
         }
 
         public async Task<bool> EnsureBrControlSets(IEnumerable<BrDevice> brDevices)

@@ -15,12 +15,15 @@ namespace BroadlinkWeb.Areas.Api.Controllers
         private readonly Dbc _dbc;
         private BrDeviceStore _store;
 
-        public A1Controller(Dbc dbc)
+        public A1Controller(
+            Dbc dbc,
+            BrDeviceStore brDeviceStore
+        )
         {
             Xb.Util.Out("A1Controller.Constructor");
 
             this._dbc = dbc;
-            this._store = BrDeviceStore.GetInstance(dbc);
+            this._store = brDeviceStore;
         }
 
         // GET: api/A1/5

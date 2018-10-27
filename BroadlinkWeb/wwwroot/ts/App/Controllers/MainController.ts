@@ -118,8 +118,11 @@ namespace App.Controllers {
 
             await this.RefreshControlSets();
 
-            // これはawaitしない。
-            Stores.BrDevices.Discover();
+            // 10秒後に実行を試した。これでも遅い。
+            // 原因は、BrDevices.GetList() の戻りが遅いこと。
+            _.delay(() => {
+                Stores.BrDevices.Discover();
+            }, 5000);
 
             return true;
         }

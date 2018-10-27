@@ -21,12 +21,15 @@ namespace BroadlinkWeb.Areas.Api.Controllers
         private readonly Dbc _dbc;
         private BrDeviceStore _store;
 
-        public RmController(Dbc dbc)
+        public RmController(
+            Dbc dbc,
+            BrDeviceStore brDeviceStore
+        )
         {
             Xb.Util.Out("RmController.Constructor");
 
             this._dbc = dbc;
-            this._store = BrDeviceStore.GetInstance(dbc);
+            this._store = brDeviceStore;
         }
 
         // GET: api/Rm/GetLearnedCode/5

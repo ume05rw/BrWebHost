@@ -4,34 +4,32 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using BroadlinkWeb.Models.Entities;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SharpBroadlink;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BroadlinkWeb.Models.Stores
 {
     public class BrDeviceStore
     {
-        private static BrDeviceStore _instance = null;
-        public static BrDeviceStore GetInstance(Dbc dbc)
-        {
-            // TODO: そのうちDI実装する。
-            if (BrDeviceStore._instance == null)
-                BrDeviceStore._instance = new BrDeviceStore();
-
-            BrDeviceStore._instance._dbc = dbc;
-
-            return BrDeviceStore._instance;
-        }
-
-
-        private Dbc _dbc;
-
-        private List<SharpBroadlink.Devices.IDevice> _sbDevices
+        private static List<SharpBroadlink.Devices.IDevice> SbDevices
             = new List<SharpBroadlink.Devices.IDevice>();
 
-        private BrDeviceStore()
+        public static IServiceProvider Provider = null;
+        public static Task LoopScan = null;
+
+        private Dbc _dbc;
+        private ControlSetStore _controlSetStore;
+
+        public BrDeviceStore(
+            [FromServices] Dbc dbc,
+            [FromServices] ControlSetStore controlSetStore
+        )
         {
             Xb.Util.Out("BrDeviceStore.Constructor");
+            this._dbc = dbc;
+            this._controlSetStore = controlSetStore;
         }
 
         public async Task<BrDevice> Get(int id)
@@ -43,7 +41,7 @@ namespace BroadlinkWeb.Models.Stores
 
             if (entity != null)
             {
-                var sbDev = this._sbDevices
+                var sbDev = BrDeviceStore.SbDevices
                     .FirstOrDefault(sd => this.IsDeviceMatch(entity, sd));
 
                 if (sbDev == null)
@@ -55,26 +53,17 @@ namespace BroadlinkWeb.Models.Stores
                     var ep = new IPEndPoint(IPAddress.Parse(entity.IpAddressString), entity.Port);
 
                     sbDev = Broadlink.Create(entity.DeviceTypeDetailNumber, mac, ep);
+                    BrDeviceStore.SbDevices.Add(sbDev);
                 }
 
                 entity.SbDevice = sbDev;
             }
 
-            // 注)非同期で認証はNG。何故かはまだ追及してない。
-            if (!this.IsDeviceAuthed(entity.SbDevice))
-            {
-                var res = await entity.SbDevice.Auth();
-                Xb.Util.Out("BrDevicesController.Get - Auth: " + res);
-                if (!res)
-                {
-                    Xb.Util.Out($"BrDevicesController.Get - Auth Failed! {entity.IpAddressString}");
-                    //throw new Exception($"BrDevicesController.Get - Auth Failed! {entity.IpAddressString}");
-                }
-            }
+            // 投げっぱなし、待機なし。
+            this.DelayedAuth(new BrDevice[] { entity });
 
             return entity;
         }
-
 
         public async Task<IEnumerable<BrDevice>> GetList()
         {
@@ -82,11 +71,10 @@ namespace BroadlinkWeb.Models.Stores
 
             // DB登録済みのデバイスエンティティ取得
             var entities = await this._dbc.BrDevices.ToListAsync();
-            var tasks = new List<Task>();
 
             foreach (var entity in entities)
             {
-                var sbDev = this._sbDevices
+                var sbDev = BrDeviceStore.SbDevices
                     .FirstOrDefault(sd => this.IsDeviceMatch(entity, sd));
 
                 if (sbDev == null)
@@ -98,30 +86,14 @@ namespace BroadlinkWeb.Models.Stores
                     var ep = new IPEndPoint(IPAddress.Parse(entity.IpAddressString), entity.Port);
 
                     sbDev = Broadlink.Create(entity.DeviceTypeDetailNumber, mac, ep);
-                    this._sbDevices.Add(sbDev);
-                }
-
-                // 注)非同期で認証はNG。何故かはまだ追及してない。
-                if (!this.IsDeviceAuthed(sbDev))
-                {
-                    //Xb.Util.Out("BrDevicesController.GetList - Auth");
-                    var task = Task.Run(() => {
-                        var res = sbDev.Auth().GetAwaiter().GetResult();
-                        Xb.Util.Out("BrDevicesController.GetList - Auth: " + res);
-                        if (!res)
-                        {
-                            Xb.Util.Out($"BrDevicesController.GetList - Auth Failed! {entity.IpAddressString}");
-                            //throw new Exception($"BrDevicesController.GetList - Auth Failed! {entity.IpAddressString}");
-                        }
-                    });
-                    task.ConfigureAwait(false);
-                    tasks.Add(task);
+                    BrDeviceStore.SbDevices.Add(sbDev);
                 }
 
                 entity.SbDevice = sbDev;
             }
 
-            Task.WaitAll(tasks.ToArray());
+            // 投げっぱなし、待機なし。
+            this.DelayedAuth(entities);
 
             return entities;
         }
@@ -135,18 +107,17 @@ namespace BroadlinkWeb.Models.Stores
             // LAN上のBroadlinkデバイスオブジェクトを取得
             var broadlinkDevices = await Broadlink.Discover(2);
 
-
             // キャッシュ上に無いBroadlinkデバイスを追加。
             foreach (var sbDev in broadlinkDevices)
-                if (!this._sbDevices.Any(sb => this.IsDeviceMatch(sb, sbDev)))
-                    this._sbDevices.Add(sbDev);
+                if (!BrDeviceStore.SbDevices.Any(sb => this.IsDeviceMatch(sb, sbDev)))
+                    BrDeviceStore.SbDevices.Add(sbDev);
 
             // DB登録済みのデバイスエンティティ取得
             var entities = this._dbc.BrDevices.ToList();
 
             // デバイスエンティティにBroadlinkデバイスオブジェクトをセット。
             foreach (var entity in entities)
-                entity.SbDevice = this._sbDevices
+                entity.SbDevice = BrDeviceStore.SbDevices
                     .FirstOrDefault(bd => this.IsDeviceMatch(entity, bd));
 
             // DB未登録デバイスオブジェクトのEntityを生成
@@ -170,32 +141,42 @@ namespace BroadlinkWeb.Models.Stores
                 this._dbc.SaveChanges();
             }
 
-            // 注)非同期で認証はNG。何故かはまだ追及してない。
+            // 投げっぱなし、待機なし。
+            this.DelayedAuth(entities);
+
+            return entities;
+        }
+
+        private async Task<bool> DelayedAuth(IEnumerable<BrDevice> entities)
+        {
             var tasks = new List<Task>();
-            foreach (var entity in entities.Where(en => en.IsActive))
+
+            foreach (var entity in entities)
             {
+                if (entity.SbDevice == null)
+                    continue;
+
+                // 注)非同期で認証はNG。何故かはまだ追及してない。
                 if (!this.IsDeviceAuthed(entity.SbDevice))
                 {
+                    //Xb.Util.Out("BrDevicesController.GetList - Auth");
                     var task = Task.Run(() => {
+                        Xb.Util.Out("BrDevicesController.DelayedAuth - Auth");
                         var res = entity.SbDevice.Auth().GetAwaiter().GetResult();
-                        Xb.Util.Out("BrDevicesController.Refresh - Auth: " + res);
                         if (!res)
                         {
-                            Xb.Util.Out($"BrDevicesController.Refresh - Auth Failed! {entity.IpAddressString}");
-                            //throw new Exception($"BrDevicesController.Refresh - Auth Failed! {entity.IpAddressString}");
+                            Xb.Util.Out($"BrDevicesController.GetList - Auth Failed! {entity.IpAddressString}");
+                            //throw new Exception($"BrDevicesController.GetList - Auth Failed! {entity.IpAddressString}");
                         }
                     });
                     task.ConfigureAwait(false);
                     tasks.Add(task);
                 }
             }
-            var taskCsets = ControlSetStore.GetInstance(this._dbc).EnsureBrControlSets(entities);
-            taskCsets.ConfigureAwait(false);
-            tasks.Add(taskCsets);
 
-            Task.WaitAll(tasks.ToArray());
+            await Task.WhenAll(tasks.ToArray());
 
-            return entities;
+            return true;
         }
 
         /// <summary>
