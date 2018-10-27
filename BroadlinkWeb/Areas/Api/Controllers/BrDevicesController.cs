@@ -70,7 +70,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
 
         // GET: api/BrDevices/Discover
         [HttpGet("Discover")]
-        public async Task<XhrResult> Discover()
+        public XhrResult Discover()
         {
             Xb.Util.Out("BrDevicesController.Discover");
             try
@@ -78,7 +78,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
                 if (!ModelState.IsValid)
                     return XhrResult.CreateError(ModelState);
 
-                var result = await this._store.Refresh();
+                var result = this._store.Refresh();
                 return XhrResult.CreateSucceeded(result.ToArray());
             }
             catch (Exception ex)

@@ -98,27 +98,45 @@ namespace BroadlinkWeb.Models.Stores
             return entities;
         }
 
-        public async Task<IEnumerable<BrDevice>> Refresh()
+        /// <summary>
+        /// LANをスキャンしてBroadlinkデバイスを取得する。
+        /// </summary>
+        /// <returns></returns>
+        /// <remarks>
+        /// 起動時に1回実行、その後は5分に1回定期的に実行される。
+        /// *** APIでは使わないように。重いので。***
+        /// ***意図的に同期処理にしてある。async入れないで！***
+        /// </remarks>
+        public IEnumerable<BrDevice> Refresh()
         {
             Xb.Util.Out("BrDevicesController.Refresh");
 
             var result = new List<BrDevice>();
 
             // LAN上のBroadlinkデバイスオブジェクトを取得
-            var broadlinkDevices = await Broadlink.Discover(2);
+            var broadlinkDevices = Broadlink.Discover(2)
+                .GetAwaiter()
+                .GetResult();
+
+            if (broadlinkDevices.Length <= 0)
+                return new BrDevice[] { };
 
             // キャッシュ上に無いBroadlinkデバイスを追加。
             foreach (var sbDev in broadlinkDevices)
+            {
                 if (!BrDeviceStore.SbDevices.Any(sb => this.IsDeviceMatch(sb, sbDev)))
                     BrDeviceStore.SbDevices.Add(sbDev);
+            }
 
             // DB登録済みのデバイスエンティティ取得
             var entities = this._dbc.BrDevices.ToList();
 
             // デバイスエンティティにBroadlinkデバイスオブジェクトをセット。
             foreach (var entity in entities)
+            {
                 entity.SbDevice = BrDeviceStore.SbDevices
                     .FirstOrDefault(bd => this.IsDeviceMatch(entity, bd));
+            }
 
             // DB未登録デバイスオブジェクトのEntityを生成
             var newDevices = broadlinkDevices

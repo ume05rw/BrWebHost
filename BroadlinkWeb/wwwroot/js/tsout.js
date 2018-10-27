@@ -4571,61 +4571,6 @@ var App;
                         });
                     });
                 };
-                BrDeviceStore.prototype.GetListAndRefresh = function () {
-                    return __awaiter(this, void 0, void 0, function () {
-                        var params, res, i;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    this.Log('GetListAndRefresh');
-                                    params = new Xhr.Params('BrDevices', Xhr.MethodType.Get);
-                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
-                                case 1:
-                                    res = _a.sent();
-                                    if (res.Succeeded) {
-                                        for (i = 0; i < res.Values.length; i++)
-                                            this.Merge(res.Values[i]);
-                                        // 非同期実行、待機しない。
-                                        this.Discover();
-                                        return [2 /*return*/, _.values(this.List)];
-                                    }
-                                    else {
-                                        this.Log('Query Fail');
-                                        this.Log(res.Errors);
-                                        return [2 /*return*/, null];
-                                    }
-                                    return [2 /*return*/];
-                            }
-                        });
-                    });
-                };
-                BrDeviceStore.prototype.Discover = function () {
-                    return __awaiter(this, void 0, void 0, function () {
-                        var params, res, i;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    this.Log('Discover');
-                                    params = new Xhr.Params('BrDevices/Discover', Xhr.MethodType.Get);
-                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
-                                case 1:
-                                    res = _a.sent();
-                                    if (res.Succeeded) {
-                                        for (i = 0; i < res.Values.length; i++)
-                                            this.Merge(res.Values[i]);
-                                        Dump.Log(res.Values);
-                                        return [2 /*return*/, res.Values];
-                                    }
-                                    else {
-                                        this.Log('Query Fail');
-                                        this.Log(res.Errors);
-                                        return [2 /*return*/, null];
-                                    }
-                                    return [2 /*return*/];
-                            }
-                        });
-                    });
-                };
                 BrDeviceStore.prototype.Exec = function (controlSet, control) {
                     return __awaiter(this, void 0, void 0, function () {
                         var result, pairedDev, _a, res1, res2, res3;
@@ -4715,6 +4660,37 @@ var App;
                                         }
                                     }
                                     return [2 /*return*/, result];
+                            }
+                        });
+                    });
+                };
+                /**
+                 * Broadlinkデバイス検出
+                 * ※UIからは、基本的に使わないでくれたまへ。
+                 */
+                BrDeviceStore.prototype.Discover = function () {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var params, res, i;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    this.Log('Discover');
+                                    params = new Xhr.Params('BrDevices/Discover', Xhr.MethodType.Get);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        for (i = 0; i < res.Values.length; i++)
+                                            this.Merge(res.Values[i]);
+                                        Dump.Log(res.Values);
+                                        return [2 /*return*/, res.Values];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, null];
+                                    }
+                                    return [2 /*return*/];
                             }
                         });
                     });
@@ -6025,11 +6001,6 @@ var App;
                                 return [4 /*yield*/, this.RefreshControlSets()];
                             case 2:
                                 _a.sent();
-                                // 10秒後に実行を試した。これでも遅い。
-                                // 原因は、BrDevices.GetList() の戻りが遅いこと。
-                                _.delay(function () {
-                                    Stores.BrDevices.Discover();
-                                }, 5000);
                                 return [2 /*return*/, true];
                         }
                     });

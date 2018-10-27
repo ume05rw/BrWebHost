@@ -76,6 +76,13 @@ namespace BroadlinkWeb
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            // 起動時に、同期的に1回、LAN上のBroadlinkデバイスをスキャンする。
+            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                var store = serviceScope.ServiceProvider.GetService<BrDeviceStore>();
+                store.Refresh();
+            }
+
             if (env.IsDevelopment())
             {
                 app.UseBrowserLink();
@@ -101,14 +108,6 @@ namespace BroadlinkWeb
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 
-
-            // 起動時に、同期的に1回、LAN上のBroadlinkデバイスをスキャンする。
-            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
-            {
-                var store = serviceScope.ServiceProvider.GetService<BrDeviceStore>();
-                store.Refresh().GetAwaiter().GetResult();
-            }
-
             // 恐らくこれは危険な実装な気がする。
             // 代替案はあるか？
             BrDeviceStore.Provider = app.ApplicationServices;
@@ -125,7 +124,7 @@ namespace BroadlinkWeb
 
                             Xb.Util.Out("Regularly Broadlink Device Scan");
                             var store = serviceScope.ServiceProvider.GetService<BrDeviceStore>();
-                            await store.Refresh();
+                            store.Refresh();
                         }
                     }
                     catch (Exception ex)
