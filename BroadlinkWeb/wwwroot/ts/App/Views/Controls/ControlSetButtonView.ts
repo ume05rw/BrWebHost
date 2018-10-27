@@ -75,7 +75,7 @@ namespace App.Views.Controls {
         public ApplyBrDeviceStatus(): void {
             if (
                 !this.ControlSet
-                || !this.ControlSet.IsBrDevice
+                || this.ControlSet.ControlType !== App.Items.ControlType.BroadlinkDevice
             ) {
                 return;
             }

@@ -10,6 +10,7 @@
 /// <reference path="../Views/Popup/AlertPopup.ts" />
 /// <reference path="../Models/Entities/BrDevice.ts" />
 /// <reference path="../Models/Stores/BrDeviceStore.ts" />
+/// <reference path="../Items/ControlType.ts" />
 
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
@@ -22,6 +23,7 @@ namespace App.Controllers {
     import Popup = App.Views.Popup;
     import Stores = App.Models.Stores;
     import Entities = App.Models.Entities;
+    import ControlType = App.Items.ControlType;
 
     export class ControlHeaderPropertyController extends Fw.Controllers.ControllerBase {
 
@@ -50,9 +52,6 @@ namespace App.Controllers {
                 if (!this._controlSet)
                     return;
 
-                if (this._controlSet.IsBrDevice)
-                    return;
-
                 this.Log('ControlPropertyController.BtnColor.SingleClick');
 
                 const ctr = this.Manager.Get('ColorSelect') as ColorSelectController;
@@ -70,9 +69,6 @@ namespace App.Controllers {
                 if (!this._controlSet)
                     return;
 
-                if (this._controlSet.IsBrDevice)
-                    return;
-
                 if ($.isNumeric(this._page.SboRm.Value)) {
                     this._controlSet.BrDeviceId = parseInt(this._page.SboRm.Value, 10);
                     this._controlSet.DispatchChanged();
@@ -81,9 +77,6 @@ namespace App.Controllers {
 
             this._page.DeleteButton.AddEventListener(Events.ButtonViewEvents.SingleClick, async (e) => {
                 if (!this._controlSet)
-                    return;
-
-                if (this._controlSet.IsBrDevice)
                     return;
 
                 const res = await Popup.Confirm.OpenAsync({
@@ -112,7 +105,7 @@ namespace App.Controllers {
 
             this._page.TxtName.Value = this._controlSet.Name;
 
-            if (this._controlSet.IsBrDevice) {
+            if (this._controlSet.ControlType === ControlType.BroadlinkDevice) {
                 this._page.LabelColor.Hide(0);
                 this._page.BtnColor.Hide(0);
                 this._page.LabelRm.Hide(0);

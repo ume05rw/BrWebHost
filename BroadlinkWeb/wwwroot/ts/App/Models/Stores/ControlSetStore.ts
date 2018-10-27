@@ -52,7 +52,7 @@ namespace App.Models.Stores {
             result.ToggleState = tpl.ToggleState;
             result.IsMainPanelReady = tpl.IsMainPanelReady;
             result.IsTogglable = tpl.IsTogglable;
-            result.IsBrDevice = tpl.IsBrDevice;
+            result.ControlType = tpl.ControlType;
             result.IsTemplate = false;
 
             _.each(tpl.Controls, (ctpl: App.Models.Entities.Control) => {

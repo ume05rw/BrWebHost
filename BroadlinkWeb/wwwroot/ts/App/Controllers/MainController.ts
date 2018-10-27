@@ -14,6 +14,7 @@
 /// <reference path="../Models/Entities/ControlSet.ts" />
 /// <reference path="../Items/Operation.ts" />
 /// <reference path="../Items/ControlSetTemplate.ts" />
+/// <reference path="../Items/ControlType.ts" />
 
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
@@ -29,6 +30,7 @@ namespace App.Controllers {
     import Operation = App.Items.Operation;
     import ControlSetTemplate = App.Items.ControlSetTemplate;
     import ControlSetButtonView = App.Views.Controls.ControlSetButtonView;
+    import ControlType = App.Items.ControlType;
 
     export class MainController extends Fw.Controllers.ControllerBase {
 
@@ -209,7 +211,7 @@ namespace App.Controllers {
                     btn.ApplyEntity();
                 });
 
-                if (cs.IsBrDevice)
+                if (cs.ControlType === ControlType.BroadlinkDevice)
                     btn.ApplyBrDeviceStatus();
 
                 this._page.ControlSetPanel.Add(btn);

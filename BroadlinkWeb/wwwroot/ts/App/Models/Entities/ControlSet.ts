@@ -4,11 +4,13 @@
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../../Items/Color.ts" />
 /// <reference path="../../Items/ControlSetTemplate.ts" />
+/// <reference path="../../Items/ControlType.ts" />
 
 namespace App.Models.Entities {
     import Dump = Fw.Util.Dump;
     import Color = App.Items.Color;
     import ControlSetTemplate = App.Items.ControlSetTemplate;
+    import ControlType = App.Items.ControlType;
 
     export class ControlSet extends Fw.Models.EntityBase {
 
@@ -57,7 +59,7 @@ namespace App.Models.Entities {
         /**
          * Broadlinkデバイスか否か(≒ ボタン編集可否)
          */
-        public IsBrDevice: boolean = false;
+        public ControlType: ControlType = ControlType.RemoteControl;
 
         /**
          * リモコン配置テンプレートか否か

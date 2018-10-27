@@ -156,11 +156,11 @@ namespace BroadlinkWeb.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(255)");
 
+                    b.Property<byte>("ControlType")
+                        .HasColumnType("tinyint(2)");
+
                     b.Property<string>("IconUrl")
                         .HasColumnType("varchar(255)");
-
-                    b.Property<byte>("IsBrDevice")
-                        .HasColumnType("tinyint(1)");
 
                     b.Property<byte>("IsMainPanelReady")
                         .HasColumnType("tinyint(1)");
@@ -191,15 +191,15 @@ namespace BroadlinkWeb.Migrations
                     b.HasAnnotation("MySQL:Collation", "utf8_general_ci ");
 
                     b.HasData(
-                        new { Id = 1, Color = "#fcc91f", IconUrl = "images/icons/controlset/tv.png", IsBrDevice = (byte)0, IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "TV", Order = 99999, ToggleState = (byte)0 },
-                        new { Id = 2, Color = "#F92068", IconUrl = "images/icons/controlset/av.png", IsBrDevice = (byte)0, IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "AV", Order = 99999, ToggleState = (byte)0 },
-                        new { Id = 3, Color = "#ccdc4b", IconUrl = "images/icons/controlset/light.png", IsBrDevice = (byte)0, IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "Light", Order = 99999, ToggleState = (byte)0 },
-                        new { Id = 4, Color = "#6545C6", IconUrl = "images/icons/controlset/aircompressor.png", IsBrDevice = (byte)0, IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "Air Complessor", Order = 99999, ToggleState = (byte)0 },
-                        new { Id = 5, Color = "#84bde8", IconUrl = "images/icons/controlset/a1.png", IsBrDevice = (byte)1, IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)0, Name = "A1 Sensor", Order = 99999, ToggleState = (byte)0 },
-                        new { Id = 6, Color = "#84bde8", IconUrl = "images/icons/controlset/sp2.png", IsBrDevice = (byte)1, IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "Sp2 Switch", Order = 99999, ToggleState = (byte)0 },
-                        new { Id = 7, Color = "#84bde8", IconUrl = "images/icons/controlset/sp2.png", IsBrDevice = (byte)1, IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "Sp1 Switch", Order = 99999, ToggleState = (byte)0 },
-                        new { Id = 8, Color = "#84bde8", IconUrl = "images/icons/controlset/sp2.png", IsBrDevice = (byte)1, IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "Single Control", Order = 99999, ToggleState = (byte)0 },
-                        new { Id = 9, Color = "#84bde8", IconUrl = "images/icons/controlset/sp2.png", IsBrDevice = (byte)1, IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "No Control", Order = 99999, ToggleState = (byte)0 }
+                        new { Id = 1, Color = "#fcc91f", ControlType = (byte)1, IconUrl = "images/icons/controlset/tv.png", IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "TV", Order = 99999, ToggleState = (byte)0 },
+                        new { Id = 2, Color = "#F92068", ControlType = (byte)1, IconUrl = "images/icons/controlset/av.png", IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "AV", Order = 99999, ToggleState = (byte)0 },
+                        new { Id = 3, Color = "#ccdc4b", ControlType = (byte)1, IconUrl = "images/icons/controlset/light.png", IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "Light", Order = 99999, ToggleState = (byte)0 },
+                        new { Id = 4, Color = "#6545C6", ControlType = (byte)1, IconUrl = "images/icons/controlset/aircompressor.png", IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "Air Complessor", Order = 99999, ToggleState = (byte)0 },
+                        new { Id = 5, Color = "#84bde8", ControlType = (byte)2, IconUrl = "images/icons/controlset/a1.png", IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)0, Name = "A1 Sensor", Order = 99999, ToggleState = (byte)0 },
+                        new { Id = 6, Color = "#84bde8", ControlType = (byte)2, IconUrl = "images/icons/controlset/sp2.png", IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "Sp2 Switch", Order = 99999, ToggleState = (byte)0 },
+                        new { Id = 7, Color = "#84bde8", ControlType = (byte)2, IconUrl = "images/icons/controlset/sp2.png", IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "Sp1 Switch", Order = 99999, ToggleState = (byte)0 },
+                        new { Id = 8, Color = "#84bde8", ControlType = (byte)2, IconUrl = "images/icons/controlset/sp2.png", IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "Single Control", Order = 99999, ToggleState = (byte)0 },
+                        new { Id = 9, Color = "#84bde8", ControlType = (byte)2, IconUrl = "images/icons/controlset/sp2.png", IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "No Control", Order = 99999, ToggleState = (byte)0 }
                     );
                 });
 

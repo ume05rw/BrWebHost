@@ -14,22 +14,6 @@ namespace BroadlinkWeb.Models.Entities
     [MySqlCollation("utf8_general_ci ")]
     public class ControlSet
     {
-        /// <summary>
-        /// シード登録済みテンプレート
-        /// </summary>
-        public enum Template
-        {
-            Tv = 1,
-            Av = 2,
-            Light = 3,
-            AirCompressor = 4,
-            A1Sensor = 5,
-            Sp2Switch = 6,
-            Sp1Switch = 7,
-            SingleControl = 8,
-            NoControl = 9,
-        }
-
         [Key]
         [Column(Order = 0, TypeName = "int(11)")] // Orderプロパティは、EFCore未サポート
         [Description("Control-Set ID")] // Description属性は、EFCore未サポート
@@ -73,9 +57,9 @@ namespace BroadlinkWeb.Models.Entities
         public bool IsTogglable { get; set; }
 
         [Required]
-        [Column(Order = 9, TypeName = "tinyint(1)")]
-        [Description("Broadlink-Device Flag")]
-        public bool IsBrDevice { get; set; }
+        [Column(Order = 9, TypeName = "tinyint(2)")]
+        [Description("Control Type")]
+        public ControlType ControlType { get; set; }
 
         [Required]
         [Column(Order = 10, TypeName = "tinyint(1)")]

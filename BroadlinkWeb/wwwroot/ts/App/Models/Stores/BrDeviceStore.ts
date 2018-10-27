@@ -6,6 +6,7 @@
 /// <reference path="../Entities/BrDevice.ts" />
 /// <reference path="../Entities/ControlSet.ts" />
 /// <reference path="../Entities/Control.ts" />
+/// <reference path="../../Items/ControlType.ts" />
 
 namespace App.Models.Stores {
     import Dump = Fw.Util.Dump;
@@ -13,6 +14,7 @@ namespace App.Models.Stores {
     import ControlSet = App.Models.Entities.ControlSet;
     import Control = App.Models.Entities.Control;
     import Xhr = Fw.Util.Xhr;
+    import ControlType = App.Items.ControlType;
 
     export class BrDeviceStore extends Fw.Models.StoreBase<BrDevice> {
 
@@ -76,7 +78,7 @@ namespace App.Models.Stores {
 
             let result = false;
 
-            if (controlSet.IsBrDevice) {
+            if (controlSet.ControlType === ControlType.BroadlinkDevice) {
                 // Broadlinkデバイスのとき
                 // デバイス種類別処理を行う。
 

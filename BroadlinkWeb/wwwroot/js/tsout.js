@@ -4381,12 +4381,15 @@ var App;
         })(ControlSetTemplate = Items.ControlSetTemplate || (Items.ControlSetTemplate = {}));
     })(Items = App.Items || (App.Items = {}));
 })(App || (App = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../../Fw/Models/EntityBase.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../../Items/Color.ts" />
 /// <reference path="../../Items/ControlSetTemplate.ts" />
+/// <reference path="../../Items/ControlType.ts" />
 var App;
 (function (App) {
     var Models;
@@ -4429,7 +4432,7 @@ var App;
                     /**
                      * Broadlinkデバイスか否か(≒ ボタン編集可否)
                      */
-                    _this.IsBrDevice = false;
+                    _this.ControlType = 1 /* RemoteControl */;
                     /**
                      * リモコン配置テンプレートか否か
                      */
@@ -4513,6 +4516,7 @@ var App;
 /// <reference path="../Entities/BrDevice.ts" />
 /// <reference path="../Entities/ControlSet.ts" />
 /// <reference path="../Entities/Control.ts" />
+/// <reference path="../../Items/ControlType.ts" />
 var App;
 (function (App) {
     var Models;
@@ -4587,7 +4591,7 @@ var App;
                                         return [2 /*return*/, false];
                                     }
                                     result = false;
-                                    if (!controlSet.IsBrDevice) return [3 /*break*/, 9];
+                                    if (!(controlSet.ControlType === 2 /* BroadlinkDevice */)) return [3 /*break*/, 9];
                                     pairedDev = this.Get(controlSet.BrDeviceId);
                                     _a = pairedDev.DeviceType;
                                     switch (_a) {
@@ -4726,6 +4730,7 @@ var App;
 /// <reference path="../Views/Popup/AlertPopup.ts" />
 /// <reference path="../Models/Entities/BrDevice.ts" />
 /// <reference path="../Models/Stores/BrDeviceStore.ts" />
+/// <reference path="../Items/ControlType.ts" />
 var App;
 (function (App) {
     var Controllers;
@@ -4755,8 +4760,6 @@ var App;
                             case 0:
                                 if (!this._controlSet)
                                     return [2 /*return*/];
-                                if (this._controlSet.IsBrDevice)
-                                    return [2 /*return*/];
                                 this.Log('ControlPropertyController.BtnColor.SingleClick');
                                 ctr = this.Manager.Get('ColorSelect');
                                 return [4 /*yield*/, ctr.Select(this)];
@@ -4774,8 +4777,6 @@ var App;
                 _this._page.SboRm.AddEventListener(Events.InputViewEvents.Changed, function (e) {
                     if (!_this._controlSet)
                         return;
-                    if (_this._controlSet.IsBrDevice)
-                        return;
                     if ($.isNumeric(_this._page.SboRm.Value)) {
                         _this._controlSet.BrDeviceId = parseInt(_this._page.SboRm.Value, 10);
                         _this._controlSet.DispatchChanged();
@@ -4787,8 +4788,6 @@ var App;
                         switch (_a.label) {
                             case 0:
                                 if (!this._controlSet)
-                                    return [2 /*return*/];
-                                if (this._controlSet.IsBrDevice)
                                     return [2 /*return*/];
                                 return [4 /*yield*/, Popup.Confirm.OpenAsync({
                                         Message: 'This Remote Control will be REMOVED.<br/>Are you ok?'
@@ -4813,7 +4812,7 @@ var App;
                     return;
                 this.RefreshBrDevices();
                 this._page.TxtName.Value = this._controlSet.Name;
-                if (this._controlSet.IsBrDevice) {
+                if (this._controlSet.ControlType === 2 /* BroadlinkDevice */) {
                     this._page.LabelColor.Hide(0);
                     this._page.BtnColor.Hide(0);
                     this._page.LabelRm.Hide(0);
@@ -5184,6 +5183,7 @@ var App;
 /// <reference path="../Events/Controls/ControlButtonViewEvents.ts" />
 /// <reference path="../Models/Entities/ControlSet.ts" />
 /// <reference path="../Models/Stores/RmStore.ts" />
+/// <reference path="../Items/ControlType.ts" />
 var App;
 (function (App) {
     var Controllers;
@@ -5277,7 +5277,7 @@ var App;
                     // ControlSetエンティティが見当たらない
                     this._page.HeaderBar.RightButton.Hide(0);
                 }
-                else if (this._controlSet.IsBrDevice) {
+                else if (this._controlSet.ControlType === 2 /* BroadlinkDevice */) {
                     // ControlSetは、Broadlinkデバイス = 編集不能
                     this._page.HeaderBar.RightButton.Hide(0);
                 }
@@ -5349,7 +5349,7 @@ var App;
                                 case 0:
                                     // 既存ボタンの処理。新規ボタン用に同様のロジックが、下にある。
                                     // Broadlinkデバイスはボタン編集禁止
-                                    if (this._controlSet.IsBrDevice)
+                                    if (this._controlSet.ControlType === 2 /* BroadlinkDevice */)
                                         return [2 /*return*/];
                                     ctr = this.Manager.Get('ControlProperty');
                                     button = e.Sender;
@@ -5357,7 +5357,7 @@ var App;
                                     ctr.ShowModal();
                                     id = this._controlSet.BrDeviceId;
                                     if (!((id)
-                                        && (!this._controlSet.IsBrDevice)
+                                        && (this._controlSet.ControlType === 1 /* RemoteControl */)
                                         && (!button.Control.Code
                                             || button.Control.Code === ''))) return [3 /*break*/, 2];
                                     return [4 /*yield*/, this.GetLearnedCode()];
@@ -5394,7 +5394,7 @@ var App;
                         btn.SetColor(control.Color);
                     if (btn.ImageSrc !== control.IconUrl)
                         btn.SetImage(control.IconUrl);
-                    if (_this._controlSet.IsBrDevice
+                    if (_this._controlSet.ControlType === 2 /* BroadlinkDevice */
                         && (control.Value)
                         && control.Value !== '') {
                         var brDev = Stores.BrDevices.Get(_this._controlSet.BrDeviceId);
@@ -5481,8 +5481,8 @@ var App;
                         switch (_a.label) {
                             case 0:
                                 // ボタン編集指示
-                                // Broadlinkデバイスはボタン編集禁止
-                                if (this._controlSet.IsBrDevice)
+                                // リモコン操作以外はボタン編集禁止
+                                if (this._controlSet.ControlType !== 1 /* RemoteControl */)
                                     return [2 /*return*/];
                                 ctr = this.Manager.Get('ControlProperty');
                                 button = e.Sender;
@@ -5490,7 +5490,7 @@ var App;
                                 ctr.ShowModal();
                                 id = this._controlSet.BrDeviceId;
                                 if (!((id)
-                                    && (!this._controlSet.IsBrDevice)
+                                    && (this._controlSet.ControlType === 1 /* RemoteControl */)
                                     && (!button.Control.Code
                                         || button.Control.Code === ''))) return [3 /*break*/, 2];
                                 return [4 /*yield*/, this.GetLearnedCode()];
@@ -5916,7 +5916,7 @@ var App;
                 ControlSetButtonView.prototype.ApplyBrDeviceStatus = function () {
                     var _this = this;
                     if (!this.ControlSet
-                        || !this.ControlSet.IsBrDevice) {
+                        || this.ControlSet.ControlType !== 2 /* BroadlinkDevice */) {
                         return;
                     }
                     // Broadlinkデバイスの、現在の値を取得する。
@@ -5978,6 +5978,7 @@ var App;
 /// <reference path="../Models/Entities/ControlSet.ts" />
 /// <reference path="../Items/Operation.ts" />
 /// <reference path="../Items/ControlSetTemplate.ts" />
+/// <reference path="../Items/ControlType.ts" />
 var App;
 (function (App) {
     var Controllers;
@@ -6171,7 +6172,7 @@ var App;
                                             return;
                                         btn.ApplyEntity();
                                     });
-                                    if (cs.IsBrDevice)
+                                    if (cs.ControlType === 2 /* BroadlinkDevice */)
                                         btn.ApplyBrDeviceStatus();
                                     _this._page.ControlSetPanel.Add(btn);
                                 });
@@ -9160,7 +9161,7 @@ var App;
                                     result.ToggleState = tpl.ToggleState;
                                     result.IsMainPanelReady = tpl.IsMainPanelReady;
                                     result.IsTogglable = tpl.IsTogglable;
-                                    result.IsBrDevice = tpl.IsBrDevice;
+                                    result.ControlType = tpl.ControlType;
                                     result.IsTemplate = false;
                                     _.each(tpl.Controls, function (ctpl) {
                                         var control = new App.Models.Entities.Control();
