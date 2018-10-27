@@ -97,12 +97,15 @@ namespace BroadlinkWeb.Areas.Api.Controllers
                     }
 
                     // 既存の明細レコードを取得
-                    var children = this._dbc.Controls.Where(c => c.ControlSetId == controlSet.Id).ToArray();
+                    var children = this._dbc.Controls
+                        .Where(c => c.ControlSetId == controlSet.Id)
+                        .ToArray();
 
                     // 既存の明細のうち、渡し値に存在しないものを削除。
                     if (children.Length > 0)
                     {
-                        var removes = children.Where(c => !controlSet.Controls.Any(c2 => c2.Id == c.Id));
+                        var removes = children
+                            .Where(c => !controlSet.Controls.Any(c2 => c2.Id == c.Id));
                         foreach (var control in removes)
                         {
                             this._dbc.Controls.Remove(control);
@@ -121,6 +124,77 @@ namespace BroadlinkWeb.Areas.Api.Controllers
             }
         }
 
+        // POST: api/ControlSets/UpdateHeader/5
+        [HttpPost("UpdateHeader/{id}")]
+        public async Task<XhrResult> UpdateHeader(
+            [FromRoute] int id,
+            [FromBody] ControlHeader controlHeader
+        )
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                    return XhrResult.CreateError(ModelState);
+
+                var controlSet = await this._dbc.ControlSets
+                    .SingleOrDefaultAsync(m => m.Id == id);
+
+                if (controlSet == null)
+                    return XhrResult.CreateError("Entity Not Found");
+
+                controlSet.Order = controlHeader.Order;
+                controlSet.ToggleState = controlHeader.ToggleState;
+
+                this._dbc.Entry(controlSet).State = EntityState.Modified;
+
+                await _dbc.SaveChangesAsync();
+
+                return XhrResult.CreateSucceeded(true);
+            }
+            catch (Exception ex)
+            {
+                return XhrResult.CreateError(ex);
+            }
+        }
+
+        // POST: api/ControlSets/UpdateHeader/5
+        [HttpPost("UpdateHeader")]
+        public async Task<XhrResult> UpdateHeader([FromBody] ControlHeader[] controlHeaders)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                    return XhrResult.CreateError(ModelState);
+
+                // 更新対象を走査、見つからなければエラー応答。
+                var targets = new List<ControlSet>();
+                foreach (var cHeader in controlHeaders)
+                {
+                    var controlSet = await this._dbc.ControlSets
+                        .SingleOrDefaultAsync(m => m.Id == cHeader.Id);
+
+                    if (controlSet == null)
+                        return XhrResult.CreateError("Entity Not Found");
+
+                    controlSet.Order = cHeader.Order;
+                    controlSet.ToggleState = cHeader.ToggleState;
+                    targets.Add(controlSet);
+                }
+
+                // 更新対象が全て存在するとき、DB更新
+                foreach (var cSet in targets)
+                    this._dbc.Entry(cSet).State = EntityState.Modified;
+
+                await _dbc.SaveChangesAsync();
+
+                return XhrResult.CreateSucceeded(true);
+            }
+            catch (Exception ex)
+            {
+                return XhrResult.CreateError(ex);
+            }
+        }
+
         // DELETE: api/ControlSets/5
         [HttpDelete("{id}")]
         public async Task<XhrResult> DeleteControlSet([FromRoute] int id)
@@ -130,13 +204,16 @@ namespace BroadlinkWeb.Areas.Api.Controllers
                 if (!ModelState.IsValid)
                     return XhrResult.CreateError(ModelState);
 
-                var controlSet = await this._dbc.ControlSets.SingleOrDefaultAsync(m => m.Id == id);
+                var controlSet = await this._dbc.ControlSets
+                    .SingleOrDefaultAsync(m => m.Id == id);
 
                 if (controlSet == null)
                     return XhrResult.CreateError("Entity Not Found");
 
                 // 既存の明細レコードを取得
-                var children = this._dbc.Controls.Where(c => c.ControlSetId == controlSet.Id).ToArray();
+                var children = this._dbc.Controls
+                    .Where(c => c.ControlSetId == controlSet.Id)
+                    .ToArray();
 
                 // 既存明細レコードを削除指定
                 foreach (var control in children)

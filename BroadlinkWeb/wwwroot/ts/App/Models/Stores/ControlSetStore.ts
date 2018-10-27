@@ -5,6 +5,7 @@
 /// <reference path="../../../Fw/Util/Xhr/Query.ts" />
 /// <reference path="../../Items/ControlSetTemplate.ts" />
 /// <reference path="../Entities/ControlSet.ts" />
+/// <reference path="../Entities/ControlHeader.ts" />
 /// <reference path="ControlStore.ts" />
 
 
@@ -14,6 +15,7 @@ namespace App.Models.Stores {
     import Controls = App.Models.Stores.Controls;
     import Xhr = Fw.Util.Xhr;
     import ControlSetTemplate = App.Items.ControlSetTemplate;
+    import ControlHeader = App.Models.Entities.ControlHeader;
 
     export class ControlSetStore extends Fw.Models.StoreBase<ControlSet> {
 
@@ -117,6 +119,79 @@ namespace App.Models.Stores {
 
             return result;
         }
+
+        public async GetListForMainPanel(): Promise<ControlSet[]> {
+            await this.GetList();
+
+            let result = new Array<ControlSet>();
+            _.each(this.List, (cs: ControlSet) => {
+                if (!cs.IsTemplate && cs.IsMainPanelReady)
+                    result.push(cs);
+            });
+
+            result = _.sortBy(result, (cs: ControlSet) => {
+                return cs.Order;
+            });
+
+            return result;
+        }
+
+
+        public async UpdateHeader(entity: ControlSet): Promise<boolean> {
+
+            const header = new ControlHeader();
+            header.Id = entity.Id;
+            header.Order = entity.Order;
+            header.ToggleState = entity.ToggleState;
+
+            const params = new Xhr.Params(
+                `ControlSets/UpdateHeader/${header.Id}`,
+                Xhr.MethodType.Post,
+                header
+            );
+
+            const res = await Xhr.Query.Invoke(params);
+
+            if (res.Succeeded) {
+                return true;
+            } else {
+                this.Log('Query Fail');
+                this.Log(res.Errors);
+
+                return false;
+            }
+        }
+
+        public async UpdateHeaders(entities: ControlSet[]): Promise<boolean> {
+
+            const headers = new Array<ControlHeader>();
+
+            _.each(entities, (entity: ControlSet) => {
+                const header = new ControlHeader();
+                header.Id = entity.Id;
+                header.Order = entity.Order;
+                header.ToggleState = entity.ToggleState;
+                headers.push(header);
+            });
+
+            const params = new Xhr.Params(
+                `ControlSets/UpdateHeader`,
+                Xhr.MethodType.Post,
+                headers
+            );
+
+            const res = await Xhr.Query.Invoke(params);
+
+            if (res.Succeeded) {
+                return true;
+            } else {
+                this.Log('Query Fail');
+                this.Log(res.Errors);
+
+                return false;
+            }
+        }
+
 
         public async Write(entity: ControlSet): Promise<ControlSet> {
 

@@ -26,14 +26,14 @@ namespace Fw.Views {
             return this._direction;
         }
 
-        private _innerBackgroundColor: string = '#F5F5F5';
-        public get InnerBackgroundColor(): string {
-            return this._innerBackgroundColor;
-        }
-        public set InnerBackgroundColor(value: string) {
-            this._innerBackgroundColor = value;
-            this.Refresh();
-        }
+        //private _innerBackgroundColor: string = '#F5F5F5';
+        //public get InnerBackgroundColor(): string {
+        //    return this._innerBackgroundColor;
+        //}
+        //public set InnerBackgroundColor(value: string) {
+        //    this._innerBackgroundColor = value;
+        //    this.Refresh();
+        //}
 
         private _innerLength: number = 10;
         public get InnerLength(): number {
@@ -76,8 +76,9 @@ namespace Fw.Views {
             this.BorderRadius = 0;
 
             this._innerBox.HasBorder = false;
-            this._innerBox.Position.Policy = Property.PositionPolicy.LeftTop;
             this._innerBox.SetTransAnimation(false);
+            this._innerBox.SetLeftTop(0, 0);
+            this._innerBox.BackgroundColor = 'transparent';
             this._innerBox.SetParent(this);
             this.Elem.append(this._innerBox.Elem);
 
@@ -281,7 +282,7 @@ namespace Fw.Views {
                     view.SuppressLayout();
                 });
 
-                this._innerBox.BackgroundColor = this._innerBackgroundColor;
+                //this._innerBox.BackgroundColor = this._innerBackgroundColor;
 
 
                 super.InnerRefresh();
@@ -468,7 +469,6 @@ namespace Fw.Views {
 
             super.Dispose();
 
-            this._innerBackgroundColor = null;
             this._innerLength = null;
 
             this._innerBox.Elem.off();

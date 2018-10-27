@@ -27,6 +27,7 @@
     <Content Remove="wwwroot\ts\App\Models\Entities\A1Values.ts" />
     <Content Remove="wwwroot\ts\App\Models\Entities\BrDevice.ts" />
     <Content Remove="wwwroot\ts\App\Models\Entities\Control.ts" />
+    <Content Remove="wwwroot\ts\App\Models\Entities\ControlHeader.ts" />
     <Content Remove="wwwroot\ts\App\Models\Entities\ControlSet.ts" />
     <Content Remove="wwwroot\ts\App\Models\Entities\RmCommand.ts" />
     <Content Remove="wwwroot\ts\App\Models\Entities\Sp2Status.ts" />
@@ -168,6 +169,7 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\A1Values.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\BrDevice.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\Control.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\ControlHeader.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\ControlSet.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\RmCommand.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\Sp2Status.ts" />

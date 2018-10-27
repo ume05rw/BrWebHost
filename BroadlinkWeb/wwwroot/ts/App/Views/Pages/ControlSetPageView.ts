@@ -60,6 +60,7 @@ namespace App.Views.Pages {
             this.ButtonPanel.Position.Policy = Property.PositionPolicy.LeftTop;
             this.ButtonPanel.Size.Width = 280;
             this.ButtonPanel.SetAnchor(70, null, null, 10);
+            this.ButtonPanel.Color = Color.MainBackground;
             this.Add(this.ButtonPanel);
 
             this.HeaderBar.Elem.hover(() => {

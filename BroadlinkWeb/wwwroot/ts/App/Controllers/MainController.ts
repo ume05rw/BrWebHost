@@ -122,25 +122,29 @@ namespace App.Controllers {
         }
 
         public async RefreshControlSets(): Promise<boolean> {
-            const sets = await Stores.ControlSets.GetListWithoutTemplates();
+            const sets = await Stores.ControlSets.GetListForMainPanel();
 
-            // 既存メインボタンを全削除。そのうち改善する。
+            // 削除されたEntity分のボタンをパネルから削除。
             const children = Fw.Util.Obj.Mirror(this._page.ControlSetPanel.Children);
-            _.each(children, (v: ControlSetButtonView) => {
-                this._page.ControlSetPanel.Remove(v);
-                v.Dispose();
+            _.each(children, (btn: ControlSetButtonView) => {
+                const existsSet = _.find(sets, (cs: Entities.ControlSet) => {
+                    return (cs === btn.ControlSet);
+                });
+                if (!existsSet) {
+                    this._page.ControlSetPanel.Remove(btn);
+                    btn.Dispose();
+                }
             });
 
+            // 追加されたEntity分のボタンをパネルに追加。
             _.each(sets, (cs: Entities.ControlSet) => {
-
-                if (!cs.IsMainPanelReady)
+                const existsBtn = _.find(children, (b: ControlSetButtonView) => {
+                    return (b.ControlSet === cs);
+                });
+                if (existsBtn)
                     return;
 
                 const btn = new ControlSetButtonView(cs);
-
-                if (!cs.IsTogglable) {
-                    btn.Toggle.Hide(0);
-                }
 
                 btn.Button.AddEventListener(ButtonEvents.SingleClick, (e) => {
                     // メインボタンクリック - リモコンをスライドイン表示する。
@@ -170,6 +174,9 @@ namespace App.Controllers {
                         : controlOff;
 
                     Stores.BrDevices.Exec(cset, targetControl);
+
+
+
                 });
 
                 cs.AddEventListener(Events.EntityEvents.Changed, (e) => {
@@ -183,67 +190,13 @@ namespace App.Controllers {
                     if (!btn)
                         return;
 
-                    if (cset.ToggleState !== btn.Toggle.BoolValue)
-                        btn.Toggle.SetBoolValue(cset.ToggleState, false);
-
-                    if (cset.Name !== btn.Label.Text)
-                        btn.Label.Text = cset.Name;
-
-                    if (cset.Color !== btn.Button.Color) {
-                        btn.Button.BackgroundColor = cset.Color;
-                        btn.Button.Color = cset.Color;
-                        btn.Button.HoverColor = cset.HoverColor;
-                    }
-
-                    if (cset.IconUrl !== btn.Button.ImageSrc)
-                        btn.Button.ImageSrc = cset.IconUrl;
+                    btn.ApplyEntity();
                 });
 
+                if (cs.IsBrDevice)
+                    btn.ApplyBrDeviceStatus();
+
                 this._page.ControlSetPanel.Add(btn);
-
-                if (cs.IsBrDevice) {
-                    // Broadlinkデバイスのとき
-                    // 現在の値を取得する。
-
-                    // 対応するデバイスを取得
-                    const pairedDev = Stores.BrDevices.Get(cs.BrDeviceId);
-                    const delay = 1000;
-
-                    switch (pairedDev.DeviceType) {
-                        case App.Items.BrDeviceType.A1:
-                            // コマンドは一つだけ - 現在の値を取得
-                            _.delay(() => {
-                                Stores.A1s.Get(cs);
-                            }, delay);
-                            break;
-
-                        case App.Items.BrDeviceType.Sp2:
-                            // コマンドはControlごとに。
-                            _.delay(() => {
-                                Stores.Sp2s.Get(cs);
-                            }, delay);
-                            break;
-
-                        case App.Items.BrDeviceType.Rm2Pro:
-                            // コマンドは一つだけ - 現在の値を取得
-                            _.delay(() => {
-                                Stores.Rm2Pros.GetTemperature(cs);
-                            }, delay);
-                            break;
-
-
-                        // 以降、未対応。
-                        case App.Items.BrDeviceType.Rm:
-                        case App.Items.BrDeviceType.Dooya:
-                        case App.Items.BrDeviceType.Hysen:
-                        case App.Items.BrDeviceType.Mp1:
-                        case App.Items.BrDeviceType.S1c:
-                        case App.Items.BrDeviceType.Sp1:
-                        case App.Items.BrDeviceType.Unknown:
-                        default:
-                            break;
-                    }
-                }
             });
             this._page.ControlSetPanel.Refresh();
 

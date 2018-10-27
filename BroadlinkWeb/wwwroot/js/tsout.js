@@ -4385,7 +4385,7 @@ var App;
                 };
                 BrDeviceStore.prototype.Exec = function (controlSet, control) {
                     return __awaiter(this, void 0, void 0, function () {
-                        var result, pairedDev, _a, res1, res2, res3;
+                        var result, pairedDev, _a, res1, res2, res3, changed, changed3, changed4;
                         return __generator(this, function (_b) {
                             switch (_b.label) {
                                 case 0:
@@ -4445,26 +4445,31 @@ var App;
                                     if (result === true
                                         && (control.IsAssignToggleOn || control.IsAssignToggleOff)) {
                                         if (control.IsAssignToggleOn && control.IsAssignToggleOff) {
-                                            // On/Off 両方アサインされているボタンのとき
-                                            // 一旦Onにし、しばらく置いてOffに戻す。
+                                            changed = (controlSet.ToggleState !== true);
                                             controlSet.ToggleState = true;
-                                            controlSet.DispatchChanged();
-                                            _.delay(function () {
-                                                controlSet.ToggleState = false;
+                                            if (changed)
                                                 controlSet.DispatchChanged();
+                                            _.delay(function () {
+                                                var changed2 = (controlSet.ToggleState !== false);
+                                                controlSet.ToggleState = false;
+                                                if (changed2)
+                                                    controlSet.DispatchChanged();
+                                                Stores.ControlSets.UpdateHeader(controlSet);
                                             }, 1000);
                                         }
                                         else if (control.IsAssignToggleOn) {
-                                            // Onだけがアサインされているボタンのとき
-                                            // トグルをOnにする。
+                                            changed3 = (controlSet.ToggleState !== true);
                                             controlSet.ToggleState = true;
-                                            controlSet.DispatchChanged();
+                                            if (changed3)
+                                                controlSet.DispatchChanged();
+                                            Stores.ControlSets.UpdateHeader(controlSet);
                                         }
                                         else if (control.IsAssignToggleOff) {
-                                            // Offだけがアサインされているボタンのとき
-                                            // トグルをOffにする。
+                                            changed4 = (controlSet.ToggleState !== false);
                                             controlSet.ToggleState = false;
-                                            controlSet.DispatchChanged();
+                                            if (changed4)
+                                                controlSet.DispatchChanged();
+                                            Stores.ControlSets.UpdateHeader(controlSet);
                                         }
                                         else {
                                             // ここには来ない
@@ -5640,6 +5645,7 @@ var Fw;
 /// <reference path="../../Items/Color.ts" />
 /// <reference path="LabeledButtonView.ts" />
 /// <reference path="../../Models/Entities/ControlSet.ts" />
+/// <reference path="../../Models/Stores/BrDeviceStore.ts" />
 var App;
 (function (App) {
     var Views;
@@ -5649,6 +5655,7 @@ var App;
             var Views = Fw.Views;
             var Property = Fw.Views.Property;
             var Color = App.Items.Color;
+            var Stores = App.Models.Stores;
             var ControlSetButtonView = /** @class */ (function (_super) {
                 __extends(ControlSetButtonView, _super);
                 function ControlSetButtonView(entity) {
@@ -5658,20 +5665,14 @@ var App;
                     _this.SetSize(150, 170);
                     _this.Button.HasBorder = false;
                     _this.Button.BorderRadius = 5;
-                    _this.Button.BackgroundColor = Color.MainBackground;
-                    _this.Button.HoverColor = Color.MainHover;
-                    _this.Button.Color = Color.Main;
-                    _this.Button.BackgroundColor = _this.ControlSet.Color;
-                    _this.Button.Color = _this.ControlSet.Color;
-                    _this.Button.HoverColor = _this.ControlSet.HoverColor;
-                    _this.Button.ImageSrc = _this.ControlSet.IconUrl;
                     _this.Button.ImageFitPolicy = Property.FitPolicy.Auto;
                     _this.Label.Color = Color.Main;
-                    _this.Label.Text = _this.ControlSet.Name;
                     _this._toggle.SetAnchor(null, 40, 40, 30);
                     _this._toggle.BackgroundColor = 'transparent';
                     _this._toggle.SetBoolValue(entity.ToggleState);
                     _this.Add(_this._toggle);
+                    _this.ApplyEntity();
+                    _this.ApplyBrDeviceStatus();
                     return _this;
                 }
                 Object.defineProperty(ControlSetButtonView.prototype, "Toggle", {
@@ -5681,6 +5682,70 @@ var App;
                     enumerable: true,
                     configurable: true
                 });
+                ControlSetButtonView.prototype.ApplyEntity = function () {
+                    if (this.ControlSet) {
+                        this.Button.BackgroundColor = this.ControlSet.Color;
+                        this.Button.Color = this.ControlSet.Color;
+                        this.Button.HoverColor = this.ControlSet.HoverColor;
+                        this.Button.ImageSrc = this.ControlSet.IconUrl;
+                        this.Label.Text = this.ControlSet.Name;
+                        if (this.ControlSet.IsTogglable)
+                            this.Toggle.Show(0);
+                        else
+                            this.Toggle.Hide(0);
+                        this.Toggle.SetBoolValue(this.ControlSet.ToggleState, false);
+                    }
+                    else {
+                        this.Button.BackgroundColor = Color.MainBackground;
+                        this.Button.Color = Color.Main;
+                        this.Button.HoverColor = Color.MainHover;
+                        this.Button.ImageSrc = '';
+                        this.Label.Text = '';
+                        this.Toggle.Show(0);
+                        this.Toggle.SetBoolValue(false, false);
+                    }
+                };
+                ControlSetButtonView.prototype.ApplyBrDeviceStatus = function () {
+                    var _this = this;
+                    if (!this.ControlSet
+                        || !this.ControlSet.IsBrDevice) {
+                        return;
+                    }
+                    // Broadlinkデバイスの、現在の値を取得する。
+                    // 対応するデバイスを取得
+                    var pairedDev = Stores.BrDevices.Get(this.ControlSet.BrDeviceId);
+                    var delay = 10;
+                    switch (pairedDev.DeviceType) {
+                        case 4 /* A1 */:
+                            // コマンドは一つだけ - 現在の値を取得
+                            _.delay(function () {
+                                Stores.A1s.Get(_this.ControlSet);
+                            }, delay);
+                            break;
+                        case 2 /* Sp2 */:
+                            // コマンドはControlごとに。
+                            _.delay(function () {
+                                Stores.Sp2s.Get(_this.ControlSet);
+                            }, delay);
+                            break;
+                        case 9 /* Rm2Pro */:
+                            // コマンドは一つだけ - 現在の値を取得
+                            _.delay(function () {
+                                Stores.Rm2Pros.GetTemperature(_this.ControlSet);
+                            }, delay);
+                            break;
+                        // 以降、未対応。
+                        case 3 /* Rm */:
+                        case 8 /* Dooya */:
+                        case 6 /* Hysen */:
+                        case 5 /* Mp1 */:
+                        case 7 /* S1c */:
+                        case 1 /* Sp1 */:
+                        case 0 /* Unknown */:
+                        default:
+                            break;
+                    }
+                };
                 return ControlSetButtonView;
             }(Controls.LabeledButtonView));
             Controls.ControlSetButtonView = ControlSetButtonView;
@@ -5824,21 +5889,27 @@ var App;
                     var _this = this;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
-                            case 0: return [4 /*yield*/, Stores.ControlSets.GetListWithoutTemplates()];
+                            case 0: return [4 /*yield*/, Stores.ControlSets.GetListForMainPanel()];
                             case 1:
                                 sets = _a.sent();
                                 children = Fw.Util.Obj.Mirror(this._page.ControlSetPanel.Children);
-                                _.each(children, function (v) {
-                                    _this._page.ControlSetPanel.Remove(v);
-                                    v.Dispose();
+                                _.each(children, function (btn) {
+                                    var existsSet = _.find(sets, function (cs) {
+                                        return (cs === btn.ControlSet);
+                                    });
+                                    if (!existsSet) {
+                                        _this._page.ControlSetPanel.Remove(btn);
+                                        btn.Dispose();
+                                    }
                                 });
+                                // 追加されたEntity分のボタンをパネルに追加。
                                 _.each(sets, function (cs) {
-                                    if (!cs.IsMainPanelReady)
+                                    var existsBtn = _.find(children, function (b) {
+                                        return (b.ControlSet === cs);
+                                    });
+                                    if (existsBtn)
                                         return;
                                     var btn = new ControlSetButtonView(cs);
-                                    if (!cs.IsTogglable) {
-                                        btn.Toggle.Hide(0);
-                                    }
                                     btn.Button.AddEventListener(ButtonEvents.SingleClick, function (e) {
                                         // メインボタンクリック - リモコンをスライドイン表示する。
                                         var button = e.Sender.Parent;
@@ -5875,56 +5946,11 @@ var App;
                                         });
                                         if (!btn)
                                             return;
-                                        if (cset.ToggleState !== btn.Toggle.BoolValue)
-                                            btn.Toggle.SetBoolValue(cset.ToggleState, false);
-                                        if (cset.Name !== btn.Label.Text)
-                                            btn.Label.Text = cset.Name;
-                                        if (cset.Color !== btn.Button.Color) {
-                                            btn.Button.BackgroundColor = cset.Color;
-                                            btn.Button.Color = cset.Color;
-                                            btn.Button.HoverColor = cset.HoverColor;
-                                        }
-                                        if (cset.IconUrl !== btn.Button.ImageSrc)
-                                            btn.Button.ImageSrc = cset.IconUrl;
+                                        btn.ApplyEntity();
                                     });
+                                    if (cs.IsBrDevice)
+                                        btn.ApplyBrDeviceStatus();
                                     _this._page.ControlSetPanel.Add(btn);
-                                    if (cs.IsBrDevice) {
-                                        // Broadlinkデバイスのとき
-                                        // 現在の値を取得する。
-                                        // 対応するデバイスを取得
-                                        var pairedDev = Stores.BrDevices.Get(cs.BrDeviceId);
-                                        var delay = 1000;
-                                        switch (pairedDev.DeviceType) {
-                                            case 4 /* A1 */:
-                                                // コマンドは一つだけ - 現在の値を取得
-                                                _.delay(function () {
-                                                    Stores.A1s.Get(cs);
-                                                }, delay);
-                                                break;
-                                            case 2 /* Sp2 */:
-                                                // コマンドはControlごとに。
-                                                _.delay(function () {
-                                                    Stores.Sp2s.Get(cs);
-                                                }, delay);
-                                                break;
-                                            case 9 /* Rm2Pro */:
-                                                // コマンドは一つだけ - 現在の値を取得
-                                                _.delay(function () {
-                                                    Stores.Rm2Pros.GetTemperature(cs);
-                                                }, delay);
-                                                break;
-                                            // 以降、未対応。
-                                            case 3 /* Rm */:
-                                            case 8 /* Dooya */:
-                                            case 6 /* Hysen */:
-                                            case 5 /* Mp1 */:
-                                            case 7 /* S1c */:
-                                            case 1 /* Sp1 */:
-                                            case 0 /* Unknown */:
-                                            default:
-                                                break;
-                                        }
-                                    }
                                 });
                                 this._page.ControlSetPanel.Refresh();
                                 return [2 /*return*/, true];
@@ -6573,6 +6599,30 @@ var App;
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/EntityBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Entities;
+        (function (Entities) {
+            var ControlHeader = /** @class */ (function (_super) {
+                __extends(ControlHeader, _super);
+                function ControlHeader() {
+                    var _this = _super !== null && _super.apply(this, arguments) || this;
+                    _this.Order = 99999;
+                    _this.ToggleState = false;
+                    return _this;
+                }
+                return ControlHeader;
+            }(Fw.Models.EntityBase));
+            Entities.ControlHeader = ControlHeader;
+        })(Entities = Models.Entities || (Models.Entities = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../../Fw/Models/StoreBase.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../../../Fw/Util/Xhr/Query.ts" />
@@ -6640,6 +6690,7 @@ var App;
 /// <reference path="../../../Fw/Util/Xhr/Query.ts" />
 /// <reference path="../../Items/ControlSetTemplate.ts" />
 /// <reference path="../Entities/ControlSet.ts" />
+/// <reference path="../Entities/ControlHeader.ts" />
 /// <reference path="ControlStore.ts" />
 var App;
 (function (App) {
@@ -6650,6 +6701,7 @@ var App;
             var ControlSet = App.Models.Entities.ControlSet;
             var Controls = App.Models.Stores.Controls;
             var Xhr = Fw.Util.Xhr;
+            var ControlHeader = App.Models.Entities.ControlHeader;
             var ControlSetStore = /** @class */ (function (_super) {
                 __extends(ControlSetStore, _super);
                 function ControlSetStore() {
@@ -6764,6 +6816,85 @@ var App;
                                         return cs.Order;
                                     });
                                     return [2 /*return*/, result];
+                            }
+                        });
+                    });
+                };
+                ControlSetStore.prototype.GetListForMainPanel = function () {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var result;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0: return [4 /*yield*/, this.GetList()];
+                                case 1:
+                                    _a.sent();
+                                    result = new Array();
+                                    _.each(this.List, function (cs) {
+                                        if (!cs.IsTemplate && cs.IsMainPanelReady)
+                                            result.push(cs);
+                                    });
+                                    result = _.sortBy(result, function (cs) {
+                                        return cs.Order;
+                                    });
+                                    return [2 /*return*/, result];
+                            }
+                        });
+                    });
+                };
+                ControlSetStore.prototype.UpdateHeader = function (entity) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var header, params, res;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    header = new ControlHeader();
+                                    header.Id = entity.Id;
+                                    header.Order = entity.Order;
+                                    header.ToggleState = entity.ToggleState;
+                                    params = new Xhr.Params("ControlSets/UpdateHeader/" + header.Id, Xhr.MethodType.Post, header);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        return [2 /*return*/, true];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, false];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
+                ControlSetStore.prototype.UpdateHeaders = function (entities) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var headers, params, res;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    headers = new Array();
+                                    _.each(entities, function (entity) {
+                                        var header = new ControlHeader();
+                                        header.Id = entity.Id;
+                                        header.Order = entity.Order;
+                                        header.ToggleState = entity.ToggleState;
+                                        headers.push(header);
+                                    });
+                                    params = new Xhr.Params("ControlSets/UpdateHeader", Xhr.MethodType.Post, headers);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        return [2 /*return*/, true];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, false];
+                                    }
+                                    return [2 /*return*/];
                             }
                         });
                     });
@@ -7628,6 +7759,7 @@ var App;
                     _this.ButtonPanel.Position.Policy = Property.PositionPolicy.LeftTop;
                     _this.ButtonPanel.Size.Width = 280;
                     _this.ButtonPanel.SetAnchor(70, null, null, 10);
+                    _this.ButtonPanel.Color = Color.MainBackground;
                     _this.Add(_this.ButtonPanel);
                     _this.HeaderBar.Elem.hover(function () {
                         if (_this.EditButton.IsVisible) {
@@ -9142,7 +9274,14 @@ var Fw;
             __extends(SlidableBoxView, _super);
             function SlidableBoxView(direction) {
                 var _this = _super.call(this) || this;
-                _this._innerBackgroundColor = '#F5F5F5';
+                //private _innerBackgroundColor: string = '#F5F5F5';
+                //public get InnerBackgroundColor(): string {
+                //    return this._innerBackgroundColor;
+                //}
+                //public set InnerBackgroundColor(value: string) {
+                //    this._innerBackgroundColor = value;
+                //    this.Refresh();
+                //}
                 _this._innerLength = 10;
                 _this._barMargin = 10;
                 _this._isDragging = false;
@@ -9162,8 +9301,9 @@ var Fw;
                 _this.HasBorder = false;
                 _this.BorderRadius = 0;
                 _this._innerBox.HasBorder = false;
-                _this._innerBox.Position.Policy = Property.PositionPolicy.LeftTop;
                 _this._innerBox.SetTransAnimation(false);
+                _this._innerBox.SetLeftTop(0, 0);
+                _this._innerBox.BackgroundColor = 'transparent';
                 _this._innerBox.SetParent(_this);
                 _this.Elem.append(_this._innerBox.Elem);
                 //this.EnableLog = true;
@@ -9296,17 +9436,6 @@ var Fw;
                 enumerable: true,
                 configurable: true
             });
-            Object.defineProperty(SlidableBoxView.prototype, "InnerBackgroundColor", {
-                get: function () {
-                    return this._innerBackgroundColor;
-                },
-                set: function (value) {
-                    this._innerBackgroundColor = value;
-                    this.Refresh();
-                },
-                enumerable: true,
-                configurable: true
-            });
             Object.defineProperty(SlidableBoxView.prototype, "InnerLength", {
                 get: function () {
                     return this._innerLength;
@@ -9365,7 +9494,7 @@ var Fw;
                     _.each(this._innerBox.Children, function (view) {
                         view.SuppressLayout();
                     });
-                    this._innerBox.BackgroundColor = this._innerBackgroundColor;
+                    //this._innerBox.BackgroundColor = this._innerBackgroundColor;
                     _super.prototype.InnerRefresh.call(this);
                     this.SetStyles({
                         overflowY: 'hidden',
@@ -9523,7 +9652,6 @@ var Fw;
                 this._positionBarMax.Elem.remove();
                 this._positionBarCurrent.Elem.remove();
                 _super.prototype.Dispose.call(this);
-                this._innerBackgroundColor = null;
                 this._innerLength = null;
                 this._innerBox.Elem.off();
                 this._innerBox.Dispose();

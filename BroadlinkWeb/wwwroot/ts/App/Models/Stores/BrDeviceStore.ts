@@ -131,24 +131,41 @@ namespace App.Models.Stores {
                     // On/Off 両方アサインされているボタンのとき
 
                     // 一旦Onにし、しばらく置いてOffに戻す。
+                    const changed = (controlSet.ToggleState !== true);
                     controlSet.ToggleState = true;
-                    controlSet.DispatchChanged();
+                    if (changed)
+                        controlSet.DispatchChanged();
 
                     _.delay(() => {
+                        const changed2 = (controlSet.ToggleState !== false);
                         controlSet.ToggleState = false;
-                        controlSet.DispatchChanged();
+                        if (changed2)
+                            controlSet.DispatchChanged();
+
+                        Stores.ControlSets.UpdateHeader(controlSet);
+
                     }, 1000);
 
                 } else if (control.IsAssignToggleOn) {
                     // Onだけがアサインされているボタンのとき
                     // トグルをOnにする。
+                    const changed3 = (controlSet.ToggleState !== true);
                     controlSet.ToggleState = true;
-                    controlSet.DispatchChanged();
+                    if (changed3)
+                        controlSet.DispatchChanged();
+
+                    Stores.ControlSets.UpdateHeader(controlSet);
+
                 } else if (control.IsAssignToggleOff) {
                     // Offだけがアサインされているボタンのとき
                     // トグルをOffにする。
+                    const changed4 = (controlSet.ToggleState !== false);
                     controlSet.ToggleState = false;
-                    controlSet.DispatchChanged();
+                    if (changed4)
+                        controlSet.DispatchChanged();
+
+                    Stores.ControlSets.UpdateHeader(controlSet);
+
                 } else {
                     // ここには来ない
                     throw new Error('そんなばかなー！');
