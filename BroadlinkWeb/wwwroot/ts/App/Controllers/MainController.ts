@@ -207,7 +207,7 @@ namespace App.Controllers {
 
                     // 対応するデバイスを取得
                     const pairedDev = Stores.BrDevices.Get(cs.BrDeviceId);
-                    const delay = 5000;
+                    const delay = 1000;
 
                     switch (pairedDev.DeviceType) {
                         case App.Items.BrDeviceType.A1:
