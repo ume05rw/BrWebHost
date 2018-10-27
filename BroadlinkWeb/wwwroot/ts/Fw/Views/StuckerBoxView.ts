@@ -48,6 +48,7 @@ namespace Fw.Views {
 
         private _backupView: IView;
         private _dummyView: IView;
+        private _childrenOrder: Array<string> = null;
         private _isChildRelocation: boolean = false;
         private _isChildDragging: boolean = false;
         private _isInnerDragging: boolean = false;
@@ -270,6 +271,13 @@ namespace Fw.Views {
         public StartRelocation(): void {
             //this.Log(`${this.ClassName}.StartRelocation`);
             this._isChildRelocation = true;
+
+            // 再配置開始時点の配置順を保持する。
+            this._childrenOrder = new Array<string>();
+            _.each(this._innerBox.Children, (v: IView) => {
+                this._childrenOrder.push(v.InstanceId);
+            });
+
             Fw.Root.Instance.SetTextSelection(false);
 
             _.each(this._innerBox.Children, (v: IView) => {
@@ -313,6 +321,16 @@ namespace Fw.Views {
                 v.ResumeEvent(ControlViewEvents.SingleClick);
                 v.ResumeEvent(ControlViewEvents.LongClick);
             });
+
+            let changed = false;
+            _.each(this._innerBox.Children, (v: IView, idx: number) => {
+                if (v.InstanceId !== this._childrenOrder[idx])
+                    changed = true;
+            });
+            if (changed)
+                this.DispatchEvent(Events.OrderChanged);
+
+            this._childrenOrder = null;
 
             this.Refresh();
         }

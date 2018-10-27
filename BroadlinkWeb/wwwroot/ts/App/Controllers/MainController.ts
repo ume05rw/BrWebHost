@@ -6,6 +6,7 @@
 /// <reference path="../../Fw/Events/ControlViewEvents.ts" />
 /// <reference path="../../Fw/Events/ButtonViewEvents.ts" />
 /// <reference path="../../Fw/Events/ToggleButtonInputViewEvents.ts" />
+/// <reference path="../../Fw/Events/StuckerBoxViewEvents.ts" />
 /// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
 /// <reference path="../Views/Pages/MainPageView.ts" />
 /// <reference path="../Views/Controls/ControlSetButtonView.ts" />
@@ -22,6 +23,7 @@ namespace App.Controllers {
     import Pages = App.Views.Pages;
     import ButtonEvents = Fw.Events.ButtonViewEvents;
     import ToggleEvents = Fw.Events.ToggleButtonInputViewEvents;
+    import StuckerBoxEvents = Fw.Events.StuckerBoxViewEvents;
     import Stores = App.Models.Stores;
     import Entities = App.Models.Entities;
     import Operation = App.Items.Operation;
@@ -109,6 +111,20 @@ namespace App.Controllers {
                 ctr.Show();
 
                 // TODO: 二回目以降で落ちる。処理後にControllerをDisposeするフローを考える。
+            });
+
+            this._page.ControlSetPanel.AddEventListener(StuckerBoxEvents.OrderChanged, () => {
+                //alert('Fuck!');
+                const csets = new Array<Entities.ControlSet>();
+                let idx = 1;
+                _.each(this._page.ControlSetPanel.Children, (btn: ControlSetButtonView) => {
+                    if (!btn.ControlSet)
+                        return;
+                    btn.ControlSet.Order = idx;
+                    idx++;
+                    csets.push(btn.ControlSet);
+                });
+                Stores.ControlSets.UpdateHeaders(csets);
             });
         }
 
