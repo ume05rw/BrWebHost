@@ -68,7 +68,8 @@ namespace BroadlinkWeb.Models.Stores
                         return;
 
                     // 応答を返す。
-                    var response = Encoding.UTF8.GetBytes(RemoteHostStore.ResponseString);
+                    var resStr = RemoteHostStore.ResponseString + System.Environment.MachineName;
+                    var response = Encoding.UTF8.GetBytes(resStr);
                     Xb.Net.Udp.SendOnce(response, rdata.RemoteEndPoint);
                 };
 
@@ -163,8 +164,11 @@ namespace BroadlinkWeb.Models.Stores
 
         private void OnResponseRecieved(object sender, Xb.Net.RemoteData rdata)
         {
-            var response = Encoding.UTF8.GetString(rdata.Bytes);
-            if (response != RemoteHostStore.ResponseString)
+            if (rdata.Bytes.Length <= 5)
+                return;
+
+            var resHeader = Encoding.UTF8.GetString(rdata.Bytes.Take(5).ToArray());
+            if (resHeader != RemoteHostStore.ResponseString)
                 return;
 
             // 既存登録と合致照会、新規なら追加登録。
@@ -194,14 +198,16 @@ namespace BroadlinkWeb.Models.Stores
                 if (exists != null)
                     return;
 
-                var hostName = "Remote Broadlink-Web";
+                var hostName = "";
                 try
                 {
-                    hostName = System.Environment.MachineName;
+                    hostName = Encoding.UTF8.GetString(rdata.Bytes.Skip(5).Take(int.MaxValue).ToArray());
                 }
                 catch (Exception ex)
                 {
                 }
+                if (string.IsNullOrEmpty(hostName))
+                    hostName = "Remote Broadlink-Web";
 
                 // DB上に無いとき、新規レコードを追加。
                 var entity = new RemoteHost()
