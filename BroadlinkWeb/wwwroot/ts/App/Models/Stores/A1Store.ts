@@ -36,7 +36,7 @@ namespace App.Models.Stores {
             this.Log('Get');
 
             const params = new Xhr.Params(
-                `A1/${controlSet.BrDeviceId}`,
+                `A1s/${controlSet.BrDeviceId}`,
                 Xhr.MethodType.Get
             );
 

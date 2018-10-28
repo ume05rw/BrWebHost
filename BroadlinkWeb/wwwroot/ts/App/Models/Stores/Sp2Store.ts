@@ -36,7 +36,7 @@ namespace App.Models.Stores {
             this.Log('Get');
 
             const params = new Xhr.Params(
-                `Sp2/${controlSet.BrDeviceId}`,
+                `Sp2s/${controlSet.BrDeviceId}`,
                 Xhr.MethodType.Get
             );
 
@@ -85,7 +85,7 @@ namespace App.Models.Stores {
             }
 
             const params = new Xhr.Params(
-                `Sp2/${controlSet.BrDeviceId}`,
+                `Sp2s/${controlSet.BrDeviceId}`,
                 Xhr.MethodType.Post,
                 status
             );

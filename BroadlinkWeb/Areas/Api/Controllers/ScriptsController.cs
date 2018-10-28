@@ -11,19 +11,19 @@ using Microsoft.Extensions.DependencyInjection;
 namespace BroadlinkWeb.Areas.Api.Controllers
 {
     [Produces("application/json")]
-    [Route("api/Script")]
-    public class ScriptController : Controller
+    [Route("api/Scripts")]
+    public class ScriptsController : Controller
     {
         private readonly Dbc _dbc;
 
-        public ScriptController(Dbc dbc)
+        public ScriptsController(Dbc dbc)
         {
-            Xb.Util.Out("ScriptController.Constructor");
+            Xb.Util.Out("ScriptsController.Constructor");
 
             this._dbc = dbc;
         }
 
-        // GET: /api/Script/
+        // GET: /api/Scripts/
         [HttpGet()]
         public async Task<XhrResult> GetList()
         {
@@ -62,7 +62,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
             }
         }
 
-        // POST: /api/Script/5
+        // POST: /api/Scripts/5
         [HttpPost("{controlId?}")]
         public async Task<XhrResult> Exec([FromRoute] int? controlId)
         {

@@ -95,6 +95,8 @@ namespace App.Controllers {
                         ctrSet.Name = 'WoL';
                         ctrSet.Color = App.Items.Color.ButtonColors[2];
                         ctrSet.IconUrl = 'images/icons/controlset/wol.png';
+                        ctrSet.Controls[0].IsAssignToggleOn = true;
+                        ctrSet.Controls[0].IsAssignToggleOff = true;
                         break;
                     case OperationTemplate.Script:
                         ctrSet = await Stores.ControlSets.GetTemplateClone(ControlSetTemplate.SingleControl);
@@ -102,6 +104,8 @@ namespace App.Controllers {
                         ctrSet.Name = 'Script';
                         ctrSet.Color = App.Items.Color.ButtonColors[2];
                         ctrSet.IconUrl = 'images/icons/controlset/script.png';
+                        ctrSet.Controls[0].IsAssignToggleOn = true;
+                        ctrSet.Controls[0].IsAssignToggleOff = true;
                         break;
                     case OperationTemplate.RemoteHostScript:
                         ctrSet = await Stores.ControlSets.GetTemplateClone(ControlSetTemplate.SingleControl);
@@ -109,6 +113,8 @@ namespace App.Controllers {
                         ctrSet.Name = 'Remote Script';
                         ctrSet.Color = App.Items.Color.ButtonColors[2];
                         ctrSet.IconUrl = 'images/icons/controlset/remote.png';
+                        ctrSet.Controls[0].IsAssignToggleOn = true;
+                        ctrSet.Controls[0].IsAssignToggleOff = true;
                         break;
 
                     default:

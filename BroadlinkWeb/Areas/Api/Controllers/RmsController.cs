@@ -15,13 +15,13 @@ using SharpBroadlink.Devices;
 namespace BroadlinkWeb.Areas.Api.Controllers
 {
     [Produces("application/json")]
-    [Route("api/Rm")]
-    public class RmController : Controller
+    [Route("api/Rms")]
+    public class RmsController : Controller
     {
         private readonly Dbc _dbc;
         private BrDeviceStore _store;
 
-        public RmController(
+        public RmsController(
             Dbc dbc,
             BrDeviceStore brDeviceStore
         )
@@ -32,7 +32,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
             this._store = brDeviceStore;
         }
 
-        // GET: api/Rm/GetLearnedCode/5
+        // GET: api/Rms/GetLearnedCode/5
         [HttpGet("GetLearnedCode/{id?}")]
         public async Task<XhrResult> GetLearnedCode([FromRoute] int? id)
         {
@@ -76,7 +76,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
             }
         }
 
-        // Post: api/Rm/CancelLearning/5
+        // Post: api/Rms/CancelLearning/5
         [HttpPost("CancelLearning/{id?}")]
         public async Task<XhrResult> CancelLearning([FromRoute] int? id)
         {
@@ -100,7 +100,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
             }
         }
 
-        // Post: api/Rm/Exec/5
+        // Post: api/Rms/Exec/5
         [HttpPost("Exec/{id?}")]
         public async Task<XhrResult> Exec([FromRoute] int? id, [FromBody] RmCommand rmCommand)
         {

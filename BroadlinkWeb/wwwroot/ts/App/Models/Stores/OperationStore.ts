@@ -59,12 +59,16 @@ namespace App.Models.Stores {
                     result = await Stores.BrDevices.Exec(controlSet, control);
                     break;
                 case OperationType.WakeOnLan:
+                    result = await Stores.Wols.Exec(controlSet, control);
                     break;
                 case OperationType.Script:
+                    result = await Stores.Scripts.Exec(controlSet, control);
                     break;
                 case OperationType.RemoteHostScript:
+                    result = await Stores.Remotes.Exec(controlSet, control);
                     break;
                 case OperationType.Scene:
+                    alert('Not Implements!');
                     break;
                 default:
                     break;

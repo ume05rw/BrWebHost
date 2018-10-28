@@ -9,24 +9,24 @@ using System.Threading.Tasks;
 namespace BroadlinkWeb.Areas.Api.Controllers
 {
     [Produces("application/json")]
-    [Route("api/Sp2")]
-    public class Sp2Controller : Controller
+    [Route("api/Sp2s")]
+    public class Sp2sController : Controller
     {
         private readonly Dbc _dbc;
         private BrDeviceStore _store;
 
-        public Sp2Controller(
+        public Sp2sController(
             Dbc dbc,
             BrDeviceStore brDeviceStore
         )
         {
-            Xb.Util.Out("A1Controller.Constructor");
+            Xb.Util.Out("Sp2sController.Constructor");
 
             this._dbc = dbc;
             this._store = brDeviceStore;
         }
 
-        // GET: api/Sp2/5
+        // GET: api/Sp2s/5
         [HttpGet("{id?}")]
         public async Task<XhrResult> GetSp2Status([FromRoute] int? id)
         {
@@ -64,7 +64,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
             }
         }
 
-        // GET: api/Sp2/5
+        // GET: api/Sp2s/5
         [HttpPost("{id?}")]
         public async Task<XhrResult> SetSp2Status([FromRoute] int? id, [FromBody] Sp2Status sp2Status)
         {

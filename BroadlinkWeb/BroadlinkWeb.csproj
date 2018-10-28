@@ -37,9 +37,12 @@
     <Content Remove="wwwroot\ts\App\Models\Stores\ControlSetStore.ts" />
     <Content Remove="wwwroot\ts\App\Models\Stores\ControlStore.ts" />
     <Content Remove="wwwroot\ts\App\Models\Stores\OperationStore.ts" />
+    <Content Remove="wwwroot\ts\App\Models\Stores\RemoteStore.ts" />
     <Content Remove="wwwroot\ts\App\Models\Stores\Rm2ProStore.ts" />
     <Content Remove="wwwroot\ts\App\Models\Stores\RmStore.ts" />
+    <Content Remove="wwwroot\ts\App\Models\Stores\ScriptStore.ts" />
     <Content Remove="wwwroot\ts\App\Models\Stores\Sp2Store.ts" />
+    <Content Remove="wwwroot\ts\App\Models\Stores\WolStore.ts" />
     <Content Remove="wwwroot\ts\App\Views\Controls\ButtonView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Controls\ControlButtonView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Controls\ControlSetButtonView.ts" />
@@ -182,9 +185,12 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\ControlSetStore.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\ControlStore.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\OperationStore.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\RemoteStore.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\Rm2ProStore.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\RmStore.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\ScriptStore.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\Sp2Store.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\WolStore.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\ButtonView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\ControlButtonView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\HeaderBarView.ts" />

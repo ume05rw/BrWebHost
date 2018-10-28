@@ -4885,7 +4885,7 @@ var App;
                             switch (_a.label) {
                                 case 0:
                                     this.Log('GetLearnedCode');
-                                    params = new Xhr.Params("Rm/GetLearnedCode/" + brDeviceId, Xhr.MethodType.Get);
+                                    params = new Xhr.Params("Rms/GetLearnedCode/" + brDeviceId, Xhr.MethodType.Get);
                                     return [4 /*yield*/, Xhr.Query.Invoke(params)];
                                 case 1:
                                     res = _a.sent();
@@ -4910,7 +4910,7 @@ var App;
                             switch (_a.label) {
                                 case 0:
                                     this.Log('CancelLearning');
-                                    params = new Xhr.Params("Rm/CancelLearning/" + brDeviceId, Xhr.MethodType.Post);
+                                    params = new Xhr.Params("Rms/CancelLearning/" + brDeviceId, Xhr.MethodType.Post);
                                     return [4 /*yield*/, Xhr.Query.Invoke(params)];
                                 case 1:
                                     res = _a.sent();
@@ -4935,7 +4935,7 @@ var App;
                             switch (_a.label) {
                                 case 0:
                                     this.Log('Exec');
-                                    params = new Xhr.Params("Rm/Exec/" + controlSet.BrDeviceId, Xhr.MethodType.Post, {
+                                    params = new Xhr.Params("Rms/Exec/" + controlSet.BrDeviceId, Xhr.MethodType.Post, {
                                         Code: control.Code
                                     });
                                     return [4 /*yield*/, Xhr.Query.Invoke(params)];
@@ -6040,6 +6040,8 @@ var App;
                                 ctrSet.Name = 'WoL';
                                 ctrSet.Color = App.Items.Color.ButtonColors[2];
                                 ctrSet.IconUrl = 'images/icons/controlset/wol.png';
+                                ctrSet.Controls[0].IsAssignToggleOn = true;
+                                ctrSet.Controls[0].IsAssignToggleOff = true;
                                 return [3 /*break*/, 18];
                             case 13: return [4 /*yield*/, Stores.ControlSets.GetTemplateClone(ControlSetTemplate.SingleControl)];
                             case 14:
@@ -6048,6 +6050,8 @@ var App;
                                 ctrSet.Name = 'Script';
                                 ctrSet.Color = App.Items.Color.ButtonColors[2];
                                 ctrSet.IconUrl = 'images/icons/controlset/script.png';
+                                ctrSet.Controls[0].IsAssignToggleOn = true;
+                                ctrSet.Controls[0].IsAssignToggleOff = true;
                                 return [3 /*break*/, 18];
                             case 15: return [4 /*yield*/, Stores.ControlSets.GetTemplateClone(ControlSetTemplate.SingleControl)];
                             case 16:
@@ -6056,6 +6060,8 @@ var App;
                                 ctrSet.Name = 'Remote Script';
                                 ctrSet.Color = App.Items.Color.ButtonColors[2];
                                 ctrSet.IconUrl = 'images/icons/controlset/remote.png';
+                                ctrSet.Controls[0].IsAssignToggleOn = true;
+                                ctrSet.Controls[0].IsAssignToggleOff = true;
                                 return [3 /*break*/, 18];
                             case 17:
                                 alert('Not Implemented!!');
@@ -9009,7 +9015,7 @@ var App;
                             switch (_a.label) {
                                 case 0:
                                     this.Log('Get');
-                                    params = new Xhr.Params("A1/" + controlSet.BrDeviceId, Xhr.MethodType.Get);
+                                    params = new Xhr.Params("A1s/" + controlSet.BrDeviceId, Xhr.MethodType.Get);
                                     return [4 /*yield*/, Xhr.Query.Invoke(params)];
                                 case 1:
                                     res = _a.sent();
@@ -9448,25 +9454,36 @@ var App;
                                         case 1 /* RemoteControl */: return [3 /*break*/, 1];
                                         case 2 /* BroadlinkDevice */: return [3 /*break*/, 3];
                                         case 3 /* WakeOnLan */: return [3 /*break*/, 5];
-                                        case 4 /* Script */: return [3 /*break*/, 6];
-                                        case 5 /* RemoteHostScript */: return [3 /*break*/, 7];
-                                        case 99 /* Scene */: return [3 /*break*/, 8];
+                                        case 4 /* Script */: return [3 /*break*/, 7];
+                                        case 5 /* RemoteHostScript */: return [3 /*break*/, 9];
+                                        case 99 /* Scene */: return [3 /*break*/, 11];
                                     }
-                                    return [3 /*break*/, 9];
+                                    return [3 /*break*/, 12];
                                 case 1: return [4 /*yield*/, Stores.Rms.Exec(controlSet, control)];
                                 case 2:
                                     result = _b.sent();
-                                    return [3 /*break*/, 10];
+                                    return [3 /*break*/, 13];
                                 case 3: return [4 /*yield*/, Stores.BrDevices.Exec(controlSet, control)];
                                 case 4:
                                     result = _b.sent();
-                                    return [3 /*break*/, 10];
-                                case 5: return [3 /*break*/, 10];
-                                case 6: return [3 /*break*/, 10];
-                                case 7: return [3 /*break*/, 10];
-                                case 8: return [3 /*break*/, 10];
-                                case 9: return [3 /*break*/, 10];
+                                    return [3 /*break*/, 13];
+                                case 5: return [4 /*yield*/, Stores.Wols.Exec(controlSet, control)];
+                                case 6:
+                                    result = _b.sent();
+                                    return [3 /*break*/, 13];
+                                case 7: return [4 /*yield*/, Stores.Scripts.Exec(controlSet, control)];
+                                case 8:
+                                    result = _b.sent();
+                                    return [3 /*break*/, 13];
+                                case 9: return [4 /*yield*/, Stores.Remotes.Exec(controlSet, control)];
                                 case 10:
+                                    result = _b.sent();
+                                    return [3 /*break*/, 13];
+                                case 11:
+                                    alert('Not Implements!');
+                                    return [3 /*break*/, 13];
+                                case 12: return [3 /*break*/, 13];
+                                case 13:
                                     if (result === true
                                         && (control.IsAssignToggleOn || control.IsAssignToggleOff)) {
                                         this.EnsureToggles(controlSet, control);
@@ -9538,6 +9555,62 @@ var App;
 /// <reference path="../Entities/BrDevice.ts" />
 /// <reference path="../Entities/ControlSet.ts" />
 /// <reference path="../Entities/Control.ts" />
+/// <reference path="../../Items/OperationType.ts" />
+/// <reference path="../../Items/DeviceType.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Stores;
+        (function (Stores) {
+            var RemoteStore = /** @class */ (function (_super) {
+                __extends(RemoteStore, _super);
+                function RemoteStore() {
+                    var _this = _super.call(this) || this;
+                    _this.SetClassName('RemoteStore');
+                    _this.EnableLog = true;
+                    return _this;
+                }
+                Object.defineProperty(RemoteStore, "Instance", {
+                    get: function () {
+                        if (RemoteStore._instance === null)
+                            RemoteStore._instance = new RemoteStore();
+                        return RemoteStore._instance;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                RemoteStore.prototype.Exec = function (controlSet, control) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        return __generator(this, function (_a) {
+                            this.Log('Exec');
+                            alert('Not Implements!');
+                            return [2 /*return*/, true];
+                        });
+                    });
+                };
+                RemoteStore.prototype.GetNewEntity = function () {
+                    throw new Error('Not Supported');
+                };
+                RemoteStore.prototype.Write = function (entity) {
+                    throw new Error('Not Supported');
+                };
+                RemoteStore._instance = null;
+                return RemoteStore;
+            }(Fw.Models.StoreBase));
+            Stores.RemoteStore = RemoteStore;
+            Stores.Remotes = RemoteStore.Instance;
+        })(Stores = Models.Stores || (Models.Stores = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/StoreBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../../Fw/Util/Xhr/Query.ts" />
+/// <reference path="../Entities/BrDevice.ts" />
+/// <reference path="../Entities/ControlSet.ts" />
+/// <reference path="../Entities/Control.ts" />
 var App;
 (function (App) {
     var Models;
@@ -9570,7 +9643,7 @@ var App;
                             switch (_a.label) {
                                 case 0:
                                     this.Log('GetTemperature');
-                                    params = new Xhr.Params("Rm2Pro/GetTemperature/" + controlSet.BrDeviceId, Xhr.MethodType.Get);
+                                    params = new Xhr.Params("Rm2Pros/GetTemperature/" + controlSet.BrDeviceId, Xhr.MethodType.Get);
                                     return [4 /*yield*/, Xhr.Query.Invoke(params)];
                                 case 1:
                                     res = _a.sent();
@@ -9601,7 +9674,7 @@ var App;
                             switch (_a.label) {
                                 case 0:
                                     this.Log('GetRfLearnedCode');
-                                    params = new Xhr.Params("Rm2Pro/GetRfLearnedCode/" + brDeviceId, Xhr.MethodType.Get);
+                                    params = new Xhr.Params("Rm2Pros/GetRfLearnedCode/" + brDeviceId, Xhr.MethodType.Get);
                                     return [4 /*yield*/, Xhr.Query.Invoke(params)];
                                 case 1:
                                     res = _a.sent();
@@ -9630,7 +9703,7 @@ var App;
                             switch (_a.label) {
                                 case 0:
                                     this.Log('CancelLearning');
-                                    params = new Xhr.Params("Rm/CancelLearning/" + brDeviceId, Xhr.MethodType.Post);
+                                    params = new Xhr.Params("Rms/CancelLearning/" + brDeviceId, Xhr.MethodType.Post);
                                     return [4 /*yield*/, Xhr.Query.Invoke(params)];
                                 case 1:
                                     res = _a.sent();
@@ -9659,6 +9732,80 @@ var App;
             }(Fw.Models.StoreBase));
             Stores.Rm2ProStore = Rm2ProStore;
             Stores.Rm2Pros = Rm2ProStore.Instance;
+        })(Stores = Models.Stores || (Models.Stores = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/StoreBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../../Fw/Util/Xhr/Query.ts" />
+/// <reference path="../Entities/BrDevice.ts" />
+/// <reference path="../Entities/ControlSet.ts" />
+/// <reference path="../Entities/Control.ts" />
+/// <reference path="../../Items/OperationType.ts" />
+/// <reference path="../../Items/DeviceType.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Stores;
+        (function (Stores) {
+            var Xhr = Fw.Util.Xhr;
+            var ScriptStore = /** @class */ (function (_super) {
+                __extends(ScriptStore, _super);
+                function ScriptStore() {
+                    var _this = _super.call(this) || this;
+                    _this.SetClassName('ScriptStore');
+                    _this.EnableLog = true;
+                    return _this;
+                }
+                Object.defineProperty(ScriptStore, "Instance", {
+                    get: function () {
+                        if (ScriptStore._instance === null)
+                            ScriptStore._instance = new ScriptStore();
+                        return ScriptStore._instance;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                ScriptStore.prototype.Exec = function (controlSet, control) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var params, res, result;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    this.Log('Exec');
+                                    params = new Xhr.Params("Scripts/" + control.Id, Xhr.MethodType.Post);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        result = res.Values;
+                                        // Suceededのときはtrue以外返ってこない。
+                                        return [2 /*return*/, result];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, false];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
+                ScriptStore.prototype.GetNewEntity = function () {
+                    throw new Error('Not Supported');
+                };
+                ScriptStore.prototype.Write = function (entity) {
+                    throw new Error('Not Supported');
+                };
+                ScriptStore._instance = null;
+                return ScriptStore;
+            }(Fw.Models.StoreBase));
+            Stores.ScriptStore = ScriptStore;
+            Stores.Scripts = ScriptStore.Instance;
         })(Stores = Models.Stores || (Models.Stores = {}));
     })(Models = App.Models || (App.Models = {}));
 })(App || (App = {}));
@@ -9702,7 +9849,7 @@ var App;
                             switch (_a.label) {
                                 case 0:
                                     this.Log('Get');
-                                    params = new Xhr.Params("Sp2/" + controlSet.BrDeviceId, Xhr.MethodType.Get);
+                                    params = new Xhr.Params("Sp2s/" + controlSet.BrDeviceId, Xhr.MethodType.Get);
                                     return [4 /*yield*/, Xhr.Query.Invoke(params)];
                                 case 1:
                                     res = _a.sent();
@@ -9752,7 +9899,7 @@ var App;
                                         default:
                                             break;
                                     }
-                                    params = new Xhr.Params("Sp2/" + controlSet.BrDeviceId, Xhr.MethodType.Post, status);
+                                    params = new Xhr.Params("Sp2s/" + controlSet.BrDeviceId, Xhr.MethodType.Post, status);
                                     return [4 /*yield*/, Xhr.Query.Invoke(params)];
                                 case 1:
                                     res = _a.sent();
@@ -9787,6 +9934,80 @@ var App;
             }(Fw.Models.StoreBase));
             Stores.Sp2Store = Sp2Store;
             Stores.Sp2s = Sp2Store.Instance;
+        })(Stores = Models.Stores || (Models.Stores = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/StoreBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../../Fw/Util/Xhr/Query.ts" />
+/// <reference path="../Entities/BrDevice.ts" />
+/// <reference path="../Entities/ControlSet.ts" />
+/// <reference path="../Entities/Control.ts" />
+/// <reference path="../../Items/OperationType.ts" />
+/// <reference path="../../Items/DeviceType.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Stores;
+        (function (Stores) {
+            var Xhr = Fw.Util.Xhr;
+            var WolStore = /** @class */ (function (_super) {
+                __extends(WolStore, _super);
+                function WolStore() {
+                    var _this = _super.call(this) || this;
+                    _this.SetClassName('WolStore');
+                    _this.EnableLog = true;
+                    return _this;
+                }
+                Object.defineProperty(WolStore, "Instance", {
+                    get: function () {
+                        if (WolStore._instance === null)
+                            WolStore._instance = new WolStore();
+                        return WolStore._instance;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                WolStore.prototype.Exec = function (controlSet, control) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var params, res, result;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    this.Log('Exec');
+                                    params = new Xhr.Params("Wols/" + control.Id, Xhr.MethodType.Post);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        result = res.Values;
+                                        // Suceededのときはtrue以外返ってこない。
+                                        return [2 /*return*/, result];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, false];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
+                WolStore.prototype.GetNewEntity = function () {
+                    throw new Error('Not Supported');
+                };
+                WolStore.prototype.Write = function (entity) {
+                    throw new Error('Not Supported');
+                };
+                WolStore._instance = null;
+                return WolStore;
+            }(Fw.Models.StoreBase));
+            Stores.WolStore = WolStore;
+            Stores.Wols = WolStore.Instance;
         })(Stores = Models.Stores || (Models.Stores = {}));
     })(Models = App.Models || (App.Models = {}));
 })(App || (App = {}));

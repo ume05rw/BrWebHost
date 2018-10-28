@@ -39,7 +39,7 @@ namespace App.Models.Stores {
             this.Log('GetLearnedCode');
 
             const params = new Xhr.Params(
-                `Rm/GetLearnedCode/${brDeviceId}`,
+                `Rms/GetLearnedCode/${brDeviceId}`,
                 Xhr.MethodType.Get
             );
 
@@ -60,7 +60,7 @@ namespace App.Models.Stores {
             this.Log('CancelLearning');
 
             const params = new Xhr.Params(
-                `Rm/CancelLearning/${brDeviceId}`,
+                `Rms/CancelLearning/${brDeviceId}`,
                 Xhr.MethodType.Post
             );
 
@@ -81,7 +81,7 @@ namespace App.Models.Stores {
             this.Log('Exec');
 
             const params = new Xhr.Params(
-                `Rm/Exec/${controlSet.BrDeviceId}`,
+                `Rms/Exec/${controlSet.BrDeviceId}`,
                 Xhr.MethodType.Post,
                 {
                     Code: control.Code

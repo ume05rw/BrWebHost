@@ -38,7 +38,7 @@ namespace App.Models.Stores {
             this.Log('GetTemperature');
 
             const params = new Xhr.Params(
-                `Rm2Pro/GetTemperature/${controlSet.BrDeviceId}`,
+                `Rm2Pros/GetTemperature/${controlSet.BrDeviceId}`,
                 Xhr.MethodType.Get
             );
 
@@ -66,7 +66,7 @@ namespace App.Models.Stores {
             this.Log('GetRfLearnedCode');
 
             const params = new Xhr.Params(
-                `Rm2Pro/GetRfLearnedCode/${brDeviceId}`,
+                `Rm2Pros/GetRfLearnedCode/${brDeviceId}`,
                 Xhr.MethodType.Get
             );
 
@@ -92,7 +92,7 @@ namespace App.Models.Stores {
 
             // RFとIR、キャンセルコマンドは共通なので、同じAPIを使う。
             const params = new Xhr.Params(
-                `Rm/CancelLearning/${brDeviceId}`,
+                `Rms/CancelLearning/${brDeviceId}`,
                 Xhr.MethodType.Post
             );
 

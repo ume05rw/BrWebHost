@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 namespace BroadlinkWeb.Areas.Api.Controllers
 {
     [Produces("application/json")]
-    [Route("api/A1")]
-    public class A1Controller : Controller
+    [Route("api/A1s")]
+    public class A1sController : Controller
     {
         private readonly Dbc _dbc;
         private BrDeviceStore _store;
 
-        public A1Controller(
+        public A1sController(
             Dbc dbc,
             BrDeviceStore brDeviceStore
         )
@@ -26,7 +26,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
             this._store = brDeviceStore;
         }
 
-        // GET: api/A1/5
+        // GET: api/A1s/5
         [HttpGet("{id?}")] // <- nullableのとき、ここにも?が必要。
         public async Task<XhrResult> GetA1SensorValues([FromRoute] int? id)
         {

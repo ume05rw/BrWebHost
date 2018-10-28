@@ -12,19 +12,19 @@ using Microsoft.Extensions.DependencyInjection;
 namespace BroadlinkWeb.Areas.Api.Controllers
 {
     [Produces("application/json")]
-    [Route("api/Wol")]
-    public class WolController : Controller
+    [Route("api/Wols")]
+    public class WolsController : Controller
     {
         private readonly Dbc _dbc;
 
-        public WolController(Dbc dbc)
+        public WolsController(Dbc dbc)
         {
             Xb.Util.Out("WolController.Constructor");
 
             this._dbc = dbc;
         }
 
-        // POST: /api/Wol/5
+        // POST: /api/Wols/5
         [HttpPost("{controlId?}")]
         public async Task<XhrResult> Exec([FromRoute] int? controlId)
         {

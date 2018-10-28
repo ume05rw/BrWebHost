@@ -132,7 +132,7 @@ namespace BroadlinkWeb
                         Xb.Util.Out(ex);
                         Xb.Util.Out("FUUUUUUUUUUUUUUUUUUUUUUCK!!!");
                         Xb.Util.Out("Regularly Scan FAIL!!!!!!!!!!!!");
-                        throw;
+                        //throw;
                     }
                 }
             });
