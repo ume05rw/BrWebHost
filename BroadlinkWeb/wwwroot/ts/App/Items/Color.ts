@@ -55,7 +55,7 @@ namespace App.Items {
             // 1.light blue (BrDevs)
             '#84bde8',
 
-            // 2.green
+            // 2.green (WoL, Script)
             '#81c03b',
 
             // 3.light green (Light)

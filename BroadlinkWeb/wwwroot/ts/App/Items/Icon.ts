@@ -14,7 +14,7 @@ namespace App.Items {
         public static Light: string = 'images/icons/operation/light.png';
 
         public static Free: string = 'images/icons/operation/free.png';
-        public static WoL: string = 'images/icons/operation/magicpacket.png';
+        public static WoL: string = 'images/icons/operation/wol.png';
         public static Script: string = 'images/icons/operation/script.png';
         public static Remote: string = 'images/icons/operation/remote.png';
 
@@ -98,14 +98,14 @@ namespace App.Items {
             'num_sharp.png',
         ];
 
-        public static Mains: Array<string> = [
-            'main_free.png',            // 0 自由割当
-            'main_tv.png',              // 1 TV
-            'main_av.png',              // 2 AV
-            'main_light.png',           // 3 Light
-            'main_aircompressor.png',   // 4 Air Compressor
-            'main_a1.png',              // 5 A1 Sensor
-            'main_sp2.png',             // 6 Sp2 Switch
-        ];
+        //public static Mains: Array<string> = [
+        //    'main_free.png',            // 0 自由割当
+        //    'main_tv.png',              // 1 TV
+        //    'main_av.png',              // 2 AV
+        //    'main_light.png',           // 3 Light
+        //    'main_aircompressor.png',   // 4 Air Compressor
+        //    'main_a1.png',              // 5 A1 Sensor
+        //    'main_sp2.png',             // 6 Sp2 Switch
+        //];
     }
 }

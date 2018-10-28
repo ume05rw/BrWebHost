@@ -74,106 +74,49 @@ namespace App.Models.Stores {
                 || !control
                 || !control.Code
                 || control.Code === ''
+                || controlSet.OperationType !== OperationType.BroadlinkDevice
             ) {
                 return false;
             }
 
             let result = false;
 
-            if (controlSet.OperationType === OperationType.BroadlinkDevice) {
-                // Broadlinkデバイスのとき
-                // デバイス種類別処理を行う。
+            // デバイス種類別処理を行う。
 
-                // 対応するデバイスを取得
-                const pairedDev = this.Get(controlSet.BrDeviceId);
+            // 対応するデバイスを取得
+            const pairedDev = this.Get(controlSet.BrDeviceId);
 
-                switch (pairedDev.DeviceType) {
-                    case DeviceType.A1:
-                        // コマンドは一つだけ - 現在の値を取得
-                        const res1 = await Stores.A1s.Get(controlSet);
-                        result = (res1 !== null);
-                        break;
+            switch (pairedDev.DeviceType) {
+                case DeviceType.A1:
+                    // コマンドは一つだけ - 現在の値を取得
+                    const res1 = await Stores.A1s.Get(controlSet);
+                    result = (res1 !== null);
+                    break;
 
-                    case DeviceType.Sp2:
-                        // コマンドはControlごとに。
-                        const res2 = await Stores.Sp2s.Set(controlSet, control);
-                        result = (res2 !== null);
-                        break;
+                case DeviceType.Sp2:
+                    // コマンドはControlごとに。
+                    const res2 = await Stores.Sp2s.Set(controlSet, control);
+                    result = (res2 !== null);
+                    break;
 
-                    case DeviceType.Rm2Pro:
-                        // コマンドは一つだけ - 現在の値を取得
-                        const res3 = await Stores.Rm2Pros.GetTemperature(controlSet);
-                        result = (res3 !== null);
-                        break;
+                case DeviceType.Rm2Pro:
+                    // コマンドは一つだけ - 現在の値を取得
+                    const res3 = await Stores.Rm2Pros.GetTemperature(controlSet);
+                    result = (res3 !== null);
+                    break;
 
 
-                    // 以降、未対応。
-                    case DeviceType.Rm:
-                    case DeviceType.Dooya:
-                    case DeviceType.Hysen:
-                    case DeviceType.Mp1:
-                    case DeviceType.S1c:
-                    case DeviceType.Sp1:
-                    case DeviceType.Unknown:
-                    default:
-                        result = false;
-                        break;
-                }
-
-            } else {
-                // Brデバイスでないとき
-                // リモコンコードを実行する。
-                result = await Stores.Rms.Exec(controlSet, control);
-            }
-
-            // コマンド送信成功、かつトグルがアサインされているとき
-            if (
-                result === true
-                && (control.IsAssignToggleOn || control.IsAssignToggleOff)
-            ) {
-                if (control.IsAssignToggleOn && control.IsAssignToggleOff) {
-                    // On/Off 両方アサインされているボタンのとき
-
-                    // 一旦Onにし、しばらく置いてOffに戻す。
-                    const changed = (controlSet.ToggleState !== true);
-                    controlSet.ToggleState = true;
-                    if (changed)
-                        controlSet.DispatchChanged();
-
-                    _.delay(() => {
-                        const changed2 = (controlSet.ToggleState !== false);
-                        controlSet.ToggleState = false;
-                        if (changed2)
-                            controlSet.DispatchChanged();
-
-                        Stores.ControlSets.UpdateHeader(controlSet);
-
-                    }, 1000);
-
-                } else if (control.IsAssignToggleOn) {
-                    // Onだけがアサインされているボタンのとき
-                    // トグルをOnにする。
-                    const changed3 = (controlSet.ToggleState !== true);
-                    controlSet.ToggleState = true;
-                    if (changed3)
-                        controlSet.DispatchChanged();
-
-                    Stores.ControlSets.UpdateHeader(controlSet);
-
-                } else if (control.IsAssignToggleOff) {
-                    // Offだけがアサインされているボタンのとき
-                    // トグルをOffにする。
-                    const changed4 = (controlSet.ToggleState !== false);
-                    controlSet.ToggleState = false;
-                    if (changed4)
-                        controlSet.DispatchChanged();
-
-                    Stores.ControlSets.UpdateHeader(controlSet);
-
-                } else {
-                    // ここには来ない
-                    throw new Error('そんなばかなー！');
-                }
+                // 以降、未対応。
+                case DeviceType.Rm:
+                case DeviceType.Dooya:
+                case DeviceType.Hysen:
+                case DeviceType.Mp1:
+                case DeviceType.S1c:
+                case DeviceType.Sp1:
+                case DeviceType.Unknown:
+                default:
+                    result = false;
+                    break;
             }
 
             return result;

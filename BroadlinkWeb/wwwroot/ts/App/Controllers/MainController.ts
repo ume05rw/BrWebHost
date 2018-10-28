@@ -71,7 +71,7 @@ namespace App.Controllers {
                 let ctrSet: App.Models.Entities.ControlSet;
                 switch (item) {
                     case OperationTemplate.Scene:
-                        Dump.Log('Not Implemented!!');
+                        alert('Not Implemented!!');
                         return;
                     case OperationTemplate.Tv:
                         ctrSet = await Stores.ControlSets.GetTemplateClone(ControlSetTemplate.Tv);
@@ -83,10 +83,36 @@ namespace App.Controllers {
                         ctrSet = await Stores.ControlSets.GetTemplateClone(ControlSetTemplate.Light);
                         break;
                     case OperationTemplate.Free:
-                        ctrSet = new App.Models.Entities.ControlSet();
+                        ctrSet = await Stores.ControlSets.GetTemplateClone(ControlSetTemplate.NoControl);
+                        ctrSet.OperationType = OperationType.RemoteControl;
+                        ctrSet.Name = 'Free Edit';
+                        ctrSet.Color = App.Items.Color.ButtonColors[7];
+                        ctrSet.IconUrl = 'images/icons/controlset/free.png';
                         break;
+                    case OperationTemplate.WoL:
+                        ctrSet = await Stores.ControlSets.GetTemplateClone(ControlSetTemplate.SingleControl);
+                        ctrSet.OperationType = OperationType.WakeOnLan;
+                        ctrSet.Name = 'WoL';
+                        ctrSet.Color = App.Items.Color.ButtonColors[2];
+                        ctrSet.IconUrl = 'images/icons/controlset/wol.png';
+                        break;
+                    case OperationTemplate.Script:
+                        ctrSet = await Stores.ControlSets.GetTemplateClone(ControlSetTemplate.SingleControl);
+                        ctrSet.OperationType = OperationType.Script;
+                        ctrSet.Name = 'Script';
+                        ctrSet.Color = App.Items.Color.ButtonColors[2];
+                        ctrSet.IconUrl = 'images/icons/controlset/script.png';
+                        break;
+                    case OperationTemplate.RemoteHostScript:
+                        ctrSet = await Stores.ControlSets.GetTemplateClone(ControlSetTemplate.SingleControl);
+                        ctrSet.OperationType = OperationType.RemoteHostScript;
+                        ctrSet.Name = 'Remote Script';
+                        ctrSet.Color = App.Items.Color.ButtonColors[2];
+                        ctrSet.IconUrl = 'images/icons/controlset/remote.png';
+                        break;
+
                     default:
-                        Dump.Log('Not Implemented!!');
+                        alert('Not Implemented!!');
                         return;
                 }
 
@@ -191,7 +217,7 @@ namespace App.Controllers {
                         ? controlOn
                         : controlOff;
 
-                    Stores.BrDevices.Exec(cset, targetControl);
+                    Stores.Operations.Exec(cset, targetControl);
                 });
 
                 cs.AddEventListener(Events.EntityEvents.Changed, (e) => {

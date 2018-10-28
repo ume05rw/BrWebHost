@@ -52,10 +52,10 @@ namespace App.Controllers {
             this._page.SelectorPanel.Add(btn1);
 
             // 区切り線
-            const line = new Fw.Views.LineView(Property.Direction.Horizontal);
-            line.SetAnchor(null, 5, 5, null);
-            line.Color = App.Items.Color.MainBackground;
-            this._page.SelectorPanel.Add(line);
+            const line1 = new Fw.Views.LineView(Property.Direction.Horizontal);
+            line1.SetAnchor(null, 5, 5, null);
+            line1.Color = App.Items.Color.MainBackground;
+            this._page.SelectorPanel.Add(line1);
 
             // TV
             const btn2 = this.GetNewButton();
@@ -105,32 +105,47 @@ namespace App.Controllers {
             });
             this._page.SelectorPanel.Add(btn5);
 
-            //// WoL
-            //const btn6 = this.GetNewButton();
-            //btn6.Label.Text = 'WoL';
-            //btn6.Button.ImageSrc = App.Icon.WoL;
-            //btn6.AddEventListener(ButtonEvents.SingleClick, () => {
-            //    this.Commit(Operation.WoL);
-            //});
-            //this._page.SelectorPanel.Add(btn6);
+            // 区切り線
+            const line2 = new Fw.Views.LineView(Property.Direction.Horizontal);
+            line2.SetAnchor(null, 5, 5, null);
+            line2.Color = App.Items.Color.MainBackground;
+            this._page.SelectorPanel.Add(line2);
 
-            //// ローカル実行
-            //const btn7 = this.GetNewButton();
-            //btn7.Label.Text = 'Script';
-            //btn7.Button.ImageSrc = App.Icon.Script;
-            //btn7.AddEventListener(ButtonEvents.SingleClick, () => {
-            //    this.Commit(Operation.Script);
-            //});
-            //this._page.SelectorPanel.Add(btn7);
+            // WoL
+            const btn6 = this.GetNewButton();
+            btn6.Label.Text = 'WoL';
+            btn6.Button.ImageSrc = App.Items.Icon.WoL;
+            btn6.Button.BackgroundColor = Color.ButtonColors[2];
+            btn6.Button.HoverColor = Color.ButtonHoverColors[2];
+            btn6.Button.Color = Color.ButtonColors[2];
+            btn6.Button.AddEventListener(ButtonEvents.SingleClick, () => {
+                this.Commit(OperationTemplate.WoL);
+            });
+            this._page.SelectorPanel.Add(btn6);
 
-            //// リモート実行
-            //const btn8 = this.GetNewButton();
-            //btn8.Label.Text = 'Remote';
-            //btn8.Button.ImageSrc = App.Icon.Remote;
-            //btn8.AddEventListener(ButtonEvents.SingleClick, () => {
-            //    this.Commit(Operation.Remote);
-            //});
-            //this._page.SelectorPanel.Add(btn8);
+            // ローカル実行
+            const btn7 = this.GetNewButton();
+            btn7.Label.Text = 'Script';
+            btn7.Button.ImageSrc = App.Items.Icon.Script;
+            btn7.Button.BackgroundColor = Color.ButtonColors[2];
+            btn7.Button.HoverColor = Color.ButtonHoverColors[2];
+            btn7.Button.Color = Color.ButtonColors[2];
+            btn7.Button.AddEventListener(ButtonEvents.SingleClick, () => {
+                this.Commit(OperationTemplate.Script);
+            });
+            this._page.SelectorPanel.Add(btn7);
+
+            // リモート実行
+            const btn8 = this.GetNewButton();
+            btn8.Label.Text = 'Remote';
+            btn8.Button.ImageSrc = App.Items.Icon.Remote;
+            btn8.Button.BackgroundColor = Color.ButtonColors[2];
+            btn8.Button.HoverColor = Color.ButtonHoverColors[2];
+            btn8.Button.Color = Color.ButtonColors[2];
+            btn8.Button.AddEventListener(ButtonEvents.SingleClick, () => {
+                this.Commit(OperationTemplate.RemoteHostScript);
+            });
+            this._page.SelectorPanel.Add(btn8);
         }
 
         private GetNewButton(): LabeledButtonView {

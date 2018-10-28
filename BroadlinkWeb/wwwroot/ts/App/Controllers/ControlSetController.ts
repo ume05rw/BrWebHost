@@ -460,7 +460,7 @@ namespace App.Controllers {
                 return null;
             }
 
-            const result = await Stores.BrDevices.Exec(this._controlSet, control);
+            const result = await Stores.Operations.Exec(this._controlSet, control);
 
             if (result) {
                 if (control.IsAssignToggleOn === true
