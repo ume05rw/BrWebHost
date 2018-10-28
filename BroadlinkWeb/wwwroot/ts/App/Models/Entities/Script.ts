@@ -8,6 +8,6 @@ namespace App.Models.Entities {
 
     export class Script extends Fw.Models.EntityBase {
         public Name: string = '';
-        public Host: string = '';
+        public RemoteHostId: number;
     }
 }

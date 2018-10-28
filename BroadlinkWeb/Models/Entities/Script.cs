@@ -13,6 +13,6 @@ namespace BroadlinkWeb.Models.Entities
 
         public string Name { get; set; }
 
-        public string Host { get; set; }
+        public int? RemoteHostId { get; set; }
     }
 }

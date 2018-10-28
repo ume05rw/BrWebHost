@@ -9001,7 +9001,6 @@ var App;
                 function Script() {
                     var _this = _super !== null && _super.apply(this, arguments) || this;
                     _this.Name = '';
-                    _this.Host = '';
                     return _this;
                 }
                 return Script;
@@ -9613,6 +9612,7 @@ var App;
 /// <reference path="../Entities/BrDevice.ts" />
 /// <reference path="../Entities/ControlSet.ts" />
 /// <reference path="../Entities/Control.ts" />
+/// <reference path="../Entities/Script.ts" />
 /// <reference path="../../Items/OperationType.ts" />
 /// <reference path="../../Items/DeviceType.ts" />
 var App;
@@ -9621,6 +9621,7 @@ var App;
     (function (Models) {
         var Stores;
         (function (Stores) {
+            var Xhr = Fw.Util.Xhr;
             var RemoteStore = /** @class */ (function (_super) {
                 __extends(RemoteStore, _super);
                 function RemoteStore() {
@@ -9638,12 +9639,62 @@ var App;
                     enumerable: true,
                     configurable: true
                 });
+                RemoteStore.prototype.GetList = function () {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var params, res;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    this.Log('GetList');
+                                    params = new Xhr.Params('RemoteHosts', Xhr.MethodType.Get);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        return [2 /*return*/, res.Values];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, []];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
                 RemoteStore.prototype.Exec = function (controlSet, control) {
                     return __awaiter(this, void 0, void 0, function () {
+                        var script, params, res, result;
                         return __generator(this, function (_a) {
-                            this.Log('Exec');
-                            alert('Not Implements!');
-                            return [2 /*return*/, true];
+                            switch (_a.label) {
+                                case 0:
+                                    this.Log('Exec');
+                                    // 渡し値がヘン
+                                    if (!controlSet
+                                        || !control
+                                        || !control.Code
+                                        || control.Code === ''
+                                        || controlSet.OperationType !== 5 /* RemoteHostScript */) {
+                                        return [2 /*return*/, false];
+                                    }
+                                    script = JSON.parse(control.Code);
+                                    params = new Xhr.Params("RemoteHosts", Xhr.MethodType.Post, script);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        result = res.Values;
+                                        // Suceededのときはtrue以外返ってこない。
+                                        return [2 /*return*/, result];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, false];
+                                    }
+                                    return [2 /*return*/];
+                            }
                         });
                     });
                 };
