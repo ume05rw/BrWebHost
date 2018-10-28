@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using BroadlinkWeb.Models;
 using BroadlinkWeb.Models.Entities;
@@ -11,19 +12,19 @@ using Microsoft.Extensions.DependencyInjection;
 namespace BroadlinkWeb.Areas.Api.Controllers
 {
     [Produces("application/json")]
-    [Route("api/Script")]
-    public class ScriptController : Controller
+    [Route("api/Wol")]
+    public class WolController : Controller
     {
         private readonly Dbc _dbc;
 
-        public ScriptController(Dbc dbc)
+        public WolController(Dbc dbc)
         {
-            Xb.Util.Out("ScriptController.Constructor");
+            Xb.Util.Out("WolController.Constructor");
 
             this._dbc = dbc;
         }
 
-        // POST: /api/Script/5
+        // POST: /api/Wol/5
         [HttpPost("{controlId?}")]
         public async Task<XhrResult> Exec([FromRoute] int? controlId)
         {
@@ -48,24 +49,49 @@ namespace BroadlinkWeb.Areas.Api.Controllers
 
                 if (controlSet == null)
                     return XhrResult.CreateError("Invalid Entity");
-                else if (controlSet.OperationType != OperationType.Script)
+                else if (controlSet.OperationType != OperationType.WakeOnLan)
                     return XhrResult.CreateError("Invalid Request");
 
-                var rows = control.Code
+                var mac = control.Code
                     .Replace("\r\n", "\n")
                     .Replace("\r", "\n")
-                    .Split('\n');
+                    .Replace("::", "-")
+                    .Replace(":", "-")
+                    .Split('\n')[0].Trim();
 
-                // 一行ずつ実行、結果取得はしない。
-                // UI付きプログラムの場合、プログラム終了まで応答を返さないため。
-                foreach (var row in rows)
-                    Xb.App.Process.GetConsoleResultAsync(row)
-                        .ConfigureAwait(false);
+                var bStrs = mac.Split("-");
+                var macBytes = new List<byte>();
+                try
+                {
+                    foreach (var str in bStrs)
+                        macBytes.Add(Convert.ToByte(str, 16));
+                }
+                catch (Exception)
+                {
+                    return XhrResult.CreateError("Invalid Hex String");
+                }
 
-                //var results = new List<string>();
-                //results.Add(row);
-                //results.Add(await Xb.App.Process.GetConsoleResultAsync(row));
-                //var result = string.Join("\n", results.ToArray());
+                if (macBytes.Count != 6)
+                    return XhrResult.CreateError("Invalid Mac-Address Format");
+
+                var bytes = new List<byte>();
+
+                // 先頭6バイトをFFに
+                for (var i = 0; i < 6; i++)
+                    bytes.Add((byte)255);
+
+                // 以降、MACアドレスを16回繰り返す。
+                for (var i = 0; i < 16; i++)
+                {
+                    foreach (var b in macBytes)
+                        bytes.Add(b);
+                }
+
+                // UDP7番ポート
+                await Xb.Net.Udp.SendOnceAsync(bytes.ToArray(), IPAddress.Broadcast, 7);
+
+                // UDP9番ポート
+                await Xb.Net.Udp.SendOnceAsync(bytes.ToArray(), IPAddress.Broadcast, 9);
 
                 return XhrResult.CreateSucceeded(true);
             }
