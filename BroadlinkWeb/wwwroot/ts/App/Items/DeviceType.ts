@@ -6,7 +6,7 @@ namespace App.Items {
      * Broadlinkデバイス種
      * SharpBroadlink.Devices.DeviceType を、そのまま持ってくる。
      */
-    export const enum BrDeviceType {
+    export const enum DeviceType {
         Unknown = 0,
         Sp1 = 1,
         Sp2 = 2,

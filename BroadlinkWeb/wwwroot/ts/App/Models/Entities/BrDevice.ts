@@ -13,6 +13,6 @@ namespace App.Models.Entities {
         public DeviceTypeDetailNumber: number;
         public IsActive: boolean;
         public DeviceTypeDetal: string;
-        public DeviceType: App.Items.BrDeviceType;
+        public DeviceType: App.Items.DeviceType;
     }
 }

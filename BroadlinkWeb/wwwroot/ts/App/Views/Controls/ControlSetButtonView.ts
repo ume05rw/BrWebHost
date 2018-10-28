@@ -5,6 +5,7 @@
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../../Items/Color.ts" />
 /// <reference path="../../Items/OperationType.ts" />
+/// <reference path="../../Items/DeviceType.ts" />
 /// <reference path="LabeledButtonView.ts" />
 /// <reference path="../../Models/Entities/ControlSet.ts" />
 /// <reference path="../../Models/Stores/BrDeviceStore.ts" />
@@ -17,6 +18,7 @@ namespace App.Views.Controls {
     import ControlSet = App.Models.Entities.ControlSet;
     import Stores = App.Models.Stores;
     import OperationType = App.Items.OperationType;
+    import DeviceType = App.Items.DeviceType;
 
     export class ControlSetButtonView extends LabeledButtonView {
 
@@ -88,21 +90,21 @@ namespace App.Views.Controls {
             const delay = 10;
 
             switch (pairedDev.DeviceType) {
-                case App.Items.BrDeviceType.A1:
+                case DeviceType.A1:
                     // コマンドは一つだけ - 現在の値を取得
                     _.delay(() => {
                         Stores.A1s.Get(this.ControlSet);
                     }, delay);
                     break;
 
-                case App.Items.BrDeviceType.Sp2:
+                case DeviceType.Sp2:
                     // コマンドはControlごとに。
                     _.delay(() => {
                         Stores.Sp2s.Get(this.ControlSet);
                     }, delay);
                     break;
 
-                case App.Items.BrDeviceType.Rm2Pro:
+                case DeviceType.Rm2Pro:
                     // コマンドは一つだけ - 現在の値を取得
                     _.delay(() => {
                         Stores.Rm2Pros.GetTemperature(this.ControlSet);
@@ -111,13 +113,13 @@ namespace App.Views.Controls {
 
 
                 // 以降、未対応。
-                case App.Items.BrDeviceType.Rm:
-                case App.Items.BrDeviceType.Dooya:
-                case App.Items.BrDeviceType.Hysen:
-                case App.Items.BrDeviceType.Mp1:
-                case App.Items.BrDeviceType.S1c:
-                case App.Items.BrDeviceType.Sp1:
-                case App.Items.BrDeviceType.Unknown:
+                case DeviceType.Rm:
+                case DeviceType.Dooya:
+                case DeviceType.Hysen:
+                case DeviceType.Mp1:
+                case DeviceType.S1c:
+                case DeviceType.Sp1:
+                case DeviceType.Unknown:
                 default:
                     break;
             }

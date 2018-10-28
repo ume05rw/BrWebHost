@@ -11,6 +11,7 @@
 /// <reference path="../Models/Entities/BrDevice.ts" />
 /// <reference path="../Models/Stores/BrDeviceStore.ts" />
 /// <reference path="../Items/OperationType.ts" />
+/// <reference path="../Items/DeviceType.ts" />
 
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
@@ -24,6 +25,7 @@ namespace App.Controllers {
     import Stores = App.Models.Stores;
     import Entities = App.Models.Entities;
     import OperationType = App.Items.OperationType;
+    import DeviceType = App.Items.DeviceType;
 
     export class ControlHeaderPropertyController extends Fw.Controllers.ControllerBase {
 
@@ -129,10 +131,10 @@ namespace App.Controllers {
         private RefreshBrDevices(): void {
             this._page.SboRm.ClearItems();
             _.each(Stores.BrDevices.List, (dev: Entities.BrDevice) => {
-                if (dev.DeviceType === App.Items.BrDeviceType.Rm
-                    || dev.DeviceType === App.Items.BrDeviceType.Rm2Pro
+                if (dev.DeviceType === DeviceType.Rm
+                    || dev.DeviceType === DeviceType.Rm2Pro
                 ) {
-                    const devName = (dev.DeviceType === App.Items.BrDeviceType.Rm)
+                    const devName = (dev.DeviceType === DeviceType.Rm)
                         ? 'Rm'
                         : 'Rm2Pro';
                     const name = `${devName} [${dev.IpAddressString}]`;

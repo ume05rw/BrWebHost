@@ -13,6 +13,7 @@
 /// <reference path="../Models/Entities/ControlSet.ts" />
 /// <reference path="../Models/Stores/RmStore.ts" />
 /// <reference path="../Items/OperationType.ts" />
+/// <reference path="../Items/DeviceType.ts" />
 
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
@@ -29,6 +30,7 @@ namespace App.Controllers {
     import Stores = App.Models.Stores;
     import Popup = App.Views.Popup;
     import OperationType = App.Items.OperationType;
+    import DeviceType = App.Items.DeviceType;
 
     export class ControlSetController extends Fw.Controllers.ControllerBase {
 
@@ -252,7 +254,7 @@ namespace App.Controllers {
                 ) {
                     const brDev = Stores.BrDevices.Get(this._controlSet.BrDeviceId);
                     switch (brDev.DeviceType) {
-                        case App.Items.BrDeviceType.A1:
+                        case DeviceType.A1:
                             // センサ値をボタンに表示する。
                             btn.HoverEnable = false;
                             switch (control.Code) {
@@ -276,7 +278,7 @@ namespace App.Controllers {
                             }
                             break;
 
-                        case App.Items.BrDeviceType.Sp2:
+                        case DeviceType.Sp2:
                             // 電源/電灯の状態を表示する。
                             btn.HoverEnable = false;
                             if (control.Value === 'true') {
@@ -286,12 +288,12 @@ namespace App.Controllers {
                             }
                             break;
 
-                        case App.Items.BrDeviceType.Rm2Pro:
+                        case DeviceType.Rm2Pro:
                             // 温度値をボタンに表示する。
                             btn.HoverEnable = false;
                             break;
 
-                        case App.Items.BrDeviceType.Sp1:
+                        case DeviceType.Sp1:
                             // 電源の状態を表示する。
                             btn.HoverEnable = false;
                             if (control.Value === 'true') {
@@ -302,12 +304,12 @@ namespace App.Controllers {
                             break;
 
                         // 以降、未対応。
-                        case App.Items.BrDeviceType.Rm:
-                        case App.Items.BrDeviceType.Dooya:
-                        case App.Items.BrDeviceType.Hysen:
-                        case App.Items.BrDeviceType.Mp1:
-                        case App.Items.BrDeviceType.S1c:
-                        case App.Items.BrDeviceType.Unknown:
+                        case DeviceType.Rm:
+                        case DeviceType.Dooya:
+                        case DeviceType.Hysen:
+                        case DeviceType.Mp1:
+                        case DeviceType.S1c:
+                        case DeviceType.Unknown:
                         default:
                             break;
                     }

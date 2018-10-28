@@ -7,6 +7,7 @@
 /// <reference path="../Entities/ControlSet.ts" />
 /// <reference path="../Entities/Control.ts" />
 /// <reference path="../../Items/OperationType.ts" />
+/// <reference path="../../Items/DeviceType.ts" />
 
 namespace App.Models.Stores {
     import Dump = Fw.Util.Dump;
@@ -15,6 +16,7 @@ namespace App.Models.Stores {
     import Control = App.Models.Entities.Control;
     import Xhr = Fw.Util.Xhr;
     import OperationType = App.Items.OperationType;
+    import DeviceType = App.Items.DeviceType;
 
     export class BrDeviceStore extends Fw.Models.StoreBase<BrDevice> {
 
@@ -86,19 +88,19 @@ namespace App.Models.Stores {
                 const pairedDev = this.Get(controlSet.BrDeviceId);
 
                 switch (pairedDev.DeviceType) {
-                    case App.Items.BrDeviceType.A1:
+                    case DeviceType.A1:
                         // コマンドは一つだけ - 現在の値を取得
                         const res1 = await Stores.A1s.Get(controlSet);
                         result = (res1 !== null);
                         break;
 
-                    case App.Items.BrDeviceType.Sp2:
+                    case DeviceType.Sp2:
                         // コマンドはControlごとに。
                         const res2 = await Stores.Sp2s.Set(controlSet, control);
                         result = (res2 !== null);
                         break;
 
-                    case App.Items.BrDeviceType.Rm2Pro:
+                    case DeviceType.Rm2Pro:
                         // コマンドは一つだけ - 現在の値を取得
                         const res3 = await Stores.Rm2Pros.GetTemperature(controlSet);
                         result = (res3 !== null);
@@ -106,13 +108,13 @@ namespace App.Models.Stores {
 
 
                     // 以降、未対応。
-                    case App.Items.BrDeviceType.Rm:
-                    case App.Items.BrDeviceType.Dooya:
-                    case App.Items.BrDeviceType.Hysen:
-                    case App.Items.BrDeviceType.Mp1:
-                    case App.Items.BrDeviceType.S1c:
-                    case App.Items.BrDeviceType.Sp1:
-                    case App.Items.BrDeviceType.Unknown:
+                    case DeviceType.Rm:
+                    case DeviceType.Dooya:
+                    case DeviceType.Hysen:
+                    case DeviceType.Mp1:
+                    case DeviceType.S1c:
+                    case DeviceType.Sp1:
+                    case DeviceType.Unknown:
                     default:
                         result = false;
                         break;
