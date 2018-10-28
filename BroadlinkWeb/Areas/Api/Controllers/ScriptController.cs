@@ -23,6 +23,45 @@ namespace BroadlinkWeb.Areas.Api.Controllers
             this._dbc = dbc;
         }
 
+        // GET: /api/Script/
+        [HttpGet()]
+        public async Task<XhrResult> GetList()
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                    return XhrResult.CreateError(ModelState);
+
+                var csets = await this._dbc.ControlSets
+                    .Include(c => c.Controls)
+                    .Where(e => e.OperationType == OperationType.Script)
+                    .ToArrayAsync();
+
+                var result = new List<Script>();
+
+                foreach (var cset in csets)
+                {
+                    foreach (var control in cset.Controls)
+                    {
+                        var detailName = string.IsNullOrEmpty(control.Name)
+                            ? " - " + control.Name
+                            : "";
+                        result.Add(new Script()
+                        {
+                            Id = control.Id,
+                            Name = $"{cset.Name}{detailName}"
+                        });
+                    }
+                }
+
+                return XhrResult.CreateSucceeded(result.ToArray());
+            }
+            catch (Exception ex)
+            {
+                return XhrResult.CreateError(ex);
+            }
+        }
+
         // POST: /api/Script/5
         [HttpPost("{controlId?}")]
         public async Task<XhrResult> Exec([FromRoute] int? controlId)

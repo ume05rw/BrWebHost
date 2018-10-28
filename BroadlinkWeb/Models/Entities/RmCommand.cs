@@ -9,7 +9,6 @@ namespace BroadlinkWeb.Models.Entities
     [NotMapped]
     public class RmCommand
     {
-        [NotMapped]
         public string Code { get; set; }
     }
 }

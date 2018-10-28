@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 namespace BroadlinkWeb.Models.Entities
 {
     [NotMapped]
-    public class Sp2Status
+    public class Script
     {
-        public bool Power { get; set; }
+        public int Id { get; set; }
 
-        public bool NightLight { get; set; }
+        public string Name { get; set; }
     }
 }
