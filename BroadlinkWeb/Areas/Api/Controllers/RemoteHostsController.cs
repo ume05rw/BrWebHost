@@ -50,10 +50,20 @@ namespace BroadlinkWeb.Areas.Api.Controllers
                     client.DefaultRequestHeaders.Add("User-Agent", ".NET Foundation Repository Reporter");
 
                     // POSTのとき
-                    //var response = client.PostAsync(url, content);
+                    //var content = new StringContent("");
+                    //var response = await client.PostAsync(url, content);
 
                     // GETのとき
-                    var response = await client.GetAsync(url);
+                    HttpResponseMessage response;
+                    try
+                    {
+                        response = await client.GetAsync(url);
+                    }
+                    catch (Exception ex)
+                    {
+                        return XhrResult.CreateError("Remote Host No-Response");
+                    }
+                    
                     var json = await response.Content.ReadAsStringAsync();
                     var remoteResult = JsonConvert.DeserializeObject<XhrResult.Items>(json);
                     if (remoteResult.Succeeded)
@@ -109,10 +119,15 @@ namespace BroadlinkWeb.Areas.Api.Controllers
 
                 // POSTのとき
                 var content = new StringContent("");
-                var response = await client.PostAsync(url, content);
-
-                // GETのとき
-                //var response = await client.GetAsync(url);
+                HttpResponseMessage response;
+                try
+                {
+                    response = await client.PostAsync(url, content);
+                }
+                catch (Exception ex)
+                {
+                    return XhrResult.CreateError("Remote Host No-Response");
+                }
 
                 var json = await response.Content.ReadAsStringAsync();
                 var remoteResult = JsonConvert.DeserializeObject<XhrResult.Items>(json);
