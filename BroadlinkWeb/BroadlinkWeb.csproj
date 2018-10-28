@@ -141,6 +141,7 @@
     <PackageReference Include="MySql.Data.EntityFrameworkCore.Design" Version="8.0.13" />
     <PackageReference Include="SharpBroadlink" Version="1.0.1.6" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
+    <PackageReference Include="Xb.App.Process" Version="1.0.1.2" />
   </ItemGroup>
 
   <ItemGroup>
