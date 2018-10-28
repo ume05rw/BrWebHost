@@ -38,6 +38,17 @@ namespace App.Models.Stores {
         public async Exec(controlSet: ControlSet, control: Control): Promise<boolean> {
             this.Log('Exec');
 
+            // 渡し値がヘン
+            if (
+                !controlSet
+                || !control
+                || !control.Code
+                || control.Code === ''
+                || controlSet.OperationType !== OperationType.Script
+            ) {
+                return false;
+            }
+
             const params = new Xhr.Params(
                 `Scripts/${control.Id}`,
                 Xhr.MethodType.Post

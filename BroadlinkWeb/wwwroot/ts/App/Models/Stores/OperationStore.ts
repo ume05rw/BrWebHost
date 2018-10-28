@@ -41,7 +41,6 @@ namespace App.Models.Stores {
             // 渡し値がヘン
             if (
                 !controlSet
-                || !controlSet.BrDeviceId
                 || !control
                 || !control.Code
                 || control.Code === ''

@@ -213,7 +213,7 @@ namespace App.Controllers {
 
                     const controlOn: Entities.Control = _.find(cset.Controls as any, (c) => {
                         const ct = c as Entities.Control;
-                        return ct.IsAssignToggleOn;;
+                        return ct.IsAssignToggleOn;
                     });
                     const controlOff: Entities.Control = _.find(cset.Controls as any, (c) => {
                         const ct = c as Entities.Control;

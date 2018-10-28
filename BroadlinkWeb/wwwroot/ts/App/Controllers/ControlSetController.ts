@@ -440,7 +440,11 @@ namespace App.Controllers {
             this.Log('ExecCode');
             const id = this._controlSet.BrDeviceId;
 
-            if (!this._controlSet.BrDeviceId) {
+            if (
+                (this._controlSet.OperationType === OperationType.RemoteControl
+                 || this._controlSet.OperationType === OperationType.BroadlinkDevice)
+                && !this._controlSet.BrDeviceId
+            ) {
                 const guide = (this.IsOnEditMode)
                     ? 'Click Header.'
                     : 'Go Edit.';
@@ -451,12 +455,39 @@ namespace App.Controllers {
             }
 
             if (!control.Code || control.Code === '') {
-                const guide = (this.IsOnEditMode)
-                    ? 'Click Learn-Button.'
-                    : 'Go Edit.';
+                let message = '';
+
+                switch (this._controlSet.OperationType) {
+                    case OperationType.RemoteControl:
+                        const guide = (this.IsOnEditMode)
+                            ? 'Click Learn-Button.'
+                            : 'Go Edit.';
+                        message = 'Learn your Remote Control Button.<br/>' + guide;
+                        break;
+                    case OperationType.BroadlinkDevice:
+                        alert('ここにはこないはずやで！！');
+                        message = 'Unexpected Operation...?';
+                        break;
+                    case OperationType.WakeOnLan:
+                        message = 'Set MAC-Address,<br/>Go Edit.';
+                        break;
+                    case OperationType.Script:
+                        message = 'Write Script,<br/>Go Edit.';
+                        break;
+                    case OperationType.RemoteHostScript:
+                        message = 'Select Remote Script,<br/>Go Edit.';
+                        break;
+                    case OperationType.Scene:
+                    default:
+                        alert('ここにはこないはずやで！！');
+                        message = 'Unexpected Operation...?';
+                        break;
+                }
+
                 Popup.Alert.Open({
-                    Message: 'Learn your Remote Control Button.<br/>' + guide,
+                    Message: message,
                 });
+
                 return null;
             }
 

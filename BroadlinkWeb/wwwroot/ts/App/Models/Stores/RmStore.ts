@@ -7,6 +7,7 @@
 /// <reference path="../Entities/ControlSet.ts" />
 /// <reference path="../Entities/Control.ts" />
 /// <reference path="../Entities/RmCommand.ts" />
+/// <reference path="../../Items/OperationType.ts" />
 
 namespace App.Models.Stores {
     import Dump = Fw.Util.Dump;
@@ -14,6 +15,7 @@ namespace App.Models.Stores {
     import ControlSet = App.Models.Entities.ControlSet;
     import Control = App.Models.Entities.Control;
     import RmCommand = App.Models.Entities.RmCommand;
+    import OperationType = App.Items.OperationType;
 
     import Xhr = Fw.Util.Xhr;
 
@@ -79,6 +81,18 @@ namespace App.Models.Stores {
 
         public async Exec(controlSet: ControlSet, control: Control): Promise<boolean> {
             this.Log('Exec');
+
+            // 渡し値がヘン
+            if (
+                !controlSet
+                || !controlSet.BrDeviceId
+                || !control
+                || !control.Code
+                || control.Code === ''
+                || controlSet.OperationType !== OperationType.RemoteControl
+            ) {
+                return false;
+            }
 
             const params = new Xhr.Params(
                 `Rms/Exec/${controlSet.BrDeviceId}`,
