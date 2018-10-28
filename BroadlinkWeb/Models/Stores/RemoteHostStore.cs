@@ -48,7 +48,6 @@ namespace BroadlinkWeb.Models.Stores
                     if (call != RemoteHostStore.CallString)
                         return;
 
-                    
                     var addr = rdata.RemoteEndPoint.Address.GetAddressBytes();
 
                     // IPv4射影アドレスのとき、v4アドレスに変換。
@@ -70,7 +69,7 @@ namespace BroadlinkWeb.Models.Stores
 
                     // 応答を返す。
                     var response = Encoding.UTF8.GetBytes(RemoteHostStore.ResponseString);
-                    RemoteHostStore.Socket.SendTo(response, rdata.RemoteEndPoint);
+                    Xb.Net.Udp.SendOnce(response, rdata.RemoteEndPoint);
                 };
 
                 RemoteHostStore.Socket = socket;
@@ -130,13 +129,13 @@ namespace BroadlinkWeb.Models.Stores
 
 
 
-        public async Task<IEnumerable<RemoteHost>> Refresh()
+        public Task<IEnumerable<RemoteHost>> Refresh()
         {
             using (var cs = new Xb.Net.Udp())
             {
                 var packet = Encoding.UTF8.GetBytes(RemoteHostStore.CallString);
 
-                cs.OnRecieved += async (object sender, Xb.Net.RemoteData rdata) =>
+                cs.OnRecieved += (object sender, Xb.Net.RemoteData rdata) =>
                 {
                     var response = Encoding.UTF8.GetString(rdata.Bytes);
                     if (response != RemoteHostStore.ResponseString)
@@ -159,8 +158,8 @@ namespace BroadlinkWeb.Models.Stores
                     }
                     var ipStr = (new IPAddress(addrBytes)).ToString();
 
-                    var exists = await this._dbc.RemoteHosts
-                        .FirstOrDefaultAsync(r => r.IpAddressString == ipStr);
+                    var exists = this._dbc.RemoteHosts
+                        .FirstOrDefault(r => r.IpAddressString == ipStr);
 
                     // DB上に既に登録があるとき、何もしない。
                     if (exists != null)
@@ -174,23 +173,28 @@ namespace BroadlinkWeb.Models.Stores
                     };
 
                     this._dbc.Add(entity);
-                    await this._dbc.SaveChangesAsync();
+                    this._dbc.SaveChanges();
                 };
 
-                await cs.SendToAsync(packet, IPAddress.Broadcast, RemoteHostStore.AckUdpPort);
+                cs.SendTo(packet, IPAddress.Broadcast, RemoteHostStore.AckUdpPort);
 
                 var startTime = DateTime.Now;
                 var timeout = 3;
-                await Task.Run(async () =>
+                Task.Run(() =>
                 {
                     while (true)
                     {
                         if ((DateTime.Now - startTime).TotalSeconds > timeout)
                             break;
 
-                        await Task.Delay(500).ConfigureAwait(false);
+                        Task.Delay(500)
+                            .ConfigureAwait(false)
+                            .GetAwaiter()
+                            .GetResult();
                     }
-                }).ConfigureAwait(false);
+                }).ConfigureAwait(false)
+                    .GetAwaiter()
+                    .GetResult();
             }
 
             return null;
