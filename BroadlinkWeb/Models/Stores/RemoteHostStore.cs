@@ -194,10 +194,19 @@ namespace BroadlinkWeb.Models.Stores
                 if (exists != null)
                     return;
 
+                var hostName = "Remote Broadlink-Web";
+                try
+                {
+                    hostName = System.Environment.MachineName;
+                }
+                catch (Exception ex)
+                {
+                }
+
                 // DB上に無いとき、新規レコードを追加。
                 var entity = new RemoteHost()
                 {
-                    Name = "Remote Broadlink-Web",
+                    Name = hostName,
                     IpAddressString = ipStr
                 };
 

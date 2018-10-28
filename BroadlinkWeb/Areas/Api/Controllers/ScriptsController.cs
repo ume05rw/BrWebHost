@@ -49,7 +49,8 @@ namespace BroadlinkWeb.Areas.Api.Controllers
                         result.Add(new Script()
                         {
                             Id = control.Id,
-                            Name = $"{cset.Name}{detailName}"
+                            Name = $"{cset.Name}{detailName}",
+                            Host = ""
                         });
                     }
                 }

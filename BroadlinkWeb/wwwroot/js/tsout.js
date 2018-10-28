@@ -8996,6 +8996,30 @@ var App;
     (function (Models) {
         var Entities;
         (function (Entities) {
+            var Script = /** @class */ (function (_super) {
+                __extends(Script, _super);
+                function Script() {
+                    var _this = _super !== null && _super.apply(this, arguments) || this;
+                    _this.Name = '';
+                    _this.Host = '';
+                    return _this;
+                }
+                return Script;
+            }(Fw.Models.EntityBase));
+            Entities.Script = Script;
+        })(Entities = Models.Entities || (Models.Entities = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/EntityBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Entities;
+        (function (Entities) {
             var Sp2Status = /** @class */ (function (_super) {
                 __extends(Sp2Status, _super);
                 function Sp2Status() {
