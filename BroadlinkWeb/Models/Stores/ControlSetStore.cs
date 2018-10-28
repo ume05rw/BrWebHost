@@ -29,7 +29,7 @@ namespace BroadlinkWeb.Models.Stores
 
             // Broadlinkデバイス自体を示すControlSetを取得
             var brCss = await this._dbc.ControlSets
-                .Where(cs => !cs.IsTemplate && cs.ControlType == ControlType.BroadlinkDevice)
+                .Where(cs => !cs.IsTemplate && cs.OperationType == OperationType.BroadlinkDevice)
                 .ToArrayAsync();
 
             var changed = false;
@@ -69,7 +69,7 @@ namespace BroadlinkWeb.Models.Stores
                     else
                         cset = await this.EnsureControlSetAny();
 
-                    cset.ControlType = ControlType.BroadlinkDevice;
+                    cset.OperationType = OperationType.BroadlinkDevice;
                     cset.BrDeviceId = brd.Id;
 
                     // EntityをDbcに追加
@@ -95,7 +95,7 @@ namespace BroadlinkWeb.Models.Stores
             cset.Controls[0].Name = "Temp.";
 
             cset.Name = "Rm2Pro";
-            cset.ControlType = ControlType.BroadlinkDevice;
+            cset.OperationType = OperationType.BroadlinkDevice;
             cset.IsMainPanelReady = false;
             cset.IsTogglable = false;
 
@@ -108,7 +108,7 @@ namespace BroadlinkWeb.Models.Stores
             var cset = await this.GetNewByTemplate(Template.NoControl);
 
             cset.Name = "Rm";
-            cset.ControlType = ControlType.BroadlinkDevice;
+            cset.OperationType = OperationType.BroadlinkDevice;
             cset.IsMainPanelReady = false;
             cset.IsTogglable = false;
 
@@ -118,7 +118,7 @@ namespace BroadlinkWeb.Models.Stores
         private async Task<ControlSet> EnsureControlSetA1()
         {
             var cset = await this.GetNewByTemplate(Template.A1Sensor);
-            cset.ControlType = ControlType.BroadlinkDevice;
+            cset.OperationType = OperationType.BroadlinkDevice;
             cset.IsMainPanelReady = true;
             cset.IsTogglable = false;
 
@@ -129,7 +129,7 @@ namespace BroadlinkWeb.Models.Stores
         {
             var cset = await this.GetNewByTemplate(Template.Sp1Switch);
 
-            cset.ControlType = ControlType.BroadlinkDevice;
+            cset.OperationType = OperationType.BroadlinkDevice;
             cset.IsMainPanelReady = false;
             cset.IsTogglable = true;
 
@@ -139,7 +139,7 @@ namespace BroadlinkWeb.Models.Stores
         private async Task<ControlSet> EnsureControlSetSp2()
         {
             var cset = await this.GetNewByTemplate(Template.Sp2Switch);
-            cset.ControlType = ControlType.BroadlinkDevice;
+            cset.OperationType = OperationType.BroadlinkDevice;
             cset.IsMainPanelReady = true;
             cset.IsTogglable = true;
 
@@ -151,7 +151,7 @@ namespace BroadlinkWeb.Models.Stores
             var cset = await this.GetNewByTemplate(Template.NoControl);
 
             cset.Name = "S1C";
-            cset.ControlType = ControlType.BroadlinkDevice;
+            cset.OperationType = OperationType.BroadlinkDevice;
             cset.IsMainPanelReady = false;
             cset.IsTogglable = false;
 
@@ -197,7 +197,7 @@ namespace BroadlinkWeb.Models.Stores
             var cset = await this.GetNewByTemplate(Template.NoControl);
 
             cset.Name = "";
-            cset.ControlType = ControlType.BroadlinkDevice;
+            cset.OperationType = OperationType.BroadlinkDevice;
             cset.IsMainPanelReady = false;
             cset.IsTogglable = false;
             return cset;
@@ -220,7 +220,7 @@ namespace BroadlinkWeb.Models.Stores
             cset.ToggleState = tplCset.ToggleState;
             cset.IsMainPanelReady = tplCset.IsMainPanelReady;
             cset.IsTogglable = tplCset.IsTogglable;
-            cset.ControlType = tplCset.ControlType;
+            cset.OperationType = tplCset.OperationType;
             cset.IsTemplate = false;
             cset.Controls = new List<Control>();
 

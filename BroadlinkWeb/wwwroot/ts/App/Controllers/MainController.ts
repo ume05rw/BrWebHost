@@ -12,9 +12,9 @@
 /// <reference path="../Views/Controls/ControlSetButtonView.ts" />
 /// <reference path="../Models/Stores/BrDeviceStore.ts" />
 /// <reference path="../Models/Entities/ControlSet.ts" />
-/// <reference path="../Items/Operation.ts" />
+/// <reference path="../Items/OperationTemplate.ts" />
 /// <reference path="../Items/ControlSetTemplate.ts" />
-/// <reference path="../Items/ControlType.ts" />
+/// <reference path="../Items/OperationType.ts" />
 
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
@@ -27,10 +27,10 @@ namespace App.Controllers {
     import StuckerBoxEvents = Fw.Events.StuckerBoxViewEvents;
     import Stores = App.Models.Stores;
     import Entities = App.Models.Entities;
-    import Operation = App.Items.Operation;
+    import OperationTemplate = App.Items.OperationTemplate;
     import ControlSetTemplate = App.Items.ControlSetTemplate;
     import ControlSetButtonView = App.Views.Controls.ControlSetButtonView;
-    import ControlType = App.Items.ControlType;
+    import OperationType = App.Items.OperationType;
 
     export class MainController extends Fw.Controllers.ControllerBase {
 
@@ -66,23 +66,23 @@ namespace App.Controllers {
             this._page.HeaderBar.RightButton.AddEventListener(ButtonEvents.SingleClick, async () => {
                 // ヘッダの追加ボタンクリック - 新規リモコンのテンプレート選択後に編集画面へ。
                 const ctr = this.Manager.Get('OperationSelect') as OperationSelectController;
-                const item: Operation = await ctr.Select(this);
+                const item: OperationTemplate = await ctr.Select(this);
 
                 let ctrSet: App.Models.Entities.ControlSet;
                 switch (item) {
-                    case Operation.Scene:
+                    case OperationTemplate.Scene:
                         Dump.Log('Not Implemented!!');
                         return;
-                    case Operation.Tv:
+                    case OperationTemplate.Tv:
                         ctrSet = await Stores.ControlSets.GetTemplateClone(ControlSetTemplate.Tv);
                         break;
-                    case Operation.Av:
+                    case OperationTemplate.Av:
                         ctrSet = await Stores.ControlSets.GetTemplateClone(ControlSetTemplate.Av);
                         break;
-                    case Operation.Light:
+                    case OperationTemplate.Light:
                         ctrSet = await Stores.ControlSets.GetTemplateClone(ControlSetTemplate.Light);
                         break;
-                    case Operation.Free:
+                    case OperationTemplate.Free:
                         ctrSet = new App.Models.Entities.ControlSet();
                         break;
                     default:
@@ -192,9 +192,6 @@ namespace App.Controllers {
                         : controlOff;
 
                     Stores.BrDevices.Exec(cset, targetControl);
-
-
-
                 });
 
                 cs.AddEventListener(Events.EntityEvents.Changed, (e) => {
@@ -211,7 +208,7 @@ namespace App.Controllers {
                     btn.ApplyEntity();
                 });
 
-                if (cs.ControlType === ControlType.BroadlinkDevice)
+                if (cs.OperationType === OperationType.BroadlinkDevice)
                     btn.ApplyBrDeviceStatus();
 
                 this._page.ControlSetPanel.Add(btn);

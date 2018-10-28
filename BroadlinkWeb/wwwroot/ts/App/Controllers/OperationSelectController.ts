@@ -9,7 +9,7 @@
 /// <reference path="../Views/Pages/MainPageView.ts" />
 /// <reference path="../Views/Controls/LabeledButtonView.ts" />
 /// <reference path="../../Fw/Events/ButtonViewEvents.ts" />
-/// <reference path="../Items/Operation.ts" />
+/// <reference path="../Items/OperationTemplate.ts" />
 /// <reference path="../Items/Color.ts" />
 
 namespace App.Controllers {
@@ -19,7 +19,7 @@ namespace App.Controllers {
     import Pages = App.Views.Pages;
     import LabeledButtonView = App.Views.Controls.LabeledButtonView;
     import ButtonEvents = Fw.Events.ButtonViewEvents;
-    import Operation = App.Items.Operation;
+    import OperationTemplate = App.Items.OperationTemplate;
     import Color = App.Items.Color;
 
     export class OperationSelectController extends ItemSelectControllerBase {
@@ -47,7 +47,7 @@ namespace App.Controllers {
             btn1.Button.HoverColor = Color.MainHover;
             btn1.Button.Color = Color.MainHover;
             btn1.Button.AddEventListener(ButtonEvents.SingleClick, () => {
-                this.Commit(Operation.Scene);
+                this.Commit(OperationTemplate.Scene);
             });
             this._page.SelectorPanel.Add(btn1);
 
@@ -65,7 +65,7 @@ namespace App.Controllers {
             btn2.Button.HoverColor = Color.ButtonHoverColors[4];
             btn2.Button.Color = Color.ButtonColors[4];
             btn2.Button.AddEventListener(ButtonEvents.SingleClick, () => {
-                this.Commit(Operation.Tv);
+                this.Commit(OperationTemplate.Tv);
             });
             this._page.SelectorPanel.Add(btn2);
 
@@ -77,7 +77,7 @@ namespace App.Controllers {
             btn3.Button.HoverColor = Color.ButtonHoverColors[5];
             btn3.Button.Color = Color.ButtonColors[5];
             btn3.Button.AddEventListener(ButtonEvents.SingleClick, () => {
-                this.Commit(Operation.Av);
+                this.Commit(OperationTemplate.Av);
             });
             this._page.SelectorPanel.Add(btn3);
 
@@ -89,7 +89,7 @@ namespace App.Controllers {
             btn4.Button.HoverColor = Color.ButtonHoverColors[3];
             btn4.Button.Color = Color.ButtonColors[3];
             btn4.Button.AddEventListener(ButtonEvents.SingleClick, () => {
-                this.Commit(Operation.Light);
+                this.Commit(OperationTemplate.Light);
             });
             this._page.SelectorPanel.Add(btn4);
 
@@ -101,7 +101,7 @@ namespace App.Controllers {
             btn5.Button.HoverColor = Color.ButtonHoverColors[7];
             btn5.Button.Color = Color.ButtonColors[7];
             btn5.Button.AddEventListener(ButtonEvents.SingleClick, () => {
-                this.Commit(Operation.Free);
+                this.Commit(OperationTemplate.Free);
             });
             this._page.SelectorPanel.Add(btn5);
 

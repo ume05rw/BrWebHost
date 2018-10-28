@@ -22,8 +22,8 @@
     <Content Remove="wwwroot\ts\App\Icon.ts" />
     <Content Remove="wwwroot\ts\App\Items\BrDeviceType.ts" />
     <Content Remove="wwwroot\ts\App\Items\ControlSetTemplate.ts" />
-    <Content Remove="wwwroot\ts\App\Items\ControlType.ts" />
-    <Content Remove="wwwroot\ts\App\Items\Operation.ts" />
+    <Content Remove="wwwroot\ts\App\Items\OperationTemplate.ts" />
+    <Content Remove="wwwroot\ts\App\Items\OperationType.ts" />
     <Content Remove="wwwroot\ts\App\Main.ts" />
     <Content Remove="wwwroot\ts\App\Models\Entities\A1Values.ts" />
     <Content Remove="wwwroot\ts\App\Models\Entities\BrDevice.ts" />
@@ -161,9 +161,9 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\Sub3Controller.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Events\Controls\ControlButtonViewEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Items\ControlSetTemplate.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\App\Items\ControlType.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Items\OperationType.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Items\Icon.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\App\Items\Operation.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Items\OperationTemplate.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Main.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\MainController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\Sub1Controller.ts" />

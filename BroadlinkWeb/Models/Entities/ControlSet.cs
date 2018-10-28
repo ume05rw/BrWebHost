@@ -59,7 +59,7 @@ namespace BroadlinkWeb.Models.Entities
         [Required]
         [Column(Order = 9, TypeName = "tinyint(2)")]
         [Description("Control Type")]
-        public ControlType ControlType { get; set; }
+        public OperationType OperationType { get; set; }
 
         [Required]
         [Column(Order = 10, TypeName = "tinyint(1)")]

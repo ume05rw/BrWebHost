@@ -10,7 +10,7 @@
 /// <reference path="../Views/Popup/AlertPopup.ts" />
 /// <reference path="../Models/Entities/BrDevice.ts" />
 /// <reference path="../Models/Stores/BrDeviceStore.ts" />
-/// <reference path="../Items/ControlType.ts" />
+/// <reference path="../Items/OperationType.ts" />
 
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
@@ -23,7 +23,7 @@ namespace App.Controllers {
     import Popup = App.Views.Popup;
     import Stores = App.Models.Stores;
     import Entities = App.Models.Entities;
-    import ControlType = App.Items.ControlType;
+    import OperationType = App.Items.OperationType;
 
     export class ControlHeaderPropertyController extends Fw.Controllers.ControllerBase {
 
@@ -105,7 +105,7 @@ namespace App.Controllers {
 
             this._page.TxtName.Value = this._controlSet.Name;
 
-            if (this._controlSet.ControlType === ControlType.BroadlinkDevice) {
+            if (this._controlSet.OperationType === OperationType.BroadlinkDevice) {
                 this._page.LabelColor.Hide(0);
                 this._page.BtnColor.Hide(0);
                 this._page.LabelRm.Hide(0);

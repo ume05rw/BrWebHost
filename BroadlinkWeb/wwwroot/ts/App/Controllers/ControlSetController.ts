@@ -12,7 +12,7 @@
 /// <reference path="../Events/Controls/ControlButtonViewEvents.ts" />
 /// <reference path="../Models/Entities/ControlSet.ts" />
 /// <reference path="../Models/Stores/RmStore.ts" />
-/// <reference path="../Items/ControlType.ts" />
+/// <reference path="../Items/OperationType.ts" />
 
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
@@ -28,7 +28,7 @@ namespace App.Controllers {
     import ControlButtonViewEvents = App.Events.Controls.ControlButtonViewEvents;
     import Stores = App.Models.Stores;
     import Popup = App.Views.Popup;
-    import ControlType = App.Items.ControlType;
+    import OperationType = App.Items.OperationType;
 
     export class ControlSetController extends Fw.Controllers.ControllerBase {
 
@@ -113,7 +113,7 @@ namespace App.Controllers {
             if (!this._controlSet) {
                 // ControlSetエンティティが見当たらない
                 this._page.HeaderBar.RightButton.Hide(0);
-            } else if (this._controlSet.ControlType === ControlType.BroadlinkDevice) {
+            } else if (this._controlSet.OperationType === OperationType.BroadlinkDevice) {
                 // ControlSetは、Broadlinkデバイス = 編集不能
                 this._page.HeaderBar.RightButton.Hide(0);
             } else {
@@ -194,7 +194,7 @@ namespace App.Controllers {
                     // 既存ボタンの処理。新規ボタン用に同様のロジックが、下にある。
 
                     // Broadlinkデバイスはボタン編集禁止
-                    if (this._controlSet.ControlType === ControlType.BroadlinkDevice)
+                    if (this._controlSet.OperationType === OperationType.BroadlinkDevice)
                         return;
 
                     const ctr = this.Manager.Get('ControlProperty') as ControlPropertyController;
@@ -205,7 +205,7 @@ namespace App.Controllers {
                     // クリック時にコードが空のものは、自動で学習モードにする。
                     const id = this._controlSet.BrDeviceId;
                     if ((id)
-                        && (this._controlSet.ControlType === ControlType.RemoteControl)
+                        && (this._controlSet.OperationType === OperationType.RemoteControl)
                         && (!button.Control.Code
                             || button.Control.Code === '')
                     ) {
@@ -246,7 +246,7 @@ namespace App.Controllers {
                 if (btn.ImageSrc !== control.IconUrl)
                     btn.SetImage(control.IconUrl);
 
-                if (this._controlSet.ControlType === ControlType.BroadlinkDevice
+                if (this._controlSet.OperationType === OperationType.BroadlinkDevice
                     && (control.Value)
                     && control.Value !== ''
                 ) {
@@ -338,7 +338,7 @@ namespace App.Controllers {
                 // ボタン編集指示
 
                 // リモコン操作以外はボタン編集禁止
-                if (this._controlSet.ControlType !== ControlType.RemoteControl)
+                if (this._controlSet.OperationType !== OperationType.RemoteControl)
                     return;
 
                 const ctr = this.Manager.Get('ControlProperty') as ControlPropertyController;
@@ -349,7 +349,7 @@ namespace App.Controllers {
                 // クリック時にコードが空のものは、自動で学習モードにする。
                 const id = this._controlSet.BrDeviceId;
                 if ((id)
-                    && (this._controlSet.ControlType === ControlType.RemoteControl)
+                    && (this._controlSet.OperationType === OperationType.RemoteControl)
                     && (!button.Control.Code
                         || button.Control.Code === '')
                 ) {

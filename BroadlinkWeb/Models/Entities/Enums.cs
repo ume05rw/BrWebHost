@@ -24,7 +24,7 @@ namespace BroadlinkWeb.Models.Entities
     /// <summary>
     /// 操作区分
     /// </summary>
-    public enum ControlType
+    public enum OperationType
     {
         /// <summary>
         /// IR/RF信号操作
@@ -42,13 +42,19 @@ namespace BroadlinkWeb.Models.Entities
         WakeOnLan = 3,
 
         /// <summary>
-        /// フリースクリプト操作
+        /// ローカルのスクリプト実行
         /// </summary>
         Script = 4,
 
         /// <summary>
         /// リモートBroadlinkWebホストのスクリプト
         /// </summary>
-        RemoteHost = 5
+        RemoteHost = 5,
+
+
+        /// <summary>
+        /// 操作組み合わせ
+        /// </summary>
+        Scene = 99
     }
 }

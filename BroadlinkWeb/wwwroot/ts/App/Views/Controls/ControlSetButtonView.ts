@@ -4,6 +4,7 @@
 /// <reference path="../../../Fw/Views/Property/Anchor.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../../Items/Color.ts" />
+/// <reference path="../../Items/OperationType.ts" />
 /// <reference path="LabeledButtonView.ts" />
 /// <reference path="../../Models/Entities/ControlSet.ts" />
 /// <reference path="../../Models/Stores/BrDeviceStore.ts" />
@@ -15,6 +16,7 @@ namespace App.Views.Controls {
     import Color = App.Items.Color;
     import ControlSet = App.Models.Entities.ControlSet;
     import Stores = App.Models.Stores;
+    import OperationType = App.Items.OperationType;
 
     export class ControlSetButtonView extends LabeledButtonView {
 
@@ -75,7 +77,7 @@ namespace App.Views.Controls {
         public ApplyBrDeviceStatus(): void {
             if (
                 !this.ControlSet
-                || this.ControlSet.ControlType !== App.Items.ControlType.BroadlinkDevice
+                || this.ControlSet.OperationType !== OperationType.BroadlinkDevice
             ) {
                 return;
             }

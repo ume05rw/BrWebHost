@@ -18,7 +18,6 @@ namespace App.Controllers {
     import Pages = App.Views.Pages;
     import LabeledButtonView = App.Views.Controls.LabeledButtonView;
     import ButtonEvents = Fw.Events.ButtonViewEvents;
-    import Operation = App.Items.Operation;
     import ItemSelectButtonView = App.Views.Controls.ItemSelectButtonView;
 
     export class ColorSelectController extends ItemSelectControllerBase {

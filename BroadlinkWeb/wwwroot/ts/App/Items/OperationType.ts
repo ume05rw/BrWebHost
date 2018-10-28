@@ -5,7 +5,7 @@ namespace App.Items {
     /**
      * 操作区分
      */
-    export const enum ControlType {
+    export const enum OperationType {
         /**
          * IR/RF信号操作
          */
@@ -22,13 +22,18 @@ namespace App.Items {
         WakeOnLan = 3,
 
         /**
-         * フリースクリプト操作
+         * ローカルのスクリプト実行
          */
         Script = 4,
 
         /**
          * リモートBroadlinkWebホストのスクリプト
          */
-        RemoteHost = 5
+        RemoteHostScript = 5,
+
+        /**
+         * 操作組み合わせ
+         */
+        Scene = 99
     }
 }

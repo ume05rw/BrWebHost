@@ -56,7 +56,7 @@ namespace BroadlinkWeb.Models
                     ToggleState = false,
                     IsMainPanelReady = true,
                     IsTogglable = true,
-                    ControlType = ControlType.RemoteControl,
+                    OperationType = OperationType.RemoteControl,
                     IsTemplate = true
                 },
                 new ControlSet
@@ -70,7 +70,7 @@ namespace BroadlinkWeb.Models
                     ToggleState = false,
                     IsMainPanelReady = true,
                     IsTogglable = true,
-                    ControlType = ControlType.RemoteControl,
+                    OperationType = OperationType.RemoteControl,
                     IsTemplate = true
                 },
                 new ControlSet
@@ -84,7 +84,7 @@ namespace BroadlinkWeb.Models
                     ToggleState = false,
                     IsMainPanelReady = true,
                     IsTogglable = true,
-                    ControlType = ControlType.RemoteControl,
+                    OperationType = OperationType.RemoteControl,
                     IsTemplate = true
                 },
                 new ControlSet
@@ -97,7 +97,7 @@ namespace BroadlinkWeb.Models
                     ToggleState = false,
                     IsMainPanelReady = true,
                     IsTogglable = true,
-                    ControlType = ControlType.RemoteControl,
+                    OperationType = OperationType.RemoteControl,
                     Color = "#6545C6",
                     IsTemplate = true
                 },
@@ -111,7 +111,7 @@ namespace BroadlinkWeb.Models
                     ToggleState = false,
                     IsMainPanelReady = true,
                     IsTogglable = false,
-                    ControlType = ControlType.BroadlinkDevice,
+                    OperationType = OperationType.BroadlinkDevice,
                     Color = "#84bde8",
                     IsTemplate = true
                 },
@@ -125,7 +125,7 @@ namespace BroadlinkWeb.Models
                     ToggleState = false,
                     IsMainPanelReady = true,
                     IsTogglable = true,
-                    ControlType = ControlType.BroadlinkDevice,
+                    OperationType = OperationType.BroadlinkDevice,
                     Color = "#84bde8",
                     IsTemplate = true
                 },
@@ -139,7 +139,7 @@ namespace BroadlinkWeb.Models
                     ToggleState = false,
                     IsMainPanelReady = true,
                     IsTogglable = true,
-                    ControlType = ControlType.BroadlinkDevice,
+                    OperationType = OperationType.BroadlinkDevice,
                     Color = "#84bde8",
                     IsTemplate = true
                 },
@@ -153,7 +153,7 @@ namespace BroadlinkWeb.Models
                     ToggleState = false,
                     IsMainPanelReady = true,
                     IsTogglable = true,
-                    ControlType = ControlType.BroadlinkDevice,
+                    OperationType = OperationType.BroadlinkDevice,
                     Color = "#84bde8",
                     IsTemplate = true
                 },
@@ -167,7 +167,7 @@ namespace BroadlinkWeb.Models
                     ToggleState = false,
                     IsMainPanelReady = true,
                     IsTogglable = true,
-                    ControlType = ControlType.BroadlinkDevice,
+                    OperationType = OperationType.BroadlinkDevice,
                     Color = "#84bde8",
                     IsTemplate = true
                 }
