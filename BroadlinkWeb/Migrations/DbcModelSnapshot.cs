@@ -203,6 +203,27 @@ namespace BroadlinkWeb.Migrations
                     );
                 });
 
+            modelBuilder.Entity("BroadlinkWeb.Models.Entities.RemoteHost", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int(11)");
+
+                    b.Property<string>("IpAddressString")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("varchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("remotehost");
+
+                    b.HasAnnotation("MySQL:Charset", "utf8");
+
+                    b.HasAnnotation("MySQL:Collation", "utf8_general_ci ");
+                });
+
             modelBuilder.Entity("BroadlinkWeb.Models.Entities.Control", b =>
                 {
                     b.HasOne("BroadlinkWeb.Models.Entities.ControlSet", "ControlSet")

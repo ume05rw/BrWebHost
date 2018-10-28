@@ -18,6 +18,8 @@ namespace BroadlinkWeb.Models
 
         public DbSet<Control> Controls { get; set; }
 
+        public DbSet<RemoteHost> RemoteHosts { get; set; }
+
         /// <summary>
         /// Constructor
         /// </summary>

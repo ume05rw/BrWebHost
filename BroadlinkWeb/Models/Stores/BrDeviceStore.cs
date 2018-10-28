@@ -15,9 +15,42 @@ namespace BroadlinkWeb.Models.Stores
     {
         private static List<SharpBroadlink.Devices.IDevice> SbDevices
             = new List<SharpBroadlink.Devices.IDevice>();
+        private static IServiceProvider Provider = null;
+        private static Task LoopScan = null;
 
-        public static IServiceProvider Provider = null;
-        public static Task LoopScan = null;
+        public static void SetScanner(IServiceProvider provider)
+        {
+            BrDeviceStore.Provider = provider;
+
+            // なんか違和感がある実装。
+            // 代替案はあるか？
+            BrDeviceStore.LoopScan = Task.Run(async () =>
+            {
+                // 5分に1回、LAN上のBroadlinkデバイスをスキャンする。
+                while (true)
+                {
+                    try
+                    {
+                        using (var serviceScope = BrDeviceStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+                        {
+                            await Task.Delay(1000 * 60 * 5);
+
+                            Xb.Util.Out("Regularly Broadlink Device Scan");
+                            var store = serviceScope.ServiceProvider.GetService<BrDeviceStore>();
+                            store.Refresh();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Xb.Util.Out(ex);
+                        Xb.Util.Out("FUUUUUUUUUUUUUUUUUUUUUUCK!!!");
+                        Xb.Util.Out("Regularly Scan FAIL!!!!!!!!!!!!");
+                        //throw;
+                    }
+                }
+            });
+        }
+
 
         private Dbc _dbc;
         private ControlSetStore _controlSetStore;

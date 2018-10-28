@@ -70,7 +70,8 @@ namespace BroadlinkWeb
             // DI対象にStoreを追加。
             services
                 .AddDbStore<BrDeviceStore>()
-                .AddDbStore<ControlSetStore>();
+                .AddDbStore<ControlSetStore>()
+                .AddDbStore<RemoteHostStore>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -108,34 +109,10 @@ namespace BroadlinkWeb
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 
-            // 恐らくこれは危険な実装な気がする。
+            // なんか違和感がある実装。
             // 代替案はあるか？
-            BrDeviceStore.Provider = app.ApplicationServices;
-            BrDeviceStore.LoopScan = Task.Run(async () =>
-            {
-                // 5分に1回、LAN上のBroadlinkデバイスをスキャンする。
-                while (true)
-                {
-                    try
-                    {
-                        using (var serviceScope = BrDeviceStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
-                        {
-                            await Task.Delay(1000 * 60 * 5);
-
-                            Xb.Util.Out("Regularly Broadlink Device Scan");
-                            var store = serviceScope.ServiceProvider.GetService<BrDeviceStore>();
-                            store.Refresh();
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Xb.Util.Out(ex);
-                        Xb.Util.Out("FUUUUUUUUUUUUUUUUUUUUUUCK!!!");
-                        Xb.Util.Out("Regularly Scan FAIL!!!!!!!!!!!!");
-                        //throw;
-                    }
-                }
-            });
+            BrDeviceStore.SetScanner(app.ApplicationServices);
+            RemoteHostStore.SetScannerAndReciever(app.ApplicationServices);
         }
     }
 }
