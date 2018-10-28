@@ -14,7 +14,7 @@ namespace BroadlinkWeb.Models.Stores
 {
     public class RemoteHostStore
     {
-        private const int AckUdpPort = 5005;
+        private const int AckUdpPort = 52891;
         private const string CallString = "hello?";
         private const string ResponseString = "here!";
 
