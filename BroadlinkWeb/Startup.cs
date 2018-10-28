@@ -77,13 +77,6 @@ namespace BroadlinkWeb
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            // 起動時に、同期的に1回、LAN上のBroadlinkデバイスをスキャンする。
-            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
-            {
-                var store = serviceScope.ServiceProvider.GetService<BrDeviceStore>();
-                store.Refresh();
-            }
-
             if (env.IsDevelopment())
             {
                 app.UseBrowserLink();

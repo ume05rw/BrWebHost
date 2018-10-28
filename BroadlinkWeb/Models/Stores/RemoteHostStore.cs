@@ -93,19 +93,18 @@ namespace BroadlinkWeb.Models.Stores
             // 代替案はあるか？
             RemoteHostStore.LoopScan = Task.Run(async () =>
             {
-                // 5分に1回、LAN上のBroadlinkデバイスをスキャンする。
+                // 5分に1回、LAN上のBroadlink-Webホストをスキャンする。
                 while (true)
                 {
                     try
                     {
                         using (var serviceScope = RemoteHostStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
                         {
-                            await Task.Delay(1000 * 15); // 60 * 5);
-
                             Xb.Util.Out("Regularly Remote Host Scan");
                             var store = serviceScope.ServiceProvider.GetService<RemoteHostStore>();
-
                             store.Refresh();
+
+                            await Task.Delay(1000 * 60 * 5);
                         }
                     }
                     catch (Exception ex)
@@ -128,7 +127,7 @@ namespace BroadlinkWeb.Models.Stores
             this._dbc = dbc;
         }
 
-        public Task<IEnumerable<RemoteHost>> Refresh()
+        public IEnumerable<RemoteHost> Refresh()
         {
             using (var cs = new Xb.Net.Udp())
             {
@@ -159,7 +158,7 @@ namespace BroadlinkWeb.Models.Stores
                 cs.OnRecieved -= this.OnResponseRecieved;
             }
 
-            return null;
+            return this._dbc.RemoteHosts.ToArray();
         }
 
         private void OnResponseRecieved(object sender, Xb.Net.RemoteData rdata)

@@ -33,11 +33,11 @@ namespace BroadlinkWeb.Models.Stores
                     {
                         using (var serviceScope = BrDeviceStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
                         {
-                            await Task.Delay(1000 * 60 * 5);
-
                             Xb.Util.Out("Regularly Broadlink Device Scan");
                             var store = serviceScope.ServiceProvider.GetService<BrDeviceStore>();
                             store.Refresh();
+
+                            await Task.Delay(1000 * 60 * 5);
                         }
                     }
                     catch (Exception ex)
