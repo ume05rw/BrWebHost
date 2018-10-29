@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BroadlinkWeb", "BroadlinkWe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpBroadlink", "..\..\Library\SharpBroadlink\SharpBroadlink\SharpBroadlink.csproj", "{0A26C895-0B8A-4A29-AC22-0B60EA9CEC27}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UdpReplyer", "UdpReplyer\UdpReplyer.csproj", "{D151F734-4EA3-43BD-AF20-D43C3C288097}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{0A26C895-0B8A-4A29-AC22-0B60EA9CEC27}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0A26C895-0B8A-4A29-AC22-0B60EA9CEC27}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0A26C895-0B8A-4A29-AC22-0B60EA9CEC27}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D151F734-4EA3-43BD-AF20-D43C3C288097}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D151F734-4EA3-43BD-AF20-D43C3C288097}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D151F734-4EA3-43BD-AF20-D43C3C288097}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D151F734-4EA3-43BD-AF20-D43C3C288097}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

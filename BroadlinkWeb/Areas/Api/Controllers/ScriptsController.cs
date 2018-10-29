@@ -96,18 +96,33 @@ namespace BroadlinkWeb.Areas.Api.Controllers
                     .Replace("\r", "\n")
                     .Split('\n');
 
-                // 一行ずつ実行、結果取得はしない。
-                // UI付きプログラムの場合、プログラム終了まで応答を返さないため。
+                // タイムアウトを設定し、1秒以上は結果を待たないことにした。
+                //// 一行ずつ実行、結果取得はしない。
+                //// UI付きプログラムの場合、プログラム終了まで応答を返さないため。
+                //foreach (var row in rows)
+                //    Xb.App.Process.GetConsoleResultAsync(row)
+                //        .ConfigureAwait(false);
+
+                var results = new List<string>();
+                var isSucceeded = true;
                 foreach (var row in rows)
-                    Xb.App.Process.GetConsoleResultAsync(row)
-                        .ConfigureAwait(false);
+                {
+                    results.Add(row);
+                    var res = await Xb.App.Process.GetConsoleResultAsync(row, null, 1);
+                    results.Add(res.Message);
 
-                //var results = new List<string>();
-                //results.Add(row);
-                //results.Add(await Xb.App.Process.GetConsoleResultAsync(row));
-                //var result = string.Join("\n", results.ToArray());
+                    if (!res.Succeeded && res.Message != "No Response")
+                    {
+                        isSucceeded = false;
+                        break;
+                    }
+                }
 
-                return XhrResult.CreateSucceeded(true);
+                var result = string.Join("\n", results.ToArray());
+
+                return (isSucceeded)
+                    ? XhrResult.CreateSucceeded(result)
+                    : XhrResult.CreateError(result, "ConsoleFailure");
             }
             catch (Exception ex)
             {

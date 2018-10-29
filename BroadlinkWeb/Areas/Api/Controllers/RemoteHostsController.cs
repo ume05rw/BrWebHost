@@ -27,7 +27,24 @@ namespace BroadlinkWeb.Areas.Api.Controllers
             this._dbc = dbc;
         }
 
-        // GET: /api/Scripts/
+        // GET: /api/RemoteHosts/GetHostname
+        [HttpGet("GetHostname")]
+        public async Task<XhrResult> GetHostname()
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                    return XhrResult.CreateError(ModelState);
+
+                return XhrResult.CreateSucceeded(System.Environment.MachineName);
+            }
+            catch (Exception ex)
+            {
+                return XhrResult.CreateError(ex);
+            }
+        }
+
+        // GET: /api/RemoteHosts/
         [HttpGet()]
         public async Task<XhrResult> GetList()
         {
@@ -89,7 +106,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
             }
         }
 
-        // POST: /api/Scripts/
+        // POST: /api/RemoteHosts/
         [HttpPost()]
         public async Task<XhrResult> Exec([FromBody] Script script)
         {

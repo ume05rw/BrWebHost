@@ -18,9 +18,9 @@ namespace BroadlinkWeb.Models.Stores
         private const string CallString = "hello?";
         private const string ResponseString = "here!";
 
+        //private static Xb.Net.Udp Socket = null;
+        private static Xb.App.Process Replyer = null;
         private static IServiceProvider Provider = null;
-        private static Xb.Net.Udp Socket = null;
-        private static List<byte[]> LocalAddresses = null;
         private static Task LoopScan = null;
 
         public static void SetScannerAndReciever(IServiceProvider provider)
@@ -34,56 +34,19 @@ namespace BroadlinkWeb.Models.Stores
         {
             try
             {
-                RemoteHostStore.LocalAddresses = new List<byte[]>();
-                var locals = Xb.Net.Util.GetLocalAddresses();
-                foreach (var addr in locals)
-                    RemoteHostStore.LocalAddresses.Add(addr.GetAddressBytes());
-
-                var socket = new Xb.Net.Udp(RemoteHostStore.AckUdpPort);
-
-                socket.OnRecieved += (object sender, Xb.Net.RemoteData rdata) =>
-                {
-                    // 受信文字列が仕様外のとき、なにもしない。
-                    var call = Encoding.UTF8.GetString(rdata.Bytes);
-                    if (call != RemoteHostStore.CallString)
-                        return;
-
-                    var addr = rdata.RemoteEndPoint.Address.GetAddressBytes();
-
-                    // IPv4射影アドレスのとき、v4アドレスに変換。
-                    if (
-                        // 長さが16バイト
-                        addr.Length == 16
-                        // 先頭10バイトが全て0
-                        && addr.Take(10).All(b => b == 0)
-                        // 11, 12バイトが FF
-                        && addr.Skip(10).Take(2).All(b => b == 255)
-                    )
-                    {
-                        addr = addr.Skip(12).Take(4).ToArray();
-                    }
-
-                    // ローカルアドレスからの呼びかけのとき、なにもしない。
-                    if (RemoteHostStore.LocalAddresses.Any(b => b.SequenceEqual(addr)))
-                        return;
-
-                    // 応答を返す。
-                    var resStr = RemoteHostStore.ResponseString + System.Environment.MachineName;
-                    var response = Encoding.UTF8.GetBytes(resStr);
-                    Xb.Net.Udp.SendOnce(response, rdata.RemoteEndPoint);
-                };
-
-                RemoteHostStore.Socket = socket;
+                // Asp.NetCore上でサービスを書くと、VSで停止したときに破棄されず、
+                // socketが保持され続ける現象が発生する。
+                // 対策として、UDP応答を返すプログラムを別途起動するようにした。
+                // VS中断時などはプロセスが残るので、必要に応じてdotnetプロセスを殺す。
+                var dir = System.IO.Path.Combine(Environment.CurrentDirectory, "lib/UdpReplyer");
+                var arg = $"lib/UdpReplyer/UdpReplyer.dll";
+                RemoteHostStore.Replyer
+                    = Xb.App.Process.Create("dotnet", $"UdpReplyer.dll {AckUdpPort}", false, dir);
             }
             catch (Exception ex)
             {
+                Xb.Util.Out("Process Failed.");
                 Xb.Util.Out(ex);
-                Xb.Util.Out("FUUUUUUUUUUUUUUUUUUUUUUCK!!!");
-                Xb.Util.Out("UDP Reciever FAIL!!!!!!!!!!!!");
-
-                // 時間を置いて再起動。
-                Task.Delay(5000).GetAwaiter().GetResult();
-                RemoteHostStore.SetReciever();
             }
         }
 
@@ -98,6 +61,17 @@ namespace BroadlinkWeb.Models.Stores
                 {
                     try
                     {
+                        try
+                        {
+                            if (RemoteHostStore.Provider == null)
+                                break;
+                        }
+                        catch (Exception)
+                        {
+                            break;
+                        }
+
+
                         using (var serviceScope = RemoteHostStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
                         {
                             Xb.Util.Out("Regularly Remote Host Scan");
@@ -115,7 +89,18 @@ namespace BroadlinkWeb.Models.Stores
                         //throw;
                     }
                 }
+
+                RemoteHostStore.DisposeScannerAndReciever();
+
+                Xb.Util.Out("RemoteHostStore.LoopScan Closed");
             });
+        }
+
+        public static void DisposeScannerAndReciever()
+        {
+            RemoteHostStore.Provider = null;
+            if (RemoteHostStore.Replyer != null)
+                RemoteHostStore.Replyer.Dispose();
         }
 
 
@@ -135,7 +120,7 @@ namespace BroadlinkWeb.Models.Stores
 
                 cs.OnRecieved += this.OnResponseRecieved;
 
-                cs.SendTo(packet, IPAddress.Broadcast, RemoteHostStore.AckUdpPort);
+                cs.SendTo(packet, IPAddress.Broadcast, 80);
 
                 var startTime = DateTime.Now;
                 var timeout = 3;

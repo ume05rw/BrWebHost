@@ -31,6 +31,16 @@ namespace BroadlinkWeb.Models.Stores
                 {
                     try
                     {
+                        try
+                        {
+                            if (BrDeviceStore.Provider == null)
+                                break;
+                        }
+                        catch (Exception)
+                        {
+                            break;
+                        }
+
                         using (var serviceScope = BrDeviceStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
                         {
                             Xb.Util.Out("Regularly Broadlink Device Scan");
@@ -48,9 +58,17 @@ namespace BroadlinkWeb.Models.Stores
                         //throw;
                     }
                 }
+
+                BrDeviceStore.DisposeScanner();
+
+                Xb.Util.Out("BrDeviceStore.LoopScan Closed");
             });
         }
 
+        public static void DisposeScanner()
+        {
+            BrDeviceStore.Provider = null;
+        }
 
         private Dbc _dbc;
         private ControlSetStore _controlSetStore;
