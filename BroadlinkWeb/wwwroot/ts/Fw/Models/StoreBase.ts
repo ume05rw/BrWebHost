@@ -27,6 +27,10 @@ namespace Fw.Models {
             this.EnableLog = true;
         }
 
+        protected Clear(): void {
+            this._list = {};
+        }
+
         /**
          * API応答などのオブジェクトをStoreに入れる。
          * @param entity

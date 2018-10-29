@@ -9,7 +9,7 @@ namespace BroadlinkWeb.Models.Entities
     [NotMapped]
     public class Script
     {
-        public int Id { get; set; }
+        public int ControlId { get; set; }
 
         public string Name { get; set; }
 

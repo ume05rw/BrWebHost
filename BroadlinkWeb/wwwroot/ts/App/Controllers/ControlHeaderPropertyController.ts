@@ -173,26 +173,6 @@ namespace App.Controllers {
                     throw new Error('なんでやねん！');
             }
 
-            //if (controlSet.OperationType === OperationType.BroadlinkDevice) {
-            //    this._page.LabelColor.Hide(0);
-            //    this._page.BtnColor.Hide(0);
-            //    this._page.LabelRm.Hide(0);
-            //    this._page.SboRm.Hide(0);
-            //    this._page.DeleteButton.Hide(0);
-
-            //} else {
-            //    this._page.LabelColor.Show(0);
-            //    this._page.BtnColor.Show(0);
-            //    this._page.LabelRm.Show(0);
-            //    this._page.SboRm.Show(0);
-            //    this._page.DeleteButton.Show(0);
-
-            //    this._page.BtnColor.Color = controlSet.Color;
-            //    this._page.BtnColor.BackgroundColor = controlSet.Color;
-            //    this._page.BtnColor.HoverColor = App.Items.Color.GetButtonHoverColor(controlSet.Color);
-            //    this._page.SboRm.Value = String(controlSet.BrDeviceId);
-            //}
-
             this._controlSet = controlSet;
         }
 

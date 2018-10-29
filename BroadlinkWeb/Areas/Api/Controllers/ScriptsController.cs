@@ -48,7 +48,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
                             : "";
                         result.Add(new Script()
                         {
-                            Id = control.Id,
+                            ControlId = control.Id,
                             Name = $"{cset.Name}{detailName}",
                             RemoteHostId = null
                         });

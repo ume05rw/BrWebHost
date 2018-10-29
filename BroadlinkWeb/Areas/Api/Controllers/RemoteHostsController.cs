@@ -89,7 +89,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
                         var scripts = jarray
                             .Select(o => new Script
                             {
-                                Id = (int)o["Id"],
+                                ControlId = (int)o["ControlId"],
                                 RemoteHostId = remote.Id,
                                 Name = $"{remote.Name}[{remote.IpAddressString}] - {(string)o["Name"]}"
                             })
@@ -126,7 +126,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
                 if (remote == null)
                     return XhrResult.CreateError("Remote Host Not Found");
 
-                var url = $"http://{remote.IpAddressString}:{BroadlinkWeb.Program.Port}/api/Scripts/{script.Id}";
+                var url = $"http://{remote.IpAddressString}:{BroadlinkWeb.Program.Port}/api/Scripts/{script.ControlId}";
                 var client = new HttpClient();
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(

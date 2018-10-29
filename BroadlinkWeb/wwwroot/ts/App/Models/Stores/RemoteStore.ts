@@ -20,7 +20,7 @@ namespace App.Models.Stores {
     import DeviceType = App.Items.DeviceType;
     import Script = App.Models.Entities.Script;
 
-    export class RemoteStore extends Fw.Models.StoreBase<null> {
+    export class RemoteStore extends Fw.Models.StoreBase<Script> {
 
         private static _instance: RemoteStore = null;
         public static get Instance(): RemoteStore {
@@ -48,7 +48,16 @@ namespace App.Models.Stores {
             const res = await Xhr.Query.Invoke(params);
 
             if (res.Succeeded) {
-                return res.Values as Script[];
+
+                this.Clear();
+                let id = 1;
+                _.each(res.Values, (e: Script) => {
+                    e.Id = id;
+                    this.Merge(e);
+                    id++;
+                });
+
+                return _.values(this.List);
             } else {
                 this.Log('Query Fail');
                 this.Log(res.Errors);
@@ -92,10 +101,10 @@ namespace App.Models.Stores {
         }
 
 
-        protected GetNewEntity(): null {
-            throw new Error('Not Supported');
+        protected GetNewEntity(): Script {
+            return new Script();
         }
-        public Write(entity: null): void {
+        public Write(entity: Script): void {
             throw new Error('Not Supported');
         }
 

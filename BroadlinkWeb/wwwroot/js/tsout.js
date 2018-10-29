@@ -4219,6 +4219,9 @@ var Fw;
                 enumerable: true,
                 configurable: true
             });
+            StoreBase.prototype.Clear = function () {
+                this._list = {};
+            };
             /**
              * API応答などのオブジェクトをStoreに入れる。
              * @param entity
@@ -4837,23 +4840,6 @@ var App;
                         alert('ここにはこないはず');
                         throw new Error('なんでやねん！');
                 }
-                //if (controlSet.OperationType === OperationType.BroadlinkDevice) {
-                //    this._page.LabelColor.Hide(0);
-                //    this._page.BtnColor.Hide(0);
-                //    this._page.LabelRm.Hide(0);
-                //    this._page.SboRm.Hide(0);
-                //    this._page.DeleteButton.Hide(0);
-                //} else {
-                //    this._page.LabelColor.Show(0);
-                //    this._page.BtnColor.Show(0);
-                //    this._page.LabelRm.Show(0);
-                //    this._page.SboRm.Show(0);
-                //    this._page.DeleteButton.Show(0);
-                //    this._page.BtnColor.Color = controlSet.Color;
-                //    this._page.BtnColor.BackgroundColor = controlSet.Color;
-                //    this._page.BtnColor.HoverColor = App.Items.Color.GetButtonHoverColor(controlSet.Color);
-                //    this._page.SboRm.Value = String(controlSet.BrDeviceId);
-                //}
                 this._controlSet = controlSet;
             };
             ControlHeaderPropertyController.prototype.RefreshBrDevices = function () {
@@ -9162,6 +9148,7 @@ var App;
                 __extends(Script, _super);
                 function Script() {
                     var _this = _super !== null && _super.apply(this, arguments) || this;
+                    _this.ControlId = 0;
                     _this.Name = '';
                     return _this;
                 }
@@ -9784,6 +9771,7 @@ var App;
         var Stores;
         (function (Stores) {
             var Xhr = Fw.Util.Xhr;
+            var Script = App.Models.Entities.Script;
             var RemoteStore = /** @class */ (function (_super) {
                 __extends(RemoteStore, _super);
                 function RemoteStore() {
@@ -9803,7 +9791,8 @@ var App;
                 });
                 RemoteStore.prototype.GetList = function () {
                     return __awaiter(this, void 0, void 0, function () {
-                        var params, res;
+                        var params, res, id_1;
+                        var _this = this;
                         return __generator(this, function (_a) {
                             switch (_a.label) {
                                 case 0:
@@ -9813,7 +9802,14 @@ var App;
                                 case 1:
                                     res = _a.sent();
                                     if (res.Succeeded) {
-                                        return [2 /*return*/, res.Values];
+                                        this.Clear();
+                                        id_1 = 1;
+                                        _.each(res.Values, function (e) {
+                                            e.Id = id_1;
+                                            _this.Merge(e);
+                                            id_1++;
+                                        });
+                                        return [2 /*return*/, _.values(this.List)];
                                     }
                                     else {
                                         this.Log('Query Fail');
@@ -9861,7 +9857,7 @@ var App;
                     });
                 };
                 RemoteStore.prototype.GetNewEntity = function () {
-                    throw new Error('Not Supported');
+                    return new Script();
                 };
                 RemoteStore.prototype.Write = function (entity) {
                     throw new Error('Not Supported');

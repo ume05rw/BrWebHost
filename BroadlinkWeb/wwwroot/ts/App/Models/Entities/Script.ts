@@ -7,6 +7,7 @@ namespace App.Models.Entities {
     import Dump = Fw.Util.Dump;
 
     export class Script extends Fw.Models.EntityBase {
+        public ControlId: number = 0;
         public Name: string = '';
         public RemoteHostId: number;
     }
