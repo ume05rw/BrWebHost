@@ -120,7 +120,7 @@ namespace BroadlinkWeb.Models.Stores
 
                 cs.OnRecieved += this.OnResponseRecieved;
 
-                cs.SendTo(packet, IPAddress.Broadcast, 80);
+                cs.SendTo(packet, IPAddress.Broadcast, RemoteHostStore.AckUdpPort);
 
                 var startTime = DateTime.Now;
                 var timeout = 3;
