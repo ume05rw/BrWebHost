@@ -89,7 +89,9 @@ namespace BroadlinkWeb.Areas.Api.Controllers
                     }
                     catch (Exception ex)
                     {
-                        return XhrResult.CreateError("Remote Host No-Response");
+                        // リモートから応答が無いとき、スキップする。
+                        //return XhrResult.CreateError("Remote Host No-Response");
+                        continue;
                     }
                     
                     var json = await response.Content.ReadAsStringAsync();
