@@ -127,6 +127,9 @@ namespace App.Controllers {
                 if (v instanceof Controls.ControlButtonView)
                     (v as Controls.ControlButtonView).SetRelocatable(true);
             });
+
+            // リモートスクリプトのキャッシュを更新しておく。
+            Stores.Remotes.GetList();
         }
 
         public SetOperateMode(): void {

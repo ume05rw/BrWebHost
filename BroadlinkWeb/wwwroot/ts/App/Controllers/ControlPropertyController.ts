@@ -9,6 +9,7 @@
 /// <reference path="../Models/Stores/RmStore.ts" />
 /// <reference path="../Models/Entities/ControlSet.ts" />
 /// <reference path="../Models/Entities/Control.ts" />
+/// <reference path="../Models/Entities/Script.ts" />
 /// <reference path="../Items/Color.ts" />
 /// <reference path="../Items/OperationType.ts" />
 /// <reference path="../Views/Pages/MainPageView.ts" />
@@ -24,9 +25,11 @@ namespace App.Controllers {
     import Popup = App.Views.Popup;
     import ControlSet = App.Models.Entities.ControlSet;
     import Control = App.Models.Entities.Control;
+    import Script = App.Models.Entities.Script;
     import Color = App.Items.Color;
     import ButtonEvents = Fw.Events.ButtonViewEvents;
     import OperationType = App.Items.OperationType;
+    import Stores = App.Models.Stores;
 
     export class ControlPropertyController extends Fw.Controllers.ControllerBase {
 
@@ -211,6 +214,20 @@ namespace App.Controllers {
                     this._page.SboRemote.Show(0);
                     this._page.BtnLearn.Hide(0);
 
+                    this._page.SboRemote.ClearItems();
+                    _.each(Stores.Remotes.List, (e: Script) => {
+                        this._page.SboRemote.AddItem(e.Name, String(e.Id));
+                    });
+
+                    if (!control.Code || control.Code === '') {
+                        this._page.SboRemote.Value = '';
+                    } else {
+                        const currentId = Stores.Remotes.GetIdByJson(control.Code);
+                        this._page.SboRemote.Value = (currentId)
+                            ? String(currentId)
+                            : '';
+                    }
+
                     break;
                 case OperationType.Scene:
                 default:
@@ -286,8 +303,23 @@ namespace App.Controllers {
                     break;
                 case OperationType.RemoteHostScript:
 
-                    if (this._control.Code !== this._page.SboRemote.Value) {
-                        this._control.Code = this._page.SboRemote.Value;
+                    const newId = (!this._page.SboRemote.Value || this._page.SboRemote.Value === '')
+                        ? null
+                        : Stores.Remotes.List[parseInt(this._page.SboRemote.Value, 10)].Id;
+                    const currentId = Stores.Remotes.GetIdByJson(this._control.Code);
+
+                    if (newId !== currentId) {
+                        if (!newId) {
+                            this._control.Code = '';
+                        } else {
+                            const entity = Stores.Remotes.List[newId];
+                            const objCode = {
+                                ControlId: entity.ControlId,
+                                Name: entity.Name,
+                                RemoteHostId: entity.RemoteHostId
+                            };
+                            this._control.Code = JSON.stringify(objCode);
+                        }
                         changed = true;
                     }
 

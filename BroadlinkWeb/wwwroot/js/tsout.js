@@ -5019,6 +5019,30 @@ var App;
         })(Stores = Models.Stores || (Models.Stores = {}));
     })(Models = App.Models || (App.Models = {}));
 })(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/EntityBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Entities;
+        (function (Entities) {
+            var Script = /** @class */ (function (_super) {
+                __extends(Script, _super);
+                function Script() {
+                    var _this = _super !== null && _super.apply(this, arguments) || this;
+                    _this.ControlId = 0;
+                    _this.Name = '';
+                    return _this;
+                }
+                return Script;
+            }(Fw.Models.EntityBase));
+            Entities.Script = Script;
+        })(Entities = Models.Entities || (Models.Entities = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Fw/Controllers/ControllerBase.ts" />
@@ -5030,6 +5054,7 @@ var App;
 /// <reference path="../Models/Stores/RmStore.ts" />
 /// <reference path="../Models/Entities/ControlSet.ts" />
 /// <reference path="../Models/Entities/Control.ts" />
+/// <reference path="../Models/Entities/Script.ts" />
 /// <reference path="../Items/Color.ts" />
 /// <reference path="../Items/OperationType.ts" />
 /// <reference path="../Views/Pages/MainPageView.ts" />
@@ -5043,6 +5068,7 @@ var App;
         var Popup = App.Views.Popup;
         var Color = App.Items.Color;
         var ButtonEvents = Fw.Events.ButtonViewEvents;
+        var Stores = App.Models.Stores;
         var ControlPropertyController = /** @class */ (function (_super) {
             __extends(ControlPropertyController, _super);
             function ControlPropertyController() {
@@ -5164,6 +5190,7 @@ var App;
                 return _this;
             }
             ControlPropertyController.prototype.SetEntity = function (control, controlSet) {
+                var _this = this;
                 // ApplyToEntityを回避するため、一旦nullセット。
                 this._control = null;
                 this._controlSet = null;
@@ -5212,6 +5239,19 @@ var App;
                         this._page.TxtMac.Hide(0);
                         this._page.SboRemote.Show(0);
                         this._page.BtnLearn.Hide(0);
+                        this._page.SboRemote.ClearItems();
+                        _.each(Stores.Remotes.List, function (e) {
+                            _this._page.SboRemote.AddItem(e.Name, String(e.Id));
+                        });
+                        if (!control.Code || control.Code === '') {
+                            this._page.SboRemote.Value = '';
+                        }
+                        else {
+                            var currentId = Stores.Remotes.GetIdByJson(control.Code);
+                            this._page.SboRemote.Value = (currentId)
+                                ? String(currentId)
+                                : '';
+                        }
                         break;
                     case 99 /* Scene */:
                     default:
@@ -5271,8 +5311,23 @@ var App;
                         }
                         break;
                     case 5 /* RemoteHostScript */:
-                        if (this._control.Code !== this._page.SboRemote.Value) {
-                            this._control.Code = this._page.SboRemote.Value;
+                        var newId = (!this._page.SboRemote.Value || this._page.SboRemote.Value === '')
+                            ? null
+                            : Stores.Remotes.List[parseInt(this._page.SboRemote.Value, 10)].Id;
+                        var currentId = Stores.Remotes.GetIdByJson(this._control.Code);
+                        if (newId !== currentId) {
+                            if (!newId) {
+                                this._control.Code = '';
+                            }
+                            else {
+                                var entity = Stores.Remotes.List[newId];
+                                var objCode = {
+                                    ControlId: entity.ControlId,
+                                    Name: entity.Name,
+                                    RemoteHostId: entity.RemoteHostId
+                                };
+                                this._control.Code = JSON.stringify(objCode);
+                            }
                             changed = true;
                         }
                         break;
@@ -5410,6 +5465,8 @@ var App;
                     if (v instanceof Controls.ControlButtonView)
                         v.SetRelocatable(true);
                 });
+                // リモートスクリプトのキャッシュを更新しておく。
+                Stores.Remotes.GetList();
             };
             ControlSetController.prototype.SetOperateMode = function () {
                 var left = 10;
@@ -9144,30 +9201,6 @@ var App;
     (function (Models) {
         var Entities;
         (function (Entities) {
-            var Script = /** @class */ (function (_super) {
-                __extends(Script, _super);
-                function Script() {
-                    var _this = _super !== null && _super.apply(this, arguments) || this;
-                    _this.ControlId = 0;
-                    _this.Name = '';
-                    return _this;
-                }
-                return Script;
-            }(Fw.Models.EntityBase));
-            Entities.Script = Script;
-        })(Entities = Models.Entities || (Models.Entities = {}));
-    })(Models = App.Models || (App.Models = {}));
-})(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Models/EntityBase.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-var App;
-(function (App) {
-    var Models;
-    (function (Models) {
-        var Entities;
-        (function (Entities) {
             var Sp2Status = /** @class */ (function (_super) {
                 __extends(Sp2Status, _super);
                 function Sp2Status() {
@@ -9820,6 +9853,27 @@ var App;
                             }
                         });
                     });
+                };
+                RemoteStore.prototype.GetIdByJson = function (scriptJson) {
+                    if (!scriptJson || scriptJson === '')
+                        return null;
+                    try {
+                        var entity = JSON.parse(scriptJson);
+                        return this.GetIdByEntity(entity);
+                    }
+                    catch (e) {
+                        return null;
+                    }
+                };
+                RemoteStore.prototype.GetIdByEntity = function (script) {
+                    if (this.Length <= 0)
+                        return null;
+                    var target = _.find(this.List, function (e) {
+                        return (e.ControlId === script.ControlId && e.RemoteHostId === script.RemoteHostId);
+                    });
+                    if (!target)
+                        return null;
+                    return target.Id;
                 };
                 RemoteStore.prototype.Exec = function (controlSet, control) {
                     return __awaiter(this, void 0, void 0, function () {

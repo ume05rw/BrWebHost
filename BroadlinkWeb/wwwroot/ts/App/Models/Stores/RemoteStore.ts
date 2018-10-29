@@ -65,6 +65,33 @@ namespace App.Models.Stores {
             }
         }
 
+        public GetIdByJson(scriptJson: string): number {
+            if (!scriptJson || scriptJson === '')
+                return null;
+
+            try {
+                var entity = JSON.parse(scriptJson) as Script;
+                return this.GetIdByEntity(entity);
+            } catch (e) {
+                return null;
+            }
+        }
+
+        public GetIdByEntity(script: Script): number {
+            if (this.Length <= 0)
+                return null;
+
+            const target = _.find(this.List, (e: Script) => {
+                return (e.ControlId === script.ControlId && e.RemoteHostId === script.RemoteHostId);
+            });
+
+            if (!target)
+                return null;
+
+            return target.Id;
+        }
+
+
         public async Exec(controlSet: ControlSet, control: Control): Promise<boolean> {
             this.Log('Exec');
 

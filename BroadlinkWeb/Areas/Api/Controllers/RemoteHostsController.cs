@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -53,11 +54,21 @@ namespace BroadlinkWeb.Areas.Api.Controllers
                 if (!ModelState.IsValid)
                     return XhrResult.CreateError(ModelState);
 
+                var localAddrs = new List<byte[]>();
+                var locals = Xb.Net.Util.GetLocalAddresses();
+                foreach (var addr in locals)
+                    localAddrs.Add(addr.GetAddressBytes());
+
                 var remotes = await this._dbc.RemoteHosts.ToArrayAsync();
                 var result = new List<Script>();
 
                 foreach (var remote in remotes)
                 {
+                    // ローカルIPのとき、スキップ。
+                    var addrBytes = IPAddress.Parse(remote.IpAddressString).GetAddressBytes();
+                    if (localAddrs.Any(la => la.SequenceEqual(addrBytes)))
+                        continue;
+
                     var url = $"http://{remote.IpAddressString}:{BroadlinkWeb.Program.Port}/api/Scripts/";
                     var client = new HttpClient();
                     client.DefaultRequestHeaders.Accept.Clear();
