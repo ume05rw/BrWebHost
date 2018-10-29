@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SharpBroadlink;
 using Microsoft.Extensions.DependencyInjection;
+using SharpBroadlink.Devices;
 
 namespace BroadlinkWeb.Models.Stores
 {
@@ -246,6 +247,26 @@ namespace BroadlinkWeb.Models.Stores
             await Task.WhenAll(tasks.ToArray());
 
             return true;
+        }
+
+        public async Task<IDevice> RefreshDevice(IDevice device)
+        {
+            var index = -1;
+            for (var i = 0; i < BrDeviceStore.SbDevices.Count; i++)
+            {
+                if (device == BrDeviceStore.SbDevices[i])
+                {
+                    index = i;
+                    break;
+                }
+            }
+
+            var newDevice = Broadlink.Create(device.DevType, device.Mac, device.Host);
+            await newDevice.Auth();
+
+            BrDeviceStore.SbDevices[index] = newDevice;
+
+            return newDevice;
         }
 
         /// <summary>

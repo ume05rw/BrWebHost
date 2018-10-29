@@ -92,15 +92,23 @@ namespace BroadlinkWeb.Areas.Api.Controllers
                 if (current.Power != sp2Status.Power)
                 {
                     var result = await sp2Dev.SetPower(sp2Status.Power);
+
                     if (!result)
+                    {
+                        await this._store.RefreshDevice(sp2Dev);
                         return XhrResult.CreateError("Set Power Failure.");
+                    }
                 }
 
                 if (current.NightLight != sp2Status.NightLight)
                 {
                     var result = await sp2Dev.SetNightLight(sp2Status.NightLight);
+
                     if (!result)
+                    {
+                        await this._store.RefreshDevice(sp2Dev);
                         return XhrResult.CreateError("Set Night-Light Failure.");
+                    }
                 }
 
                 return XhrResult.CreateSucceeded(sp2Status);

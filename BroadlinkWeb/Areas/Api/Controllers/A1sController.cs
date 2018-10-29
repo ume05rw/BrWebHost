@@ -51,6 +51,13 @@ namespace BroadlinkWeb.Areas.Api.Controllers
                 var a1Dev = (A1)entity.SbDevice;
                 var a1Res = await a1Dev.CheckSensorsRaw();
 
+                // 時々取得に失敗する。Authが通っていないとか？
+                if (a1Res == null)
+                {
+                    await this._store.RefreshDevice(a1Dev);
+                    return XhrResult.CreateError("Device not Ready");
+                }
+
                 var result = new A1Values()
                 {
                     Temperature = a1Res.Temperature,
