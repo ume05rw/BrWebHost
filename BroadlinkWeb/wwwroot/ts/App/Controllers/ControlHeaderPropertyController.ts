@@ -97,35 +97,103 @@ namespace App.Controllers {
         }
 
 
-        public SetEntity(entity: Entities.ControlSet): void {
-            this._controlSet = entity;
-
-            if (!this._controlSet)
+        public SetEntity(controlSet: Entities.ControlSet): void {
+            if (!controlSet)
                 return;
+
+            this._controlSet = null;
 
             this.RefreshBrDevices();
 
-            this._page.TxtName.Value = this._controlSet.Name;
+            this._page.TxtName.Value = controlSet.Name;
 
-            if (this._controlSet.OperationType === OperationType.BroadlinkDevice) {
-                this._page.LabelColor.Hide(0);
-                this._page.BtnColor.Hide(0);
-                this._page.LabelRm.Hide(0);
-                this._page.SboRm.Hide(0);
-                this._page.DeleteButton.Hide(0);
 
-            } else {
-                this._page.LabelColor.Show(0);
-                this._page.BtnColor.Show(0);
-                this._page.LabelRm.Show(0);
-                this._page.SboRm.Show(0);
-                this._page.DeleteButton.Show(0);
+            switch (controlSet.OperationType) {
+                case OperationType.RemoteControl:
 
-                this._page.BtnColor.Color = this._controlSet.Color;
-                this._page.BtnColor.BackgroundColor = this._controlSet.Color;
-                this._page.BtnColor.HoverColor = App.Items.Color.GetButtonHoverColor(this._controlSet.Color);
-                this._page.SboRm.Value = String(this._controlSet.BrDeviceId);
+                    this._page.LabelColor.Show(0);
+                    this._page.BtnColor.Show(0);
+                    this._page.LabelRm.Show(0);
+                    this._page.SboRm.Show(0);
+                    this._page.DeleteButton.Show(0);
+
+                    this._page.BtnColor.Color = controlSet.Color;
+                    this._page.BtnColor.BackgroundColor = controlSet.Color;
+                    this._page.BtnColor.HoverColor = App.Items.Color.GetButtonHoverColor(controlSet.Color);
+                    this._page.SboRm.Value = String(controlSet.BrDeviceId);
+
+                    break;
+                case OperationType.BroadlinkDevice:
+                    this._page.LabelColor.Hide(0);
+                    this._page.BtnColor.Hide(0);
+                    this._page.LabelRm.Hide(0);
+                    this._page.SboRm.Hide(0);
+                    this._page.DeleteButton.Hide(0);
+
+                    break;
+                case OperationType.WakeOnLan:
+                    this._page.LabelColor.Show(0);
+                    this._page.BtnColor.Show(0);
+                    this._page.LabelRm.Hide(0);
+                    this._page.SboRm.Hide(0);
+                    this._page.DeleteButton.Show(0);
+
+                    this._page.BtnColor.Color = controlSet.Color;
+                    this._page.BtnColor.BackgroundColor = controlSet.Color;
+                    this._page.BtnColor.HoverColor = App.Items.Color.GetButtonHoverColor(controlSet.Color);
+
+                    break;
+                case OperationType.Script:
+                    this._page.LabelColor.Show(0);
+                    this._page.BtnColor.Show(0);
+                    this._page.LabelRm.Hide(0);
+                    this._page.SboRm.Hide(0);
+                    this._page.DeleteButton.Show(0);
+
+                    this._page.BtnColor.Color = controlSet.Color;
+                    this._page.BtnColor.BackgroundColor = controlSet.Color;
+                    this._page.BtnColor.HoverColor = App.Items.Color.GetButtonHoverColor(controlSet.Color);
+
+                    break;
+                case OperationType.RemoteHostScript:
+                    this._page.LabelColor.Show(0);
+                    this._page.BtnColor.Show(0);
+                    this._page.LabelRm.Hide(0);
+                    this._page.SboRm.Hide(0);
+                    this._page.DeleteButton.Show(0);
+
+                    this._page.BtnColor.Color = controlSet.Color;
+                    this._page.BtnColor.BackgroundColor = controlSet.Color;
+                    this._page.BtnColor.HoverColor = App.Items.Color.GetButtonHoverColor(controlSet.Color);
+
+                    break;
+                case OperationType.Scene:
+                default:
+                    alert('ここにはこないはず');
+                    throw new Error('なんでやねん！');
             }
+
+            //if (controlSet.OperationType === OperationType.BroadlinkDevice) {
+            //    this._page.LabelColor.Hide(0);
+            //    this._page.BtnColor.Hide(0);
+            //    this._page.LabelRm.Hide(0);
+            //    this._page.SboRm.Hide(0);
+            //    this._page.DeleteButton.Hide(0);
+
+            //} else {
+            //    this._page.LabelColor.Show(0);
+            //    this._page.BtnColor.Show(0);
+            //    this._page.LabelRm.Show(0);
+            //    this._page.SboRm.Show(0);
+            //    this._page.DeleteButton.Show(0);
+
+            //    this._page.BtnColor.Color = controlSet.Color;
+            //    this._page.BtnColor.BackgroundColor = controlSet.Color;
+            //    this._page.BtnColor.HoverColor = App.Items.Color.GetButtonHoverColor(controlSet.Color);
+            //    this._page.SboRm.Value = String(controlSet.BrDeviceId);
+            //}
+
+            this._controlSet = controlSet;
         }
 
         private RefreshBrDevices(): void {

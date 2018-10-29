@@ -75,7 +75,6 @@ namespace App.Controllers {
                 const ctr = this.Manager.Get('ColorSelect') as ColorSelectController;
                 const color: string = await ctr.Select(this);
 
-                
                 this._page.BtnColor.Color = color;
                 this._page.BtnColor.BackgroundColor = color;
                 this._page.BtnColor.HoverColor = Color.GetButtonHoverColor(color);
@@ -125,7 +124,6 @@ namespace App.Controllers {
             this._page.ChkToggleOff.AddEventListener(Events.InputViewEvents.Changed, (e) => {
                 this.ApplyToEntity();
             });
-
 
             this._page.DeleteButton.AddEventListener(ButtonEvents.SingleClick, async (e) => {
                 if (!this._control)
