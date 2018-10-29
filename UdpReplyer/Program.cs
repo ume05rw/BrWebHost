@@ -54,7 +54,10 @@ namespace UdpReplyer
                 Xb.Util.Out("Replyer Failed!");
                 Xb.Util.Out(ex);
 
-                if (Program._isExited)
+                // Program._replyer がnullのときは、初回起動に失敗している可能性がある。
+                // 重複ポートを使用できずに落ちる場合など。
+                // 初回起動失敗時はそのままプログラムを終了するようにする。
+                if (Program._replyer != null && Program._isExited)
                 {
                     await Task.Delay(5000).ConfigureAwait(false);
                     await Program.Start().ConfigureAwait(false);
