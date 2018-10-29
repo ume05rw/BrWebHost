@@ -639,6 +639,9 @@ namespace Fw.Views {
 
             _.each(this._innerBox.Children, (view: IView) => {
 
+                if (!view.IsVisible)
+                    return;
+
                 const isOverWidth = (maxRight < (currentLeft + view.Size.Width));
                 if (isOverWidth && rowElemCount !== 0) {
                     // 表示幅を超え、かつ既にその行に要素が出力されているとき
@@ -690,6 +693,9 @@ namespace Fw.Views {
             let rowElemCount = 0;
 
             _.each(this._innerBox.Children, (view: IView) => {
+
+                if (!view.IsVisible)
+                    return;
 
                 const isOverWidth = ((currentRight - view.Size.Width) < minLeft);
                 if (isOverWidth && rowElemCount !== 0) {
@@ -744,6 +750,9 @@ namespace Fw.Views {
 
             _.each(this._innerBox.Children, (view: IView) => {
 
+                if (!view.IsVisible)
+                    return;
+
                 const isOverWidth = (maxRight < (currentLeft + view.Size.Width));
                 if (isOverWidth && rowElemCount !== 0) {
                     // 表示幅を超え、かつ既にその行に要素が出力されているとき
@@ -796,6 +805,9 @@ namespace Fw.Views {
             let rowElemCount = 0;
 
             _.each(this._innerBox.Children, (view: IView) => {
+
+                if (!view.IsVisible)
+                    return;
 
                 const isOverWidth = ((currentRight - view.Size.Width) < minLeft);
                 if (isOverWidth && rowElemCount !== 0) {

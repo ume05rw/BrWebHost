@@ -100,7 +100,7 @@ namespace App.Views.Pages {
 
             this.SboRm.SetAnchor(null, 5, 15, null);
             this.SboRm.Size.Height = 30;
-            this.SboRm.Name = 'Icon';
+            this.SboRm.Name = 'Rm';
             _.each(App.Items.Icon.Names, (iconName) => {
                 const dispName = iconName.substr(0, iconName.indexOf('.')).replace('_', ' ');
                 this.SboRm.AddItem(dispName, `images/icons/${iconName}`);

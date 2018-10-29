@@ -22,7 +22,10 @@ namespace App.Views.Pages {
         public TxtName: Views.TextBoxInputView;
         public BtnIcon: Controls.ItemSelectButtonView;
         public BtnColor: Controls.ItemSelectButtonView;
+        public LblCode: Views.LabelView;
         public TarCode: Views.TextAreaInputView;
+        public TxtMac: Views.TextBoxInputView;
+        public SboRemote: Views.SelectBoxInputView;
         public BtnLearn: Controls.ButtonView;
         public BtnSend: Controls.ButtonView;
         public ChkToggleOn: Views.CheckBoxInputView;
@@ -37,7 +40,10 @@ namespace App.Views.Pages {
             this.TxtName = new Views.TextBoxInputView();
             this.BtnIcon = new Controls.ItemSelectButtonView();
             this.BtnColor = new Controls.ItemSelectButtonView();
+            this.LblCode = new Views.LabelView();
             this.TarCode = new Views.TextAreaInputView();
+            this.TxtMac = new Views.TextBoxInputView();
+            this.SboRemote = new Views.SelectBoxInputView();
             this.BtnLearn = new Controls.ButtonView();
             this.BtnSend = new Controls.ButtonView();
             this.ChkToggleOn = new Views.CheckBoxInputView();
@@ -97,27 +103,36 @@ namespace App.Views.Pages {
             this.InputPanel.Add(this.BtnColor);
             this.InputPanel.AddSpacer();
 
-            const lbl4 = new Views.LabelView();
-            lbl4.Text = 'Code';
-            lbl4.TextAlign = Property.TextAlign.Left;
-            lbl4.AutoSize = true;
-            lbl4.SetAnchor(null, 5, null, null);
-            lbl4.Size.Height = 21;
-            this.InputPanel.Add(lbl4);
+            this.LblCode = new Views.LabelView();
+            this.LblCode.Text = 'Code';
+            this.LblCode.TextAlign = Property.TextAlign.Left;
+            this.LblCode.AutoSize = true;
+            this.LblCode.SetAnchor(null, 5, null, null);
+            this.LblCode.Size.Height = 21;
+            this.InputPanel.Add(this.LblCode);
 
             this.TarCode.SetAnchor(null, 5, 15, null);
             this.TarCode.Size.Height = 90;
             this.TarCode.Name = 'Code';
             this.InputPanel.Add(this.TarCode);
 
+            this.TxtMac.SetAnchor(null, 5, 15, null);
+            this.TxtMac.Size.Height = 30;
+            this.TxtMac.Name = 'Mac';
+            this.InputPanel.Add(this.TxtMac);
+
+            this.SboRemote.SetAnchor(null, 5, 15, null);
+            this.SboRemote.Size.Height = 30;
+            this.InputPanel.Add(this.SboRemote);
+
             this.BtnLearn.SetAnchor(null, 5, 15, null);
             this.BtnLearn.Size.Height = 30;
-            this.BtnLearn.Text = 'Learn Code';
+            this.BtnLearn.Text = 'Learn';
             this.InputPanel.Add(this.BtnLearn);
 
             this.BtnSend.SetAnchor(null, 5, 15, null);
             this.BtnSend.Size.Height = 30;
-            this.BtnSend.Text = 'Test Code';
+            this.BtnSend.Text = 'Test';
             this.InputPanel.Add(this.BtnSend);
 
             const lbl5 = new Views.LabelView();

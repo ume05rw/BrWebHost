@@ -201,7 +201,7 @@ namespace App.Controllers {
 
                     const ctr = this.Manager.Get('ControlProperty') as ControlPropertyController;
                     const button = e.Sender as Controls.ControlButtonView;
-                    ctr.SetEntity(button.Control);
+                    ctr.SetEntity(button.Control, this._controlSet);
                     ctr.ShowModal();
 
                     // クリック時にコードが空のものは、自動で学習モードにする。
@@ -214,7 +214,7 @@ namespace App.Controllers {
                         const code = await this.GetLearnedCode();
                         if (code) {
                             button.Control.Code = code;
-                            ctr.SetEntity(button.Control);
+                            ctr.SetEntity(button.Control, this._controlSet);
                         }
                     }
                 }, this);
@@ -345,7 +345,7 @@ namespace App.Controllers {
 
                 const ctr = this.Manager.Get('ControlProperty') as ControlPropertyController;
                 const button = e.Sender as Controls.ControlButtonView;
-                ctr.SetEntity(button.Control);
+                ctr.SetEntity(button.Control, this._controlSet);
                 ctr.ShowModal();
 
                 // クリック時にコードが空のものは、自動で学習モードにする。
@@ -358,7 +358,7 @@ namespace App.Controllers {
                     const code = await this.GetLearnedCode();
                     if (code) {
                         button.Control.Code = code;
-                        ctr.SetEntity(button.Control);
+                        ctr.SetEntity(button.Control, this._controlSet);
                     }
                 }
 

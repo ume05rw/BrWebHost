@@ -138,7 +138,9 @@ namespace Fw.Views {
 
                 if (this._autoSize) {
                     this.Size.Width = this._hiddenSpan.offsetWidth + 10;
-                    this.Size.Height = this._hiddenSpan.offsetHeight;
+
+                    if (this.Size.Height === 0)
+                        this.Size.Height = this._hiddenSpan.offsetHeight;
                 }
 
                 super.CalcLayout();

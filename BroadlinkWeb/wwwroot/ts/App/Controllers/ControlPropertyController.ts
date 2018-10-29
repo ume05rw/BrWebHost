@@ -4,8 +4,13 @@
 /// <reference path="../../Fw/Controllers/Manager.ts" />
 /// <reference path="../../Fw/Util/Dump.ts" />
 /// <reference path="../../Fw/Events/ControlViewEvents.ts" />
+/// <reference path="../../Fw/Events/ButtonViewEvents.ts" />
 /// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
 /// <reference path="../Models/Stores/RmStore.ts" />
+/// <reference path="../Models/Entities/ControlSet.ts" />
+/// <reference path="../Models/Entities/Control.ts" />
+/// <reference path="../Items/Color.ts" />
+/// <reference path="../Items/OperationType.ts" />
 /// <reference path="../Views/Pages/MainPageView.ts" />
 /// <reference path="../Views/Popup/AlertPopup.ts" />
 
@@ -17,12 +22,17 @@ namespace App.Controllers {
     import Pages = App.Views.Pages;
     import Controls = App.Views.Controls;
     import Popup = App.Views.Popup;
-    
+    import ControlSet = App.Models.Entities.ControlSet;
+    import Control = App.Models.Entities.Control;
+    import Color = App.Items.Color;
+    import ButtonEvents = Fw.Events.ButtonViewEvents;
+    import OperationType = App.Items.OperationType;
 
     export class ControlPropertyController extends Fw.Controllers.ControllerBase {
 
         private _page: Pages.ControlPropertyPageView;
         private _control: App.Models.Entities.Control;
+        private _controlSet: App.Models.Entities.ControlSet;
 
         constructor() {
             super('ControlProperty');
@@ -32,17 +42,13 @@ namespace App.Controllers {
             this.SetPageView(new Pages.ControlPropertyPageView());
             this._page = this.View as Pages.ControlPropertyPageView;
             this._control = null;
+            this._controlSet = null;
 
             this._page.TxtName.AddEventListener(Events.InputViewEvents.Changed, (e) => {
-                if (!this._control)
-                    return;
-
-                //this.Log('ControlPropertyController.TxtName.Changed');
-                this._control.Name = this._page.TxtName.Value;
-                this._control.DispatchChanged();
+                this.ApplyToEntity();
             });
 
-            this._page.BtnIcon.AddEventListener(Events.ButtonViewEvents.SingleClick, async (e) => {
+            this._page.BtnIcon.AddEventListener(ButtonEvents.SingleClick, async (e) => {
                 if (!this._control)
                     return;
 
@@ -55,13 +61,12 @@ namespace App.Controllers {
                     ? 'images/icons/' + icon
                     : '';
 
-                this._control.IconUrl = url;
                 this._page.BtnIcon.ImageSrc = url;
 
-                this._control.DispatchChanged();
+                this.ApplyToEntity();
             });
 
-            this._page.BtnColor.AddEventListener(Events.ButtonViewEvents.SingleClick, async (e) => {
+            this._page.BtnColor.AddEventListener(ButtonEvents.SingleClick, async (e) => {
                 if (!this._control)
                     return;
 
@@ -70,24 +75,27 @@ namespace App.Controllers {
                 const ctr = this.Manager.Get('ColorSelect') as ColorSelectController;
                 const color: string = await ctr.Select(this);
 
-                this._control.Color = color;
+                
                 this._page.BtnColor.Color = color;
                 this._page.BtnColor.BackgroundColor = color;
-                this._page.BtnColor.HoverColor = App.Items.Color.GetButtonHoverColor(color);
+                this._page.BtnColor.HoverColor = Color.GetButtonHoverColor(color);
 
-                this._control.DispatchChanged();
+                this.ApplyToEntity();
             });
 
             this._page.TarCode.AddEventListener(Events.InputViewEvents.Changed, (e) => {
-                if (!this._control)
-                    return;
-
-                //this.Log('ControlPropertyController.TarCode.Changed');
-                this._control.Code = this._page.TarCode.Value;
-                this._control.DispatchChanged();
+                this.ApplyToEntity();
             });
 
-            this._page.BtnLearn.AddEventListener(Events.ButtonViewEvents.SingleClick, async (e) => {
+            this._page.TxtMac.AddEventListener(Events.InputViewEvents.Changed, (e) => {
+                this.ApplyToEntity();
+            });
+
+            this._page.SboRemote.AddEventListener(Events.InputViewEvents.Changed, (e) => {
+                this.ApplyToEntity();
+            });
+
+            this._page.BtnLearn.AddEventListener(ButtonEvents.SingleClick, async (e) => {
                 if (!this._control)
                     return;
 
@@ -98,10 +106,11 @@ namespace App.Controllers {
                     return;
 
                 this._page.TarCode.Value = code;
-                this._control.Code = code;
+
+                this.ApplyToEntity();
             });
 
-            this._page.BtnSend.AddEventListener(Events.ButtonViewEvents.SingleClick, async (e) => {
+            this._page.BtnSend.AddEventListener(ButtonEvents.SingleClick, async (e) => {
                 if (!this._control)
                     return;
 
@@ -110,35 +119,15 @@ namespace App.Controllers {
             });
 
             this._page.ChkToggleOn.AddEventListener(Events.InputViewEvents.Changed, (e) => {
-                if (!this._control)
-                    return;
-
-                //this.Log('ControlPropertyController.ChkToggleOn.Changed');
-                this._control.IsAssignToggleOn = this._page.ChkToggleOn.BoolValue;
-                this._control.DispatchChanged();
-
-                if (this._control.IsAssignToggleOn === true) {
-                    const ctr = this.Manager.Get('ControlSet') as ControlSetController;
-                    ctr.ResetToggleAssign(this._control, true);
-                }
+                this.ApplyToEntity();
             });
 
             this._page.ChkToggleOff.AddEventListener(Events.InputViewEvents.Changed, (e) => {
-                if (!this._control)
-                    return;
-
-                //this.Log('ControlPropertyController.ChkToggleOff.Changed');
-                this._control.IsAssignToggleOff = this._page.ChkToggleOff.BoolValue;
-                this._control.DispatchChanged();
-
-                if (this._control.IsAssignToggleOff === true) {
-                    const ctr = this.Manager.Get('ControlSet') as ControlSetController;
-                    ctr.ResetToggleAssign(this._control, false);
-                }
+                this.ApplyToEntity();
             });
 
 
-            this._page.DeleteButton.AddEventListener(Events.ButtonViewEvents.SingleClick, async (e) => {
+            this._page.DeleteButton.AddEventListener(ButtonEvents.SingleClick, async (e) => {
                 if (!this._control)
                     return;
 
@@ -153,23 +142,166 @@ namespace App.Controllers {
                 ctr.RemoveControl(this._control);
 
                 this._control = null;
+                this._controlSet = null;
                 this.HideModal();
             });
         }
 
-        public SetEntity(control: App.Models.Entities.Control): void {
+        public SetEntity(control: Control, controlSet: ControlSet): void {
+            // ApplyToEntityを回避するため、一旦nullセット。
+            this._control = null;
+            this._controlSet = null;
+
+            this._page.TxtName.Value = control.Name;
+            this._page.BtnIcon.ImageSrc = control.IconUrl;
+
+            this._page.BtnColor.Color = control.Color;
+            this._page.BtnColor.BackgroundColor = control.Color;
+            this._page.BtnColor.HoverColor = Color.GetButtonHoverColor(control.Color);
+
+            this._page.ChkToggleOn.BoolValue = control.IsAssignToggleOn;
+            this._page.ChkToggleOff.BoolValue = control.IsAssignToggleOff;
+
+            switch (controlSet.OperationType) {
+                case OperationType.RemoteControl:
+                    this._page.LblCode.Text = 'Code';
+
+                    this._page.TarCode.Show(0);
+                    this._page.TxtMac.Hide(0);
+                    this._page.SboRemote.Hide(0);
+                    this._page.BtnLearn.Show(0);
+
+                    this._page.TarCode.Value = control.Code;
+
+                    break;
+                case OperationType.BroadlinkDevice:
+                    this._page.LblCode.Text = 'Code';
+
+                    this._page.TarCode.Show(0);
+                    this._page.TxtMac.Hide(0);
+                    this._page.SboRemote.Hide(0);
+                    this._page.BtnLearn.Show(0);
+
+                    break;
+                case OperationType.WakeOnLan:
+                    this._page.LblCode.Text = 'MAC Address';
+
+                    this._page.TarCode.Hide(0);
+                    this._page.TxtMac.Show(0);
+                    this._page.SboRemote.Hide(0);
+                    this._page.BtnLearn.Hide(0);
+
+                    this._page.TxtMac.Value = control.Code;
+
+                    break;
+                case OperationType.Script:
+                    this._page.LblCode.Text = 'Commands';
+
+                    this._page.TarCode.Show(0);
+                    this._page.TxtMac.Hide(0);
+                    this._page.SboRemote.Hide(0);
+                    this._page.BtnLearn.Hide(0);
+
+                    this._page.TarCode.Value = control.Code;
+
+                    break;
+                case OperationType.RemoteHostScript:
+                    this._page.LblCode.Text = 'Remote Script';
+
+                    this._page.TarCode.Hide(0);
+                    this._page.TxtMac.Hide(0);
+                    this._page.SboRemote.Show(0);
+                    this._page.BtnLearn.Hide(0);
+
+                    break;
+                case OperationType.Scene:
+                default:
+                    alert('ここにはこないはず');
+                    throw new Error('なんでやねん！');
+            }
+
             this._control = control;
+            this._controlSet = controlSet;
+        }
 
-            this._page.TxtName.Value = this._control.Name;
-            this._page.BtnIcon.ImageSrc = this._control.IconUrl;
+        public ApplyToEntity(): void {
+            if (!this._control || !this._controlSet)
+                return;
 
-            this._page.BtnColor.Color = this._control.Color;
-            this._page.BtnColor.BackgroundColor = this._control.Color;
-            this._page.BtnColor.HoverColor = App.Items.Color.GetButtonHoverColor(this._control.Color);
+            let changed = false;
 
-            this._page.TarCode.Value = this._control.Code;
-            this._page.ChkToggleOn.BoolValue = this._control.IsAssignToggleOn;
-            this._page.ChkToggleOff.BoolValue = this._control.IsAssignToggleOff;
+            if (this._control.Name !== this._page.TxtName.Value) {
+                this._control.Name = this._page.TxtName.Value;
+                changed = true;
+            }
+
+            if (this._control.IconUrl !== this._page.BtnIcon.ImageSrc) {
+                this._control.IconUrl = this._page.BtnIcon.ImageSrc;
+                changed = true;
+            }
+
+            if (this._control.Color !== this._page.BtnColor.Color) {
+                this._control.Color = this._page.BtnColor.Color;
+                changed = true;
+            }
+
+            if (this._control.IsAssignToggleOn !== this._page.ChkToggleOn.BoolValue) {
+                this._control.IsAssignToggleOn = this._page.ChkToggleOn.BoolValue;
+                const ctr = this.Manager.Get('ControlSet') as ControlSetController;
+                ctr.ResetToggleAssign(this._control, true);
+                changed = true;
+            }
+
+            if (this._control.IsAssignToggleOff !== this._page.ChkToggleOff.BoolValue) {
+                this._control.IsAssignToggleOff = this._page.ChkToggleOff.BoolValue;
+                const ctr = this.Manager.Get('ControlSet') as ControlSetController;
+                ctr.ResetToggleAssign(this._control, false);
+                changed = true;
+            }
+
+            switch (this._controlSet.OperationType) {
+                case OperationType.RemoteControl:
+
+                    if (this._control.Code !== this._page.TarCode.Value) {
+                        this._control.Code = this._page.TarCode.Value;
+                        changed = true;
+                    }
+
+                    break;
+                case OperationType.BroadlinkDevice:
+                    break;
+                case OperationType.WakeOnLan:
+
+                    if (this._control.Code !== this._page.TxtMac.Value) {
+                        this._control.Code = this._page.TxtMac.Value;
+                        changed = true;
+                    }
+
+                    break;
+                case OperationType.Script:
+
+                    if (this._control.Code !== this._page.TarCode.Value) {
+                        this._control.Code = this._page.TarCode.Value;
+                        changed = true;
+                    }
+
+                    break;
+                case OperationType.RemoteHostScript:
+
+                    if (this._control.Code !== this._page.SboRemote.Value) {
+                        this._control.Code = this._page.SboRemote.Value;
+                        changed = true;
+                    }
+
+                    break;
+                case OperationType.Scene:
+                default:
+                    alert('ここにはこないはず');
+                    throw new Error('なんでやねん！');
+            }
+
+            if (changed)
+                this._control.DispatchChanged();
         }
     }
 }
