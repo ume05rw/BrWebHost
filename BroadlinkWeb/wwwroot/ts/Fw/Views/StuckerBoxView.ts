@@ -124,6 +124,7 @@ namespace Fw.Views {
             this._lockButton.Color = '#9d9e9e';
             this._lockButton.BackgroundColor = '#FFFFFF';
             this._lockButton.HoverColor = '#F4F4F4';
+            this._lockButton.ImageFitPolicy = Property.FitPolicy.Auto;
             this._lockButton.ImageSrc = this.LockedImage;
             this._lockButton.Hide(0);
             
