@@ -20,7 +20,7 @@ namespace App.Views.Pages {
         public HeaderBar: Controls.HeaderBarView;
         public EditButton: Controls.ButtonView;
         public HeaderLeftLabel: Views.LabelView;
-        public OperationPanel: Views.SlidableBoxView;
+        public OperationPanel: Views.StuckerBoxView;
 
         constructor() {
             super();
@@ -28,7 +28,7 @@ namespace App.Views.Pages {
             this.HeaderBar = new Controls.HeaderBarView();
             this.HeaderLeftLabel = new Views.LabelView();
             this.EditButton = new Controls.ButtonView();
-            this.OperationPanel = new Views.SlidableBoxView(Property.Direction.Vertical);
+            this.OperationPanel = new Views.StuckerBoxView();
 
             this.SetClassName('ScenePageView');
 
@@ -55,6 +55,7 @@ namespace App.Views.Pages {
             this.HeaderLeftLabel.SetAnchor(null, 5, null, null);
             this.HeaderBar.Add(this.HeaderLeftLabel);
 
+            this.OperationPanel.ReferencePoint = Property.ReferencePoint.LeftTop;
             this.OperationPanel.Position.Policy = Property.PositionPolicy.LeftTop;
             this.OperationPanel.Size.Width = 280;
             this.OperationPanel.SetAnchor(70, null, null, 10);

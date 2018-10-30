@@ -52,6 +52,7 @@
     <Content Remove="wwwroot\ts\App\Views\Controls\ItemSelectButtonView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Controls\LabelAndButtonView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Controls\SceneButtonView.ts" />
+    <Content Remove="wwwroot\ts\App\Views\Controls\SceneDetailView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Pages\ControlHeaderPropertyPageView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Pages\ControlPropertyPageView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Pages\ControlSetPageView.ts" />
@@ -205,6 +206,7 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\LabelAndButtonView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\ControlSetButtonView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\SceneButtonView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\SceneDetailView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\ControlHeaderPropertyPageView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\ControlPropertyPageView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\ControlSetPageView.ts" />

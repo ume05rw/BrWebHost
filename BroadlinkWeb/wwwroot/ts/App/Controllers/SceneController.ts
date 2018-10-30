@@ -9,6 +9,7 @@
 /// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
 /// <reference path="../Views/Pages/MainPageView.ts" />
 /// <reference path="../Views/Popup/AlertPopup.ts" />
+/// <reference path="../Views/Controls/SceneDetailView.ts" />
 /// <reference path="../Events/Controls/ControlButtonViewEvents.ts" />
 /// <reference path="../Models/Entities/ControlSet.ts" />
 /// <reference path="../Models/Stores/RmStore.ts" />
@@ -31,6 +32,7 @@ namespace App.Controllers {
     import Popup = App.Views.Popup;
     import OperationType = App.Items.OperationType;
     import DeviceType = App.Items.DeviceType;
+    import SceneDetailView = App.Views.Controls.SceneDetailView;
 
     export class SceneController extends Fw.Controllers.ControllerBase {
 
@@ -82,6 +84,16 @@ namespace App.Controllers {
             this._page.HeaderBar.Label.Elem.on('click', (e) => {
                 this.OnOrderedHeader(e);
             });
+
+
+            for (var i = 0; i < 5; i++) {
+                const row = new SceneDetailView();
+                (i === 4)
+                    ? row.SetWaitable(false)
+                    : row.SetWaitable(true);
+                this._page.OperationPanel.Add(row);
+            }
+
         }
 
         public SetEditMode(): void {
