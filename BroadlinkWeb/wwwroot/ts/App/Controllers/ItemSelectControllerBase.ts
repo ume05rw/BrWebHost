@@ -26,7 +26,6 @@ namespace App.Controllers {
         
         private _parentController: Fw.Controllers.IController;
         private _resolve: (value: any) => void;
-        //private _callback: (value: any) => void;
 
         constructor(controllerId) {
             super(controllerId);
@@ -41,9 +40,6 @@ namespace App.Controllers {
                 this.Log('ShowSelector.Promise');
                 this._parentController = parentController;
                 this._resolve = resolve;
-                //this._callback = (value: any) => {
-                //    resolve(value);
-                //};
                 this.View.ShowModal();
                 this._parentController.View.Mask();
             });

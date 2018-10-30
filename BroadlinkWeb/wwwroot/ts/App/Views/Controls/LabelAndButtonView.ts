@@ -25,6 +25,8 @@ namespace App.Views.Controls {
             return this._labelView;
         }
 
+        public Value: any;
+
         /**
          * @see publicプロパティの初期化タイミングに注意。コンストラクタ実行後に値がセットされる。
          */

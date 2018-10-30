@@ -109,29 +109,12 @@ namespace App.Views.Controls {
             this._name = '';
             this._hoverEnable = true;
 
-            this.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, (e) => {
-                //Dump.Log('ControlButtonView.SingileClick');
-                this.OnSingleClicked();
-            });
-
             this.AddEventListener(Events.PositionChanged, () => {
                 if (this._control) {
                     this._control.PositionLeft = this.Position.Left;
                     this._control.PositionTop = this.Position.Top;
                 }
             });
-        }
-
-        private OnSingleClicked(): void {
-            if (this.IsRelocatable) {
-                // 編集モードのとき
-                //this.Log('Edit');
-                this.DispatchEvent(Events.EditOrdered);
-            } else {
-                // 実行モードのとき
-                //this.Log('Exec');
-                this.DispatchEvent(Events.ExecOrdered);
-            }
         }
 
         private ApplyFromEntity(): void {

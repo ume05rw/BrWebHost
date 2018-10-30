@@ -14,6 +14,9 @@
 /// <reference path="../Models/Stores/RmStore.ts" />
 /// <reference path="../Items/OperationType.ts" />
 /// <reference path="../Items/DeviceType.ts" />
+/// <reference path="../Items/ControlSetOperationType.ts" />
+/// <reference path="ItemSelectControllerBase.ts" />
+/// <reference path="../Views/Controls/ItemSelectButtonView.ts" />
 
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
@@ -25,25 +28,21 @@ namespace App.Controllers {
     import Entities = App.Models.Entities;
     import Util = Fw.Util;
     import EntityEvents = Fw.Events.EntityEvents;
-    import ButtonViewEvents = Fw.Events.ButtonViewEvents;
-    import ControlButtonViewEvents = App.Events.Controls.ControlButtonViewEvents;
+    import ButtonEvents = Fw.Events.ButtonViewEvents;
+    import ControlButtonEvents = App.Events.Controls.ControlButtonViewEvents;
     import Stores = App.Models.Stores;
     import Popup = App.Views.Popup;
     import OperationType = App.Items.OperationType;
     import DeviceType = App.Items.DeviceType;
+    import ControlSetOperationType = App.Items.ControlSetOperationType;
+    import ItemSelectControllerBase = App.Controllers.ItemSelectControllerBase;
+    import ItemSelectButtonView = App.Views.Controls.ItemSelectButtonView;
 
-    export class ControlSetController extends Fw.Controllers.ControllerBase {
+    export class ControlSetController extends ItemSelectControllerBase {
 
         private _page: Pages.ControlSetPageView;
         private _controlSet: Entities.ControlSet;
-
-        /**
-         * 現在リモコン編集中か否か
-         */
-        private get IsOnEditMode(): boolean {
-            // 編集ボタンが見えているとき操作モード。非表示のとき編集モード
-            return !this._page.EditButton.IsVisible;
-        }
+        private _operationType: ControlSetOperationType;
 
         constructor() {
             super('ControlSet');
@@ -53,8 +52,10 @@ namespace App.Controllers {
             this.SetPageView(new Pages.ControlSetPageView());
             this._page = this.View as Pages.ControlSetPageView;
 
+            this._operationType = ControlSetOperationType.Exec;
+
             this._page.HeaderBar.LeftButton.Hide(0);
-            this._page.HeaderBar.LeftButton.AddEventListener(ButtonViewEvents.SingleClick, async () => {
+            this._page.HeaderBar.LeftButton.AddEventListener(ButtonEvents.SingleClick, async () => {
                 // 編集モードの状態で、戻るボタンクリック。
                 // ここでControlSetエンティティを保存する。
 
@@ -86,12 +87,12 @@ namespace App.Controllers {
                 ctr.RefreshControlSets();
             });
 
-            this._page.EditButton.AddEventListener(ButtonViewEvents.SingleClick, () => {
+            this._page.EditButton.AddEventListener(ButtonEvents.SingleClick, () => {
                 this.SetEditMode();
                 this.ToUnmodal();
             });
 
-            this._page.HeaderBar.RightButton.AddEventListener(ButtonViewEvents.SingleClick, (e) => {
+            this._page.HeaderBar.RightButton.AddEventListener(ButtonEvents.SingleClick, (e) => {
                 this.OnOrderedNewControl(e);
             });
 
@@ -103,7 +104,17 @@ namespace App.Controllers {
             });
         }
 
+        /**
+         * リモコンボタン選択 ** このメソッド呼び出し前に、SetEntity()しておくこと。**
+         * @param parentController
+         */
+        public async Select(parentController: Fw.Controllers.IController): Promise<any> {
+            this._operationType = ControlSetOperationType.Select;
+            return super.Select(parentController);
+        }
+
         public SetEditMode(): void {
+            this._operationType = ControlSetOperationType.Edit;
             const left = (this._page.Size.Width / 2) - (this._page.ButtonPanel.Size.Width / 2);
             this._page.ButtonPanel.Position.Left = left;
             this._page.HeaderBar.Label.Show(0);
@@ -132,7 +143,8 @@ namespace App.Controllers {
             Stores.Remotes.GetList();
         }
 
-        public SetOperateMode(): void {
+        public SetExecMode(): void {
+            this._operationType = ControlSetOperationType.Exec;
             const left = 10;
             this._page.ButtonPanel.Position.Left = left;
             this._page.HeaderBar.Label.Hide(0);
@@ -141,24 +153,21 @@ namespace App.Controllers {
             this._page.HeaderLeftLabel.Show(0);
             this._page.EditButton.Show(0);
 
-            // 編集自体は許可する。
-            // 編集項目を、名称だけに制限する。
-            //// 編集ボタン - 表示制御対象
-            //if (!this._controlSet) {
-            //    // ControlSetエンティティが見当たらない
-            //    this._page.EditButton.Hide(0);
-            //} else if (this._controlSet.IsBrDevice) {
-            //    // ControlSetは、Broadlinkデバイス = 編集不能
-            //    this._page.EditButton.Hide(0);
-            //} else {
-            //    // その他 - ユーザー追加デバイス = 編集可
-            //    this._page.EditButton.Show(0);
-            //}
-
             _.each(this._page.ButtonPanel.Children, (v) => {
                 if (v instanceof Controls.ControlButtonView)
                     (v as Controls.ControlButtonView).SetRelocatable(false);
             });
+        }
+
+        public SetSelectMode(): void {
+            this._operationType = ControlSetOperationType.Select;
+            const left = 10;
+            this._page.ButtonPanel.Position.Left = left;
+            this._page.HeaderBar.Label.Hide(0);
+            this._page.HeaderBar.LeftButton.Hide(0);
+            this._page.HeaderBar.RightButton.Hide(0);
+            this._page.HeaderLeftLabel.Show(0);
+            this._page.EditButton.Hide(0);
         }
 
         /**
@@ -195,43 +204,60 @@ namespace App.Controllers {
                 btn.SetColor(control.Color);
                 btn.SetImage(control.IconUrl);
 
-                btn.AddEventListener(ControlButtonViewEvents.EditOrdered, async (e) => {
-                    // 既存ボタンの処理。新規ボタン用に同様のロジックが、下にある。
+                btn.AddEventListener(ButtonEvents.SingleClick, this.OnButtonClicked, this);
+
+                this._page.ButtonPanel.Add(btn);
+            });
+
+            this.ApplyFromEntity();
+        }
+
+        private async OnButtonClicked(e: Fw.Events.EventObject) {
+
+            switch (this._operationType) {
+                case ControlSetOperationType.Exec:
+
+                    this.Log('ControlButtonViewEvents.ExecOrdered');
+                    const button1 = e.Sender as Controls.ControlButtonView;
+                    this.ExecCode(button1.Control);
+
+                    break;
+                case ControlSetOperationType.Edit:
 
                     // Broadlinkデバイスはボタン編集禁止
                     if (this._controlSet.OperationType === OperationType.BroadlinkDevice)
                         return;
 
                     const ctr = this.Manager.Get('ControlProperty') as ControlPropertyController;
-                    const button = e.Sender as Controls.ControlButtonView;
-                    ctr.SetEntity(button.Control, this._controlSet);
+                    const button2 = e.Sender as Controls.ControlButtonView;
+                    ctr.SetEntity(button2.Control, this._controlSet);
                     ctr.ShowModal();
 
                     // クリック時にコードが空のものは、自動で学習モードにする。
                     const id = this._controlSet.BrDeviceId;
                     if ((id)
                         && (this._controlSet.OperationType === OperationType.RemoteControl)
-                        && (!button.Control.Code
-                            || button.Control.Code === '')
+                        && (!button2.Control.Code
+                            || button2.Control.Code === '')
                     ) {
                         const code = await this.GetLearnedCode();
                         if (code) {
-                            button.Control.Code = code;
-                            ctr.SetEntity(button.Control, this._controlSet);
+                            button2.Control.Code = code;
+                            ctr.SetEntity(button2.Control, this._controlSet);
                         }
                     }
-                }, this);
 
-                btn.AddEventListener(ControlButtonViewEvents.ExecOrdered, (e) => {
-                    this.Log('ControlButtonViewEvents.ExecOrdered');
-                    const button = e.Sender as Controls.ControlButtonView;
-                    this.ExecCode(button.Control);
-                }, this);
+                    break;
+                case ControlSetOperationType.Select:
 
-                this._page.ButtonPanel.Add(btn);
-            });
+                    const button3 = e.Sender as Controls.ControlButtonView;
+                    this.Commit(button3.Control);
 
-            this.ApplyFromEntity();
+                    break;
+                default:
+                    alert('ここにはこないはず。');
+                    throw new Error('なんでー？');
+            }
         }
 
         private ApplyFromEntity(): void {
@@ -325,7 +351,9 @@ namespace App.Controllers {
          * @param e
          */
         private OnOrderedNewControl(e: Fw.Events.EventObject): void {
-            if (!this.IsOnEditMode)
+            //if (!this.IsOnEditMode)
+            //    return;
+            if (this._operationType !== ControlSetOperationType.Edit)
                 return;
 
             if (!this._controlSet)
@@ -339,39 +367,7 @@ namespace App.Controllers {
             btn.Control = control;
             btn.SetLeftTop(185, this._page.Size.Height - 90 - 75);
 
-            btn.AddEventListener(ControlButtonViewEvents.EditOrdered, async (e) => {
-                // ボタン編集指示
-
-                // リモコン操作以外はボタン編集禁止
-                if (this._controlSet.OperationType !== OperationType.RemoteControl)
-                    return;
-
-                const ctr = this.Manager.Get('ControlProperty') as ControlPropertyController;
-                const button = e.Sender as Controls.ControlButtonView;
-                ctr.SetEntity(button.Control, this._controlSet);
-                ctr.ShowModal();
-
-                // クリック時にコードが空のものは、自動で学習モードにする。
-                const id = this._controlSet.BrDeviceId;
-                if ((id)
-                    && (this._controlSet.OperationType === OperationType.RemoteControl)
-                    && (!button.Control.Code
-                        || button.Control.Code === '')
-                ) {
-                    const code = await this.GetLearnedCode();
-                    if (code) {
-                        button.Control.Code = code;
-                        ctr.SetEntity(button.Control, this._controlSet);
-                    }
-                }
-
-            }, this);
-
-            btn.AddEventListener(ControlButtonViewEvents.ExecOrdered, (e) => {
-                // ボタン実行指示
-                const button = e.Sender as Controls.ControlButtonView;
-                this.ExecCode(button.Control);
-            }, this);
+            btn.AddEventListener(ButtonEvents.SingleClick, this.OnButtonClicked, this);
 
             this._page.ButtonPanel.Add(btn);
 
@@ -387,7 +383,9 @@ namespace App.Controllers {
             if (e.eventPhase !== 2)
                 return;
 
-            if (!this.IsOnEditMode)
+            //if (!this.IsOnEditMode)
+            //    return;
+            if (this._operationType !== ControlSetOperationType.Edit)
                 return;
 
             if (!this._controlSet)
@@ -448,7 +446,7 @@ namespace App.Controllers {
                  || this._controlSet.OperationType === OperationType.BroadlinkDevice)
                 && !this._controlSet.BrDeviceId
             ) {
-                const guide = (this.IsOnEditMode)
+                const guide = (this._operationType === ControlSetOperationType.Edit)
                     ? 'Click Header.'
                     : 'Go Edit.';
                 Popup.Alert.Open({
@@ -462,7 +460,7 @@ namespace App.Controllers {
 
                 switch (this._controlSet.OperationType) {
                     case OperationType.RemoteControl:
-                        const guide = (this.IsOnEditMode)
+                        const guide = (this._operationType === ControlSetOperationType.Edit)
                             ? 'Click Learn-Button.'
                             : 'Go Edit.';
                         message = 'Learn your Remote Control Button.<br/>' + guide;
@@ -522,7 +520,9 @@ namespace App.Controllers {
          * @param targetState On/Offアサインのどちらかを示す
          */
         public ResetToggleAssign(control: Entities.Control, targetState: boolean): void {
-            if (!this.IsOnEditMode)
+            //if (!this.IsOnEditMode)
+            //    return;
+            if (this._operationType !== ControlSetOperationType.Edit)
                 return;
 
             const propName = (targetState)
@@ -543,7 +543,9 @@ namespace App.Controllers {
          * @param control
          */
         public RemoveControl(control: Entities.Control): void {
-            if (!this.IsOnEditMode)
+            //if (!this.IsOnEditMode)
+            //    return;
+            if (this._operationType !== ControlSetOperationType.Edit)
                 return;
 
             // View側削除処理
@@ -569,8 +571,10 @@ namespace App.Controllers {
          * リモコン全体を削除する。
          */
         public async RemoveControlSet(): Promise<boolean> {
-            if (!this.IsOnEditMode)
+            if (this._operationType !== ControlSetOperationType.Edit)
                 return;
+            //if (!this.IsOnEditMode)
+            //    return;
 
             const buttons = Util.Obj.Mirror(this._page.ButtonPanel.Children);
             _.each(buttons, (btn: Fw.Views.IView) => {

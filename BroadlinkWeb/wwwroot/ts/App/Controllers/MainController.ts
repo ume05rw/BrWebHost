@@ -201,7 +201,7 @@ namespace App.Controllers {
                     const button = (e.Sender as Fw.Views.IView).Parent as ControlSetButtonView;
                     const ctr = this.Manager.Get('ControlSet') as ControlSetController;
                     ctr.SetEntity(button.ControlSet);
-                    ctr.SetOperateMode();
+                    ctr.SetExecMode();
                     ctr.ShowModal();
                 });
 

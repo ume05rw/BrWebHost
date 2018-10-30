@@ -12,6 +12,7 @@
     <Content Remove="wwwroot\ts\App\Controllers\ControlHeaderPropertyController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\ControlPropertyController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\ControlSetController.ts" />
+    <Content Remove="wwwroot\ts\App\Controllers\ControlSetSelectController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\IconSelectController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\ItemSelectControllerBase.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\LayoutCheckController.ts" />
@@ -21,6 +22,7 @@
     <Content Remove="wwwroot\ts\App\Controllers\Sub3Controller.ts" />
     <Content Remove="wwwroot\ts\App\Events\Controls\ControlButtonViewEvents.ts" />
     <Content Remove="wwwroot\ts\App\Icon.ts" />
+    <Content Remove="wwwroot\ts\App\Items\ControlSetOperationType.ts" />
     <Content Remove="wwwroot\ts\App\Items\ControlSetTemplate.ts" />
     <Content Remove="wwwroot\ts\App\Items\DeviceType.ts" />
     <Content Remove="wwwroot\ts\App\Items\OperationTemplate.ts" />
@@ -164,7 +166,9 @@
   <ItemGroup>
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ColorSelectController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\IconSelectController.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ControlSetSelectController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\SceneController.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Items\ControlSetOperationType.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Items\DeviceType.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Items\Color.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ControlHeaderPropertyController.ts" />
