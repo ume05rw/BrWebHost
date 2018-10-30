@@ -13,7 +13,7 @@ namespace App.Views.Controls {
     import Color = App.Items.Color;
     import ControlButtonViewEvents = App.Events.Controls.ControlButtonViewEvents;
 
-    export class LabeledButtonView extends Fw.Views.BoxView {
+    export class LabelAndButtonView extends Fw.Views.BoxView {
 
         private _buttonView: Views.ButtonView;
         public get Button(): Views.ButtonView {

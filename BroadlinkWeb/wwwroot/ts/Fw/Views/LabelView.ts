@@ -17,10 +17,14 @@ namespace Fw.Views {
             return this._text;
         }
         public set Text(value: string) {
+            const changed = (this._text !== value);
             this._text = value;
-            this.Elem.text(''); // 一旦消す。
-            this._hiddenSpan.innerText = this._text;
-            this.Refresh();
+
+            if (changed) {
+                this.Elem.text(''); // 一旦消す。
+                this._hiddenSpan.innerText = this._text;
+                this.Refresh();
+            }
         }
 
         private _fontWeight: Property.FontWeight;

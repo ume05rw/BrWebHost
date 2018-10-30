@@ -4,7 +4,7 @@
 /// <reference path="../../../Fw/Views/Property/Anchor.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../../Items/Color.ts" />
-/// <reference path="LabeledButtonView.ts" />
+/// <reference path="LabelAndButtonView.ts" />
 
 namespace App.Views.Controls {
     import Dump = Fw.Util.Dump;
@@ -12,7 +12,7 @@ namespace App.Views.Controls {
     import Property = Fw.Views.Property;
     import Color = App.Items.Color;
 
-    export class SceneButtonView extends LabeledButtonView {
+    export class SceneButtonView extends LabelAndButtonView {
         constructor() {
             super()
 

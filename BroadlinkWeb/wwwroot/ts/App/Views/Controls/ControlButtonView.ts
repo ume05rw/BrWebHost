@@ -6,8 +6,6 @@
 /// <reference path="../../../Fw/Events/EntityEvents.ts" />
 /// <reference path="../../Items/Color.ts" />
 /// <reference path="../../Events/Controls/ControlButtonViewEvents.ts" />
-/// <reference path="LabeledButtonView.ts" />
-
 
 namespace App.Views.Controls {
     import Dump = Fw.Util.Dump;

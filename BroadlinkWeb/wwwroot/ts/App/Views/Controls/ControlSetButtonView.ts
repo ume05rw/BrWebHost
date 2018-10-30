@@ -6,7 +6,7 @@
 /// <reference path="../../Items/Color.ts" />
 /// <reference path="../../Items/OperationType.ts" />
 /// <reference path="../../Items/DeviceType.ts" />
-/// <reference path="LabeledButtonView.ts" />
+/// <reference path="LabelAndButtonView.ts" />
 /// <reference path="../../Models/Entities/ControlSet.ts" />
 /// <reference path="../../Models/Stores/BrDeviceStore.ts" />
 
@@ -20,7 +20,7 @@ namespace App.Views.Controls {
     import OperationType = App.Items.OperationType;
     import DeviceType = App.Items.DeviceType;
 
-    export class ControlSetButtonView extends LabeledButtonView {
+    export class ControlSetButtonView extends LabelAndButtonView {
 
         private _toggle: Views.ToggleButtonInputView;
         public get Toggle(): Views.ToggleButtonInputView {

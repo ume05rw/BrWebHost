@@ -49,7 +49,7 @@
     <Content Remove="wwwroot\ts\App\Views\Controls\ControlSetButtonView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Controls\HeaderBarView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Controls\ItemSelectButtonView.ts" />
-    <Content Remove="wwwroot\ts\App\Views\Controls\LabeledButtonView.ts" />
+    <Content Remove="wwwroot\ts\App\Views\Controls\LabelAndButtonView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Controls\SceneButtonView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Pages\ControlHeaderPropertyPageView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Pages\ControlPropertyPageView.ts" />
@@ -57,6 +57,7 @@
     <Content Remove="wwwroot\ts\App\Views\Pages\ItemSelectPageView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Pages\LayoutCheckPageView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Pages\MainPageView.ts" />
+    <Content Remove="wwwroot\ts\App\Views\Pages\ScenePageView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Pages\Sub3PageView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Popup\AlertPopup.ts" />
     <Content Remove="wwwroot\ts\App\Views\Popup\Cancellable.ts" />
@@ -106,6 +107,7 @@
     <Content Remove="wwwroot\ts\Fw\Views\ButtonView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\CheckBoxView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\ControlView.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\HtmlView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\IInputView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\ImageView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\InputViewBase.ts" />
@@ -198,13 +200,14 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\ControlButtonView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\HeaderBarView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\ItemSelectButtonView.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\LabeledButtonView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\LabelAndButtonView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\ControlSetButtonView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\SceneButtonView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\ControlHeaderPropertyPageView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\ControlPropertyPageView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\ControlSetPageView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\ItemSelectPageView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\ScenePageView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\Sub3PageView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\MainPageView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\LayoutCheckPageView.ts" />
@@ -259,6 +262,7 @@
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\BoxView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ButtonView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\CheckBoxView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\HtmlView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\IInputView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\InputViewBase.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\MouseLocation.ts" />

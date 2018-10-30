@@ -15,22 +15,22 @@ namespace App.Views.Pages {
     import Controls = App.Views.Controls;
     import Color = App.Items.Color;
 
-    export class ControlSetPageView extends Fw.Views.PageView {
+    export class ScenePageView extends Fw.Views.PageView {
 
         public HeaderBar: Controls.HeaderBarView;
         public EditButton: Controls.ButtonView;
         public HeaderLeftLabel: Views.LabelView;
-        public ButtonPanel: Views.SlidableBoxView;
+        public OperationPanel: Views.SlidableBoxView;
 
         constructor() {
             super();
 
             this.HeaderBar = new Controls.HeaderBarView();
-            this.EditButton = new Controls.ButtonView();
             this.HeaderLeftLabel = new Views.LabelView();
-            this.ButtonPanel = new Views.SlidableBoxView(Property.Direction.Vertical);
+            this.EditButton = new Controls.ButtonView();
+            this.OperationPanel = new Views.SlidableBoxView(Property.Direction.Vertical);
 
-            this.SetClassName('ControlSetPageView');
+            this.SetClassName('ScenePageView');
 
             const background = new Views.ImageView();
             background.SetAnchor(0, 0, 0, 0);
@@ -38,7 +38,7 @@ namespace App.Views.Pages {
             background.Src = 'images/Pages/ControlSet/background.jpg';
             this.Add(background);
 
-            this.HeaderBar.Text = 'Remote Control';
+            this.HeaderBar.Text = 'Scene';
             this.HeaderBar.RightButton.Hide(0);
             this.Add(this.HeaderBar);
 
@@ -55,12 +55,11 @@ namespace App.Views.Pages {
             this.HeaderLeftLabel.SetAnchor(null, 5, null, null);
             this.HeaderBar.Add(this.HeaderLeftLabel);
 
-
-            this.ButtonPanel.Position.Policy = Property.PositionPolicy.LeftTop;
-            this.ButtonPanel.Size.Width = 280;
-            this.ButtonPanel.SetAnchor(70, null, null, 10);
-            this.ButtonPanel.Color = Color.MainBackground;
-            this.Add(this.ButtonPanel);
+            this.OperationPanel.Position.Policy = Property.PositionPolicy.LeftTop;
+            this.OperationPanel.Size.Width = 280;
+            this.OperationPanel.SetAnchor(70, null, null, 10);
+            this.OperationPanel.Color = Color.MainBackground;
+            this.Add(this.OperationPanel);
 
             this.HeaderBar.Elem.hover(() => {
                 if (this.EditButton.IsVisible) {

@@ -16,7 +16,6 @@ namespace App.Controllers {
     import Manager = Fw.Controllers.Manager;
     import Property = Fw.Views.Property;
     import Pages = App.Views.Pages;
-    import LabeledButtonView = App.Views.Controls.LabeledButtonView;
     import ButtonEvents = Fw.Events.ButtonViewEvents;
     import ItemSelectButtonView = App.Views.Controls.ItemSelectButtonView;
 

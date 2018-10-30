@@ -3123,10 +3123,6 @@ var App;
                 function MainPageView() {
                     var _this = _super.call(this) || this;
                     _this.HeaderBar = new Controls.HeaderBarView();
-                    _this.BtnGoSub1 = new Controls.ButtonView();
-                    _this.BtnGoSub2 = new Controls.ButtonView();
-                    _this.BtnGoSub3 = new Controls.ButtonView();
-                    _this.BtnGoDynamic = new Controls.ButtonView();
                     _this.SetClassName('MainPageView');
                     var background = new Views.ImageView();
                     background.SetAnchor(0, 0, 0, 0);
@@ -3156,44 +3152,18 @@ var App;
                     _this.ControlSetPanel.BorderRadius = 0;
                     _this.ControlSetPanel.BackgroundColor = Color.Transparent;
                     _this.ControlSetPanel.Color = Color.MainBackground;
-                    _this.ControlSetPanel.SetAnchor(280, 10, 10, 70);
-                    //remConPanel.SetAnchor(280, 10, 10, 10);
+                    _this.ControlSetPanel.SetAnchor(280, 10, 10, 16);
                     _this.ControlSetPanel.ReferencePoint = Property.ReferencePoint.LeftTop;
                     _this.Add(_this.ControlSetPanel);
-                    //for (let i = 0; i < 20; i++) {
-                    //    const btn = new Controls.ControlSetButtonView();
-                    //    // 何かひとつ、詳細なログ出力を行う。デバッグ用。
-                    //    //if (i === 0)
-                    //    //    btn.EnableLog = true;
-                    //    const idx = i % Color.ButtonColors.length;
-                    //    btn.Button.BackgroundColor = Color.ButtonColors[idx];
-                    //    btn.Button.Color = Color.ReverseMain;
-                    //    btn.Button.HoverColor = Color.ButtonHoverColors[idx];
-                    //    btn.Label.Text = `Control ${i + 1}`;
-                    //    //btn.Label.Color = Color.ReverseMain;
-                    //    this.ControlSetPanel.Add(btn);
-                    //}
-                    _this.BottomPanel = new Views.StuckerBoxView();
-                    _this.BottomPanel.HasBorder = true;
-                    _this.BottomPanel.BorderRadius = 0;
-                    _this.BottomPanel.BackgroundColor = 'transparent';
-                    _this.BottomPanel.Color = '#f5f5f5';
-                    _this.BottomPanel.SetAnchor(null, 10, 10, 10);
-                    _this.BottomPanel.ReferencePoint = Property.ReferencePoint.RightBottom;
-                    _this.BottomPanel.Size.Height = 50;
-                    _this.Add(_this.BottomPanel);
-                    _this.BtnGoSub1.Text = 'Show Sub1';
-                    _this.BtnGoSub1.SetSize(80, 30);
-                    _this.BottomPanel.Add(_this.BtnGoSub1);
-                    _this.BtnGoSub2.Text = 'Show Sub2';
-                    _this.BtnGoSub2.SetSize(80, 30);
-                    _this.BottomPanel.Add(_this.BtnGoSub2);
-                    _this.BtnGoSub3.Text = 'Show Sub3';
-                    _this.BtnGoSub3.SetSize(80, 30);
-                    _this.BottomPanel.Add(_this.BtnGoSub3);
-                    _this.BtnGoDynamic.Text = 'Layout';
-                    _this.BtnGoDynamic.SetSize(80, 30);
-                    _this.BottomPanel.Add(_this.BtnGoDynamic);
+                    var iconRights = new Views.HtmlView('a');
+                    iconRights.SetSize(200, 16);
+                    iconRights.SetAnchor(null, null, 5, 2);
+                    iconRights.Color = '#9d9e9e';
+                    iconRights.InnerHtml = 'designed by Lucy G from Flaticon';
+                    iconRights.Dom.style.fontSize = '12px';
+                    iconRights.Elem.attr('href', 'https://www.flaticon.com/packs/free-basic-ui-elements');
+                    iconRights.Elem.attr('target', '_blank');
+                    _this.Add(iconRights);
                     return _this;
                 }
                 return MainPageView;
@@ -3844,99 +3814,16 @@ var Fw;
 })(Fw || (Fw = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Views/ControlView.ts" />
-/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-/// <reference path="../../Items/Color.ts" />
-/// <reference path="../../Events/Controls/ControlButtonViewEvents.ts" />
-var App;
-(function (App) {
-    var Views;
-    (function (Views_3) {
-        var Controls;
-        (function (Controls) {
-            var Dump = Fw.Util.Dump;
-            var Views = Fw.Views;
-            var Property = Fw.Views.Property;
-            var LabeledButtonView = /** @class */ (function (_super) {
-                __extends(LabeledButtonView, _super);
-                function LabeledButtonView() {
-                    var _this = _super.call(this) || this;
-                    _this._buttonView = new Views.ButtonView();
-                    _this._labelView = new Views.LabelView();
-                    _this.SetClassName('LabeledButtonView');
-                    _this.Elem.addClass(_this.ClassName);
-                    _this._buttonView.SetAnchor(0, 0, 0, 20);
-                    _this.Add(_this._buttonView);
-                    _this._labelView.SetAnchor(null, null, null, 0);
-                    _this._labelView.Size.Height = 15;
-                    _this._labelView.FontSize = Property.FontSize.Small;
-                    _this.Add(_this._labelView);
-                    return _this;
-                    // StuckerViewの再配置モード移行操作を変更。
-                    //// StuckerViewが直下の子のLongClickを監視するため。
-                    //this._buttonView.AddEventListener(ControlButtonViewEvents.LongClick, (e) => {
-                    //    this.DispatchEvent(ControlButtonViewEvents.LongClick);
-                    //}, this);
-                }
-                Object.defineProperty(LabeledButtonView.prototype, "Button", {
-                    get: function () {
-                        return this._buttonView;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Object.defineProperty(LabeledButtonView.prototype, "Label", {
-                    get: function () {
-                        return this._labelView;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                LabeledButtonView.prototype.InnerRefresh = function () {
-                    try {
-                        this.SuppressLayout();
-                        _super.prototype.InnerRefresh.call(this);
-                        this.SetStyles({
-                            color: 'transparent',
-                            backgroundColor: 'transparent',
-                            borderWidth: '0',
-                            borderColor: 'transparent',
-                            opacity: "" + this.Opacity
-                        });
-                    }
-                    catch (e) {
-                        Dump.ErrorLog(e, this.ClassName);
-                    }
-                    finally {
-                        this.ResumeLayout();
-                    }
-                };
-                LabeledButtonView.prototype.Dispose = function () {
-                    _super.prototype.Dispose.call(this);
-                    this._labelView = null;
-                    this._buttonView = null;
-                    this.HoverColor = null;
-                };
-                return LabeledButtonView;
-            }(Fw.Views.BoxView));
-            Controls.LabeledButtonView = LabeledButtonView;
-        })(Controls = Views_3.Controls || (Views_3.Controls = {}));
-    })(Views = App.Views || (App.Views = {}));
-})(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../../Fw/Views/RelocatableButtonView.ts" />
 /// <reference path="../../../Fw/Views/Property/Anchor.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../../../Fw/Events/EntityEvents.ts" />
 /// <reference path="../../Items/Color.ts" />
 /// <reference path="../../Events/Controls/ControlButtonViewEvents.ts" />
-/// <reference path="LabeledButtonView.ts" />
 var App;
 (function (App) {
     var Views;
-    (function (Views_4) {
+    (function (Views_3) {
         var Controls;
         (function (Controls) {
             var Views = Fw.Views;
@@ -3960,7 +3847,7 @@ var App;
                 return ItemSelectButtonView;
             }(Views.ButtonView));
             Controls.ItemSelectButtonView = ItemSelectButtonView;
-        })(Controls = Views_4.Controls || (Views_4.Controls = {}));
+        })(Controls = Views_3.Controls || (Views_3.Controls = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
@@ -4013,7 +3900,7 @@ var App;
 var App;
 (function (App) {
     var Views;
-    (function (Views_5) {
+    (function (Views_4) {
         var Popup;
         (function (Popup) {
             var PopupBase = /** @class */ (function () {
@@ -4090,7 +3977,7 @@ var App;
                 return PopupBase;
             }());
             Popup.PopupBase = PopupBase;
-        })(Popup = Views_5.Popup || (Views_5.Popup = {}));
+        })(Popup = Views_4.Popup || (Views_4.Popup = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
@@ -4103,7 +3990,7 @@ var App;
 var App;
 (function (App) {
     var Views;
-    (function (Views_6) {
+    (function (Views_5) {
         var Popup;
         (function (Popup) {
             var AlertPopup = /** @class */ (function (_super) {
@@ -4130,7 +4017,7 @@ var App;
             }(Popup.PopupBase));
             Popup.AlertPopup = AlertPopup;
             Popup.Alert = AlertPopup.Instance;
-        })(Popup = Views_6.Popup || (Views_6.Popup = {}));
+        })(Popup = Views_5.Popup || (Views_5.Popup = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
@@ -6052,13 +5939,95 @@ var Fw;
 })(Fw || (Fw = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Views/ControlView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../Items/Color.ts" />
+/// <reference path="../../Events/Controls/ControlButtonViewEvents.ts" />
+var App;
+(function (App) {
+    var Views;
+    (function (Views_6) {
+        var Controls;
+        (function (Controls) {
+            var Dump = Fw.Util.Dump;
+            var Views = Fw.Views;
+            var Property = Fw.Views.Property;
+            var LabelAndButtonView = /** @class */ (function (_super) {
+                __extends(LabelAndButtonView, _super);
+                function LabelAndButtonView() {
+                    var _this = _super.call(this) || this;
+                    _this._buttonView = new Views.ButtonView();
+                    _this._labelView = new Views.LabelView();
+                    _this.SetClassName('LabeledButtonView');
+                    _this.Elem.addClass(_this.ClassName);
+                    _this._buttonView.SetAnchor(0, 0, 0, 20);
+                    _this.Add(_this._buttonView);
+                    _this._labelView.SetAnchor(null, null, null, 0);
+                    _this._labelView.Size.Height = 15;
+                    _this._labelView.FontSize = Property.FontSize.Small;
+                    _this.Add(_this._labelView);
+                    return _this;
+                    // StuckerViewの再配置モード移行操作を変更。
+                    //// StuckerViewが直下の子のLongClickを監視するため。
+                    //this._buttonView.AddEventListener(ControlButtonViewEvents.LongClick, (e) => {
+                    //    this.DispatchEvent(ControlButtonViewEvents.LongClick);
+                    //}, this);
+                }
+                Object.defineProperty(LabelAndButtonView.prototype, "Button", {
+                    get: function () {
+                        return this._buttonView;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(LabelAndButtonView.prototype, "Label", {
+                    get: function () {
+                        return this._labelView;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                LabelAndButtonView.prototype.InnerRefresh = function () {
+                    try {
+                        this.SuppressLayout();
+                        _super.prototype.InnerRefresh.call(this);
+                        this.SetStyles({
+                            color: 'transparent',
+                            backgroundColor: 'transparent',
+                            borderWidth: '0',
+                            borderColor: 'transparent',
+                            opacity: "" + this.Opacity
+                        });
+                    }
+                    catch (e) {
+                        Dump.ErrorLog(e, this.ClassName);
+                    }
+                    finally {
+                        this.ResumeLayout();
+                    }
+                };
+                LabelAndButtonView.prototype.Dispose = function () {
+                    _super.prototype.Dispose.call(this);
+                    this._labelView = null;
+                    this._buttonView = null;
+                    this.HoverColor = null;
+                };
+                return LabelAndButtonView;
+            }(Fw.Views.BoxView));
+            Controls.LabelAndButtonView = LabelAndButtonView;
+        })(Controls = Views_6.Controls || (Views_6.Controls = {}));
+    })(Views = App.Views || (App.Views = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../../Fw/Views/ButtonView.ts" />
 /// <reference path="../../../Fw/Views/Property/Anchor.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../../Items/Color.ts" />
 /// <reference path="../../Items/OperationType.ts" />
 /// <reference path="../../Items/DeviceType.ts" />
-/// <reference path="LabeledButtonView.ts" />
+/// <reference path="LabelAndButtonView.ts" />
 /// <reference path="../../Models/Entities/ControlSet.ts" />
 /// <reference path="../../Models/Stores/BrDeviceStore.ts" />
 var App;
@@ -6162,7 +6131,7 @@ var App;
                     }
                 };
                 return ControlSetButtonView;
-            }(Controls.LabeledButtonView));
+            }(Controls.LabelAndButtonView));
             Controls.ControlSetButtonView = ControlSetButtonView;
         })(Controls = Views_7.Controls || (Views_7.Controls = {}));
     })(Views = App.Views || (App.Views = {}));
@@ -6217,9 +6186,6 @@ var App;
                     var controlPropertyCtr = new Controllers.ControlPropertyController();
                     var iconSelectCtr = new Controllers.IconSelectController();
                     var colorSelectCtr = new Controllers.ColorSelectController();
-                    var sub1Ctr = new Controllers.Sub1Controller();
-                    var sub2Ctr = new Controllers.Sub2Controller();
-                    var sub3Ctr = new Controllers.Sub3Controller();
                     Dump.Log('SubController Load End');
                 });
                 _this._page.HeaderBar.RightButton.AddEventListener(ButtonEvents.SingleClick, function () { return __awaiter(_this, void 0, void 0, function () {
@@ -6308,20 +6274,6 @@ var App;
                         }
                     });
                 }); });
-                _this._page.BtnGoSub1.AddEventListener(ButtonEvents.SingleClick, function () {
-                    _this.Manager.Get("Sub1").Show();
-                });
-                _this._page.BtnGoSub2.AddEventListener(ButtonEvents.SingleClick, function () {
-                    _this.Manager.Get("Sub2").Show();
-                });
-                _this._page.BtnGoSub3.AddEventListener(ButtonEvents.SingleClick, function () {
-                    _this.Manager.Get("Sub3").Show();
-                });
-                _this._page.BtnGoDynamic.AddEventListener(ButtonEvents.SingleClick, function () {
-                    var ctr = new Controllers.LayoutCheckController('LayoutCheck');
-                    ctr.Show();
-                    // TODO: 二回目以降で落ちる。処理後にControllerをDisposeするフローを考える。
-                });
                 _this._page.ControlSetPanel.AddEventListener(StuckerBoxEvents.OrderChanged, function () {
                     //alert('Fuck!');
                     var csets = new Array();
@@ -6503,7 +6455,7 @@ var App;
 /// <reference path="../../Fw/Controllers/Manager.ts" />
 /// <reference path="../../Fw/Views/Property/Anchor.ts" />
 /// <reference path="../Views/Pages/MainPageView.ts" />
-/// <reference path="../Views/Controls/LabeledButtonView.ts" />
+/// <reference path="../Views/Controls/LabelAndButtonView.ts" />
 /// <reference path="../../Fw/Events/ButtonViewEvents.ts" />
 /// <reference path="../Items/OperationTemplate.ts" />
 /// <reference path="../Items/Color.ts" />
@@ -6512,7 +6464,7 @@ var App;
     var Controllers;
     (function (Controllers) {
         var Property = Fw.Views.Property;
-        var LabeledButtonView = App.Views.Controls.LabeledButtonView;
+        var LabelAndButtonView = App.Views.Controls.LabelAndButtonView;
         var ButtonEvents = Fw.Events.ButtonViewEvents;
         var Color = App.Items.Color;
         var OperationSelectController = /** @class */ (function (_super) {
@@ -6627,7 +6579,7 @@ var App;
                 this._page.SelectorPanel.Add(btn8);
             };
             OperationSelectController.prototype.GetNewButton = function () {
-                var button = new LabeledButtonView();
+                var button = new LabelAndButtonView();
                 button.SetSize(75, 95);
                 button.Button.Position.Policy = Property.PositionPolicy.LeftTop;
                 button.Button.HasBorder = true;
@@ -7275,6 +7227,72 @@ var Fw;
         Views.CheckBoxInputView = CheckBoxInputView;
     })(Views = Fw.Views || (Fw.Views = {}));
 })(Fw || (Fw = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Property;
+        (function (Property) {
+            /**
+             * @description font-weight
+             */
+            var FontWeight;
+            (function (FontWeight) {
+                FontWeight["Lighter"] = "lighter";
+                FontWeight["Normal"] = "normal";
+                FontWeight["Bold"] = "bold";
+                FontWeight["Bolder"] = "bolder";
+            })(FontWeight = Property.FontWeight || (Property.FontWeight = {}));
+        })(Property = Views.Property || (Views.Property = {}));
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Events/ControlViewEvents.ts" />
+/// <reference path="../Util/Dump.ts" />
+/// <reference path="ViewBase.ts" />
+/// <reference path="Property/FontWeight.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var HtmlView = /** @class */ (function (_super) {
+            __extends(HtmlView, _super);
+            function HtmlView(elementType) {
+                var _this = _super.call(this, $("<" + elementType + "></" + elementType + ">")) || this;
+                _this.SetClassName('HtmlView');
+                _this.Elem.addClass(_this.ClassName);
+                _this._innerHtml = '';
+                _this.BackgroundColor = 'transparent';
+                _this.SetTransAnimation(false);
+                _this.SetStyles({
+                    borderWidth: '0',
+                    borderRadius: '0'
+                });
+                return _this;
+            }
+            Object.defineProperty(HtmlView.prototype, "InnerHtml", {
+                get: function () {
+                    return this._innerHtml;
+                },
+                set: function (value) {
+                    var changed = (this._innerHtml !== value);
+                    this._innerHtml = value;
+                    if (changed) {
+                        this.Elem.html(this._innerHtml);
+                        this.Refresh();
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return HtmlView;
+        }(Views.ViewBase));
+        Views.HtmlView = HtmlView;
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Events/ViewEvents.ts" />
@@ -7431,27 +7449,6 @@ var Fw;
         Views.InputViewBase = InputViewBase;
     })(Views = Fw.Views || (Fw.Views = {}));
 })(Fw || (Fw = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var Property;
-        (function (Property) {
-            /**
-             * @description font-weight
-             */
-            var FontWeight;
-            (function (FontWeight) {
-                FontWeight["Lighter"] = "lighter";
-                FontWeight["Normal"] = "normal";
-                FontWeight["Bold"] = "bold";
-                FontWeight["Bolder"] = "bolder";
-            })(FontWeight = Property.FontWeight || (Property.FontWeight = {}));
-        })(Property = Views.Property || (Views.Property = {}));
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Events/ControlViewEvents.ts" />
@@ -7503,10 +7500,13 @@ var Fw;
                     return this._text;
                 },
                 set: function (value) {
+                    var changed = (this._text !== value);
                     this._text = value;
-                    this.Elem.text(''); // 一旦消す。
-                    this._hiddenSpan.innerText = this._text;
-                    this.Refresh();
+                    if (changed) {
+                        this.Elem.text(''); // 一旦消す。
+                        this._hiddenSpan.innerText = this._text;
+                        this.Refresh();
+                    }
                 },
                 enumerable: true,
                 configurable: true
@@ -10497,7 +10497,6 @@ var App;
 /// <reference path="../../../Fw/Events/EntityEvents.ts" />
 /// <reference path="../../Items/Color.ts" />
 /// <reference path="../../Events/Controls/ControlButtonViewEvents.ts" />
-/// <reference path="LabeledButtonView.ts" />
 var App;
 (function (App) {
     var Views;
@@ -10686,7 +10685,7 @@ var App;
 /// <reference path="../../../Fw/Views/Property/Anchor.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../../Items/Color.ts" />
-/// <reference path="LabeledButtonView.ts" />
+/// <reference path="LabelAndButtonView.ts" />
 var App;
 (function (App) {
     var Views;
@@ -10714,7 +10713,7 @@ var App;
                     //this.Button.SetStyle('borderColor', Color.MainHover);
                 };
                 return SceneButtonView;
-            }(Controls.LabeledButtonView));
+            }(Controls.LabelAndButtonView));
             Controls.SceneButtonView = SceneButtonView;
         })(Controls = Views_10.Controls || (Views_10.Controls = {}));
     })(Views = App.Views || (App.Views = {}));
@@ -11181,6 +11180,8 @@ var App;
 /// <reference path="../../../Fw/Views/Property/Anchor.ts" />
 /// <reference path="../../../Fw/Events/PageViewEvents.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../Controls/HeaderBarView.ts" />
+/// <reference path="../../Items/Color.ts" />
 var App;
 (function (App) {
     var Views;
@@ -11189,11 +11190,89 @@ var App;
         (function (Pages) {
             var Views = Fw.Views;
             var Property = Fw.Views.Property;
+            var Controls = App.Views.Controls;
+            var Color = App.Items.Color;
+            var ScenePageView = /** @class */ (function (_super) {
+                __extends(ScenePageView, _super);
+                function ScenePageView() {
+                    var _this = _super.call(this) || this;
+                    _this.HeaderBar = new Controls.HeaderBarView();
+                    _this.HeaderLeftLabel = new Views.LabelView();
+                    _this.EditButton = new Controls.ButtonView();
+                    _this.OperationPanel = new Views.SlidableBoxView(Property.Direction.Vertical);
+                    _this.SetClassName('ScenePageView');
+                    var background = new Views.ImageView();
+                    background.SetAnchor(0, 0, 0, 0);
+                    background.FitPolicy = Property.FitPolicy.Cover;
+                    background.Src = 'images/Pages/ControlSet/background.jpg';
+                    _this.Add(background);
+                    _this.HeaderBar.Text = 'Scene';
+                    _this.HeaderBar.RightButton.Hide(0);
+                    _this.Add(_this.HeaderBar);
+                    _this.EditButton.SetSize(40, 40);
+                    _this.EditButton.BackgroundColor = Color.HeaderButtonBackground;
+                    _this.EditButton.HoverColor = Color.HeaderButtonHover;
+                    _this.EditButton.Color = Color.Main;
+                    _this.EditButton.Text = '@';
+                    _this.EditButton.SetAnchor(null, 255, null, null);
+                    _this.HeaderBar.Add(_this.EditButton);
+                    _this.HeaderLeftLabel.FontSize = Property.FontSize.Large;
+                    _this.HeaderLeftLabel.Color = Color.Main;
+                    _this.HeaderLeftLabel.SetAnchor(null, 5, null, null);
+                    _this.HeaderBar.Add(_this.HeaderLeftLabel);
+                    _this.OperationPanel.Position.Policy = Property.PositionPolicy.LeftTop;
+                    _this.OperationPanel.Size.Width = 280;
+                    _this.OperationPanel.SetAnchor(70, null, null, 10);
+                    _this.OperationPanel.Color = Color.MainBackground;
+                    _this.Add(_this.OperationPanel);
+                    _this.HeaderBar.Elem.hover(function () {
+                        if (_this.EditButton.IsVisible) {
+                            _this.HeaderBar.SetStyles({
+                                backgroundColor: Color.MainBackground,
+                                cursor: 'normal'
+                            });
+                            _this.HeaderBar.ApplyStyles();
+                            return;
+                        }
+                        _this.HeaderBar.SetStyles({
+                            backgroundColor: Color.MainHover,
+                            cursor: 'pointer'
+                        });
+                        _this.HeaderBar.ApplyStyles();
+                    }, function () {
+                        _this.HeaderBar.SetStyles({
+                            backgroundColor: Color.MainBackground,
+                            cursor: 'normal'
+                        });
+                        _this.HeaderBar.ApplyStyles();
+                    });
+                    return _this;
+                }
+                return ScenePageView;
+            }(Fw.Views.PageView));
+            Pages.ScenePageView = ScenePageView;
+        })(Pages = Views_16.Pages || (Views_16.Pages = {}));
+    })(Views = App.Views || (App.Views = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Views/PageView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Events/PageViewEvents.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+var App;
+(function (App) {
+    var Views;
+    (function (Views_17) {
+        var Pages;
+        (function (Pages) {
+            var Views = Fw.Views;
+            var Property = Fw.Views.Property;
             var Sub3PageView = /** @class */ (function (_super) {
                 __extends(Sub3PageView, _super);
                 function Sub3PageView() {
                     var _this = _super.call(this) || this;
-                    _this.HeaderBar = new Views_16.Controls.HeaderBarView();
+                    _this.HeaderBar = new Views_17.Controls.HeaderBarView();
                     _this.Stucker = new Views.StuckerBoxView();
                     _this.SetClassName('Sub3PageView');
                     _this.HeaderBar.Text = 'Sub 3 Page';
@@ -11244,7 +11323,7 @@ var App;
                 return Sub3PageView;
             }(Fw.Views.PageView));
             Pages.Sub3PageView = Sub3PageView;
-        })(Pages = Views_16.Pages || (Views_16.Pages = {}));
+        })(Pages = Views_17.Pages || (Views_17.Pages = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
@@ -11257,7 +11336,7 @@ var App;
 var App;
 (function (App) {
     var Views;
-    (function (Views_17) {
+    (function (Views_18) {
         var Popup;
         (function (Popup) {
             var CancellablePopup = /** @class */ (function (_super) {
@@ -11296,7 +11375,7 @@ var App;
             }(Popup.PopupBase));
             Popup.CancellablePopup = CancellablePopup;
             Popup.Cancellable = CancellablePopup.Instance;
-        })(Popup = Views_17.Popup || (Views_17.Popup = {}));
+        })(Popup = Views_18.Popup || (Views_18.Popup = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
@@ -11309,7 +11388,7 @@ var App;
 var App;
 (function (App) {
     var Views;
-    (function (Views_18) {
+    (function (Views_19) {
         var Popup;
         (function (Popup) {
             var ConfirmPopup = /** @class */ (function (_super) {
@@ -11377,7 +11456,7 @@ var App;
             }(Popup.PopupBase));
             Popup.ConfirmPopup = ConfirmPopup;
             Popup.Confirm = ConfirmPopup.Instance;
-        })(Popup = Views_18.Popup || (Views_18.Popup = {}));
+        })(Popup = Views_19.Popup || (Views_19.Popup = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />

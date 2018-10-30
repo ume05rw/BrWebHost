@@ -56,10 +56,6 @@ namespace App.Controllers {
                     const controlPropertyCtr = new ControlPropertyController();
                     const iconSelectCtr = new IconSelectController();
                     const colorSelectCtr = new ColorSelectController();
-
-                    const sub1Ctr = new Sub1Controller();
-                    const sub2Ctr = new Sub2Controller();
-                    const sub3Ctr = new Sub3Controller();
                     Dump.Log('SubController Load End');
                 });
 
@@ -126,25 +122,6 @@ namespace App.Controllers {
                 ctr2.SetEntity(ctrSet);
                 ctr2.SetEditMode();
                 ctr2.Show();
-            });
-
-            this._page.BtnGoSub1.AddEventListener(ButtonEvents.SingleClick, () => {
-                this.Manager.Get("Sub1").Show();
-            });
-
-            this._page.BtnGoSub2.AddEventListener(ButtonEvents.SingleClick, () => {
-                this.Manager.Get("Sub2").Show();
-            });
-
-            this._page.BtnGoSub3.AddEventListener(ButtonEvents.SingleClick, () => {
-                this.Manager.Get("Sub3").Show();
-            });
-
-            this._page.BtnGoDynamic.AddEventListener(ButtonEvents.SingleClick, () => {
-                const ctr = new LayoutCheckController('LayoutCheck');
-                ctr.Show();
-
-                // TODO: 二回目以降で落ちる。処理後にControllerをDisposeするフローを考える。
             });
 
             this._page.ControlSetPanel.AddEventListener(StuckerBoxEvents.OrderChanged, () => {

@@ -7,7 +7,7 @@
 /// <reference path="../../Fw/Controllers/Manager.ts" />
 /// <reference path="../../Fw/Views/Property/Anchor.ts" />
 /// <reference path="../Views/Pages/MainPageView.ts" />
-/// <reference path="../Views/Controls/LabeledButtonView.ts" />
+/// <reference path="../Views/Controls/LabelAndButtonView.ts" />
 /// <reference path="../../Fw/Events/ButtonViewEvents.ts" />
 /// <reference path="../Items/OperationTemplate.ts" />
 /// <reference path="../Items/Color.ts" />
@@ -17,7 +17,7 @@ namespace App.Controllers {
     import Manager = Fw.Controllers.Manager;
     import Property = Fw.Views.Property;
     import Pages = App.Views.Pages;
-    import LabeledButtonView = App.Views.Controls.LabeledButtonView;
+    import LabelAndButtonView = App.Views.Controls.LabelAndButtonView;
     import ButtonEvents = Fw.Events.ButtonViewEvents;
     import OperationTemplate = App.Items.OperationTemplate;
     import Color = App.Items.Color;
@@ -148,8 +148,8 @@ namespace App.Controllers {
             this._page.SelectorPanel.Add(btn8);
         }
 
-        private GetNewButton(): LabeledButtonView {
-            const button = new LabeledButtonView();
+        private GetNewButton(): LabelAndButtonView {
+            const button = new LabelAndButtonView();
             button.SetSize(75, 95);
             button.Button.Position.Policy = Property.PositionPolicy.LeftTop;
             button.Button.HasBorder = true;
