@@ -32,6 +32,15 @@ namespace Fw.Views {
             this.Refresh();
         }
 
+        private _rightMargin: number;
+        public get RightMargin(): number {
+            return this._rightMargin;
+        }
+        public set RightMargin(value: number) {
+            this._rightMargin = value;
+            this.Refresh();
+        }
+
         private _referencePoint: Property.ReferencePoint;
         public get ReferencePoint(): Property.ReferencePoint {
             return this._referencePoint;
@@ -84,6 +93,7 @@ namespace Fw.Views {
             this.Elem.addClass(this.ClassName);
 
             this._margin = 10;
+            this._rightMargin = 40;
             this._referencePoint = Property.ReferencePoint.LeftTop;
             this._scrollMargin = 0;
 
@@ -747,7 +757,7 @@ namespace Fw.Views {
                 if (!view.IsVisible)
                     return;
 
-                const isOverWidth = (maxRight < (currentLeft + view.Size.Width));
+                const isOverWidth = (maxRight < (currentLeft + view.Size.Width + this._rightMargin));
                 if (isOverWidth && rowElemCount !== 0) {
                     // 表示幅を超え、かつ既にその行に要素が出力されているとき
                     // 改行後に要素を出力する。
@@ -802,7 +812,7 @@ namespace Fw.Views {
                 if (!view.IsVisible)
                     return;
 
-                const isOverWidth = ((currentRight - view.Size.Width) < minLeft);
+                const isOverWidth = ((currentRight - view.Size.Width + this._rightMargin) < minLeft);
                 if (isOverWidth && rowElemCount !== 0) {
                     // 表示幅を超え、かつ既にその行に要素が出力されているとき
                     // 改行後に要素を出力する。
@@ -858,7 +868,7 @@ namespace Fw.Views {
                 if (!view.IsVisible)
                     return;
 
-                const isOverWidth = (maxRight < (currentLeft + view.Size.Width));
+                const isOverWidth = (maxRight < (currentLeft + view.Size.Width + this._rightMargin));
                 if (isOverWidth && rowElemCount !== 0) {
                     // 表示幅を超え、かつ既にその行に要素が出力されているとき
                     // 改行後に要素を出力する。
@@ -914,7 +924,7 @@ namespace Fw.Views {
                 if (!view.IsVisible)
                     return;
 
-                const isOverWidth = ((currentRight - view.Size.Width) < minLeft);
+                const isOverWidth = ((currentRight - view.Size.Width) < minLeft + this._rightMargin);
                 if (isOverWidth && rowElemCount !== 0) {
                     // 表示幅を超え、かつ既にその行に要素が出力されているとき
                     // 改行後に要素を出力する。
