@@ -221,7 +221,7 @@ namespace Fw.Views {
             if (this._isChildRelocation) {
             } else {
                 //this.Log(`${this.ClassName}.OnInnerMouseDown`);
-                e.preventDefault();
+                //e.preventDefault();
 
                 this._isInnerDragging = true;
                 Fw.Root.Instance.SetTextSelection(false);
@@ -319,7 +319,7 @@ namespace Fw.Views {
                 // 子View再配置モードのとき
             } else {
                 // 内部Viewドラッグ中のとき
-                e.preventDefault();
+                //e.preventDefault();
 
                 // ドラッグ終了処理。
                 this._isInnerDragging = false;
