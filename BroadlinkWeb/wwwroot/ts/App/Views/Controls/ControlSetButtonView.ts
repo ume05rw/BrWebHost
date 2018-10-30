@@ -46,11 +46,11 @@ namespace App.Views.Controls {
             this._toggle.SetBoolValue(entity.ToggleState);
             this.Add(this._toggle);
 
-            this.ApplyEntity();
+            this.ApplyByEntity();
             this.ApplyBrDeviceStatus();
         }
 
-        public ApplyEntity(): void {
+        public ApplyByEntity(): void {
             if (this.ControlSet) {
                 this.Button.BackgroundColor = this.ControlSet.Color;
                 this.Button.Color = this.ControlSet.Color;

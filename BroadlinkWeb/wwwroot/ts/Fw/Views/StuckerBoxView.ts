@@ -41,15 +41,27 @@ namespace Fw.Views {
             this.Refresh();
         }
 
+        private _isChildRelocation: boolean = false;
+        public get IsChildRelocation(): boolean {
+            return this._isChildRelocation;
+        }
+
+        public LockedImage: string = '';
+        public UnlockedImage: string = '';
+        public get LockButton(): ButtonView {
+            return this._lockButton;
+        }
+
         private _innerBox: BoxView;
         private _positionBarMax: LineView;
         private _positionBarCurrent: LineView;
+        private _lockButton: ButtonView;
         private _scrollMargin: number = 0;
 
         private _backupView: IView;
         private _dummyView: IView;
         private _childrenOrder: Array<string> = null;
-        private _isChildRelocation: boolean = false;
+        
         private _isChildDragging: boolean = false;
         private _isInnerDragging: boolean = false;
         private _relocationTargetView: IView = null;
@@ -62,7 +74,11 @@ namespace Fw.Views {
             this._innerBox = new BoxView();
             this._positionBarMax = new LineView(Property.Direction.Vertical);
             this._positionBarCurrent = new LineView(Property.Direction.Vertical);
+            this._lockButton = new ButtonView();
             this._dummyView = new Fw.Views.BoxView();
+
+            this.LockedImage = 'images/Fw/Locked.png';
+            this.UnlockedImage = 'images/Fw/Unlocked.png';
 
             this.SetClassName('StuckerBoxView');
             this.Elem.addClass(this.ClassName);
@@ -91,6 +107,18 @@ namespace Fw.Views {
             this._positionBarCurrent.SetParent(this);
             this.Elem.append(this._positionBarCurrent.Elem);
 
+            this._lockButton.SetSize(30, 30);
+            this._lockButton.Position.Policy = Property.PositionPolicy.LeftTop;
+            this._lockButton.BorderRadius = 50;
+            this._lockButton.HasBorder = true;
+            this._lockButton.Color = '#9d9e9e';
+            this._lockButton.BackgroundColor = '#FFFFFF';
+            this._lockButton.HoverColor = '#F4F4F4';
+            this._lockButton.ImageSrc = this.LockedImage;
+            this._lockButton.Hide(0);
+            
+
+
             this._backupView = null;
             this._dummyView.Elem.addClass('Shadow');
             this._dummyView.Position.Policy = Property.PositionPolicy.LeftTop;
@@ -102,16 +130,20 @@ namespace Fw.Views {
             this.OnInnerMouseMove = this.OnInnerMouseMove.bind(this);
             this.OnInnerMouseUp = this.OnInnerMouseUp.bind(this);
 
-            this.OnInnerSingleClick = this.OnInnerSingleClick.bind(this);
             this.OnChildMouseDown = this.OnChildMouseDown.bind(this);
             this.OnChildMouseMove = this.OnChildMouseMove.bind(this);
             this.OnInnerMouseWheel = this.OnInnerMouseWheel.bind(this);
             this.OnChildMouseUp = this.OnChildMouseUp.bind(this);
 
+            this.OnInnerSingleClick = this.OnInnerSingleClick.bind(this);
+            this.OnLockButtonClick = this.OnLockButtonClick.bind(this);
+
             this._innerBox.Elem.on('touchstart mousedown', this.OnInnerMouseDown);
             this._innerBox.Elem.on('touchmove mousemove', this.OnInnerMouseMove);
             this._innerBox.Elem.on('touchend mouseup mouseout', this.OnInnerMouseUp);
-            this._innerBox.Elem.on('click', this.OnInnerSingleClick);
+            //this._innerBox.Elem.on('click', this.OnInnerSingleClick);
+
+            this._lockButton.Elem.on('click', this.OnLockButtonClick)
 
             var mouseWheelEvent = 'onwheel' in document
                 ? 'wheel'
@@ -119,13 +151,20 @@ namespace Fw.Views {
                     ? 'mousewheel'
                     : 'DOMMouseScroll';
             this._innerBox.Elem.on(mouseWheelEvent, this.OnInnerMouseWheel);
+
+            this.AddEventListener(Events.Attached, () => {
+                this.Parent.Add(this._lockButton);
+            });
+            this.AddEventListener(Events.Detached, () => {
+                this.Parent.Remove(this._lockButton);
+            });
         }
 
         public Add(view: IView): void {
             view.Position.Policy = Property.PositionPolicy.LeftTop;
             this._innerBox.Add(view);
 
-            view.AddEventListener(ControlViewEvents.LongClick, this.OnChildLongClick, this);
+            //view.AddEventListener(ControlViewEvents.LongClick, this.OnChildLongClick, this);
             view.Elem.on('touchstart mousedown', this.OnChildMouseDown);
             view.Elem.on('touchmove mousemove', this.OnChildMouseMove);
             view.Elem.on('touchend mouseup', this.OnChildMouseUp);
@@ -134,7 +173,7 @@ namespace Fw.Views {
         public Remove(view: IView): void {
             this._innerBox.Remove(view);
 
-            view.RemoveEventListener(ControlViewEvents.LongClick, this.OnChildLongClick, this);
+            //view.RemoveEventListener(ControlViewEvents.LongClick, this.OnChildLongClick, this);
             view.Elem.off('touchstart mousedown', this.OnChildMouseDown);
             view.Elem.off('touchmove mousemove', this.OnChildMouseMove);
             view.Elem.off('touchend mouseup', this.OnChildMouseUp);
@@ -153,18 +192,14 @@ namespace Fw.Views {
 
 // #region "上下スクロール"
 
+        private _mouseClickTime: Date;
         private OnInnerMouseDown(e: JQueryEventObject): void {
-            // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
-            if (e.eventPhase !== 2)
-                return;
 
-            //this.Log(`${this.ClassName}.OnInnerMouseDown`);
-            e.preventDefault();
+            //// 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
+            //if (e.eventPhase !== 2)
+            //    return;
 
-            if (this._isChildRelocation)
-                return;
-
-            this._isInnerDragging = true;
+            this._mouseClickTime = new Date();
 
             const ml = MouseLocation.Create(e);
             this._dragStartMousePosition.X = ml.ClientX;
@@ -172,18 +207,27 @@ namespace Fw.Views {
 
             this._dragStartViewPosition.X = this._innerBox.Position.Left;
             this._dragStartViewPosition.Y = this._innerBox.Position.Top;
-            Fw.Root.Instance.SetTextSelection(false);
+
+            if (this._isChildRelocation) {
+            } else {
+                //this.Log(`${this.ClassName}.OnInnerMouseDown`);
+                e.preventDefault();
+
+                this._isInnerDragging = true;
+                Fw.Root.Instance.SetTextSelection(false);
+            }
         }
 
         private OnInnerMouseMove(e: JQueryEventObject): void {
-            // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
-            if (e.eventPhase !== 2)
-                return;
 
-            e.preventDefault();
+            //// 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
+            //if (e.eventPhase !== 2)
+            //    return;
 
             if (this._isChildRelocation || this._scrollMargin === 0)
                 return;
+
+            e.preventDefault();
 
             // * ドラッグ処理中でないとき *　は無視する。
             if (!this._isInnerDragging)
@@ -216,6 +260,7 @@ namespace Fw.Views {
                 return;
 
             e.preventDefault();
+
             const orgEv = e.originalEvent as any;
             const delta = orgEv.deltaY
                 ? -(orgEv.deltaY)
@@ -240,19 +285,36 @@ namespace Fw.Views {
         }
 
         private OnInnerMouseUp(e: JQueryEventObject): void {
-            // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
-            if (e.eventPhase !== 2)
-                return;
 
-            e.preventDefault();
+            //// 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
+            //if (e.eventPhase !== 2)
+            //    return;
+
+            // シングルクリック判定
+            if (this._mouseClickTime) {
+                const elasped = (new Date()).getTime() - this._mouseClickTime.getTime();
+                const ml = MouseLocation.Create(e);
+                const addX = ml.ClientX - this._dragStartMousePosition.X;
+                const addY = ml.ClientY - this._dragStartMousePosition.Y;
+                if (elasped < 800
+                    && (Math.abs(addX) + Math.abs(addY)) < 30
+                ) {
+                    this.OnInnerSingleClick();
+                }
+                this._mouseClickTime = null;
+            }
 
             //this.Log(`${this.ClassName}.OnInnerMouseUp`);
-            if (this._isChildRelocation)
-                return;
+            if (this._isChildRelocation) {
+                // 子View再配置モードのとき
+            } else {
+                // 内部Viewドラッグ中のとき
+                e.preventDefault();
 
-            // 内部Viewドラッグ中のとき、ドラッグ終了処理。
-            this._isInnerDragging = false;
-            Fw.Root.Instance.SetTextSelection(true);
+                // ドラッグ終了処理。
+                this._isInnerDragging = false;
+                Fw.Root.Instance.SetTextSelection(true);
+            }
         }
 
 // #endregion "上下スクロール"
@@ -260,12 +322,60 @@ namespace Fw.Views {
 // #region "子View再配置"
 
         /**
-         * 子要素がロングクリックされたとき
+         * スタッカーBox自身がクリックされたとき
          * @param e1
          */
-        private OnChildLongClick(e: Fw.Events.EventObject): void {
-            Dump.Log(`${this.ClassName}.OnChildLongClick`);
-            this.StartRelocation();
+        private OnInnerSingleClick(): void {
+            //this.Log(`${this.ClassName}.OnSingleClick`);
+
+            if (this._lockButton.IsVisible) {
+                // ロックボタン表示中のとき
+                if (!this._isChildRelocation)
+                    this._lockButton.Hide();
+            } else {
+                // ロックボタン非表示のとき
+                // 現在のロック状態を表示する。
+                const image = (this._isChildRelocation)
+                    ? this.UnlockedImage
+                    : this.LockedImage;
+
+                if (image !== this._lockButton.ImageSrc)
+                    this._lockButton.ImageSrc = image;
+
+                this._lockButton.Show();
+            }
+        }
+
+        /**
+         * ロックボタンがクリックされたとき
+         * 
+         * @param e
+         */
+        private OnLockButtonClick(e: JQueryEventObject): void {
+            e.stopPropagation();
+
+            //if (e.eventPhase !== 2)
+            //    return;
+
+            // 一旦、変更後のロック状態を表示。
+            this._lockButton.ImageSrc = (this._isChildRelocation)
+                ? this.LockedImage
+                : this.UnlockedImage;
+
+            if (this._isChildRelocation) {
+                // 子View再配置モードのとき
+                // 配置を確定させる。
+                this.CommitRelocation();
+
+                _.delay(() => {
+                    this._lockButton.Hide();
+                }, 700);
+
+            } else {
+                // 通常モードのとき
+                // 子View再配置モードを開始する。
+                this.StartRelocation();
+            }
         }
 
         public StartRelocation(): void {
@@ -287,22 +397,6 @@ namespace Fw.Views {
             });
 
             this.Refresh();
-        }
-
-        /**
-         * スタッカーBox自身がクリックされたとき
-         * @param e1
-         */
-        private OnInnerSingleClick(e: JQueryEventObject): void {
-            e.stopPropagation();
-            if (e.eventPhase !== 2)
-                return;
-
-            //this.Log(`${this.ClassName}.OnSingleClick`);
-            if (this._isChildRelocation) {
-                // 子要素再配置モードのとき、配置を確定させる。
-                this.CommitRelocation();
-            }
         }
 
         public CommitRelocation(): void {
@@ -522,6 +616,7 @@ namespace Fw.Views {
                 this._innerBox.SuppressLayout();
                 this._positionBarMax.SuppressLayout();
                 this._positionBarCurrent.SuppressLayout();
+                this._lockButton.SuppressLayout()
                 _.each(this._innerBox.Children, (view: IView) => {
                     view.SuppressLayout();
                 });
@@ -542,6 +637,8 @@ namespace Fw.Views {
                 this._positionBarMax.Refresh();
                 this._positionBarCurrent.ResumeLayout();
                 this._positionBarCurrent.Refresh();
+                this._lockButton.ResumeLayout()
+                this._lockButton.Refresh()
                 //this.Log(`${this.ClassName}.InnerRefresh-End`);
             }
         }
@@ -552,6 +649,7 @@ namespace Fw.Views {
                 this._innerBox.SuppressLayout();
                 this._positionBarMax.SuppressLayout();
                 this._positionBarCurrent.SuppressLayout();
+                this._lockButton.SuppressLayout();
                 _.each(this._innerBox.Children, (view: IView) => {
                     view.SuppressLayout();
                 });
@@ -612,6 +710,11 @@ namespace Fw.Views {
 
                 this.InnerRefreshPositionLine();
 
+                this._lockButton.Position.Left
+                    = this.Position.Left + this.Size.Width - this._lockButton.Size.Width;
+                this._lockButton.Position.Top
+                    = this.Position.Top - (this._lockButton.Size.Height / 2);
+
             } catch (e) {
                 Dump.ErrorLog(e, this.ClassName);
             } finally {
@@ -626,6 +729,8 @@ namespace Fw.Views {
                 this._positionBarMax.Refresh();
                 this._positionBarCurrent.ResumeLayout();
                 this._positionBarCurrent.Refresh();
+                this._lockButton.ResumeLayout();
+                this._lockButton.Refresh();
             }
         }
 

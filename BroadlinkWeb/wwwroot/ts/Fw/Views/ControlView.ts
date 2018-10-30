@@ -38,6 +38,7 @@ namespace Fw.Views {
             // touch系イベントはmouse系と重複して発生するため、リッスンしない。
             this.Elem.on('mousedown', (e) => {
                 //this.Log(`mousedown`);
+
                 if (this._clickEventTimer != null)
                     clearTimeout(this._clickEventTimer);
 

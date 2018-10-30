@@ -197,6 +197,10 @@ namespace App.Controllers {
                 const btn = new ControlSetButtonView(cs);
 
                 btn.Button.AddEventListener(ButtonEvents.SingleClick, (e) => {
+                    // 子View再配置中のとき、何もしない。
+                    if (this._page.ControlSetPanel.IsChildRelocation)
+                        return;
+
                     // メインボタンクリック - リモコンをスライドイン表示する。
                     const button = (e.Sender as Fw.Views.IView).Parent as ControlSetButtonView;
                     const ctr = this.Manager.Get('ControlSet') as ControlSetController;
@@ -206,6 +210,10 @@ namespace App.Controllers {
                 });
 
                 btn.Toggle.AddEventListener(ToggleEvents.Changed, (e) => {
+                    // 子View再配置中のとき、何もしない。
+                    if (this._page.ControlSetPanel.IsChildRelocation)
+                        return;
+
                     // トグルクリック
                     const button = (e.Sender as Fw.Views.IView).Parent as ControlSetButtonView;
                     const cset = button.ControlSet;
@@ -237,7 +245,7 @@ namespace App.Controllers {
                     if (!btn)
                         return;
 
-                    btn.ApplyEntity();
+                    btn.ApplyByEntity();
                 });
 
                 if (cs.OperationType === OperationType.BroadlinkDevice)
