@@ -6,7 +6,7 @@
 namespace App.Models.Entities {
     import Dump = Fw.Util.Dump;
 
-    export class ControlHeader extends Fw.Models.EntityBase {
+    export class Header extends Fw.Models.EntityBase {
         public Order: number = 99999;
         public ToggleState: boolean = false;
     }

@@ -91,21 +91,20 @@ namespace App.Controllers {
                 (i === 4)
                     ? row.SetWaitable(false)
                     : row.SetWaitable(true);
-                this._page.OperationPanel.Add(row);
+                this._page.DetailPanel.Add(row);
             }
-
         }
 
         public SetEditMode(): void {
-            const left = (this._page.Size.Width / 2) - (this._page.OperationPanel.Size.Width / 2);
-            this._page.OperationPanel.Position.Left = left;
+            const left = (this._page.Size.Width / 2) - (this._page.DetailPanel.Size.Width / 2);
+            this._page.DetailPanel.Position.Left = left;
             this._page.HeaderBar.Label.Show(0);
             this._page.HeaderBar.LeftButton.Show(0);
             this._page.HeaderLeftLabel.Hide(0);
             this._page.EditButton.Hide(0);
             this._page.HeaderBar.RightButton.Show(0);
 
-            _.each(this._page.OperationPanel.Children, (v) => {
+            _.each(this._page.DetailPanel.Children, (v) => {
                 //if (v instanceof Controls.ControlButtonView)
                 //    (v as Controls.ControlButtonView).SetRelocatable(true);
             });
@@ -113,14 +112,14 @@ namespace App.Controllers {
 
         public SetOperateMode(): void {
             const left = 10;
-            this._page.OperationPanel.Position.Left = left;
+            this._page.DetailPanel.Position.Left = left;
             this._page.HeaderBar.Label.Hide(0);
             this._page.HeaderBar.LeftButton.Hide(0);
             this._page.HeaderBar.RightButton.Hide(0);
             this._page.HeaderLeftLabel.Show(0);
             this._page.EditButton.Show(0);
 
-            _.each(this._page.OperationPanel.Children, (v) => {
+            _.each(this._page.DetailPanel.Children, (v) => {
                 //if (v instanceof Controls.ControlButtonView)
                 //    (v as Controls.ControlButtonView).SetRelocatable(false);
             });

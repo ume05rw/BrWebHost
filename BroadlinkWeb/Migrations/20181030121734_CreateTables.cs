@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BroadlinkWeb.Migrations
 {
-    public partial class InitCreate : Migration
+    public partial class CreateTables : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -23,6 +23,36 @@ namespace BroadlinkWeb.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "remotehost",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int(11)", nullable: false)
+                        .Annotation("MySQL:AutoIncrement", true),
+                    Name = table.Column<string>(type: "varchar(50)", nullable: true),
+                    IpAddressString = table.Column<string>(type: "varchar(255)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_remotehost", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "scenes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int(11)", nullable: false)
+                        .Annotation("MySQL:AutoIncrement", true),
+                    Name = table.Column<string>(type: "varchar(50)", nullable: true),
+                    IconUrl = table.Column<string>(type: "varchar(255)", nullable: true),
+                    Color = table.Column<string>(type: "varchar(255)", nullable: false),
+                    Order = table.Column<int>(type: "int(11)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_scenes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "controlsets",
                 columns: table => new
                 {
@@ -36,7 +66,7 @@ namespace BroadlinkWeb.Migrations
                     ToggleState = table.Column<byte>(type: "tinyint(1)", nullable: false),
                     IsMainPanelReady = table.Column<byte>(type: "tinyint(1)", nullable: false),
                     IsTogglable = table.Column<byte>(type: "tinyint(1)", nullable: false),
-                    IsBrDevice = table.Column<byte>(type: "tinyint(1)", nullable: false),
+                    OperationType = table.Column<byte>(type: "tinyint(2)", nullable: false),
                     IsTemplate = table.Column<byte>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
@@ -77,20 +107,55 @@ namespace BroadlinkWeb.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "scenedetails",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int(11)", nullable: false)
+                        .Annotation("MySQL:AutoIncrement", true),
+                    SceneId = table.Column<int>(type: "int(11)", nullable: false),
+                    ControlSetId = table.Column<int>(type: "int(11)", nullable: false),
+                    ControlId = table.Column<int>(type: "int(11)", nullable: false),
+                    WaitSecond = table.Column<decimal>(type: "decimal(6, 1)", nullable: false),
+                    Order = table.Column<int>(type: "int(11)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_scenedetails", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_scenedetails_controls_ControlId",
+                        column: x => x.ControlId,
+                        principalTable: "controls",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_scenedetails_controlsets_ControlSetId",
+                        column: x => x.ControlSetId,
+                        principalTable: "controlsets",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_scenedetails_scenes_SceneId",
+                        column: x => x.SceneId,
+                        principalTable: "scenes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.InsertData(
                 table: "controlsets",
-                columns: new[] { "Id", "BrDeviceId", "Color", "IconUrl", "IsBrDevice", "IsMainPanelReady", "IsTemplate", "IsTogglable", "Name", "Order", "ToggleState" },
+                columns: new[] { "Id", "BrDeviceId", "Color", "IconUrl", "IsMainPanelReady", "IsTemplate", "IsTogglable", "Name", "OperationType", "Order", "ToggleState" },
                 values: new object[,]
                 {
-                    { 1, null, "#fcc91f", "images/icons/controlset/tv.png", (byte)0, (byte)1, (byte)1, (byte)1, "TV", 99999, (byte)0 },
-                    { 2, null, "#F92068", "images/icons/controlset/av.png", (byte)0, (byte)1, (byte)1, (byte)1, "AV", 99999, (byte)0 },
-                    { 3, null, "#ccdc4b", "images/icons/controlset/light.png", (byte)0, (byte)1, (byte)1, (byte)1, "Light", 99999, (byte)0 },
-                    { 4, null, "#6545C6", "images/icons/controlset/aircompressor.png", (byte)0, (byte)1, (byte)1, (byte)1, "Air Complessor", 99999, (byte)0 },
-                    { 5, null, "#84bde8", "images/icons/controlset/a1.png", (byte)1, (byte)1, (byte)1, (byte)0, "A1 Sensor", 99999, (byte)0 },
-                    { 6, null, "#84bde8", "images/icons/controlset/sp2.png", (byte)1, (byte)1, (byte)1, (byte)1, "Sp2 Switch", 99999, (byte)0 },
-                    { 7, null, "#84bde8", "images/icons/controlset/sp2.png", (byte)1, (byte)1, (byte)1, (byte)1, "Sp1 Switch", 99999, (byte)0 },
-                    { 8, null, "#84bde8", "images/icons/controlset/sp2.png", (byte)1, (byte)1, (byte)1, (byte)1, "Single Control", 99999, (byte)0 },
-                    { 9, null, "#84bde8", "images/icons/controlset/sp2.png", (byte)1, (byte)1, (byte)1, (byte)1, "No Control", 99999, (byte)0 }
+                    { 1, null, "#fcc91f", "images/icons/controlset/tv.png", (byte)1, (byte)1, (byte)1, "TV", (byte)1, 99999, (byte)0 },
+                    { 2, null, "#F92068", "images/icons/controlset/av.png", (byte)1, (byte)1, (byte)1, "AV", (byte)1, 99999, (byte)0 },
+                    { 3, null, "#ccdc4b", "images/icons/controlset/light.png", (byte)1, (byte)1, (byte)1, "Light", (byte)1, 99999, (byte)0 },
+                    { 4, null, "#6545C6", "images/icons/controlset/aircompressor.png", (byte)1, (byte)1, (byte)1, "Air Complessor", (byte)1, 99999, (byte)0 },
+                    { 5, null, "#84bde8", "images/icons/controlset/a1.png", (byte)1, (byte)1, (byte)0, "A1 Sensor", (byte)2, 99999, (byte)0 },
+                    { 6, null, "#84bde8", "images/icons/controlset/sp2.png", (byte)1, (byte)1, (byte)1, "Sp2 Switch", (byte)2, 99999, (byte)0 },
+                    { 7, null, "#84bde8", "images/icons/controlset/sp2.png", (byte)1, (byte)1, (byte)1, "Sp1 Switch", (byte)2, 99999, (byte)0 },
+                    { 8, null, "#84bde8", "images/icons/controlset/sp2.png", (byte)1, (byte)1, (byte)1, "Single Control", (byte)2, 99999, (byte)0 },
+                    { 9, null, "#84bde8", "images/icons/controlset/sp2.png", (byte)1, (byte)1, (byte)1, "No Control", (byte)2, 99999, (byte)0 }
                 });
 
             migrationBuilder.InsertData(
@@ -110,16 +175,16 @@ namespace BroadlinkWeb.Migrations
                     { 36, "", "#9d9e9e", 4, "images/icons/settings2.png", (byte)0, (byte)0, "Select", 5, 185 },
                     { 37, "", "#9d9e9e", 4, "images/icons/arrow2_up.png", (byte)0, (byte)0, "Up", 185, 95 },
                     { 38, "", "#9d9e9e", 4, "images/icons/arrow2_down.png", (byte)0, (byte)0, "Down", 185, 185 },
-                    { 39, "", "#F92068", 5, "", (byte)0, (byte)0, "Temp.", 185, 5 },
-                    { 40, "", "#84bde8", 5, "", (byte)0, (byte)0, "Humidity", 5, 5 },
-                    { 41, "", "#81c03b", 5, "", (byte)0, (byte)0, "VOC", 95, 95 },
-                    { 42, "", "#fcc91f", 5, "", (byte)0, (byte)0, "Light", 5, 185 },
-                    { 43, "", "#B5743B", 5, "", (byte)0, (byte)0, "Noise", 185, 185 },
-                    { 44, "", "#F92068", 6, "", (byte)0, (byte)1, "Power On", 5, 5 },
-                    { 45, "", "#9d9e9e", 6, "", (byte)1, (byte)0, "Power Off", 185, 5 },
-                    { 46, "", "#6545C6", 6, "", (byte)0, (byte)0, "Light On", 5, 95 },
-                    { 47, "", "#9d9e9e", 6, "", (byte)0, (byte)0, "Light Off", 185, 95 },
-                    { 48, "", "#F92068", 7, "", (byte)0, (byte)1, "Power On", 5, 5 },
+                    { 39, "Temp", "#F92068", 5, "", (byte)0, (byte)0, "Temp.", 185, 5 },
+                    { 40, "Humidity", "#84bde8", 5, "", (byte)0, (byte)0, "Humidity", 5, 5 },
+                    { 41, "Voc", "#81c03b", 5, "", (byte)0, (byte)0, "VOC", 95, 95 },
+                    { 42, "Light", "#fcc91f", 5, "", (byte)0, (byte)0, "Light", 5, 185 },
+                    { 43, "Noise", "#B5743B", 5, "", (byte)0, (byte)0, "Noise", 185, 185 },
+                    { 44, "PowerOn", "#F92068", 6, "", (byte)0, (byte)1, "Power On", 5, 5 },
+                    { 45, "PowerOff", "#9d9e9e", 6, "", (byte)1, (byte)0, "Power Off", 185, 5 },
+                    { 46, "LightOn", "#6545C6", 6, "", (byte)0, (byte)0, "Light On", 5, 95 },
+                    { 47, "LightOff", "#9d9e9e", 6, "", (byte)0, (byte)0, "Light Off", 185, 95 },
+                    { 48, "PowerOn", "#F92068", 7, "", (byte)0, (byte)1, "Power On", 5, 5 },
                     { 27, "", "#9d9e9e", 2, "images/icons/darrow_left.png", (byte)0, (byte)0, "Prev", 5, 365 },
                     { 26, "", "#9d9e9e", 2, "images/icons/darrow_right.png", (byte)0, (byte)0, "Next", 185, 365 },
                     { 25, "", "#9d9e9e", 2, "images/icons/circle_play.png", (byte)0, (byte)0, "Play", 95, 275 },
@@ -134,7 +199,7 @@ namespace BroadlinkWeb.Migrations
                     { 9, "", "#9d9e9e", 1, "images/icons/num_3.png", (byte)0, (byte)0, "Ch.3", 185, 275 },
                     { 10, "", "#9d9e9e", 1, "images/icons/num_2.png", (byte)0, (byte)0, "Ch.2", 95, 275 },
                     { 11, "", "#9d9e9e", 1, "images/icons/num_1.png", (byte)0, (byte)0, "Ch.1", 5, 275 },
-                    { 49, "", "#9d9e9e", 7, "", (byte)1, (byte)0, "Power Off", 185, 5 },
+                    { 49, "PowerOff", "#9d9e9e", 7, "", (byte)1, (byte)0, "Power Off", 185, 5 },
                     { 12, "", "#9d9e9e", 1, "images/icons/circle_minus.png", (byte)0, (byte)0, "Vol.Down", 5, 185 },
                     { 14, "", "#9d9e9e", 1, "images/icons/arrow2_down.png", (byte)0, (byte)0, "Ch.Down", 185, 185 },
                     { 15, "", "#9d9e9e", 1, "images/icons/arrow2_up.png", (byte)0, (byte)0, "Ch.Up", 185, 95 },
@@ -147,7 +212,7 @@ namespace BroadlinkWeb.Migrations
                     { 22, "", "#9d9e9e", 2, "images/icons/circle_minus.png", (byte)0, (byte)0, "Vol.Down", 5, 185 },
                     { 23, "", "#9d9e9e", 2, "images/icons/arrow2_up.png", (byte)0, (byte)0, "Ch.Up", 185, 95 },
                     { 13, "", "#9d9e9e", 1, "images/icons/circle_plus.png", (byte)0, (byte)0, "Vol.Up", 5, 95 },
-                    { 50, "", "#9d9e9e", 8, "", (byte)0, (byte)0, "Control", 95, 5 }
+                    { 50, "Control", "#9d9e9e", 8, "", (byte)0, (byte)0, "Control", 95, 5 }
                 });
 
             migrationBuilder.CreateIndex(
@@ -159,12 +224,36 @@ namespace BroadlinkWeb.Migrations
                 name: "IX_controlsets_BrDeviceId",
                 table: "controlsets",
                 column: "BrDeviceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_scenedetails_ControlId",
+                table: "scenedetails",
+                column: "ControlId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_scenedetails_ControlSetId",
+                table: "scenedetails",
+                column: "ControlSetId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_scenedetails_SceneId",
+                table: "scenedetails",
+                column: "SceneId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "remotehost");
+
+            migrationBuilder.DropTable(
+                name: "scenedetails");
+
+            migrationBuilder.DropTable(
                 name: "controls");
+
+            migrationBuilder.DropTable(
+                name: "scenes");
 
             migrationBuilder.DropTable(
                 name: "controlsets");

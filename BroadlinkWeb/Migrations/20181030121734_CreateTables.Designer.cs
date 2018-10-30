@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BroadlinkWeb.Migrations
 {
     [DbContext(typeof(Dbc))]
-    [Migration("20181027110024_ModIsBrDeviceToControlType")]
-    partial class ModIsBrDeviceToControlType
+    [Migration("20181030121734_CreateTables")]
+    partial class CreateTables
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -158,9 +158,6 @@ namespace BroadlinkWeb.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(255)");
 
-                    b.Property<byte>("ControlType")
-                        .HasColumnType("tinyint(2)");
-
                     b.Property<string>("IconUrl")
                         .HasColumnType("varchar(255)");
 
@@ -175,6 +172,9 @@ namespace BroadlinkWeb.Migrations
 
                     b.Property<string>("Name")
                         .HasColumnType("varchar(50)");
+
+                    b.Property<byte>("OperationType")
+                        .HasColumnType("tinyint(2)");
 
                     b.Property<int>("Order")
                         .HasColumnType("int(11)");
@@ -193,16 +193,101 @@ namespace BroadlinkWeb.Migrations
                     b.HasAnnotation("MySQL:Collation", "utf8_general_ci ");
 
                     b.HasData(
-                        new { Id = 1, Color = "#fcc91f", ControlType = (byte)1, IconUrl = "images/icons/controlset/tv.png", IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "TV", Order = 99999, ToggleState = (byte)0 },
-                        new { Id = 2, Color = "#F92068", ControlType = (byte)1, IconUrl = "images/icons/controlset/av.png", IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "AV", Order = 99999, ToggleState = (byte)0 },
-                        new { Id = 3, Color = "#ccdc4b", ControlType = (byte)1, IconUrl = "images/icons/controlset/light.png", IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "Light", Order = 99999, ToggleState = (byte)0 },
-                        new { Id = 4, Color = "#6545C6", ControlType = (byte)1, IconUrl = "images/icons/controlset/aircompressor.png", IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "Air Complessor", Order = 99999, ToggleState = (byte)0 },
-                        new { Id = 5, Color = "#84bde8", ControlType = (byte)2, IconUrl = "images/icons/controlset/a1.png", IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)0, Name = "A1 Sensor", Order = 99999, ToggleState = (byte)0 },
-                        new { Id = 6, Color = "#84bde8", ControlType = (byte)2, IconUrl = "images/icons/controlset/sp2.png", IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "Sp2 Switch", Order = 99999, ToggleState = (byte)0 },
-                        new { Id = 7, Color = "#84bde8", ControlType = (byte)2, IconUrl = "images/icons/controlset/sp2.png", IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "Sp1 Switch", Order = 99999, ToggleState = (byte)0 },
-                        new { Id = 8, Color = "#84bde8", ControlType = (byte)2, IconUrl = "images/icons/controlset/sp2.png", IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "Single Control", Order = 99999, ToggleState = (byte)0 },
-                        new { Id = 9, Color = "#84bde8", ControlType = (byte)2, IconUrl = "images/icons/controlset/sp2.png", IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "No Control", Order = 99999, ToggleState = (byte)0 }
+                        new { Id = 1, Color = "#fcc91f", IconUrl = "images/icons/controlset/tv.png", IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "TV", OperationType = (byte)1, Order = 99999, ToggleState = (byte)0 },
+                        new { Id = 2, Color = "#F92068", IconUrl = "images/icons/controlset/av.png", IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "AV", OperationType = (byte)1, Order = 99999, ToggleState = (byte)0 },
+                        new { Id = 3, Color = "#ccdc4b", IconUrl = "images/icons/controlset/light.png", IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "Light", OperationType = (byte)1, Order = 99999, ToggleState = (byte)0 },
+                        new { Id = 4, Color = "#6545C6", IconUrl = "images/icons/controlset/aircompressor.png", IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "Air Complessor", OperationType = (byte)1, Order = 99999, ToggleState = (byte)0 },
+                        new { Id = 5, Color = "#84bde8", IconUrl = "images/icons/controlset/a1.png", IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)0, Name = "A1 Sensor", OperationType = (byte)2, Order = 99999, ToggleState = (byte)0 },
+                        new { Id = 6, Color = "#84bde8", IconUrl = "images/icons/controlset/sp2.png", IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "Sp2 Switch", OperationType = (byte)2, Order = 99999, ToggleState = (byte)0 },
+                        new { Id = 7, Color = "#84bde8", IconUrl = "images/icons/controlset/sp2.png", IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "Sp1 Switch", OperationType = (byte)2, Order = 99999, ToggleState = (byte)0 },
+                        new { Id = 8, Color = "#84bde8", IconUrl = "images/icons/controlset/sp2.png", IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "Single Control", OperationType = (byte)2, Order = 99999, ToggleState = (byte)0 },
+                        new { Id = 9, Color = "#84bde8", IconUrl = "images/icons/controlset/sp2.png", IsMainPanelReady = (byte)1, IsTemplate = (byte)1, IsTogglable = (byte)1, Name = "No Control", OperationType = (byte)2, Order = 99999, ToggleState = (byte)0 }
                     );
+                });
+
+            modelBuilder.Entity("BroadlinkWeb.Models.Entities.RemoteHost", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int(11)");
+
+                    b.Property<string>("IpAddressString")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("varchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("remotehost");
+
+                    b.HasAnnotation("MySQL:Charset", "utf8");
+
+                    b.HasAnnotation("MySQL:Collation", "utf8_general_ci ");
+                });
+
+            modelBuilder.Entity("BroadlinkWeb.Models.Entities.Scene", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int(11)");
+
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("IconUrl")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int(11)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("scenes");
+
+                    b.HasAnnotation("MySQL:Charset", "utf8");
+
+                    b.HasAnnotation("MySQL:Collation", "utf8_general_ci ");
+                });
+
+            modelBuilder.Entity("BroadlinkWeb.Models.Entities.SceneDetail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int(11)");
+
+                    b.Property<int>("ControlId")
+                        .HasColumnType("int(11)");
+
+                    b.Property<int>("ControlSetId")
+                        .HasColumnType("int(11)");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int(11)");
+
+                    b.Property<int>("SceneId")
+                        .HasColumnType("int(11)");
+
+                    b.Property<decimal>("WaitSecond")
+                        .HasColumnType("decimal(6, 1)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ControlId");
+
+                    b.HasIndex("ControlSetId");
+
+                    b.HasIndex("SceneId");
+
+                    b.ToTable("scenedetails");
+
+                    b.HasAnnotation("MySQL:Charset", "utf8");
+
+                    b.HasAnnotation("MySQL:Collation", "utf8_general_ci ");
                 });
 
             modelBuilder.Entity("BroadlinkWeb.Models.Entities.Control", b =>
@@ -218,6 +303,24 @@ namespace BroadlinkWeb.Migrations
                     b.HasOne("BroadlinkWeb.Models.Entities.BrDevice", "BrDevice")
                         .WithMany()
                         .HasForeignKey("BrDeviceId");
+                });
+
+            modelBuilder.Entity("BroadlinkWeb.Models.Entities.SceneDetail", b =>
+                {
+                    b.HasOne("BroadlinkWeb.Models.Entities.Control", "Control")
+                        .WithMany()
+                        .HasForeignKey("ControlId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("BroadlinkWeb.Models.Entities.ControlSet", "ControlSet")
+                        .WithMany()
+                        .HasForeignKey("ControlSetId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("BroadlinkWeb.Models.Entities.Scene", "Scene")
+                        .WithMany("Details")
+                        .HasForeignKey("SceneId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }

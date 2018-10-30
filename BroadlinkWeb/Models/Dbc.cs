@@ -18,6 +18,10 @@ namespace BroadlinkWeb.Models
 
         public DbSet<Control> Controls { get; set; }
 
+        public DbSet<Scene> Scenes { get; set; }
+
+        public DbSet<SceneDetail> SceneDetails { get; set; }
+
         public DbSet<RemoteHost> RemoteHosts { get; set; }
 
         /// <summary>

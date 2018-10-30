@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace BroadlinkWeb.Models.Entities
 {
     [NotMapped]
-    public class ControlHeader
+    public class Header
     {
         [NotMapped]
         public int Id { get; set; }

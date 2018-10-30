@@ -128,7 +128,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
         [HttpPost("UpdateHeader/{id}")]
         public async Task<XhrResult> UpdateHeader(
             [FromRoute] int id,
-            [FromBody] ControlHeader controlHeader
+            [FromBody] Header controlHeader
         )
         {
             try
@@ -159,7 +159,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
 
         // POST: api/ControlSets/UpdateHeader/5
         [HttpPost("UpdateHeader")]
-        public async Task<XhrResult> UpdateHeader([FromBody] ControlHeader[] controlHeaders)
+        public async Task<XhrResult> UpdateHeader([FromBody] Header[] controlHeaders)
         {
             try
             {

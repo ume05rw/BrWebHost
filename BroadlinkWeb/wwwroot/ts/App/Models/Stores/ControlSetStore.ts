@@ -5,7 +5,7 @@
 /// <reference path="../../../Fw/Util/Xhr/Query.ts" />
 /// <reference path="../../Items/ControlSetTemplate.ts" />
 /// <reference path="../Entities/ControlSet.ts" />
-/// <reference path="../Entities/ControlHeader.ts" />
+/// <reference path="../Entities/Header.ts" />
 /// <reference path="ControlStore.ts" />
 
 
@@ -15,7 +15,7 @@ namespace App.Models.Stores {
     import Controls = App.Models.Stores.Controls;
     import Xhr = Fw.Util.Xhr;
     import ControlSetTemplate = App.Items.ControlSetTemplate;
-    import ControlHeader = App.Models.Entities.ControlHeader;
+    import Header = App.Models.Entities.Header;
 
     export class ControlSetStore extends Fw.Models.StoreBase<ControlSet> {
 
@@ -139,7 +139,7 @@ namespace App.Models.Stores {
 
         public async UpdateHeader(entity: ControlSet): Promise<boolean> {
 
-            const header = new ControlHeader();
+            const header = new Header();
             header.Id = entity.Id;
             header.Order = entity.Order;
             header.ToggleState = entity.ToggleState;
@@ -164,10 +164,10 @@ namespace App.Models.Stores {
 
         public async UpdateHeaders(entities: ControlSet[]): Promise<boolean> {
 
-            const headers = new Array<ControlHeader>();
+            const headers = new Array<Header>();
 
             _.each(entities, (entity: ControlSet) => {
-                const header = new ControlHeader();
+                const header = new Header();
                 header.Id = entity.Id;
                 header.Order = entity.Order;
                 header.ToggleState = entity.ToggleState;

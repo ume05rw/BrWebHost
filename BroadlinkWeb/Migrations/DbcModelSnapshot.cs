@@ -224,6 +224,70 @@ namespace BroadlinkWeb.Migrations
                     b.HasAnnotation("MySQL:Collation", "utf8_general_ci ");
                 });
 
+            modelBuilder.Entity("BroadlinkWeb.Models.Entities.Scene", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int(11)");
+
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("IconUrl")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int(11)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("scenes");
+
+                    b.HasAnnotation("MySQL:Charset", "utf8");
+
+                    b.HasAnnotation("MySQL:Collation", "utf8_general_ci ");
+                });
+
+            modelBuilder.Entity("BroadlinkWeb.Models.Entities.SceneDetail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int(11)");
+
+                    b.Property<int>("ControlId")
+                        .HasColumnType("int(11)");
+
+                    b.Property<int>("ControlSetId")
+                        .HasColumnType("int(11)");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int(11)");
+
+                    b.Property<int>("SceneId")
+                        .HasColumnType("int(11)");
+
+                    b.Property<decimal>("WaitSecond")
+                        .HasColumnType("decimal(6, 1)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ControlId");
+
+                    b.HasIndex("ControlSetId");
+
+                    b.HasIndex("SceneId");
+
+                    b.ToTable("scenedetails");
+
+                    b.HasAnnotation("MySQL:Charset", "utf8");
+
+                    b.HasAnnotation("MySQL:Collation", "utf8_general_ci ");
+                });
+
             modelBuilder.Entity("BroadlinkWeb.Models.Entities.Control", b =>
                 {
                     b.HasOne("BroadlinkWeb.Models.Entities.ControlSet", "ControlSet")
@@ -237,6 +301,24 @@ namespace BroadlinkWeb.Migrations
                     b.HasOne("BroadlinkWeb.Models.Entities.BrDevice", "BrDevice")
                         .WithMany()
                         .HasForeignKey("BrDeviceId");
+                });
+
+            modelBuilder.Entity("BroadlinkWeb.Models.Entities.SceneDetail", b =>
+                {
+                    b.HasOne("BroadlinkWeb.Models.Entities.Control", "Control")
+                        .WithMany()
+                        .HasForeignKey("ControlId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("BroadlinkWeb.Models.Entities.ControlSet", "ControlSet")
+                        .WithMany()
+                        .HasForeignKey("ControlSetId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("BroadlinkWeb.Models.Entities.Scene", "Scene")
+                        .WithMany("Details")
+                        .HasForeignKey("SceneId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }

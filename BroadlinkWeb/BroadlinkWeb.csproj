@@ -29,9 +29,11 @@
     <Content Remove="wwwroot\ts\App\Models\Entities\A1Values.ts" />
     <Content Remove="wwwroot\ts\App\Models\Entities\BrDevice.ts" />
     <Content Remove="wwwroot\ts\App\Models\Entities\Control.ts" />
-    <Content Remove="wwwroot\ts\App\Models\Entities\ControlHeader.ts" />
     <Content Remove="wwwroot\ts\App\Models\Entities\ControlSet.ts" />
+    <Content Remove="wwwroot\ts\App\Models\Entities\Header.ts" />
     <Content Remove="wwwroot\ts\App\Models\Entities\RmCommand.ts" />
+    <Content Remove="wwwroot\ts\App\Models\Entities\Scene.ts" />
+    <Content Remove="wwwroot\ts\App\Models\Entities\SceneDetail.ts" />
     <Content Remove="wwwroot\ts\App\Models\Entities\Script.ts" />
     <Content Remove="wwwroot\ts\App\Models\Entities\Sp2Status.ts" />
     <Content Remove="wwwroot\ts\App\Models\Stores\A1Store.ts" />
@@ -42,6 +44,8 @@
     <Content Remove="wwwroot\ts\App\Models\Stores\RemoteStore.ts" />
     <Content Remove="wwwroot\ts\App\Models\Stores\Rm2ProStore.ts" />
     <Content Remove="wwwroot\ts\App\Models\Stores\RmStore.ts" />
+    <Content Remove="wwwroot\ts\App\Models\Stores\SceneDetailStore.ts" />
+    <Content Remove="wwwroot\ts\App\Models\Stores\SceneStore.ts" />
     <Content Remove="wwwroot\ts\App\Models\Stores\ScriptStore.ts" />
     <Content Remove="wwwroot\ts\App\Models\Stores\Sp2Store.ts" />
     <Content Remove="wwwroot\ts\App\Models\Stores\WolStore.ts" />
@@ -183,9 +187,11 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\A1Values.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\BrDevice.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\Control.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\ControlHeader.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\Header.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\ControlSet.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\RmCommand.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\Scene.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\SceneDetail.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\Script.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\Sp2Status.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\A1Store.ts" />
@@ -196,6 +202,8 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\RemoteStore.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\Rm2ProStore.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\RmStore.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\SceneDetailStore.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\SceneStore.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\ScriptStore.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\Sp2Store.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\WolStore.ts" />
