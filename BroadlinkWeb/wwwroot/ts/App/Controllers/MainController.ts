@@ -56,8 +56,27 @@ namespace App.Controllers {
                     const controlPropertyCtr = new ControlPropertyController();
                     const iconSelectCtr = new IconSelectController();
                     const colorSelectCtr = new ColorSelectController();
+
+                    const sceneCtr = new SceneController();
+
                     Dump.Log('SubController Load End');
                 });
+
+
+            for (let i = 0; i < 5; i++) {
+                const btn = new App.Views.Controls.SceneButtonView();
+                btn.Label.Text = `Scene ${i + 1}`;
+                btn.Button.AddEventListener(ButtonEvents.SingleClick, async () => {
+                    const ctr = this.Manager.Get('Scene') as SceneController;
+                    ctr.SetOperateMode();
+                    ctr.ShowModal();
+                });
+
+                this._page.ScenePanel.Add(btn);
+            }
+
+
+
 
             this._page.HeaderBar.RightButton.AddEventListener(ButtonEvents.SingleClick, async () => {
                 // ヘッダの追加ボタンクリック - 新規リモコンのテンプレート選択後に編集画面へ。

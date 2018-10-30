@@ -49,12 +49,6 @@ namespace App.Views.Pages {
             this.ScenePanel.ReferencePoint = Property.ReferencePoint.LeftTop;
             this.Add(this.ScenePanel);
 
-            for (let i = 0; i < 5; i++) {
-                const btn = new Controls.SceneButtonView();
-                btn.Label.Text = `Scene ${i + 1}`;
-                this.ScenePanel.Add(btn);
-            }
-
             this.ControlSetPanel = new Views.StuckerBoxView();
             this.ControlSetPanel.HasBorder = true;
             this.ControlSetPanel.BorderRadius = 0;

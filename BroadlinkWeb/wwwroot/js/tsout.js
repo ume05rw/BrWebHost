@@ -3142,11 +3142,6 @@ var App;
                     _this.ScenePanel.Size.Height = 200;
                     _this.ScenePanel.ReferencePoint = Property.ReferencePoint.LeftTop;
                     _this.Add(_this.ScenePanel);
-                    for (var i = 0; i < 5; i++) {
-                        var btn = new Controls.SceneButtonView();
-                        btn.Label.Text = "Scene " + (i + 1);
-                        _this.ScenePanel.Add(btn);
-                    }
                     _this.ControlSetPanel = new Views.StuckerBoxView();
                     _this.ControlSetPanel.HasBorder = true;
                     _this.ControlSetPanel.BorderRadius = 0;
@@ -6186,8 +6181,23 @@ var App;
                     var controlPropertyCtr = new Controllers.ControlPropertyController();
                     var iconSelectCtr = new Controllers.IconSelectController();
                     var colorSelectCtr = new Controllers.ColorSelectController();
+                    var sceneCtr = new Controllers.SceneController();
                     Dump.Log('SubController Load End');
                 });
+                for (var i = 0; i < 5; i++) {
+                    var btn = new App.Views.Controls.SceneButtonView();
+                    btn.Label.Text = "Scene " + (i + 1);
+                    btn.Button.AddEventListener(ButtonEvents.SingleClick, function () { return __awaiter(_this, void 0, void 0, function () {
+                        var ctr;
+                        return __generator(this, function (_a) {
+                            ctr = this.Manager.Get('Scene');
+                            ctr.SetOperateMode();
+                            ctr.ShowModal();
+                            return [2 /*return*/];
+                        });
+                    }); });
+                    _this._page.ScenePanel.Add(btn);
+                }
                 _this._page.HeaderBar.RightButton.AddEventListener(ButtonEvents.SingleClick, function () { return __awaiter(_this, void 0, void 0, function () {
                     var ctr, item, ctrSet, _a, ctr2;
                     return __generator(this, function (_b) {
@@ -6593,6 +6603,121 @@ var App;
             return OperationSelectController;
         }(Controllers.ItemSelectControllerBase));
         Controllers.OperationSelectController = OperationSelectController;
+    })(Controllers = App.Controllers || (App.Controllers = {}));
+})(App || (App = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Fw/Controllers/ControllerBase.ts" />
+/// <reference path="../../Fw/Controllers/Manager.ts" />
+/// <reference path="../../Fw/Util/Dump.ts" />
+/// <reference path="../../Fw/Events/ControlViewEvents.ts" />
+/// <reference path="../../Fw/Events/EntityEvents.ts" />
+/// <reference path="../../Fw/Events/ButtonViewEvents.ts" />
+/// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
+/// <reference path="../Views/Pages/MainPageView.ts" />
+/// <reference path="../Views/Popup/AlertPopup.ts" />
+/// <reference path="../Events/Controls/ControlButtonViewEvents.ts" />
+/// <reference path="../Models/Entities/ControlSet.ts" />
+/// <reference path="../Models/Stores/RmStore.ts" />
+/// <reference path="../Items/OperationType.ts" />
+/// <reference path="../Items/DeviceType.ts" />
+var App;
+(function (App) {
+    var Controllers;
+    (function (Controllers) {
+        var Pages = App.Views.Pages;
+        var ButtonViewEvents = Fw.Events.ButtonViewEvents;
+        var SceneController = /** @class */ (function (_super) {
+            __extends(SceneController, _super);
+            function SceneController() {
+                var _this = _super.call(this, 'Scene') || this;
+                _this.SetClassName('SceneController');
+                _this.SetPageView(new Pages.ScenePageView());
+                _this._page = _this.View;
+                _this._page.HeaderBar.LeftButton.Hide(0);
+                _this._page.HeaderBar.LeftButton.AddEventListener(ButtonViewEvents.SingleClick, function () { return __awaiter(_this, void 0, void 0, function () {
+                    var ctr;
+                    return __generator(this, function (_a) {
+                        ctr = this.Manager.Get('Main');
+                        ctr.Show();
+                        return [2 /*return*/];
+                    });
+                }); });
+                _this._page.EditButton.AddEventListener(ButtonViewEvents.SingleClick, function () {
+                    _this.SetEditMode();
+                    _this.ToUnmodal();
+                });
+                _this._page.HeaderBar.RightButton.AddEventListener(ButtonViewEvents.SingleClick, function (e) {
+                    _this.OnOrderedNewControl(e);
+                });
+                _this._page.HeaderBar.Elem.on('click', function (e) {
+                    _this.OnOrderedHeader(e);
+                });
+                _this._page.HeaderBar.Label.Elem.on('click', function (e) {
+                    _this.OnOrderedHeader(e);
+                });
+                return _this;
+            }
+            Object.defineProperty(SceneController.prototype, "IsOnEditMode", {
+                /**
+                 * 現在リモコン編集中か否か
+                 */
+                get: function () {
+                    // 編集ボタンが見えているとき操作モード。非表示のとき編集モード
+                    return !this._page.EditButton.IsVisible;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            SceneController.prototype.SetEditMode = function () {
+                var left = (this._page.Size.Width / 2) - (this._page.OperationPanel.Size.Width / 2);
+                this._page.OperationPanel.Position.Left = left;
+                this._page.HeaderBar.Label.Show(0);
+                this._page.HeaderBar.LeftButton.Show(0);
+                this._page.HeaderLeftLabel.Hide(0);
+                this._page.EditButton.Hide(0);
+                this._page.HeaderBar.RightButton.Show(0);
+                _.each(this._page.OperationPanel.Children, function (v) {
+                    //if (v instanceof Controls.ControlButtonView)
+                    //    (v as Controls.ControlButtonView).SetRelocatable(true);
+                });
+            };
+            SceneController.prototype.SetOperateMode = function () {
+                var left = 10;
+                this._page.OperationPanel.Position.Left = left;
+                this._page.HeaderBar.Label.Hide(0);
+                this._page.HeaderBar.LeftButton.Hide(0);
+                this._page.HeaderBar.RightButton.Hide(0);
+                this._page.HeaderLeftLabel.Show(0);
+                this._page.EditButton.Show(0);
+                _.each(this._page.OperationPanel.Children, function (v) {
+                    //if (v instanceof Controls.ControlButtonView)
+                    //    (v as Controls.ControlButtonView).SetRelocatable(false);
+                });
+            };
+            /**
+             * 操作対象シーンEnttiyをセットする。
+             * @param entity
+             */
+            SceneController.prototype.SetEntity = function (entity) {
+            };
+            SceneController.prototype.ApplyFromEntity = function () {
+            };
+            /**
+             * 操作追加指示
+             * @param e
+             */
+            SceneController.prototype.OnOrderedNewControl = function (e) {
+            };
+            /**
+             * シーンヘッダ情報の編集指示
+             * @param e
+             */
+            SceneController.prototype.OnOrderedHeader = function (e) {
+            };
+            return SceneController;
+        }(Fw.Controllers.ControllerBase));
+        Controllers.SceneController = SceneController;
     })(Controllers = App.Controllers || (App.Controllers = {}));
 })(App || (App = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
