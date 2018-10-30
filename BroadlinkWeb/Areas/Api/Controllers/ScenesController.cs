@@ -11,29 +11,29 @@ using BroadlinkWeb.Models.Entities;
 namespace BroadlinkWeb.Areas.Api.Controllers
 {
     [Produces("application/json")]
-    [Route("api/ControlSets")]
-    public class ControlSetsController : Controller
+    [Route("api/Scenes")]
+    public class ScenesController : Controller
     {
         private readonly Dbc _dbc;
 
-        public ControlSetsController(Dbc dbc)
+        public ScenesController(Dbc dbc)
         {
-            Xb.Util.Out("ControlSetsController.Constructor");
+            Xb.Util.Out("ScenesController.Constructor");
             this._dbc = dbc;
         }
 
-        // GET: api/ControlSets
+        // GET: api/Scenes
         [HttpGet]
-        public XhrResult GetControlSets()
+        public XhrResult GetScenes()
         {
-            Xb.Util.Out("ControlSetsController.GetControlSets");
+            Xb.Util.Out("ScenesController.GetControlSets");
             try
             {
                 if (!ModelState.IsValid)
                     return XhrResult.CreateError(ModelState);
 
-                var list = _dbc.ControlSets
-                    .Include(c => c.Controls)
+                var list = _dbc.Scenes
+                    .Include(c => c.Details)
                     .ToArray();
                 return XhrResult.CreateSucceeded(list);
             }
@@ -43,22 +43,22 @@ namespace BroadlinkWeb.Areas.Api.Controllers
             }
         }
 
-        // GET: api/ControlSets/5
+        // GET: api/Scenes/5
         [HttpGet("{id}")]
-        public async Task<XhrResult> GetControlSet([FromRoute] int id)
+        public async Task<XhrResult> GetScene([FromRoute] int id)
         {
             try
             {
                 if (!ModelState.IsValid)
                     return XhrResult.CreateError(ModelState);
 
-                var controlSet = await _dbc.ControlSets
+                var scene = await _dbc.Scenes
                     .SingleOrDefaultAsync(m => m.Id == id);
 
-                if (controlSet == null)
+                if (scene == null)
                     return XhrResult.CreateError("Entity Not Found");
 
-                return XhrResult.CreateSucceeded(controlSet);
+                return XhrResult.CreateSucceeded(scene);
             }
             catch (Exception ex)
             {
@@ -66,19 +66,19 @@ namespace BroadlinkWeb.Areas.Api.Controllers
             }
         }
 
-        // POST: api/ControlSets
+        // POST: api/Scenes
         [HttpPost]
-        public async Task<XhrResult> PostControlSet([FromBody] ControlSet controlSet)
+        public async Task<XhrResult> PostScene([FromBody] Scene scene)
         {
             try
             {
                 if (!ModelState.IsValid)
                     return XhrResult.CreateError(ModelState);
 
-                if (controlSet.Id == default(int))
+                if (scene.Id == default(int))
                 {
                     // IDが無いEntity = 新規
-                    this._dbc.ControlSets.Add(controlSet);
+                    this._dbc.Scenes.Add(scene);
 
                     // 保存
                     await _dbc.SaveChangesAsync();
@@ -86,29 +86,29 @@ namespace BroadlinkWeb.Areas.Api.Controllers
                 else
                 {
                     // IDを持つEntity = 既存の更新
-                    this._dbc.Entry(controlSet).State = EntityState.Modified;
+                    this._dbc.Entry(scene).State = EntityState.Modified;
 
-                    foreach (var control in controlSet.Controls)
+                    foreach (var detail in scene.Details)
                     {
-                        if (control.Id == default(int))
-                            this._dbc.Controls.Add(control);
+                        if (detail.Id == default(int))
+                            this._dbc.SceneDetails.Add(detail);
                         else
-                            this._dbc.Entry(control).State = EntityState.Modified;
+                            this._dbc.Entry(detail).State = EntityState.Modified;
                     }
 
                     // 既存の明細レコードを取得
-                    var children = this._dbc.Controls
-                        .Where(c => c.ControlSetId == controlSet.Id)
+                    var children = this._dbc.SceneDetails
+                        .Where(c => c.SceneId == scene.Id)
                         .ToArray();
 
                     // 既存の明細のうち、渡し値に存在しないものを削除。
                     if (children.Length > 0)
                     {
                         var removes = children
-                            .Where(c => !controlSet.Controls.Any(c2 => c2.Id == c.Id));
-                        foreach (var control in removes)
+                            .Where(c => !scene.Details.Any(c2 => c2.Id == c.Id));
+                        foreach (var detail in removes)
                         {
-                            this._dbc.Controls.Remove(control);
+                            this._dbc.SceneDetails.Remove(detail);
                         }
                     }
 
@@ -116,7 +116,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
                     await _dbc.SaveChangesAsync();
                 }
 
-                return XhrResult.CreateSucceeded(controlSet);
+                return XhrResult.CreateSucceeded(scene);
             }
             catch (Exception ex)
             {
@@ -124,7 +124,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
             }
         }
 
-        // POST: api/ControlSets/UpdateHeader/5
+        // POST: api/Scenes/UpdateHeader/5
         [HttpPost("UpdateHeader/{id}")]
         public async Task<XhrResult> UpdateHeader(
             [FromRoute] int id,
@@ -136,16 +136,15 @@ namespace BroadlinkWeb.Areas.Api.Controllers
                 if (!ModelState.IsValid)
                     return XhrResult.CreateError(ModelState);
 
-                var controlSet = await this._dbc.ControlSets
+                var scene = await this._dbc.Scenes
                     .SingleOrDefaultAsync(m => m.Id == id);
 
-                if (controlSet == null)
+                if (scene == null)
                     return XhrResult.CreateError("Entity Not Found");
 
-                controlSet.Order = header.Order;
-                controlSet.ToggleState = header.ToggleState;
+                scene.Order = header.Order;
 
-                this._dbc.Entry(controlSet).State = EntityState.Modified;
+                this._dbc.Entry(scene).State = EntityState.Modified;
 
                 await _dbc.SaveChangesAsync();
 
@@ -157,7 +156,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
             }
         }
 
-        // POST: api/ControlSets/UpdateHeader/5
+        // POST: api/Scenes/UpdateHeader/5
         [HttpPost("UpdateHeader")]
         public async Task<XhrResult> UpdateHeader([FromBody] Header[] headers)
         {
@@ -167,23 +166,22 @@ namespace BroadlinkWeb.Areas.Api.Controllers
                     return XhrResult.CreateError(ModelState);
 
                 // 更新対象を走査、見つからなければエラー応答。
-                var targets = new List<ControlSet>();
+                var targets = new List<Scene>();
                 foreach (var cHeader in headers)
                 {
-                    var controlSet = await this._dbc.ControlSets
+                    var scene = await this._dbc.Scenes
                         .SingleOrDefaultAsync(m => m.Id == cHeader.Id);
 
-                    if (controlSet == null)
+                    if (scene == null)
                         return XhrResult.CreateError("Entity Not Found");
 
-                    controlSet.Order = cHeader.Order;
-                    controlSet.ToggleState = cHeader.ToggleState;
-                    targets.Add(controlSet);
+                    scene.Order = cHeader.Order;
+                    targets.Add(scene);
                 }
 
                 // 更新対象が全て存在するとき、DB更新
-                foreach (var cSet in targets)
-                    this._dbc.Entry(cSet).State = EntityState.Modified;
+                foreach (var scene in targets)
+                    this._dbc.Entry(scene).State = EntityState.Modified;
 
                 await _dbc.SaveChangesAsync();
 
@@ -195,7 +193,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
             }
         }
 
-        // DELETE: api/ControlSets/5
+        // DELETE: api/Scenes/5
         [HttpDelete("{id}")]
         public async Task<XhrResult> DeleteControlSet([FromRoute] int id)
         {
@@ -204,23 +202,23 @@ namespace BroadlinkWeb.Areas.Api.Controllers
                 if (!ModelState.IsValid)
                     return XhrResult.CreateError(ModelState);
 
-                var controlSet = await this._dbc.ControlSets
+                var scene = await this._dbc.Scenes
                     .SingleOrDefaultAsync(m => m.Id == id);
 
-                if (controlSet == null)
+                if (scene == null)
                     return XhrResult.CreateError("Entity Not Found");
 
                 // 既存の明細レコードを取得
-                var children = this._dbc.Controls
-                    .Where(c => c.ControlSetId == controlSet.Id)
+                var children = this._dbc.SceneDetails
+                    .Where(c => c.SceneId == scene.Id)
                     .ToArray();
 
                 // 既存明細レコードを削除指定
-                foreach (var control in children)
-                    this._dbc.Controls.Remove(control);
+                foreach (var detail in children)
+                    this._dbc.SceneDetails.Remove(detail);
 
                 // ヘッダレコードを削除指定
-                this._dbc.ControlSets.Remove(controlSet);
+                this._dbc.Scenes.Remove(scene);
 
                 // ヘッダ・明細を一括削除
                 await this._dbc.SaveChangesAsync();
@@ -235,7 +233,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
 
         private bool ControlSetExists(int id)
         {
-            return _dbc.ControlSets.Any(e => e.Id == id);
+            return _dbc.Scenes.Any(e => e.Id == id);
         }
     }
 }
