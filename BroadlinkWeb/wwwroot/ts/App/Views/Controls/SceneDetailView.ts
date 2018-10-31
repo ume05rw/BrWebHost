@@ -4,6 +4,7 @@
 /// <reference path="../../../Fw/Views/Property/Anchor.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../../../Fw/Events/EntityEvents.ts" />
+/// <reference path="../../../Fw/Events/BoxViewEvents.ts" />
 /// <reference path="../../Items/Color.ts" />
 /// <reference path="../../Events/Controls/ControlButtonViewEvents.ts" />
 /// <reference path="../../Models/Stores/SceneDetailStore.ts" />
@@ -13,6 +14,7 @@ namespace App.Views.Controls {
     import Views = Fw.Views;
     import Property = Fw.Views.Property;
     import Color = App.Items.Color;
+    import BoxEvents = Fw.Events.BoxViewEvents;
     import ControlButtonViewEvents = App.Events.Controls.ControlButtonViewEvents;
     import EntityEvents = Fw.Events.EntityEvents;
     import Stores = App.Models.Stores;
@@ -24,6 +26,9 @@ namespace App.Views.Controls {
         public readonly ControlButton: ItemSelectButtonView;
         public readonly ControlLabel: Views.LabelView;
         public readonly WaitTextBox: Views.TextBoxInputView;
+        public readonly WaitPreLabel: Views.LabelView;
+        public readonly WaitPostLabel: Views.LabelView;
+        public readonly DeleteButton: Views.ButtonView;
 
         private _detail: App.Models.Entities.SceneDetail;
         public get Detail(): App.Models.Entities.SceneDetail {
@@ -52,6 +57,9 @@ namespace App.Views.Controls {
             this.ControlButton = new ItemSelectButtonView();
             this.ControlLabel = new Views.LabelView();
             this.WaitTextBox = new Views.TextBoxInputView();
+            this.WaitPreLabel = new Views.LabelView();
+            this.WaitPostLabel = new Views.LabelView();
+            this.DeleteButton = new Views.ButtonView();
 
             this.SetClassName('SceneDetailView');
             this.Elem.addClass(this.ClassName);
@@ -60,37 +68,74 @@ namespace App.Views.Controls {
             this.HasBorder = true;
             this.Color = Color.MainHover;
 
-            this.ControlSetButton.SetLeftTop(22, 10);
+            this.ControlSetButton.SetLeftTop(16, 10);
             this.ControlSetButton.ImageFitPolicy = Property.FitPolicy.Contain;
             this.Add(this.ControlSetButton);
 
             this.ControlSetLabel.SetLeftTop(5, 90);
-            this.ControlSetLabel.SetSize(105, 21);
+            this.ControlSetLabel.SetSize(85, 21);
             this.ControlSetLabel.AutoSize = false;
             this.ControlSetLabel.TextAlign = Property.TextAlign.Center;
-            this.ControlSetLabel.FontSize = Property.FontSize.Small;
+            this.ControlSetLabel.FontSize = Property.FontSize.XSmall;
             this.ControlSetLabel.Text = '';
             this.Add(this.ControlSetLabel);
 
 
-            this.ControlButton.SetLeftTop(137, 10);
+            this.ControlButton.SetLeftTop(119, 10);
             this.ControlButton.ImageFitPolicy = Property.FitPolicy.Contain;
             this.Add(this.ControlButton);
 
-            this.ControlLabel.SetLeftTop(120, 90);
-            this.ControlLabel.SetSize(105, 21);
+            this.ControlLabel.SetLeftTop(100, 90);
+            this.ControlLabel.SetSize(85, 21);
             this.ControlLabel.AutoSize = false;
             this.ControlLabel.TextAlign = Property.TextAlign.Center;
-            this.ControlLabel.FontSize = Property.FontSize.Small;
+            this.ControlLabel.FontSize = Property.FontSize.XSmall;
             this.ControlLabel.Text = '';
             this.Add(this.ControlLabel);
 
+            this.WaitPreLabel.SetLeftTop(50, 121);
+            this.WaitPreLabel.SetSize(40, 21);
+            this.WaitPreLabel.AutoSize = false;
+            this.WaitPreLabel.TextAlign = Property.TextAlign.Right;
+            this.WaitPreLabel.FontSize = Property.FontSize.XSmall;
+            this.WaitPreLabel.Text = 'Wait:';
+            this.WaitPreLabel.SetTransAnimation(true);
+            this.Add(this.WaitPreLabel);
+
+            this.WaitPostLabel.SetLeftTop(140, 121);
+            this.WaitPostLabel.SetSize(40, 21);
+            this.WaitPostLabel.AutoSize = false;
+            this.WaitPostLabel.TextAlign = Property.TextAlign.Left;
+            this.WaitPostLabel.FontSize = Property.FontSize.XSmall;
+            this.WaitPostLabel.Text = 'Sec';
+            this.WaitPostLabel.SetTransAnimation(true);
+            this.Add(this.WaitPostLabel);
+
+            this.WaitTextBox.SetLeftTop(95, 115);
             this.WaitTextBox.SetSize(40, 21);
-            this.WaitTextBox.SetLeftTop(105, 115);
             this.WaitTextBox.Value = '1.0';
             this.WaitTextBox.TextAlign = Property.TextAlign.Center;
-            
             this.Add(this.WaitTextBox);
+
+            this.DeleteButton.SetSize(30, 30);
+            this.DeleteButton.Position.Policy = Property.PositionPolicy.LeftTop;
+            this.DeleteButton.BorderRadius = 50;
+            this.DeleteButton.HasBorder = true;
+            this.DeleteButton.Color = '#9d9e9e';
+            this.DeleteButton.BackgroundColor = '#FFFFFF';
+            this.DeleteButton.HoverColor = '#F4F4F4';
+            this.DeleteButton.ImageFitPolicy = Property.FitPolicy.Auto;
+            this.DeleteButton.ImageSrc = 'images/icons/scene/cross.png';
+            this.DeleteButton.SetParent(this);
+            this.DeleteButton.Hide(0);
+            //this.Add(this.DeleteButton);
+
+            this.AddEventListener(BoxEvents.Attached, () => {
+                this.Parent.Elem.append(this.DeleteButton.Elem);
+            });
+            this.AddEventListener(BoxEvents.Detached, () => {
+                this.DeleteButton.Elem.remove();
+            });
         }
 
         public SetWaitable(enable: boolean): void {
@@ -103,7 +148,6 @@ namespace App.Views.Controls {
                 this.SetSize(230, 115);
                 this.WaitTextBox.Hide(0);
             }
-            
         }
 
         public ApplyFromEntity(): void {
@@ -166,6 +210,9 @@ namespace App.Views.Controls {
                     this.ControlButton.BackgroundColor = Color.MainBackground;
                     this.ControlButton.HoverColor = Color.ButtonHoverColors[0];
                 }
+
+                this.WaitTextBox.Value = String(this._detail.WaitSecond);
+
             } else {
                 this.ControlSetButton.ImageSrc = '';
                 this.ControlSetButton.Text = 'Select<br/>Remotes';
@@ -183,6 +230,42 @@ namespace App.Views.Controls {
             }
 
             this.Refresh();
+        }
+
+        public CalcLayout(): void {
+
+            super.CalcLayout();
+
+            if (this.DeleteButton.IsVisible) {
+                this.ControlSetButton.SetLeftTop(16, 10);
+                this.ControlSetLabel.SetLeftTop(5, 90);
+                this.ControlSetLabel.SetSize(92, 21);
+
+                this.ControlButton.SetLeftTop(119, 10);
+                this.ControlLabel.SetLeftTop(107, 90);
+                this.ControlLabel.SetSize(92, 21);
+
+                this.WaitTextBox.SetLeftTop(82, 115);
+                this.WaitPreLabel.SetLeftTop(37, 121);
+                this.WaitPostLabel.SetLeftTop(127, 121);
+
+                this.DeleteButton.Position.Left
+                    = this.Position.Left + this.Size.Width - (this.DeleteButton.Size.Width / 2) - 8;
+                this.DeleteButton.Position.Top
+                    = this.Position.Top - (this.DeleteButton.Size.Height / 2) + 8;
+            } else {
+                this.ControlSetButton.SetLeftTop(22, 10);
+                this.ControlSetLabel.SetLeftTop(5, 90);
+                this.ControlSetLabel.SetSize(105, 21);
+
+                this.ControlButton.SetLeftTop(138, 10);
+                this.ControlLabel.SetLeftTop(120, 90);
+                this.ControlLabel.SetSize(105, 21);
+
+                this.WaitTextBox.SetLeftTop(95, 115);
+                this.WaitPreLabel.SetLeftTop(50, 121);
+                this.WaitPostLabel.SetLeftTop(140, 121);
+            }
         }
     }
 }

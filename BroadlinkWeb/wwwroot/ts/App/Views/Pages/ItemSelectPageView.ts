@@ -49,6 +49,8 @@ namespace App.Views.Pages {
             this.SelectorPanel.Position.Policy = Property.PositionPolicy.LeftTop;
             this.SelectorPanel.ReferencePoint = Property.ReferencePoint.LeftTop;
             this.SelectorPanel.Size.Width = 280;
+            this.SelectorPanel.Margin = 5;
+            this.SelectorPanel.RightMargin = 20;
             this.SelectorPanel.SetAnchor(70, 10, null, 10);
             this.SelectorPanel.Color = App.Items.Color.MainBackground;
             this.Add(this.SelectorPanel);

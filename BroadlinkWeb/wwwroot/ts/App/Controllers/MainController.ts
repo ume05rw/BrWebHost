@@ -60,6 +60,7 @@ namespace App.Controllers {
 
                     const sceneCtr = new SceneController();
                     const controlSetSelectStr = new ControlSetSelectController();
+                    const sceneHeaderPropertyCtr = new SceneHeaderPropertyController();
 
                     Dump.Log('SubController Load End');
                 });
@@ -90,7 +91,9 @@ namespace App.Controllers {
                         //alert('Not Implemented!!');
                         const ctr = this.Manager.Get('Scene') as SceneController;
                         const scene = new Entities.Scene();
-                        scene.Details.push(new Entities.SceneDetail());
+                        const detail = new Entities.SceneDetail();
+                        detail.Order = 1;
+                        scene.Details.push(detail);
                         ctr.SetEntity(scene);
                         ctr.SetEditMode();
                         ctr.Show();

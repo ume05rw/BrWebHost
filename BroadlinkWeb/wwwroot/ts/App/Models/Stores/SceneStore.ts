@@ -187,4 +187,6 @@ namespace App.Models.Stores {
             }
         }
     }
+
+    export const Scenes: SceneStore = SceneStore.Instance;
 }

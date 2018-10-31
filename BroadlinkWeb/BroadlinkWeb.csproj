@@ -19,6 +19,7 @@
     <Content Remove="wwwroot\ts\App\Controllers\MouseEventsController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\OperationSelectController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\SceneController.ts" />
+    <Content Remove="wwwroot\ts\App\Controllers\SceneHeaderPropertyController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\Sub3Controller.ts" />
     <Content Remove="wwwroot\ts\App\Events\Controls\ControlButtonViewEvents.ts" />
     <Content Remove="wwwroot\ts\App\Icon.ts" />
@@ -65,6 +66,7 @@
     <Content Remove="wwwroot\ts\App\Views\Pages\ItemSelectPageView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Pages\LayoutCheckPageView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Pages\MainPageView.ts" />
+    <Content Remove="wwwroot\ts\App\Views\Pages\SceneHeaderPropertyPageView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Pages\ScenePageView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Pages\Sub3PageView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Popup\AlertPopup.ts" />
@@ -165,6 +167,7 @@
 
   <ItemGroup>
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ColorSelectController.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Controllers\SceneHeaderPropertyController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\IconSelectController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ControlSetSelectController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\SceneController.ts" />
@@ -219,6 +222,7 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\ControlSetButtonView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\SceneButtonView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\SceneDetailView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\SceneHeaderPropertyPageView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\ControlHeaderPropertyPageView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\ControlPropertyPageView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\ControlSetPageView.ts" />

@@ -427,6 +427,8 @@ namespace Fw.Views {
                 }, 500);
             }
 
+            this.DispatchEvent(Events.RelocationStarted);
+
             this.Refresh();
         }
 
@@ -452,8 +454,6 @@ namespace Fw.Views {
                 if (v.InstanceId !== this._childrenOrder[idx])
                     changed = true;
             });
-            if (changed)
-                this.DispatchEvent(Events.OrderChanged);
 
             this._childrenOrder = null;
 
@@ -471,6 +471,11 @@ namespace Fw.Views {
                     this.Refresh();
                 }
             }, 700);
+
+            if (changed)
+                this.DispatchEvent(Events.OrderChanged);
+
+            this.DispatchEvent(Events.RelocationEnded);
 
             this.Refresh();
         }
@@ -567,6 +572,15 @@ namespace Fw.Views {
                 }
                 
                 this.RestoreDummyView();
+
+                let changed = false;
+                _.each(this._innerBox.Children, (v: IView, idx: number) => {
+                    if (v.InstanceId !== this._childrenOrder[idx])
+                        changed = true;
+                });
+                if (changed)
+                    this.DispatchEvent(Events.OrderUncommitChanged);
+
                 this.Refresh();
             }
         }

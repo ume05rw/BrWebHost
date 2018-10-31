@@ -6,7 +6,9 @@
 /// <reference path="../../Fw/Events/ControlViewEvents.ts" />
 /// <reference path="../../Fw/Events/EntityEvents.ts" />
 /// <reference path="../../Fw/Events/ButtonViewEvents.ts" />
+/// <reference path="../../Fw/Events/StuckerBoxViewEvents.ts" />
 /// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
+/// <reference path="../../Fw/Views/ButtonView.ts" />
 /// <reference path="../Views/Pages/MainPageView.ts" />
 /// <reference path="../Views/Popup/AlertPopup.ts" />
 /// <reference path="../Views/Controls/SceneDetailView.ts" />
@@ -30,11 +32,13 @@ namespace App.Controllers {
     import Util = Fw.Util;
     import EntityEvents = Fw.Events.EntityEvents;
     import ButtonEvents = Fw.Events.ButtonViewEvents;
+    import StuckerBoxEvents = Fw.Events.StuckerBoxViewEvents;
     import Stores = App.Models.Stores;
     import Popup = App.Views.Popup;
     import OperationType = App.Items.OperationType;
     import DeviceType = App.Items.DeviceType;
     import SceneDetailView = App.Views.Controls.SceneDetailView;
+    import ButtonView = Fw.Views.ButtonView;
     import ItemSelectButtonView = App.Views.Controls.ItemSelectButtonView;
     import ModalOperationType = App.Items.ModalOperationType;
     import ControlSetSelectController = App.Controllers.ControlSetSelectController;
@@ -89,7 +93,25 @@ namespace App.Controllers {
                 this.OnOrderedHeader(e);
             });
 
-            this._page.DetailPanel.AddEventListener(Events.StuckerBoxViewEvents.OrderChanged, () => {
+            this._page.DetailPanel.AddEventListener(StuckerBoxEvents.RelocationStarted, () => {
+                _.each(this._page.DetailPanel.Children, (v: SceneDetailView) => {
+                    v.DeleteButton.Show();
+                });
+                _.delay(() => {
+                    this._page.DetailPanel.Refresh();
+                }, 300);
+            });
+
+            this._page.DetailPanel.AddEventListener(StuckerBoxEvents.RelocationEnded, () => {
+                _.each(this._page.DetailPanel.Children, (v: SceneDetailView) => {
+                    v.DeleteButton.Hide();
+                });
+                _.delay(() => {
+                    this._page.DetailPanel.Refresh();
+                }, 300);
+            });
+
+            this._page.DetailPanel.AddEventListener(StuckerBoxEvents.OrderUncommitChanged, () => {
 
                 if (!this._scene)
                     return;
@@ -116,7 +138,9 @@ namespace App.Controllers {
             this._page.EditButton.Hide(0);
             this._page.HeaderBar.RightButton.Show(0);
 
-            this._page.DetailPanel.StartRelocation();
+            // 開始時、再配置モードにはしない。
+            // マウスイベントをStuckerに取られ、待機時間入力が出来ないので。
+            //this._page.DetailPanel.StartRelocation();
 
             const ctr = this.Manager.Get('ControlSetSelect') as ControlSetSelectController;
             ctr.RefreshControlSets();
@@ -173,6 +197,7 @@ namespace App.Controllers {
             box.Detail = detail;
             box.ControlSetButton.AddEventListener(ButtonEvents.SingleClick, this.OnControlSetClicked, this);
             box.ControlButton.AddEventListener(ButtonEvents.SingleClick, this.OnControlClicked, this);
+            box.DeleteButton.AddEventListener(ButtonEvents.SingleClick, this.OnDeleteClicked, this);
             this._page.DetailPanel.Add(box);
 
             const length = this._scene.Details.length;
@@ -239,6 +264,37 @@ namespace App.Controllers {
             }
         }
 
+        private async OnDeleteClicked(e: Fw.Events.EventObject) {
+            switch (this._operationType) {
+                case ModalOperationType.Exec:
+                    // なにもしない。
+                    break;
+                case ModalOperationType.Edit:
+                    const button: ButtonView = e.Sender as ButtonView;
+                    const sdView: SceneDetailView = button.Parent as SceneDetailView;
+                    const detail = sdView.Detail as Entities.SceneDetail;
+                    const idx = this._scene.Details.indexOf(detail);
+
+                    if (idx === -1)
+                        return;
+
+                    this._page.DetailPanel.Remove(sdView);
+                    sdView.Dispose();
+
+                    this._scene.Details.splice(idx, 1);
+                    detail.Dispose();
+
+                    this._page.Refresh();
+
+                    break;
+                case ModalOperationType.Select:
+                default:
+                    alert('ここにはこないはず。');
+                    throw new Error('なんでー？');
+            }
+        }
+        
+
         private ApplyFromEntity(): void {
         }
 
@@ -266,6 +322,48 @@ namespace App.Controllers {
          * @param e
          */
         private OnOrderedHeader(e: JQueryEventObject): void {
+            if (e.eventPhase !== 2)
+                return;
+
+            //if (!this.IsOnEditMode)
+            //    return;
+            if (this._operationType !== ModalOperationType.Edit)
+                return;
+
+            if (!this._scene)
+                throw new Error('Scene Not Found');
+
+            const ctr = this.Manager.Get('SceneHeaderProperty') as SceneHeaderPropertyController;
+            ctr.SetEntity(this._scene);
+            ctr.ShowModal();
+        }
+
+        /**
+         * リモコン全体を削除する。
+         */
+        public async RemoveScene(): Promise<boolean> {
+            if (this._operationType !== ModalOperationType.Edit)
+                return;
+            //if (!this.IsOnEditMode)
+            //    return;
+
+            const buttons = Util.Obj.Mirror(this._page.DetailPanel.Children);
+            _.each(buttons, (btn: Fw.Views.IView) => {
+                this._page.DetailPanel.Remove(btn);
+                btn.Dispose();
+            });
+
+            const scene = this._scene;
+            const ctr = this.Manager.Get('Main') as MainController;
+            ctr.Show();
+
+            this._scene = null;
+            this._page.UnMask();
+
+            // 削除メソッド、投げっぱなしの終了確認無しで終わる。
+            await Stores.Scenes.Remove(scene);
+
+            ctr.RefreshControlSets();
         }
     }
 }

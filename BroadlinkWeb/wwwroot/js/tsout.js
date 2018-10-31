@@ -6322,7 +6322,10 @@ var Fw;
             __extends(StuckerBoxViewEventsClass, _super);
             function StuckerBoxViewEventsClass() {
                 var _this = _super !== null && _super.apply(this, arguments) || this;
+                _this.RelocationStarted = 'RelocationStarted';
+                _this.RelocationEnded = 'RelocationEnded';
                 _this.OrderChanged = 'OrderChanged';
+                _this.OrderUncommitChanged = 'OrderUncommitChanged';
                 return _this;
             }
             return StuckerBoxViewEventsClass;
@@ -6529,6 +6532,7 @@ var App;
                     var colorSelectCtr = new Controllers.ColorSelectController();
                     var sceneCtr = new Controllers.SceneController();
                     var controlSetSelectStr = new Controllers.ControlSetSelectController();
+                    var sceneHeaderPropertyCtr = new Controllers.SceneHeaderPropertyController();
                     Dump.Log('SubController Load End');
                 });
                 for (var i = 0; i < 5; i++) {
@@ -6546,7 +6550,7 @@ var App;
                     _this._page.ScenePanel.Add(btn);
                 }
                 _this._page.HeaderBar.RightButton.AddEventListener(ButtonEvents.SingleClick, function () { return __awaiter(_this, void 0, void 0, function () {
-                    var ctr, item, ctrSet, _a, ctr_1, scene, ctr2;
+                    var ctr, item, ctrSet, _a, ctr_1, scene, detail, ctr2;
                     return __generator(this, function (_b) {
                         switch (_b.label) {
                             case 0:
@@ -6569,7 +6573,9 @@ var App;
                             case 2:
                                 ctr_1 = this.Manager.Get('Scene');
                                 scene = new Entities.Scene();
-                                scene.Details.push(new Entities.SceneDetail());
+                                detail = new Entities.SceneDetail();
+                                detail.Order = 1;
+                                scene.Details.push(detail);
                                 ctr_1.SetEntity(scene);
                                 ctr_1.SetEditMode();
                                 ctr_1.Show();
@@ -7054,6 +7060,7 @@ var App;
 /// <reference path="../../../Fw/Views/Property/Anchor.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../../../Fw/Events/EntityEvents.ts" />
+/// <reference path="../../../Fw/Events/BoxViewEvents.ts" />
 /// <reference path="../../Items/Color.ts" />
 /// <reference path="../../Events/Controls/ControlButtonViewEvents.ts" />
 /// <reference path="../../Models/Stores/SceneDetailStore.ts" />
@@ -7066,6 +7073,7 @@ var App;
             var Views = Fw.Views;
             var Property = Fw.Views.Property;
             var Color = App.Items.Color;
+            var BoxEvents = Fw.Events.BoxViewEvents;
             var EntityEvents = Fw.Events.EntityEvents;
             var Stores = App.Models.Stores;
             var SceneDetailView = /** @class */ (function (_super) {
@@ -7077,36 +7085,73 @@ var App;
                     _this.ControlButton = new Controls.ItemSelectButtonView();
                     _this.ControlLabel = new Views.LabelView();
                     _this.WaitTextBox = new Views.TextBoxInputView();
+                    _this.WaitPreLabel = new Views.LabelView();
+                    _this.WaitPostLabel = new Views.LabelView();
+                    _this.DeleteButton = new Views.ButtonView();
                     _this.SetClassName('SceneDetailView');
                     _this.Elem.addClass(_this.ClassName);
                     _this.SetSize(230, 145);
                     _this.HasBorder = true;
                     _this.Color = Color.MainHover;
-                    _this.ControlSetButton.SetLeftTop(22, 10);
+                    _this.ControlSetButton.SetLeftTop(16, 10);
                     _this.ControlSetButton.ImageFitPolicy = Property.FitPolicy.Contain;
                     _this.Add(_this.ControlSetButton);
                     _this.ControlSetLabel.SetLeftTop(5, 90);
-                    _this.ControlSetLabel.SetSize(105, 21);
+                    _this.ControlSetLabel.SetSize(85, 21);
                     _this.ControlSetLabel.AutoSize = false;
                     _this.ControlSetLabel.TextAlign = Property.TextAlign.Center;
-                    _this.ControlSetLabel.FontSize = Property.FontSize.Small;
+                    _this.ControlSetLabel.FontSize = Property.FontSize.XSmall;
                     _this.ControlSetLabel.Text = '';
                     _this.Add(_this.ControlSetLabel);
-                    _this.ControlButton.SetLeftTop(137, 10);
+                    _this.ControlButton.SetLeftTop(119, 10);
                     _this.ControlButton.ImageFitPolicy = Property.FitPolicy.Contain;
                     _this.Add(_this.ControlButton);
-                    _this.ControlLabel.SetLeftTop(120, 90);
-                    _this.ControlLabel.SetSize(105, 21);
+                    _this.ControlLabel.SetLeftTop(100, 90);
+                    _this.ControlLabel.SetSize(85, 21);
                     _this.ControlLabel.AutoSize = false;
                     _this.ControlLabel.TextAlign = Property.TextAlign.Center;
-                    _this.ControlLabel.FontSize = Property.FontSize.Small;
+                    _this.ControlLabel.FontSize = Property.FontSize.XSmall;
                     _this.ControlLabel.Text = '';
                     _this.Add(_this.ControlLabel);
+                    _this.WaitPreLabel.SetLeftTop(50, 121);
+                    _this.WaitPreLabel.SetSize(40, 21);
+                    _this.WaitPreLabel.AutoSize = false;
+                    _this.WaitPreLabel.TextAlign = Property.TextAlign.Right;
+                    _this.WaitPreLabel.FontSize = Property.FontSize.XSmall;
+                    _this.WaitPreLabel.Text = 'Wait:';
+                    _this.WaitPreLabel.SetTransAnimation(true);
+                    _this.Add(_this.WaitPreLabel);
+                    _this.WaitPostLabel.SetLeftTop(140, 121);
+                    _this.WaitPostLabel.SetSize(40, 21);
+                    _this.WaitPostLabel.AutoSize = false;
+                    _this.WaitPostLabel.TextAlign = Property.TextAlign.Left;
+                    _this.WaitPostLabel.FontSize = Property.FontSize.XSmall;
+                    _this.WaitPostLabel.Text = 'Sec';
+                    _this.WaitPostLabel.SetTransAnimation(true);
+                    _this.Add(_this.WaitPostLabel);
+                    _this.WaitTextBox.SetLeftTop(95, 115);
                     _this.WaitTextBox.SetSize(40, 21);
-                    _this.WaitTextBox.SetLeftTop(105, 115);
                     _this.WaitTextBox.Value = '1.0';
                     _this.WaitTextBox.TextAlign = Property.TextAlign.Center;
                     _this.Add(_this.WaitTextBox);
+                    _this.DeleteButton.SetSize(30, 30);
+                    _this.DeleteButton.Position.Policy = Property.PositionPolicy.LeftTop;
+                    _this.DeleteButton.BorderRadius = 50;
+                    _this.DeleteButton.HasBorder = true;
+                    _this.DeleteButton.Color = '#9d9e9e';
+                    _this.DeleteButton.BackgroundColor = '#FFFFFF';
+                    _this.DeleteButton.HoverColor = '#F4F4F4';
+                    _this.DeleteButton.ImageFitPolicy = Property.FitPolicy.Auto;
+                    _this.DeleteButton.ImageSrc = 'images/icons/scene/cross.png';
+                    _this.DeleteButton.SetParent(_this);
+                    _this.DeleteButton.Hide(0);
+                    //this.Add(this.DeleteButton);
+                    _this.AddEventListener(BoxEvents.Attached, function () {
+                        _this.Parent.Elem.append(_this.DeleteButton.Elem);
+                    });
+                    _this.AddEventListener(BoxEvents.Detached, function () {
+                        _this.DeleteButton.Elem.remove();
+                    });
                     return _this;
                 }
                 Object.defineProperty(SceneDetailView.prototype, "Detail", {
@@ -7196,6 +7241,7 @@ var App;
                             this.ControlButton.BackgroundColor = Color.MainBackground;
                             this.ControlButton.HoverColor = Color.ButtonHoverColors[0];
                         }
+                        this.WaitTextBox.Value = String(this._detail.WaitSecond);
                     }
                     else {
                         this.ControlSetButton.ImageSrc = '';
@@ -7213,6 +7259,35 @@ var App;
                     }
                     this.Refresh();
                 };
+                SceneDetailView.prototype.CalcLayout = function () {
+                    _super.prototype.CalcLayout.call(this);
+                    if (this.DeleteButton.IsVisible) {
+                        this.ControlSetButton.SetLeftTop(16, 10);
+                        this.ControlSetLabel.SetLeftTop(5, 90);
+                        this.ControlSetLabel.SetSize(92, 21);
+                        this.ControlButton.SetLeftTop(119, 10);
+                        this.ControlLabel.SetLeftTop(107, 90);
+                        this.ControlLabel.SetSize(92, 21);
+                        this.WaitTextBox.SetLeftTop(82, 115);
+                        this.WaitPreLabel.SetLeftTop(37, 121);
+                        this.WaitPostLabel.SetLeftTop(127, 121);
+                        this.DeleteButton.Position.Left
+                            = this.Position.Left + this.Size.Width - (this.DeleteButton.Size.Width / 2) - 8;
+                        this.DeleteButton.Position.Top
+                            = this.Position.Top - (this.DeleteButton.Size.Height / 2) + 8;
+                    }
+                    else {
+                        this.ControlSetButton.SetLeftTop(22, 10);
+                        this.ControlSetLabel.SetLeftTop(5, 90);
+                        this.ControlSetLabel.SetSize(105, 21);
+                        this.ControlButton.SetLeftTop(138, 10);
+                        this.ControlLabel.SetLeftTop(120, 90);
+                        this.ControlLabel.SetSize(105, 21);
+                        this.WaitTextBox.SetLeftTop(95, 115);
+                        this.WaitPreLabel.SetLeftTop(50, 121);
+                        this.WaitPostLabel.SetLeftTop(140, 121);
+                    }
+                };
                 return SceneDetailView;
             }(Fw.Views.BoxView));
             Controls.SceneDetailView = SceneDetailView;
@@ -7227,7 +7302,9 @@ var App;
 /// <reference path="../../Fw/Events/ControlViewEvents.ts" />
 /// <reference path="../../Fw/Events/EntityEvents.ts" />
 /// <reference path="../../Fw/Events/ButtonViewEvents.ts" />
+/// <reference path="../../Fw/Events/StuckerBoxViewEvents.ts" />
 /// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
+/// <reference path="../../Fw/Views/ButtonView.ts" />
 /// <reference path="../Views/Pages/MainPageView.ts" />
 /// <reference path="../Views/Popup/AlertPopup.ts" />
 /// <reference path="../Views/Controls/SceneDetailView.ts" />
@@ -7243,12 +7320,12 @@ var App;
 (function (App) {
     var Controllers;
     (function (Controllers) {
-        var Events = Fw.Events;
         var Pages = App.Views.Pages;
         var Entities = App.Models.Entities;
         var Util = Fw.Util;
         var EntityEvents = Fw.Events.EntityEvents;
         var ButtonEvents = Fw.Events.ButtonViewEvents;
+        var StuckerBoxEvents = Fw.Events.StuckerBoxViewEvents;
         var Stores = App.Models.Stores;
         var SceneDetailView = App.Views.Controls.SceneDetailView;
         var SceneController = /** @class */ (function (_super) {
@@ -7282,7 +7359,23 @@ var App;
                 _this._page.HeaderBar.Label.Elem.on('click', function (e) {
                     _this.OnOrderedHeader(e);
                 });
-                _this._page.DetailPanel.AddEventListener(Events.StuckerBoxViewEvents.OrderChanged, function () {
+                _this._page.DetailPanel.AddEventListener(StuckerBoxEvents.RelocationStarted, function () {
+                    _.each(_this._page.DetailPanel.Children, function (v) {
+                        v.DeleteButton.Show();
+                    });
+                    _.delay(function () {
+                        _this._page.DetailPanel.Refresh();
+                    }, 300);
+                });
+                _this._page.DetailPanel.AddEventListener(StuckerBoxEvents.RelocationEnded, function () {
+                    _.each(_this._page.DetailPanel.Children, function (v) {
+                        v.DeleteButton.Hide();
+                    });
+                    _.delay(function () {
+                        _this._page.DetailPanel.Refresh();
+                    }, 300);
+                });
+                _this._page.DetailPanel.AddEventListener(StuckerBoxEvents.OrderUncommitChanged, function () {
                     if (!_this._scene)
                         return;
                     var length = _this._scene.Details.length;
@@ -7305,7 +7398,9 @@ var App;
                 this._page.HeaderLeftLabel.Hide(0);
                 this._page.EditButton.Hide(0);
                 this._page.HeaderBar.RightButton.Show(0);
-                this._page.DetailPanel.StartRelocation();
+                // 開始時、再配置モードにはしない。
+                // マウスイベントをStuckerに取られ、待機時間入力が出来ないので。
+                //this._page.DetailPanel.StartRelocation();
                 var ctr = this.Manager.Get('ControlSetSelect');
                 ctr.RefreshControlSets();
             };
@@ -7350,6 +7445,7 @@ var App;
                 box.Detail = detail;
                 box.ControlSetButton.AddEventListener(ButtonEvents.SingleClick, this.OnControlSetClicked, this);
                 box.ControlButton.AddEventListener(ButtonEvents.SingleClick, this.OnControlClicked, this);
+                box.DeleteButton.AddEventListener(ButtonEvents.SingleClick, this.OnDeleteClicked, this);
                 this._page.DetailPanel.Add(box);
                 var length = this._scene.Details.length;
                 _.each(this._page.DetailPanel.Children, function (v) {
@@ -7436,6 +7532,36 @@ var App;
                     });
                 });
             };
+            SceneController.prototype.OnDeleteClicked = function (e) {
+                return __awaiter(this, void 0, void 0, function () {
+                    var button, sdView, detail, idx;
+                    return __generator(this, function (_a) {
+                        switch (this._operationType) {
+                            case 1 /* Exec */:
+                                // なにもしない。
+                                break;
+                            case 2 /* Edit */:
+                                button = e.Sender;
+                                sdView = button.Parent;
+                                detail = sdView.Detail;
+                                idx = this._scene.Details.indexOf(detail);
+                                if (idx === -1)
+                                    return [2 /*return*/];
+                                this._page.DetailPanel.Remove(sdView);
+                                sdView.Dispose();
+                                this._scene.Details.splice(idx, 1);
+                                detail.Dispose();
+                                this._page.Refresh();
+                                break;
+                            case 3 /* Select */:
+                            default:
+                                alert('ここにはこないはず。');
+                                throw new Error('なんでー？');
+                        }
+                        return [2 /*return*/];
+                    });
+                });
+            };
             SceneController.prototype.ApplyFromEntity = function () {
             };
             /**
@@ -7458,6 +7584,50 @@ var App;
              * @param e
              */
             SceneController.prototype.OnOrderedHeader = function (e) {
+                if (e.eventPhase !== 2)
+                    return;
+                //if (!this.IsOnEditMode)
+                //    return;
+                if (this._operationType !== 2 /* Edit */)
+                    return;
+                if (!this._scene)
+                    throw new Error('Scene Not Found');
+                var ctr = this.Manager.Get('SceneHeaderProperty');
+                ctr.SetEntity(this._scene);
+                ctr.ShowModal();
+            };
+            /**
+             * リモコン全体を削除する。
+             */
+            SceneController.prototype.RemoveScene = function () {
+                return __awaiter(this, void 0, void 0, function () {
+                    var buttons, scene, ctr;
+                    var _this = this;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                if (this._operationType !== 2 /* Edit */)
+                                    return [2 /*return*/];
+                                buttons = Util.Obj.Mirror(this._page.DetailPanel.Children);
+                                _.each(buttons, function (btn) {
+                                    _this._page.DetailPanel.Remove(btn);
+                                    btn.Dispose();
+                                });
+                                scene = this._scene;
+                                ctr = this.Manager.Get('Main');
+                                ctr.Show();
+                                this._scene = null;
+                                this._page.UnMask();
+                                // 削除メソッド、投げっぱなしの終了確認無しで終わる。
+                                return [4 /*yield*/, Stores.Scenes.Remove(scene)];
+                            case 1:
+                                // 削除メソッド、投げっぱなしの終了確認無しで終わる。
+                                _a.sent();
+                                ctr.RefreshControlSets();
+                                return [2 /*return*/];
+                        }
+                    });
+                });
             };
             return SceneController;
         }(Fw.Controllers.ControllerBase));
@@ -7760,6 +7930,61 @@ var App;
                 'num_12.png',
                 'num_aster.png',
                 'num_sharp.png',
+                'bag.png',
+                'battery.png',
+                'bell.png',
+                'bookmark.png',
+                'briefcase.png',
+                'calendar.png',
+                'cancel.png',
+                'clip.png',
+                'clock2.png',
+                'cloud.png',
+                'creditcard.png',
+                'cursor.png',
+                'cursor2.png',
+                'cut.png',
+                'cutlery.png',
+                'download.png',
+                'envelope.png',
+                'export.png',
+                'file.png',
+                'folder.png',
+                'gallery.png',
+                'gamepad.png',
+                'help.png',
+                'hourglass.png',
+                'link.png',
+                'logout.png',
+                'magnet.png',
+                'padnote.png',
+                'paint.png',
+                'photocamera.png',
+                'placeholder.png',
+                'presentation.png',
+                'printer.png',
+                'puzzle.png',
+                'screen.png',
+                'search.png',
+                'setting3.png',
+                'share.png',
+                'shield.png',
+                'shoppingcart.png',
+                'shutter.png',
+                'smartphone.png',
+                'speedometer.png',
+                'stats.png',
+                'store.png',
+                'switch.png',
+                'tag.png',
+                'timer.png',
+                'unlock.png',
+                'upload.png',
+                'visible.png',
+                'waiting.png',
+                'wifi.png',
+                'zoomin.png',
+                'zoomout.png',
             ];
             return Icon;
         }());
@@ -8508,6 +8733,7 @@ var App;
                 return SceneStore;
             }(Fw.Models.StoreBase));
             Stores.SceneStore = SceneStore;
+            Stores.Scenes = SceneStore.Instance;
         })(Stores = Models.Stores || (Models.Stores = {}));
     })(Models = App.Models || (App.Models = {}));
 })(App || (App = {}));
@@ -9399,6 +9625,8 @@ var App;
                     _this.SelectorPanel.Position.Policy = Property.PositionPolicy.LeftTop;
                     _this.SelectorPanel.ReferencePoint = Property.ReferencePoint.LeftTop;
                     _this.SelectorPanel.Size.Width = 280;
+                    _this.SelectorPanel.Margin = 5;
+                    _this.SelectorPanel.RightMargin = 20;
                     _this.SelectorPanel.SetAnchor(70, 10, null, 10);
                     _this.SelectorPanel.Color = App.Items.Color.MainBackground;
                     _this.Add(_this.SelectorPanel);
@@ -11718,6 +11946,7 @@ var Fw;
                         }
                     }, 500);
                 }
+                this.DispatchEvent(Events.RelocationStarted);
                 this.Refresh();
             };
             StuckerBoxView.prototype.CommitRelocation = function () {
@@ -11740,8 +11969,6 @@ var Fw;
                     if (v.InstanceId !== _this._childrenOrder[idx])
                         changed = true;
                 });
-                if (changed)
-                    this.DispatchEvent(Events.OrderChanged);
                 this._childrenOrder = null;
                 if (this._lockButton.IsVisible
                     && this._lockButton.ImageSrc !== this.LockedImage) {
@@ -11755,6 +11982,9 @@ var Fw;
                         _this.Refresh();
                     }
                 }, 700);
+                if (changed)
+                    this.DispatchEvent(Events.OrderChanged);
+                this.DispatchEvent(Events.RelocationEnded);
                 this.Refresh();
             };
             /**
@@ -11819,6 +12049,7 @@ var Fw;
                 //// 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
                 //if (e.eventPhase !== 2)
                 //    return;
+                var _this = this;
                 //this.Log(`${this.ClassName}.OnChildMouseUp`);
                 if (!this._isChildRelocation) {
                     this._isChildDragging = false;
@@ -11831,6 +12062,13 @@ var Fw;
                         this._relocationTargetView = null;
                     }
                     this.RestoreDummyView();
+                    var changed_1 = false;
+                    _.each(this._innerBox.Children, function (v, idx) {
+                        if (v.InstanceId !== _this._childrenOrder[idx])
+                            changed_1 = true;
+                    });
+                    if (changed_1)
+                        this.DispatchEvent(Events.OrderUncommitChanged);
                     this.Refresh();
                 }
             };
@@ -12828,4 +13066,182 @@ var Fw;
         })(Property = Views.Property || (Views.Property = {}));
     })(Views = Fw.Views || (Fw.Views = {}));
 })(Fw || (Fw = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Views/PageView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Events/PageViewEvents.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../Controls/HeaderBarView.ts" />
+var App;
+(function (App) {
+    var Views;
+    (function (Views_21) {
+        var Pages;
+        (function (Pages) {
+            var Views = Fw.Views;
+            var Property = Fw.Views.Property;
+            var Controls = App.Views.Controls;
+            var SceneHeaderPropertyPageView = /** @class */ (function (_super) {
+                __extends(SceneHeaderPropertyPageView, _super);
+                function SceneHeaderPropertyPageView() {
+                    var _this = _super.call(this) || this;
+                    _this.HeaderBar = new Controls.HeaderBarView();
+                    _this.InputPanel = new Views.StuckerBoxView();
+                    _this.TxtName = new Views.TextBoxInputView();
+                    _this.LabelColor = new Views.LabelView();
+                    _this.BtnColor = new Controls.ItemSelectButtonView();
+                    _this.DeleteButton = new Controls.ButtonView();
+                    _this.SetClassName('SceneHeaderPropertyPageView');
+                    var background = new Views.ImageView();
+                    background.SetAnchor(0, 0, 0, 0);
+                    background.FitPolicy = Property.FitPolicy.Cover;
+                    background.Src = 'images/Pages/ControlProperty/background.jpg';
+                    _this.Add(background);
+                    _this.HeaderBar.Text = '';
+                    _this.HeaderBar.LeftButton.Hide(0);
+                    _this.HeaderBar.RightButton.Hide(0);
+                    _this.Add(_this.HeaderBar);
+                    var label = new Views.LabelView();
+                    label.FontSize = Property.FontSize.Large;
+                    label.Color = App.Items.Color.Main;
+                    label.SetAnchor(null, 5, null, null);
+                    label.Text = 'Remote Control';
+                    _this.HeaderBar.Add(label);
+                    _this.InputPanel.Position.Policy = Property.PositionPolicy.LeftTop;
+                    _this.InputPanel.ReferencePoint = Property.ReferencePoint.LeftTop;
+                    _this.InputPanel.Size.Width = 280;
+                    _this.InputPanel.SetAnchor(70, 10, null, 10);
+                    _this.InputPanel.Color = App.Items.Color.MainBackground;
+                    _this.Add(_this.InputPanel);
+                    var lbl1 = new Views.LabelView();
+                    lbl1.Text = 'Name';
+                    lbl1.TextAlign = Property.TextAlign.Left;
+                    lbl1.AutoSize = true;
+                    lbl1.SetAnchor(null, 5, null, null);
+                    lbl1.Size.Height = 21;
+                    _this.InputPanel.Add(lbl1);
+                    _this.TxtName.SetAnchor(null, 5, 15, null);
+                    _this.TxtName.Size.Height = 30;
+                    _this.TxtName.Name = 'Name';
+                    _this.InputPanel.Add(_this.TxtName);
+                    _this.LabelColor = new Views.LabelView();
+                    _this.LabelColor.Text = 'Color';
+                    _this.LabelColor.TextAlign = Property.TextAlign.Left;
+                    _this.LabelColor.AutoSize = true;
+                    _this.LabelColor.SetAnchor(null, 5, null, null);
+                    _this.LabelColor.Size.Height = 21;
+                    _this.InputPanel.Add(_this.LabelColor);
+                    _this.InputPanel.AddSpacer();
+                    _this.InputPanel.Add(_this.BtnColor);
+                    _this.InputPanel.AddSpacer();
+                    _this.DeleteButton.SetAnchor(null, 5, 15, null);
+                    _this.DeleteButton.Size.Height = 30;
+                    _this.DeleteButton.Text = '*Delete*';
+                    _this.InputPanel.Add(_this.DeleteButton);
+                    return _this;
+                }
+                return SceneHeaderPropertyPageView;
+            }(Fw.Views.PageView));
+            Pages.SceneHeaderPropertyPageView = SceneHeaderPropertyPageView;
+        })(Pages = Views_21.Pages || (Views_21.Pages = {}));
+    })(Views = App.Views || (App.Views = {}));
+})(App || (App = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Fw/Controllers/ControllerBase.ts" />
+/// <reference path="../../Fw/Controllers/Manager.ts" />
+/// <reference path="../../Fw/Util/Dump.ts" />
+/// <reference path="../../Fw/Events/ControlViewEvents.ts" />
+/// <reference path="../../Fw/Events/EntityEvents.ts" />
+/// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
+/// <reference path="../Views/Pages/MainPageView.ts" />
+/// <reference path="../Views/Popup/AlertPopup.ts" />
+/// <reference path="../Models/Entities/BrDevice.ts" />
+/// <reference path="../Models/Stores/BrDeviceStore.ts" />
+/// <reference path="../Items/OperationType.ts" />
+/// <reference path="../Items/DeviceType.ts" />
+var App;
+(function (App) {
+    var Controllers;
+    (function (Controllers) {
+        var Events = Fw.Events;
+        var Pages = App.Views.Pages;
+        var Popup = App.Views.Popup;
+        var SceneHeaderPropertyController = /** @class */ (function (_super) {
+            __extends(SceneHeaderPropertyController, _super);
+            function SceneHeaderPropertyController() {
+                var _this = _super.call(this, 'SceneHeaderProperty') || this;
+                _this.SetClassName('SceneHeaderPropertyController');
+                _this.SetPageView(new Pages.SceneHeaderPropertyPageView());
+                _this._page = _this.View;
+                _this._scene = null;
+                _this._page.TxtName.AddEventListener(Events.InputViewEvents.Changed, function (e) {
+                    if (!_this._scene)
+                        return;
+                    _this._scene.Name = _this._page.TxtName.Value;
+                    _this._scene.DispatchChanged();
+                });
+                _this._page.BtnColor.AddEventListener(Events.ButtonViewEvents.SingleClick, function (e) { return __awaiter(_this, void 0, void 0, function () {
+                    var ctr, color;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                if (!this._scene)
+                                    return [2 /*return*/];
+                                ctr = this.Manager.Get('ColorSelect');
+                                return [4 /*yield*/, ctr.Select(this)];
+                            case 1:
+                                color = _a.sent();
+                                this._scene.Color = color;
+                                this._page.BtnColor.Color = color;
+                                this._page.BtnColor.BackgroundColor = color;
+                                this._page.BtnColor.HoverColor = App.Items.Color.GetButtonHoverColor(color);
+                                this._scene.DispatchChanged();
+                                return [2 /*return*/];
+                        }
+                    });
+                }); });
+                _this._page.DeleteButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function (e) { return __awaiter(_this, void 0, void 0, function () {
+                    var res, ctr;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                if (!this._scene)
+                                    return [2 /*return*/];
+                                return [4 /*yield*/, Popup.Confirm.OpenAsync({
+                                        Message: 'This Scene will be REMOVED.<br/>Are you ok?'
+                                    })];
+                            case 1:
+                                res = _a.sent();
+                                if (res !== true)
+                                    return [2 /*return*/];
+                                ctr = this.Manager.Get('Scene');
+                                ctr.RemoveScene();
+                                this._scene = null;
+                                this.HideModal();
+                                return [2 /*return*/];
+                        }
+                    });
+                }); });
+                return _this;
+            }
+            SceneHeaderPropertyController.prototype.SetEntity = function (scene) {
+                if (!scene)
+                    return;
+                this._scene = null;
+                this._page.TxtName.Value = scene.Name;
+                this._page.LabelColor.Show(0);
+                this._page.BtnColor.Show(0);
+                this._page.DeleteButton.Show(0);
+                this._page.BtnColor.Color = scene.Color;
+                this._page.BtnColor.BackgroundColor = scene.Color;
+                this._page.BtnColor.HoverColor = App.Items.Color.GetButtonHoverColor(scene.Color);
+                this._scene = scene;
+            };
+            return SceneHeaderPropertyController;
+        }(Fw.Controllers.ControllerBase));
+        Controllers.SceneHeaderPropertyController = SceneHeaderPropertyController;
+    })(Controllers = App.Controllers || (App.Controllers = {}));
+})(App || (App = {}));
 //# sourceMappingURL=tsout.js.map
