@@ -33,6 +33,7 @@ namespace BroadlinkWeb.Models.Stores
                 .ToArrayAsync();
 
             var changed = false;
+            var count = 0;
             foreach (var brd in brDevices)
             {
                 try
@@ -73,9 +74,11 @@ namespace BroadlinkWeb.Models.Stores
                     cset.BrDeviceId = brd.Id;
 
                     // EntityをDbcに追加
+                    Xb.Util.Out($"ControlSetStore.EnsureBrControlSets - Add new ControlSet {cset.Name} - {brd.DeviceType}[{brd.IpAddressString}]");
                     this._dbc.ControlSets.Add(cset);
 
                     changed = true;
+                    count++;
                 }
                 catch (Exception ex)
                 {
@@ -84,7 +87,14 @@ namespace BroadlinkWeb.Models.Stores
             }
 
             if (changed)
+            {
+                Xb.Util.Out($"ControlSetStore.EnsureBrControlSets - Found {count} Device");
                 await this._dbc.SaveChangesAsync();
+            }
+            else
+            {
+                Xb.Util.Out($"ControlSetStore.EnsureBrControlSets - Already Ensured");
+            }
 
             return true;
         }

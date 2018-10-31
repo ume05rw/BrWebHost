@@ -77,10 +77,23 @@ namespace BroadlinkWeb
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IApplicationLifetime applicationLifetime, IHostingEnvironment env)
         {
-            // なんか違和感がある実装。
-            // 代替案はあるか？
-            BrDeviceStore.SetScanner(app.ApplicationServices);
-            RemoteHostStore.SetScannerAndReciever(app.ApplicationServices);
+            try
+            {
+                // TODO: マイグレーション時にも以下が実行されてしまい、落ちる。
+                // マイグレーションと通常起動の区別がつかないか？
+                // なんか違和感がある実装。
+                // 代替案はあるか？
+                BrDeviceStore.SetScanner(app.ApplicationServices);
+                RemoteHostStore.SetScannerAndReciever(app.ApplicationServices);
+            }
+            catch (Exception ex)
+            {
+                Xb.Util.Out("Startup Scan Failed!");
+                Xb.Util.Out(ex);
+                // マイグレーション時にも実行されてしまう。
+                // とりあえず握りつぶす。
+            }
+
 
             // アプリケーション起動／終了をハンドルする。
             // https://stackoverflow.com/questions/41675577/where-can-i-log-an-asp-net-core-apps-start-stop-error-events

@@ -174,6 +174,7 @@ namespace BroadlinkWeb.Models.Stores
             var result = new List<BrDevice>();
 
             // LAN上のBroadlinkデバイスオブジェクトを取得
+            Xb.Util.Out("BrDevicesController.Refresh - Find Devices");
             var broadlinkDevices = Broadlink.Discover(2)
                 .GetAwaiter()
                 .GetResult();
@@ -220,10 +221,21 @@ namespace BroadlinkWeb.Models.Stores
             }
 
             // 認証処理終了まで待機する。
+            Xb.Util.Out("BrDevicesController.Refresh - Device Auth");
             this.DelayedAuth(entities)
                 .ConfigureAwait(false)
                 .GetAwaiter()
                 .GetResult();
+
+            using (var serviceScope = BrDeviceStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                Xb.Util.Out("BrDevicesController.Refresh - Ensure Device's ControlSet");
+                var store = serviceScope.ServiceProvider.GetService<ControlSetStore>();
+                store.EnsureBrControlSets(entities)
+                    .ConfigureAwait(false)
+                    .GetAwaiter()
+                    .GetResult();
+            }
 
             return entities;
         }
