@@ -16,6 +16,7 @@ namespace App.Models.Stores {
     import SceneDetails = App.Models.Stores.SceneDetails;
     import Xhr = Fw.Util.Xhr;
     import Scene = App.Models.Entities.Scene;
+    import SceneDetail = App.Models.Entities.SceneDetail;
     import Header = App.Models.Entities.Header;
 
     export class SceneStore extends Fw.Models.StoreBase<Scene> {
@@ -57,7 +58,11 @@ namespace App.Models.Stores {
                     // API応答値を、TS側Entityに整形して保持しておく。
                     if (entity.Details && entity.Details.length > 0) {
                         SceneDetails.SetRange(entity.Details);
-                        obj.Details = SceneDetails.GetListBySceneId(entity.Id);
+                        let details = SceneDetails.GetListBySceneId(entity.Id);
+
+                        obj.Details = _.sortBy(details, (detail: SceneDetail) => {
+                            return detail.Order;
+                        });
                     } else {
                         obj.Details = [];
                     }

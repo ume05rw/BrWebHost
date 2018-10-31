@@ -10,6 +10,7 @@
 /// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
 /// <reference path="../Views/Pages/MainPageView.ts" />
 /// <reference path="../Views/Controls/ControlSetButtonView.ts" />
+/// <reference path="../Views/Controls/SceneButtonView.ts" />
 /// <reference path="../Models/Stores/BrDeviceStore.ts" />
 /// <reference path="../Models/Entities/ControlSet.ts" />
 /// <reference path="../Models/Entities/Scene.ts" />
@@ -32,6 +33,7 @@ namespace App.Controllers {
     import ControlSetTemplate = App.Items.ControlSetTemplate;
     import ControlSetButtonView = App.Views.Controls.ControlSetButtonView;
     import OperationType = App.Items.OperationType;
+    import SceneButtonView = App.Views.Controls.SceneButtonView;
 
     export class MainController extends Fw.Controllers.ControllerBase {
 
@@ -66,17 +68,17 @@ namespace App.Controllers {
                 });
 
 
-            for (let i = 0; i < 5; i++) {
-                const btn = new App.Views.Controls.SceneButtonView();
-                btn.Label.Text = `Scene ${i + 1}`;
-                btn.Button.AddEventListener(ButtonEvents.SingleClick, async () => {
-                    const ctr = this.Manager.Get('Scene') as SceneController;
-                    ctr.SetExecMode();
-                    ctr.ShowModal();
-                });
+            //for (let i = 0; i < 5; i++) {
+            //    const btn = new App.Views.Controls.SceneButtonView();
+            //    btn.Label.Text = `Scene ${i + 1}`;
+            //    btn.Button.AddEventListener(ButtonEvents.SingleClick, async () => {
+            //        const ctr = this.Manager.Get('Scene') as SceneController;
+            //        ctr.SetExecMode();
+            //        ctr.ShowModal();
+            //    });
 
-                this._page.ScenePanel.Add(btn);
-            }
+            //    this._page.ScenePanel.Add(btn);
+            //}
 
 
             this._page.HeaderBar.RightButton.AddEventListener(ButtonEvents.SingleClick, async () => {
@@ -177,6 +179,8 @@ namespace App.Controllers {
 
             await this.RefreshControlSets();
 
+            await this.RefreshScenes();
+
             return true;
         }
 
@@ -263,6 +267,65 @@ namespace App.Controllers {
                 this._page.ControlSetPanel.Add(btn);
             });
             this._page.ControlSetPanel.Refresh();
+
+            return true;
+        }
+
+        public async RefreshScenes(): Promise<boolean> {
+            const scenes = await Stores.Scenes.GetList();
+
+            // 削除されたEntity分のボタンをパネルから削除。
+            const children = Fw.Util.Obj.Mirror(this._page.ScenePanel.Children);
+            _.each(children, (btn: SceneButtonView) => {
+                const existsSet = _.find(scenes, (s: Entities.Scene) => {
+                    return (s === btn.Scene);
+                });
+                if (!existsSet) {
+                    this._page.ScenePanel.Remove(btn);
+                    btn.Dispose();
+                }
+            });
+
+            // 追加されたEntity分のボタンをパネルに追加。
+            _.each(scenes, (scene: Entities.Scene) => {
+                const existsBtn = _.find(children, (b: SceneButtonView) => {
+                    return (b.Scene === scene);
+                });
+                if (existsBtn)
+                    return;
+
+                const btn = new SceneButtonView(scene);
+
+                btn.Button.AddEventListener(ButtonEvents.SingleClick, (e) => {
+                    // 子View再配置中のとき、何もしない。
+                    if (this._page.ScenePanel.IsChildRelocation)
+                        return;
+
+                    // メインボタンクリック - リモコンをスライドイン表示する。
+                    const button = (e.Sender as Fw.Views.IView).Parent as SceneButtonView;
+                    const ctr = this.Manager.Get('Scene') as SceneController;
+                    ctr.SetEntity(button.Scene);
+                    ctr.SetExecMode();
+                    ctr.ShowModal();
+                });
+
+                scene.AddEventListener(Events.EntityEvents.Changed, (e) => {
+                    // ボタンに乗せたControlSetEntityの値変更イベント
+                    const sc = e.Sender as Entities.Scene
+                    const btn: SceneButtonView = _.find(this._page.ScenePanel.Children, (b) => {
+                        const sceneBtn = b as SceneButtonView;
+                        return (sceneBtn.Scene === sc);
+                    }) as SceneButtonView;
+
+                    if (!btn)
+                        return;
+
+                    btn.ApplyByEntity();
+                });
+
+                this._page.ScenePanel.Add(btn);
+            });
+            this._page.ScenePanel.Refresh();
 
             return true;
         }

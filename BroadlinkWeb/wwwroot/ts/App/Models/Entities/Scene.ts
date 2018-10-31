@@ -14,7 +14,7 @@ namespace App.Models.Entities {
 
         public IconUrl: string = 'images/icons/scene/scene.png';
 
-        public Color: string = Color.ButtonColors[6];
+        public Color: string = Color.ButtonColors[8];
 
         public Order: number = 99999;
 

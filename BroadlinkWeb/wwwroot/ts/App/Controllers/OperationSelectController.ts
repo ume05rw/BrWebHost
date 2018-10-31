@@ -43,9 +43,9 @@ namespace App.Controllers {
             const btn1 = this.GetNewButton();
             btn1.Label.Text = 'Scene';
             btn1.Button.ImageSrc = App.Items.Icon.Scene;
-            btn1.Button.BackgroundColor = Color.MainBackground;
-            btn1.Button.HoverColor = Color.MainHover;
-            btn1.Button.Color = Color.MainHover;
+            btn1.Button.Color = Color.ButtonColors[8];
+            btn1.Button.BackgroundColor = Color.ButtonColors[8]
+            btn1.Button.HoverColor = Color.ButtonHoverColors[8];
             btn1.Button.AddEventListener(ButtonEvents.SingleClick, () => {
                 this.Commit(OperationTemplate.Scene);
             });

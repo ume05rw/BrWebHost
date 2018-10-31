@@ -226,7 +226,7 @@ namespace App.Views.Controls {
                     this.ControlButton.HoverColor = Color.ButtonHoverColors[0];
                 }
 
-                this.WaitTextBox.Value = String(this._detail.WaitSecond);
+                this.WaitTextBox.Value = this._detail.WaitSecond.toFixed(1);
 
             } else {
                 this.ControlSetButton.ImageSrc = '';
@@ -247,6 +247,14 @@ namespace App.Views.Controls {
             }
 
             this.Refresh();
+        }
+
+        public SetEditMode(): void {
+            this.WaitTextBox.Elem.attr('readonly', 'false');
+        }
+
+        public SetExecMode(): void {
+            this.WaitTextBox.Elem.attr('readonly', 'true');
         }
 
         public CalcLayout(): void {

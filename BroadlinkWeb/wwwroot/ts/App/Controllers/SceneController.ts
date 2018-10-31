@@ -102,7 +102,7 @@ namespace App.Controllers {
                     });
                 } else {
                     // 保存成功
-                    //ctr.RefreshControlSets();
+                    ctr.RefreshScenes();
                 }
             });
 
@@ -173,6 +173,10 @@ namespace App.Controllers {
 
             const ctr = this.Manager.Get('ControlSetSelect') as ControlSetSelectController;
             ctr.RefreshControlSets();
+
+            _.each(this._page.DetailPanel.Children, (v: SceneDetailView) => {
+                v.SetEditMode();
+            });
         }
 
         public SetExecMode(): void {
@@ -187,6 +191,10 @@ namespace App.Controllers {
 
             if (this._page.DetailPanel.IsChildRelocation)
                 this._page.DetailPanel.CommitRelocation();
+
+            _.each(this._page.DetailPanel.Children, (v: SceneDetailView) => {
+                v.SetExecMode();
+            });
         }
 
         /**
@@ -408,7 +416,7 @@ namespace App.Controllers {
             // 削除メソッド、投げっぱなしの終了確認無しで終わる。
             await Stores.Scenes.Remove(scene);
 
-            ctr.RefreshControlSets();
+            ctr.RefreshScenes();
         }
     }
 }
