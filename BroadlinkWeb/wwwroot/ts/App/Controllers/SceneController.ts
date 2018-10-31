@@ -296,6 +296,13 @@ namespace App.Controllers {
         
 
         private ApplyFromEntity(): void {
+            if (!this._scene)
+                return;
+
+            this._page.HeaderBar.Text = this._scene.Name;
+            this._page.HeaderLeftLabel.Text = this._scene.Name;
+            this._page.Refresh();
+
         }
 
         /**
