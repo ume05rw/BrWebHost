@@ -12,6 +12,7 @@
 /// <reference path="../Views/Controls/ControlSetButtonView.ts" />
 /// <reference path="../Models/Stores/BrDeviceStore.ts" />
 /// <reference path="../Models/Entities/ControlSet.ts" />
+/// <reference path="../Models/Entities/Scene.ts" />
 /// <reference path="../Items/OperationTemplate.ts" />
 /// <reference path="../Items/ControlSetTemplate.ts" />
 /// <reference path="../Items/OperationType.ts" />
@@ -58,6 +59,7 @@ namespace App.Controllers {
                     const colorSelectCtr = new ColorSelectController();
 
                     const sceneCtr = new SceneController();
+                    const controlSetSelectStr = new ControlSetSelectController();
 
                     Dump.Log('SubController Load End');
                 });
@@ -68,14 +70,12 @@ namespace App.Controllers {
                 btn.Label.Text = `Scene ${i + 1}`;
                 btn.Button.AddEventListener(ButtonEvents.SingleClick, async () => {
                     const ctr = this.Manager.Get('Scene') as SceneController;
-                    ctr.SetOperateMode();
+                    ctr.SetExecMode();
                     ctr.ShowModal();
                 });
 
                 this._page.ScenePanel.Add(btn);
             }
-
-
 
 
             this._page.HeaderBar.RightButton.AddEventListener(ButtonEvents.SingleClick, async () => {
@@ -86,8 +86,18 @@ namespace App.Controllers {
                 let ctrSet: App.Models.Entities.ControlSet;
                 switch (item) {
                     case OperationTemplate.Scene:
-                        alert('Not Implemented!!');
+                        
+                        //alert('Not Implemented!!');
+                        const ctr = this.Manager.Get('Scene') as SceneController;
+                        const scene = new Entities.Scene();
+                        scene.Details.push(new Entities.SceneDetail());
+                        ctr.SetEntity(scene);
+                        ctr.SetEditMode();
+                        ctr.Show();
+
+                        // ※シーンのみ、対象Entity/起動画面が違う。このセクションでreturnする。
                         return;
+
                     case OperationTemplate.Tv:
                         ctrSet = await Stores.ControlSets.GetTemplateClone(ControlSetTemplate.Tv);
                         break;
@@ -133,8 +143,8 @@ namespace App.Controllers {
                         break;
 
                     default:
-                        alert('Not Implemented!!');
-                        return;
+                        alert('ここにはこないはず');
+                        throw new Error('なんでやー！');
                 }
 
                 const ctr2 = this.Manager.Get('ControlSet') as ControlSetController;

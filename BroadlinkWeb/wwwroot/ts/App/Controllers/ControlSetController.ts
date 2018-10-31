@@ -14,7 +14,7 @@
 /// <reference path="../Models/Stores/RmStore.ts" />
 /// <reference path="../Items/OperationType.ts" />
 /// <reference path="../Items/DeviceType.ts" />
-/// <reference path="../Items/ControlSetOperationType.ts" />
+/// <reference path="../Items/ModalOperationType.ts" />
 /// <reference path="ItemSelectControllerBase.ts" />
 /// <reference path="../Views/Controls/ItemSelectButtonView.ts" />
 
@@ -34,7 +34,7 @@ namespace App.Controllers {
     import Popup = App.Views.Popup;
     import OperationType = App.Items.OperationType;
     import DeviceType = App.Items.DeviceType;
-    import ControlSetOperationType = App.Items.ControlSetOperationType;
+    import ModalOperationType = App.Items.ModalOperationType;
     import ItemSelectControllerBase = App.Controllers.ItemSelectControllerBase;
     import ItemSelectButtonView = App.Views.Controls.ItemSelectButtonView;
 
@@ -42,7 +42,7 @@ namespace App.Controllers {
 
         private _page: Pages.ControlSetPageView;
         private _controlSet: Entities.ControlSet;
-        private _operationType: ControlSetOperationType;
+        private _operationType: ModalOperationType;
 
         constructor() {
             super('ControlSet');
@@ -52,7 +52,8 @@ namespace App.Controllers {
             this.SetPageView(new Pages.ControlSetPageView());
             this._page = this.View as Pages.ControlSetPageView;
 
-            this._operationType = ControlSetOperationType.Exec;
+            this._controlSet = null;
+            this._operationType = ModalOperationType.Exec;
 
             this._page.HeaderBar.LeftButton.Hide(0);
             this._page.HeaderBar.LeftButton.AddEventListener(ButtonEvents.SingleClick, async () => {
@@ -109,12 +110,12 @@ namespace App.Controllers {
          * @param parentController
          */
         public async Select(parentController: Fw.Controllers.IController): Promise<any> {
-            this._operationType = ControlSetOperationType.Select;
+            this._operationType = ModalOperationType.Select;
             return super.Select(parentController);
         }
 
         public SetEditMode(): void {
-            this._operationType = ControlSetOperationType.Edit;
+            this._operationType = ModalOperationType.Edit;
             const left = (this._page.Size.Width / 2) - (this._page.ButtonPanel.Size.Width / 2);
             this._page.ButtonPanel.Position.Left = left;
             this._page.HeaderBar.Label.Show(0);
@@ -144,7 +145,7 @@ namespace App.Controllers {
         }
 
         public SetExecMode(): void {
-            this._operationType = ControlSetOperationType.Exec;
+            this._operationType = ModalOperationType.Exec;
             const left = 10;
             this._page.ButtonPanel.Position.Left = left;
             this._page.HeaderBar.Label.Hide(0);
@@ -160,7 +161,7 @@ namespace App.Controllers {
         }
 
         public SetSelectMode(): void {
-            this._operationType = ControlSetOperationType.Select;
+            this._operationType = ModalOperationType.Select;
             const left = 10;
             this._page.ButtonPanel.Position.Left = left;
             this._page.HeaderBar.Label.Hide(0);
@@ -215,14 +216,14 @@ namespace App.Controllers {
         private async OnButtonClicked(e: Fw.Events.EventObject) {
 
             switch (this._operationType) {
-                case ControlSetOperationType.Exec:
+                case ModalOperationType.Exec:
 
                     this.Log('ControlButtonViewEvents.ExecOrdered');
                     const button1 = e.Sender as Controls.ControlButtonView;
                     this.ExecCode(button1.Control);
 
                     break;
-                case ControlSetOperationType.Edit:
+                case ModalOperationType.Edit:
 
                     // Broadlinkデバイスはボタン編集禁止
                     if (this._controlSet.OperationType === OperationType.BroadlinkDevice)
@@ -248,7 +249,7 @@ namespace App.Controllers {
                     }
 
                     break;
-                case ControlSetOperationType.Select:
+                case ModalOperationType.Select:
 
                     const button3 = e.Sender as Controls.ControlButtonView;
                     this.Commit(button3.Control);
@@ -353,7 +354,7 @@ namespace App.Controllers {
         private OnOrderedNewControl(e: Fw.Events.EventObject): void {
             //if (!this.IsOnEditMode)
             //    return;
-            if (this._operationType !== ControlSetOperationType.Edit)
+            if (this._operationType !== ModalOperationType.Edit)
                 return;
 
             if (!this._controlSet)
@@ -385,7 +386,7 @@ namespace App.Controllers {
 
             //if (!this.IsOnEditMode)
             //    return;
-            if (this._operationType !== ControlSetOperationType.Edit)
+            if (this._operationType !== ModalOperationType.Edit)
                 return;
 
             if (!this._controlSet)
@@ -446,7 +447,7 @@ namespace App.Controllers {
                  || this._controlSet.OperationType === OperationType.BroadlinkDevice)
                 && !this._controlSet.BrDeviceId
             ) {
-                const guide = (this._operationType === ControlSetOperationType.Edit)
+                const guide = (this._operationType === ModalOperationType.Edit)
                     ? 'Click Header.'
                     : 'Go Edit.';
                 Popup.Alert.Open({
@@ -460,7 +461,7 @@ namespace App.Controllers {
 
                 switch (this._controlSet.OperationType) {
                     case OperationType.RemoteControl:
-                        const guide = (this._operationType === ControlSetOperationType.Edit)
+                        const guide = (this._operationType === ModalOperationType.Edit)
                             ? 'Click Learn-Button.'
                             : 'Go Edit.';
                         message = 'Learn your Remote Control Button.<br/>' + guide;
@@ -522,7 +523,7 @@ namespace App.Controllers {
         public ResetToggleAssign(control: Entities.Control, targetState: boolean): void {
             //if (!this.IsOnEditMode)
             //    return;
-            if (this._operationType !== ControlSetOperationType.Edit)
+            if (this._operationType !== ModalOperationType.Edit)
                 return;
 
             const propName = (targetState)
@@ -545,7 +546,7 @@ namespace App.Controllers {
         public RemoveControl(control: Entities.Control): void {
             //if (!this.IsOnEditMode)
             //    return;
-            if (this._operationType !== ControlSetOperationType.Edit)
+            if (this._operationType !== ModalOperationType.Edit)
                 return;
 
             // View側削除処理
@@ -571,7 +572,7 @@ namespace App.Controllers {
          * リモコン全体を削除する。
          */
         public async RemoveControlSet(): Promise<boolean> {
-            if (this._operationType !== ControlSetOperationType.Edit)
+            if (this._operationType !== ModalOperationType.Edit)
                 return;
             //if (!this.IsOnEditMode)
             //    return;

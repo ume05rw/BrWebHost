@@ -132,8 +132,8 @@ namespace App.Views.Controls {
                 this.ImageSrc = '';
                 this.Text = this.Name;
             } else {
-                this.Text = '';
                 this.ImageSrc = value;
+                this.Text = '';
             }
         }
 

@@ -10,11 +10,14 @@
 /// <reference path="../Views/Pages/MainPageView.ts" />
 /// <reference path="../Views/Popup/AlertPopup.ts" />
 /// <reference path="../Views/Controls/SceneDetailView.ts" />
+/// <reference path="../Views/Controls/ItemSelectButtonView.ts" />
 /// <reference path="../Events/Controls/ControlButtonViewEvents.ts" />
 /// <reference path="../Models/Entities/ControlSet.ts" />
 /// <reference path="../Models/Stores/RmStore.ts" />
 /// <reference path="../Items/OperationType.ts" />
 /// <reference path="../Items/DeviceType.ts" />
+/// <reference path="../Items/ModalOperationType.ts" />
+/// <reference path="ControlSetSelectController.ts" />
 
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
@@ -26,25 +29,23 @@ namespace App.Controllers {
     import Entities = App.Models.Entities;
     import Util = Fw.Util;
     import EntityEvents = Fw.Events.EntityEvents;
-    import ButtonViewEvents = Fw.Events.ButtonViewEvents;
-    import ControlButtonViewEvents = App.Events.Controls.ControlButtonViewEvents;
+    import ButtonEvents = Fw.Events.ButtonViewEvents;
     import Stores = App.Models.Stores;
     import Popup = App.Views.Popup;
     import OperationType = App.Items.OperationType;
     import DeviceType = App.Items.DeviceType;
     import SceneDetailView = App.Views.Controls.SceneDetailView;
+    import ItemSelectButtonView = App.Views.Controls.ItemSelectButtonView;
+    import ModalOperationType = App.Items.ModalOperationType;
+    import ControlSetSelectController = App.Controllers.ControlSetSelectController;
+    import ControlSet = App.Models.Entities.ControlSet;
+    import Control = App.Models.Entities.Control;
 
     export class SceneController extends Fw.Controllers.ControllerBase {
 
         private _page: Pages.ScenePageView;
-
-        /**
-         * 現在リモコン編集中か否か
-         */
-        private get IsOnEditMode(): boolean {
-            // 編集ボタンが見えているとき操作モード。非表示のとき編集モード
-            return !this._page.EditButton.IsVisible;
-        }
+        private _scene: Entities.Scene;
+        private _operationType: ModalOperationType;
 
         constructor() {
             super('Scene');
@@ -54,9 +55,12 @@ namespace App.Controllers {
             this.SetPageView(new Pages.ScenePageView());
             this._page = this.View as Pages.ScenePageView;
 
+            this._scene = null;
+            this._operationType = ModalOperationType.Exec;
+
             this._page.HeaderBar.LeftButton.Hide(0);
 
-            this._page.HeaderBar.LeftButton.AddEventListener(ButtonViewEvents.SingleClick, async () => {
+            this._page.HeaderBar.LeftButton.AddEventListener(ButtonEvents.SingleClick, async () => {
                 // 編集モードの状態で、戻るボタンクリック。
                 // ここでSceneエンティティを保存する。
 
@@ -69,13 +73,13 @@ namespace App.Controllers {
                 //ctr.RefreshScenes();
             });
 
-            this._page.EditButton.AddEventListener(ButtonViewEvents.SingleClick, () => {
+            this._page.EditButton.AddEventListener(ButtonEvents.SingleClick, () => {
                 this.SetEditMode();
                 this.ToUnmodal();
             });
 
-            this._page.HeaderBar.RightButton.AddEventListener(ButtonViewEvents.SingleClick, (e) => {
-                this.OnOrderedNewControl(e);
+            this._page.HeaderBar.RightButton.AddEventListener(ButtonEvents.SingleClick, (e) => {
+                this.OnOrderedNewDetail(e);
             });
 
             this._page.HeaderBar.Elem.on('click', (e) => {
@@ -85,17 +89,25 @@ namespace App.Controllers {
                 this.OnOrderedHeader(e);
             });
 
+            this._page.DetailPanel.AddEventListener(Events.StuckerBoxViewEvents.OrderChanged, () => {
 
-            for (var i = 0; i < 5; i++) {
-                const row = new SceneDetailView();
-                (i === 4)
-                    ? row.SetWaitable(false)
-                    : row.SetWaitable(true);
-                this._page.DetailPanel.Add(row);
-            }
+                if (!this._scene)
+                    return;
+
+                const length = this._scene.Details.length;
+                let idx = 1;
+                _.each(this._page.DetailPanel.Children, (v: SceneDetailView) => {
+                    v.Detail.Order = idx;
+                    v.SetWaitable(v.Detail.Order !== length);
+                    idx++;
+                });
+                this._page.DetailPanel.Refresh();
+            });
+
         }
 
         public SetEditMode(): void {
+            this._operationType = ModalOperationType.Edit;
             const left = (this._page.Size.Width / 2) - (this._page.DetailPanel.Size.Width / 2);
             this._page.DetailPanel.Position.Left = left;
             this._page.HeaderBar.Label.Show(0);
@@ -104,13 +116,14 @@ namespace App.Controllers {
             this._page.EditButton.Hide(0);
             this._page.HeaderBar.RightButton.Show(0);
 
-            _.each(this._page.DetailPanel.Children, (v) => {
-                //if (v instanceof Controls.ControlButtonView)
-                //    (v as Controls.ControlButtonView).SetRelocatable(true);
-            });
+            this._page.DetailPanel.StartRelocation();
+
+            const ctr = this.Manager.Get('ControlSetSelect') as ControlSetSelectController;
+            ctr.RefreshControlSets();
         }
 
-        public SetOperateMode(): void {
+        public SetExecMode(): void {
+            this._operationType = ModalOperationType.Exec;
             const left = 10;
             this._page.DetailPanel.Position.Left = left;
             this._page.HeaderBar.Label.Hide(0);
@@ -119,17 +132,111 @@ namespace App.Controllers {
             this._page.HeaderLeftLabel.Show(0);
             this._page.EditButton.Show(0);
 
-            _.each(this._page.DetailPanel.Children, (v) => {
-                //if (v instanceof Controls.ControlButtonView)
-                //    (v as Controls.ControlButtonView).SetRelocatable(false);
-            });
+            if (this._page.DetailPanel.IsChildRelocation)
+                this._page.DetailPanel.CommitRelocation();
         }
 
         /**
          * 操作対象シーンEnttiyをセットする。
          * @param entity
          */
-        public SetEntity(entity: Entities.ControlSet): void {
+        public SetEntity(entity: Entities.Scene): void {
+
+            // View側削除処理、ButtonPanel.Childrenを削除操作するため、要素退避しておく。
+            const buttons = Util.Obj.Mirror(this._page.DetailPanel.Children);
+            _.each(buttons, (btn: Fw.Views.IView) => {
+                this._page.DetailPanel.Remove(btn);
+                btn.Dispose();
+            });
+
+            if (this._scene) {
+                this._scene.RemoveEventListener(EntityEvents.Changed, this.ApplyFromEntity, this);
+            }
+
+            this._scene = entity;
+
+            if (!this._scene)
+                return;
+
+            this._scene.AddEventListener(EntityEvents.Changed, this.ApplyFromEntity, this);
+
+            _.each(this._scene.Details, (detail) => {
+                this.AddDetail(detail);
+            });
+
+            this.ApplyFromEntity();
+        }
+
+        private AddDetail(detail: Entities.SceneDetail): void {
+            
+            const box = new SceneDetailView();
+            box.Detail = detail;
+            box.ControlSetButton.AddEventListener(ButtonEvents.SingleClick, this.OnControlSetClicked, this);
+            box.ControlButton.AddEventListener(ButtonEvents.SingleClick, this.OnControlClicked, this);
+            this._page.DetailPanel.Add(box);
+
+            const length = this._scene.Details.length;
+            _.each(this._page.DetailPanel.Children, (v: SceneDetailView) => {
+                v.SetWaitable(v.Detail.Order !== length);
+            });
+            this._page.DetailPanel.Refresh();
+        }
+
+        private async OnControlSetClicked(e: Fw.Events.EventObject) {
+            switch (this._operationType) {
+                case ModalOperationType.Exec:
+                    // なにもしない。
+                    break;
+                case ModalOperationType.Edit:
+
+                    const ctr = this.Manager.Get('ControlSetSelect') as ControlSetSelectController;
+                    const controlSet: ControlSet = await ctr.Select(this);
+
+                    if (controlSet) {
+                        const button: ItemSelectButtonView = e.Sender as ItemSelectButtonView;
+                        const sdView: SceneDetailView = button.Parent as SceneDetailView;
+                        sdView.Detail.ControlSetId = controlSet.Id;
+                        sdView.Detail.ControlId = null;
+                        sdView.ApplyFromEntity();
+                    }
+
+                    break;
+                case ModalOperationType.Select:
+                default:
+                    alert('ここにはこないはず。');
+                    throw new Error('なんでー？');
+            }
+        }
+
+        private async OnControlClicked(e: Fw.Events.EventObject) {
+            switch (this._operationType) {
+                case ModalOperationType.Exec:
+                    // なにもしない。
+                    break;
+                case ModalOperationType.Edit:
+                    const button: ItemSelectButtonView = e.Sender as ItemSelectButtonView;
+                    const sdView: SceneDetailView = button.Parent as SceneDetailView;
+                    const controlSet: ControlSet = Stores.ControlSets.List[sdView.Detail.ControlSetId];
+
+                    if (controlSet) {
+                        const ctr = this.Manager.Get('ControlSet') as ControlSetController;
+                        ctr.SetEntity(controlSet);
+                        ctr.SetSelectMode();
+                        const control: Control = await ctr.Select(this);
+
+                        if (control) {
+                            sdView.Detail.ControlSetId = controlSet.Id;
+                            sdView.Detail.ControlId = control.Id;
+                            sdView.ApplyFromEntity();
+                        }
+                    }
+
+                    break;
+                case ModalOperationType.Select:
+                default:
+                    alert('ここにはこないはず。');
+                    throw new Error('なんでー？');
+            }
         }
 
         private ApplyFromEntity(): void {
@@ -139,7 +246,19 @@ namespace App.Controllers {
          * 操作追加指示
          * @param e
          */
-        private OnOrderedNewControl(e: Fw.Events.EventObject): void {
+        private OnOrderedNewDetail(e: Fw.Events.EventObject): void {
+
+            if (this._operationType !== ModalOperationType.Edit)
+                return;
+
+            if (!this._scene)
+                throw new Error('Scene Not Found');
+
+            const detail = new Entities.SceneDetail();
+            this._scene.Details.push(detail);
+            detail.SceneId = this._scene.Id;
+            detail.Order = this._scene.Details.length;
+            this.AddDetail(detail);
         }
 
         /**

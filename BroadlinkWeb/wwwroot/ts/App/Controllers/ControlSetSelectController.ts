@@ -33,6 +33,7 @@ namespace App.Controllers {
     export class ControlSetSelectController extends ItemSelectControllerBase {
 
         private _page: Pages.ItemSelectPageView;
+        private _controlSets: Array<ControlSet> = [];
 
         constructor() {
             super('ControlSetSelect');
@@ -41,16 +42,33 @@ namespace App.Controllers {
 
             this._page = this.View as Pages.ItemSelectPageView;
 
+            this._page.Label.Text = 'Select Remote Control';
+
+            this._controlSets = null;
+        }
+
+        public async Select(parentController: Fw.Controllers.IController): Promise<any> {
             this.InitView();
+            return super.Select(parentController);
+        }
+
+        public async RefreshControlSets(): Promise<boolean> {
+            this._controlSets = await Stores.ControlSets.GetListForMainPanel();
+            return true;
         }
 
         private async InitView(): Promise<boolean> {
 
-            this._page.Label.Text = 'Select Remote Control';
+            if (!this._controlSets)
+                await this.RefreshControlSets();
 
-            const csets = await Stores.ControlSets.GetListForMainPanel();
+            const children = Fw.Util.Obj.Mirror(this._page.SelectorPanel.Children);
+            _.each(children, (v: Fw.Views.IView) => {
+                this._page.SelectorPanel.Remove(v);
+                v.Dispose();
+            });
 
-            _.each(csets, (cset: ControlSet) => {
+            _.each(this._controlSets, (cset: ControlSet) => {
 
                 // 操作未対応のBroadlinkデバイスのとき、選択させない。
                 if (cset.OperationType === OperationType.BroadlinkDevice) {
@@ -78,12 +96,15 @@ namespace App.Controllers {
                 btn.Value = cset;
 
                 btn.Button.AddEventListener(ButtonEvents.SingleClick, (e) => {
-                    const button = e.Sender as LabelAndButtonView;
-                    const controlSet = button.Value as ControlSet;
+                    const button = e.Sender as Fw.Views.ButtonView;
+                    const lbView = button.Parent as LabelAndButtonView;
+                    const controlSet = lbView.Value as ControlSet;
                     this.Commit(controlSet);
                 });
                 this._page.SelectorPanel.Add(btn);
             });
+
+            this._page.SelectorPanel.Refresh();
 
             return true;
         }
@@ -97,7 +118,7 @@ namespace App.Controllers {
             button.Button.BackgroundColor = App.Items.Color.MainBackground;
             button.Button.HoverColor = App.Items.Color.ButtonHoverColors[0];
             button.Button.Color = App.Items.Color.ButtonColors[0];
-            button.Button.ImageFitPolicy = Property.FitPolicy.Auto;
+            button.Button.ImageFitPolicy = Property.FitPolicy.Cover;
             return button;
         }
     }

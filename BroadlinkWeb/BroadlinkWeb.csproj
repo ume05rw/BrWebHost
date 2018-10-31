@@ -22,9 +22,9 @@
     <Content Remove="wwwroot\ts\App\Controllers\Sub3Controller.ts" />
     <Content Remove="wwwroot\ts\App\Events\Controls\ControlButtonViewEvents.ts" />
     <Content Remove="wwwroot\ts\App\Icon.ts" />
-    <Content Remove="wwwroot\ts\App\Items\ControlSetOperationType.ts" />
     <Content Remove="wwwroot\ts\App\Items\ControlSetTemplate.ts" />
     <Content Remove="wwwroot\ts\App\Items\DeviceType.ts" />
+    <Content Remove="wwwroot\ts\App\Items\ModalOperationType.ts" />
     <Content Remove="wwwroot\ts\App\Items\OperationTemplate.ts" />
     <Content Remove="wwwroot\ts\App\Items\OperationType.ts" />
     <Content Remove="wwwroot\ts\App\Main.ts" />
@@ -168,7 +168,7 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\IconSelectController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ControlSetSelectController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\SceneController.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\App\Items\ControlSetOperationType.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Items\ModalOperationType.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Items\DeviceType.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Items\Color.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ControlHeaderPropertyController.ts" />

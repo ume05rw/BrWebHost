@@ -16,11 +16,11 @@ namespace App.Models.Entities {
 
         public SceneId: number;
 
-        public ControlSetId: number;
+        public ControlSetId: number = null;
 
-        public ControlId: number;
+        public ControlId: number = null;
 
-        public WaitSecond: number;
+        public WaitSecond: number = 0.5;
 
         public Order: number;
     }

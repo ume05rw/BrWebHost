@@ -127,8 +127,6 @@ namespace Fw.Views {
             this._lockButton.ImageFitPolicy = Property.FitPolicy.Auto;
             this._lockButton.ImageSrc = this.LockedImage;
             this._lockButton.Hide(0);
-            
-
 
             this._backupView = null;
             this._dummyView.Elem.addClass('Shadow');
@@ -152,7 +150,6 @@ namespace Fw.Views {
             this._innerBox.Elem.on('touchstart mousedown', this.OnInnerMouseDown);
             this._innerBox.Elem.on('touchmove mousemove', this.OnInnerMouseMove);
             this._innerBox.Elem.on('touchend mouseup mouseout', this.OnInnerMouseUp);
-            //this._innerBox.Elem.on('click', this.OnInnerSingleClick);
 
             this._lockButton.Elem.on('click', this.OnLockButtonClick)
 
@@ -341,8 +338,10 @@ namespace Fw.Views {
 
             if (this._lockButton.IsVisible) {
                 // ロックボタン表示中のとき
-                if (!this._isChildRelocation)
+                if (!this._isChildRelocation) {
+                    this._lockButton.ClearAnimatedClass();
                     this._lockButton.Hide();
+                }
             } else {
                 // ロックボタン非表示のとき
                 // 現在のロック状態を表示する。
@@ -353,7 +352,16 @@ namespace Fw.Views {
                 if (image !== this._lockButton.ImageSrc)
                     this._lockButton.ImageSrc = image;
 
+                this._lockButton.ClearAnimatedClass();
                 this._lockButton.Show();
+
+                // 再配置モードでないとき、2秒後も再配置モードにしていなければ、ボタンを消す。
+                if (!this._isChildRelocation) {
+                    _.delay(() => {
+                        if (!this._isChildRelocation)
+                            this._lockButton.Hide();
+                    }, 2000);
+                }
             }
         }
 
@@ -407,6 +415,18 @@ namespace Fw.Views {
                 v.SuppressEvent(ControlViewEvents.LongClick);
             });
 
+            if (!this._lockButton.IsVisible) {
+                _.delay(() => {
+                    if (!this._lockButton.IsVisible) {
+                        if (this._lockButton.ImageSrc !== this.UnlockedImage)
+                            this._lockButton.ImageSrc = this.UnlockedImage;
+
+                        this._lockButton.ClearAnimatedClass();
+                        this._lockButton.Show();
+                    }
+                }, 500);
+            }
+
             this.Refresh();
         }
 
@@ -436,6 +456,21 @@ namespace Fw.Views {
                 this.DispatchEvent(Events.OrderChanged);
 
             this._childrenOrder = null;
+
+            if (this._lockButton.IsVisible
+                && this._lockButton.ImageSrc !== this.LockedImage
+            ) {
+                if (this._lockButton.ImageSrc !== this.LockedImage)
+                    this._lockButton.ImageSrc = this.LockedImage;
+            }
+
+            _.delay(() => {
+                if (this._lockButton.IsVisible) {
+                    this._lockButton.ClearAnimatedClass();
+                    this._lockButton.Hide();
+                    this.Refresh();
+                }
+            }, 700);
 
             this.Refresh();
         }

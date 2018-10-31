@@ -10,11 +10,11 @@ namespace App.Models.Entities {
 
     export class Scene extends Fw.Models.EntityBase {
 
-        public Name: string = 'New Remote Control';
+        public Name: string = 'New Scene';
 
-        public IconUrl: string = 'images/icons/main_av.png';
+        public IconUrl: string = 'images/icons/scene/scene.png';
 
-        public Color: string = Color.ButtonColors[0];
+        public Color: string = Color.ButtonColors[6];
 
         public Order: number = 99999;
 

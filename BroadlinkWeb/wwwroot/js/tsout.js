@@ -472,8 +472,10 @@ var Fw;
                 this._controllers[controller.Id] = controller;
             };
             Manager.prototype.Get = function (id) {
-                if (!this._controllers[id])
-                    throw new Error("Id[" + id + "] not found");
+                if (!this._controllers[id]) {
+                    alert("Controller Id[" + id + "] not found");
+                    throw new Error("Controller Id[" + id + "] not found");
+                }
                 return this._controllers[id];
             };
             Manager.prototype.Remove = function (id) {
@@ -589,89 +591,6 @@ var Fw;
 (function (Fw) {
     var Events;
     (function (Events) {
-        var EventReference = /** @class */ (function () {
-            function EventReference() {
-            }
-            return EventReference;
-        }());
-        Events.EventReference = EventReference;
-    })(Events = Fw.Events || (Fw.Events = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../lib/jquery/index.d.ts" />
-/// <reference path="../../lib/underscore/index.d.ts" />
-/// <reference path="IObject.ts" />
-/// <reference path="Events/EventReference.ts" />
-/// <reference path="Util/Dump.ts" />
-var Fw;
-(function (Fw) {
-    var Dump = Fw.Util.Dump;
-    var ObjectBase = /** @class */ (function () {
-        function ObjectBase() {
-            this._isDisposed = false;
-            this._instanceId = Fw.Util.App.CreateId();
-            this.EnableLog = false;
-        }
-        Object.defineProperty(ObjectBase.prototype, "InstanceId", {
-            get: function () {
-                return this._instanceId;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(ObjectBase.prototype, "IsDisposed", {
-            get: function () {
-                return this._isDisposed;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(ObjectBase.prototype, "ClassName", {
-            get: function () {
-                return this._className;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(ObjectBase.prototype, "ObjectIdentifier", {
-            get: function () {
-                return "[" + this._className + "[" + this._instanceId + "]";
-            },
-            enumerable: true,
-            configurable: true
-        });
-        ObjectBase.prototype.SetClassName = function (name) {
-            this._className = name;
-        };
-        ObjectBase.prototype.Log = function (value) {
-            if (!this.EnableLog)
-                return;
-            var header = this.ClassName + "[" + this.InstanceId + "]:: ";
-            if (typeof value === 'object') {
-                Dump.Log(header);
-                Dump.Log(value);
-            }
-            else {
-                Dump.Log(header + value);
-            }
-        };
-        ObjectBase.prototype.Dispose = function () {
-            this.Log("Dispose");
-            // TODO: あとで戻す。デバッグ用。
-            //this._className = null;
-            //this._instanceId = null;
-            this._isDisposed = true;
-            Fw.Util.Obj.Clean(this);
-        };
-        return ObjectBase;
-    }());
-    Fw.ObjectBase = ObjectBase;
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-var Fw;
-(function (Fw) {
-    var Events;
-    (function (Events) {
         var EventableEventsClass = /** @class */ (function () {
             function EventableEventsClass() {
             }
@@ -679,143 +598,6 @@ var Fw;
         }());
         Events.EventableEventsClass = EventableEventsClass;
         Events.EventableEvents = new EventableEventsClass();
-    })(Events = Fw.Events || (Fw.Events = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../lib/jquery/index.d.ts" />
-/// <reference path="../../lib/underscore/index.d.ts" />
-/// <reference path="IEventable.ts" />
-/// <reference path="ObjectBase.ts" />
-/// <reference path="Events/EventReference.ts" />
-/// <reference path="Util/Dump.ts" />
-/// <reference path="Events/EventableEvents.ts" />
-var Fw;
-(function (Fw) {
-    var Dump = Fw.Util.Dump;
-    var EventReference = Fw.Events.EventReference;
-    var EventableBase = /** @class */ (function (_super) {
-        __extends(EventableBase, _super);
-        function EventableBase() {
-            var _this = _super.call(this) || this;
-            _this._suppressedEvents = new Array();
-            _this._eventHandlers = new Array();
-            return _this;
-        }
-        EventableBase.prototype.AddEventListener = function (name, handler, bindObject) {
-            if (bindObject === void 0) { bindObject = null; }
-            if (!bindObject)
-                bindObject = this;
-            var eRef = new EventReference();
-            eRef.Name = name;
-            eRef.Handler = handler;
-            eRef.BindedHandler = handler.bind(bindObject);
-            eRef.BindObject = bindObject;
-            this.Log("AddEventListener: " + eRef.BindObject.ClassName + "_" + eRef.BindObject.InstanceId + "." + name);
-            this._eventHandlers.push(eRef);
-            //this.Elem.on(eRef.Name, eRef.BindedHandler);
-        };
-        EventableBase.prototype.RemoveEventListener = function (name, handler, bindObject) {
-            var _this = this;
-            if (bindObject === void 0) { bindObject = null; }
-            if (!bindObject)
-                bindObject = this;
-            if (handler) {
-                // handlerが指定されているとき
-                // 特定のイベントハンドラのみを削除する。
-                var key_1;
-                var eRef = _.find(this._eventHandlers, function (er, idx) {
-                    key_1 = idx;
-                    // 関数は継承関係のプロトタイプ参照都合で同一オブジェクトになりやすいため、
-                    // 判定基準にならない。
-                    //return (er.Name === name && er.Handler === handler);
-                    _this.Log("RemoveEventListener: " + er.BindObject.ClassName + "_" + er.BindObject.InstanceId + "." + name + " :: " + bindObject.ClassName + "." + bindObject.InstanceId);
-                    return (er.Name === name
-                        && er.Handler === handler
-                        && er.BindObject === bindObject);
-                });
-                if (!eRef) {
-                    throw new Error(this.ClassName + "." + name + " event not found.");
-                }
-                //this.Elem.off(eRef.Name, eRef.BindedHandler);
-                this._eventHandlers.splice(key_1, 1);
-            }
-            else {
-                // handlerが指定されないとき
-                // bindObjectの全てのイベントハンドラを削除する。
-                var eRefs_1 = new Array();
-                _.each(this._eventHandlers, function (er) {
-                    if (er.Name === name
-                        && er.BindObject === bindObject) {
-                        eRefs_1.push(er);
-                    }
-                });
-                _.each(eRefs_1, function (eRef) {
-                    //this.Elem.off(eRef.Name, eRef.BindedHandler);
-                    var idx = _this._eventHandlers.indexOf(eRef);
-                    _this._eventHandlers.splice(idx, 1);
-                });
-            }
-        };
-        EventableBase.prototype.DispatchEvent = function (name, params) {
-            if (params === void 0) { params = null; }
-            if (this.IsSuppressedEvent(name))
-                return;
-            this.Log("DispatchEvent: " + name);
-            var eo = new Fw.Events.EventObject(this, name, params);
-            _.each(this._eventHandlers, function (er) {
-                if (er.Name === name) {
-                    try {
-                        er.BindedHandler(eo);
-                    }
-                    catch (e) {
-                        Dump.ErrorLog(e);
-                    }
-                }
-            });
-        };
-        EventableBase.prototype.SuppressEvent = function (name) {
-            if (this.IsSuppressedEvent(name))
-                return;
-            this._suppressedEvents.push(name);
-        };
-        EventableBase.prototype.IsSuppressedEvent = function (name) {
-            return (this._suppressedEvents.indexOf(name) !== -1);
-        };
-        EventableBase.prototype.ResumeEvent = function (name) {
-            if (!this.IsSuppressedEvent(name))
-                return;
-            var idx = this._suppressedEvents.indexOf(name);
-            this._suppressedEvents.splice(idx, 1);
-        };
-        EventableBase.prototype.Dispose = function () {
-            _super.prototype.Dispose.call(this);
-            this._eventHandlers = null;
-            this._suppressedEvents = null;
-        };
-        return EventableBase;
-    }(Fw.ObjectBase));
-    Fw.EventableBase = EventableBase;
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="EventableEvents.ts" />
-var Fw;
-(function (Fw) {
-    var Events;
-    (function (Events) {
-        var RootEventsClass = /** @class */ (function (_super) {
-            __extends(RootEventsClass, _super);
-            function RootEventsClass() {
-                var _this = _super !== null && _super.apply(this, arguments) || this;
-                _this.PageInitializeStarted = 'PageInitializeStarted';
-                _this.PageInitializeCompleted = 'PageInitializeCompleted';
-                _this.Resized = 'Resized';
-                _this.MaskClicked = 'MaskClicked';
-                return _this;
-            }
-            return RootEventsClass;
-        }(Events.EventableEventsClass));
-        Events.RootEventsClass = RootEventsClass;
-        Events.RootEvents = new RootEventsClass();
     })(Events = Fw.Events || (Fw.Events = {}));
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
@@ -867,258 +649,6 @@ var Fw;
         }());
         Util.Num = Num;
     })(Util = Fw.Util || (Fw.Util = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../Events/ViewEvents.ts" />
-/// <reference path="../../Util/Dump.ts" />
-/// <reference path="../../Util/Num.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var Property;
-        (function (Property) {
-            var Events = Fw.Events.ViewEvents;
-            var Num = Fw.Util.Num;
-            var Size = /** @class */ (function () {
-                function Size(view) {
-                    if (view === void 0) { view = null; }
-                    this._view = null;
-                    this._width = 0;
-                    this._height = 0;
-                    this._view = view;
-                }
-                Object.defineProperty(Size.prototype, "Width", {
-                    get: function () {
-                        return this._width;
-                    },
-                    set: function (value) {
-                        // nullは許可、その他は例外
-                        if (Num.IsNaN(value) || value === undefined)
-                            throw new Error("value type not allowed");
-                        var changed = (this._width !== value);
-                        this._width = value;
-                        if (changed && this._view)
-                            this._view.DispatchEvent(Events.SizeChanged);
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Object.defineProperty(Size.prototype, "Height", {
-                    get: function () {
-                        return this._height;
-                    },
-                    set: function (value) {
-                        // nullは許可、その他は例外
-                        if (Num.IsNaN(value) || value === undefined)
-                            throw new Error("value type not allowed");
-                        var changed = (this._height !== value);
-                        this._height = value;
-                        if (changed && this._view)
-                            this._view.DispatchEvent(Events.SizeChanged);
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Size.prototype.Dispose = function () {
-                    this._view = null;
-                    this._width = null;
-                    this._height = null;
-                };
-                return Size;
-            }());
-            Property.Size = Size;
-        })(Property = Views.Property || (Views.Property = {}));
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../lib/jquery/index.d.ts" />
-/// <reference path="../../lib/underscore/index.d.ts" />
-/// <reference path="EventableBase.ts" />
-/// <reference path="Events/RootEvents.ts" />
-/// <reference path="Util/Dump.ts" />
-/// <reference path="Views/Property/Size.ts" />
-var Fw;
-(function (Fw) {
-    var Dump = Fw.Util.Dump;
-    var Events = Fw.Events.RootEvents;
-    var Property = Fw.Views.Property;
-    var Root = /** @class */ (function (_super) {
-        __extends(Root, _super);
-        function Root(jqueryElem) {
-            var _this = _super.call(this) || this;
-            _this._viewRefreshInterval = 3000;
-            _this._releaseInitialized = false;
-            _this.SetClassName('Root');
-            _this._elem = jqueryElem;
-            _this._dom = jqueryElem.get(0);
-            _this._size = new Property.Size();
-            _this._size.Width = _this.Elem.width();
-            _this._size.Height = _this.Elem.height();
-            _this._masked = false;
-            var $window = $(window);
-            $window.on('resize', function () {
-                _.defer(function () {
-                    _this.Refresh();
-                    _this.DispatchEvent(Events.Resized);
-                });
-            });
-            _this._renderInitializer = new Fw.Util.DelayedOnceExecuter(_this, function () {
-                _this._viewRefreshInterval = 30;
-                _this._releaseInitialized = true;
-                _this.DispatchEvent(Events.PageInitializeCompleted);
-                Dump.Log('Root.ReleasePageInitialize - Released');
-            }, 300, -1, true);
-            _this._renderInitializer.Name = 'RenderInitializer';
-            // Root.Init()の終了後にViewBaseからFw.Root.Instanceを呼び出す。
-            _.defer(function () {
-                _this._mask = new Fw.Views.BoxView();
-                _this._mask.Elem.removeClass('TransAnimation');
-                _this._mask.Elem.addClass('RootMask');
-                _this._mask.HasBorder = false;
-                _this._mask.BackgroundColor = '#000000';
-                _this._mask.ZIndex = -1;
-                // RootはIViewでないので、this.Addは出来ない。
-                _this.Elem.append(_this._mask.Elem);
-                _this._mask.Elem.on('click touchend', function () {
-                    _this.DispatchEvent(Events.MaskClicked);
-                });
-                _this.Refresh();
-            });
-            return _this;
-        }
-        Object.defineProperty(Root, "Instance", {
-            get: function () {
-                if (!Root._instance) {
-                    throw new Error('Root.Init() has not been executed.');
-                }
-                return Root._instance;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Root.Init = function (selectorString) {
-            Root._instance = new Root($(selectorString));
-        };
-        Object.defineProperty(Root.prototype, "Elem", {
-            get: function () {
-                return this._elem;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(Root.prototype, "Dom", {
-            get: function () {
-                return this._dom;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(Root.prototype, "Size", {
-            get: function () {
-                return this._size;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Root.prototype.Mask = function () {
-            //this.Log(`${this.ClassName}.Mask`);
-            this._masked = true;
-            this.Refresh();
-        };
-        Root.prototype.UnMask = function () {
-            //this.Log(`${this.ClassName}.UnMask`);
-            this._masked = false;
-            this.Refresh();
-        };
-        Root.prototype.SetTextSelection = function (enable) {
-            if (enable && this.Elem.hasClass('TextUnselect'))
-                this.Elem.removeClass('TextUnselect');
-            else if (!enable && !this.Elem.hasClass('TextUnselect'))
-                this.Elem.addClass('TextUnselect');
-        };
-        Object.defineProperty(Root.prototype, "ViewRefreshInterval", {
-            get: function () {
-                return this._viewRefreshInterval;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        /**
-         * @description ページ生成開始から一定時間、ViewのDom更新頻度を大幅に下げる。
-         */
-        Root.prototype.StartPageInitialize = function () {
-            // ViewのDom更新を抑止する。
-            this._releaseInitialized = false;
-            this._viewRefreshInterval = 3000;
-            this.DispatchEvent(Events.PageInitializeStarted);
-            Dump.Log('Root.StartPageInitialize');
-        };
-        Root.prototype.ReleasePageInitialize = function (view) {
-            if (this._releaseInitialized)
-                return;
-            //this.Log('Root.ReleasePageInitialize: ' + view.ObjectIdentifier);
-            this._renderInitializer.Exec();
-        };
-        Root.prototype.Refresh = function () {
-            // this.Sizeのセッターが無いので、フィールドに直接書き込む。
-            this._size.Width = this.Elem.width();
-            this._size.Height = this.Elem.height();
-            if (this._mask) {
-                this._mask.SetSize(this._size.Width, this._size.Height);
-                if (this._masked) {
-                    this._mask.ZIndex = 0;
-                    this._mask.Opacity = 0.4;
-                }
-                else {
-                    this._mask.ZIndex = -1;
-                    this._mask.Opacity = 0.0;
-                }
-            }
-        };
-        Root.prototype.Dispose = function () {
-            _super.prototype.Dispose.call(this);
-            this._dom = null;
-            this._size.Dispose();
-            this._size = null;
-        };
-        Root._instance = null;
-        return Root;
-    }(Fw.EventableBase));
-    Fw.Root = Root;
-})(Fw || (Fw = {}));
-/// <reference path="../../lib/jquery/index.d.ts" />
-/// <reference path="../../lib/underscore/index.d.ts" />
-/// <reference path="Util/Dump.ts" />
-/* /// <reference path="Views/Root.ts" /> */
-var Fw;
-(function (Fw) {
-    var Startup = /** @class */ (function () {
-        function Startup() {
-        }
-        Startup.Init = function () {
-            // ↓API仕様に応じて、App.Mainで書き換える。
-            Fw.Config.XhrBaseUrl
-                = location.protocol
-                    + '//' + location.hostname
-                    + ':' + location.port
-                    + '/';
-            // iOSの全体スクロール対策
-            $(window).on('touchmove', function (e) {
-                e.preventDefault();
-            });
-            $(document.body).on('touchmove', function (e) {
-                e.preventDefault();
-            });
-            $('div.body-content').on('touchmove', function (e) {
-                e.preventDefault();
-            });
-            // 画面全体のコンテナを初期化
-            Fw.Root.Init('div.body-content');
-        };
-        return Startup;
-    }());
-    Fw.Startup = Startup;
 })(Fw || (Fw = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
@@ -1320,6 +850,89 @@ var Fw;
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../IObject.ts" />
 /// <reference path="../Views/IView.ts" />
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+var Fw;
+(function (Fw) {
+    var Events;
+    (function (Events) {
+        var EventReference = /** @class */ (function () {
+            function EventReference() {
+            }
+            return EventReference;
+        }());
+        Events.EventReference = EventReference;
+    })(Events = Fw.Events || (Fw.Events = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../lib/jquery/index.d.ts" />
+/// <reference path="../../lib/underscore/index.d.ts" />
+/// <reference path="IObject.ts" />
+/// <reference path="Events/EventReference.ts" />
+/// <reference path="Util/Dump.ts" />
+var Fw;
+(function (Fw) {
+    var Dump = Fw.Util.Dump;
+    var ObjectBase = /** @class */ (function () {
+        function ObjectBase() {
+            this._isDisposed = false;
+            this._instanceId = Fw.Util.App.CreateId();
+            this.EnableLog = false;
+        }
+        Object.defineProperty(ObjectBase.prototype, "InstanceId", {
+            get: function () {
+                return this._instanceId;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(ObjectBase.prototype, "IsDisposed", {
+            get: function () {
+                return this._isDisposed;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(ObjectBase.prototype, "ClassName", {
+            get: function () {
+                return this._className;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(ObjectBase.prototype, "ObjectIdentifier", {
+            get: function () {
+                return "[" + this._className + "[" + this._instanceId + "]";
+            },
+            enumerable: true,
+            configurable: true
+        });
+        ObjectBase.prototype.SetClassName = function (name) {
+            this._className = name;
+        };
+        ObjectBase.prototype.Log = function (value) {
+            if (!this.EnableLog)
+                return;
+            var header = this.ClassName + "[" + this.InstanceId + "]:: ";
+            if (typeof value === 'object') {
+                Dump.Log(header);
+                Dump.Log(value);
+            }
+            else {
+                Dump.Log(header + value);
+            }
+        };
+        ObjectBase.prototype.Dispose = function () {
+            this.Log("Dispose");
+            // TODO: あとで戻す。デバッグ用。
+            //this._className = null;
+            //this._instanceId = null;
+            this._isDisposed = true;
+            Fw.Util.Obj.Clean(this);
+        };
+        return ObjectBase;
+    }());
+    Fw.ObjectBase = ObjectBase;
+})(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="IController.ts" />
@@ -1857,6 +1470,207 @@ var Fw;
         })(Animation = Views.Animation || (Views.Animation = {}));
     })(Views = Fw.Views || (Fw.Views = {}));
 })(Fw || (Fw = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Events/ViewEvents.ts" />
+/// <reference path="../../Util/Dump.ts" />
+/// <reference path="../../Util/Num.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Property;
+        (function (Property) {
+            var Events = Fw.Events.ViewEvents;
+            var Num = Fw.Util.Num;
+            var Size = /** @class */ (function () {
+                function Size(view) {
+                    if (view === void 0) { view = null; }
+                    this._view = null;
+                    this._width = 0;
+                    this._height = 0;
+                    this._view = view;
+                }
+                Object.defineProperty(Size.prototype, "Width", {
+                    get: function () {
+                        return this._width;
+                    },
+                    set: function (value) {
+                        // nullは許可、その他は例外
+                        if (Num.IsNaN(value) || value === undefined)
+                            throw new Error("value type not allowed");
+                        var changed = (this._width !== value);
+                        this._width = value;
+                        if (changed && this._view)
+                            this._view.DispatchEvent(Events.SizeChanged);
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(Size.prototype, "Height", {
+                    get: function () {
+                        return this._height;
+                    },
+                    set: function (value) {
+                        // nullは許可、その他は例外
+                        if (Num.IsNaN(value) || value === undefined)
+                            throw new Error("value type not allowed");
+                        var changed = (this._height !== value);
+                        this._height = value;
+                        if (changed && this._view)
+                            this._view.DispatchEvent(Events.SizeChanged);
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Size.prototype.Dispose = function () {
+                    this._view = null;
+                    this._width = null;
+                    this._height = null;
+                };
+                return Size;
+            }());
+            Property.Size = Size;
+        })(Property = Views.Property || (Views.Property = {}));
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../lib/jquery/index.d.ts" />
+/// <reference path="../../lib/underscore/index.d.ts" />
+/// <reference path="IEventable.ts" />
+/// <reference path="ObjectBase.ts" />
+/// <reference path="Events/EventReference.ts" />
+/// <reference path="Util/Dump.ts" />
+/// <reference path="Events/EventableEvents.ts" />
+var Fw;
+(function (Fw) {
+    var Dump = Fw.Util.Dump;
+    var EventReference = Fw.Events.EventReference;
+    var EventableBase = /** @class */ (function (_super) {
+        __extends(EventableBase, _super);
+        function EventableBase() {
+            var _this = _super.call(this) || this;
+            _this._suppressedEvents = new Array();
+            _this._eventHandlers = new Array();
+            return _this;
+        }
+        EventableBase.prototype.AddEventListener = function (name, handler, bindObject) {
+            if (bindObject === void 0) { bindObject = null; }
+            if (!bindObject)
+                bindObject = this;
+            var eRef = new EventReference();
+            eRef.Name = name;
+            eRef.Handler = handler;
+            eRef.BindedHandler = handler.bind(bindObject);
+            eRef.BindObject = bindObject;
+            this.Log("AddEventListener: " + eRef.BindObject.ClassName + "_" + eRef.BindObject.InstanceId + "." + name);
+            this._eventHandlers.push(eRef);
+            //this.Elem.on(eRef.Name, eRef.BindedHandler);
+        };
+        EventableBase.prototype.RemoveEventListener = function (name, handler, bindObject) {
+            var _this = this;
+            if (bindObject === void 0) { bindObject = null; }
+            if (!bindObject)
+                bindObject = this;
+            if (handler) {
+                // handlerが指定されているとき
+                // 特定のイベントハンドラのみを削除する。
+                var key_1;
+                var eRef = _.find(this._eventHandlers, function (er, idx) {
+                    key_1 = idx;
+                    // 関数は継承関係のプロトタイプ参照都合で同一オブジェクトになりやすいため、
+                    // 判定基準にならない。
+                    //return (er.Name === name && er.Handler === handler);
+                    _this.Log("RemoveEventListener: " + er.BindObject.ClassName + "_" + er.BindObject.InstanceId + "." + name + " :: " + bindObject.ClassName + "." + bindObject.InstanceId);
+                    return (er.Name === name
+                        && er.Handler === handler
+                        && er.BindObject === bindObject);
+                });
+                if (!eRef) {
+                    throw new Error(this.ClassName + "." + name + " event not found.");
+                }
+                //this.Elem.off(eRef.Name, eRef.BindedHandler);
+                this._eventHandlers.splice(key_1, 1);
+            }
+            else {
+                // handlerが指定されないとき
+                // bindObjectの全てのイベントハンドラを削除する。
+                var eRefs_1 = new Array();
+                _.each(this._eventHandlers, function (er) {
+                    if (er.Name === name
+                        && er.BindObject === bindObject) {
+                        eRefs_1.push(er);
+                    }
+                });
+                _.each(eRefs_1, function (eRef) {
+                    //this.Elem.off(eRef.Name, eRef.BindedHandler);
+                    var idx = _this._eventHandlers.indexOf(eRef);
+                    _this._eventHandlers.splice(idx, 1);
+                });
+            }
+        };
+        EventableBase.prototype.DispatchEvent = function (name, params) {
+            if (params === void 0) { params = null; }
+            if (this.IsSuppressedEvent(name))
+                return;
+            this.Log("DispatchEvent: " + name);
+            var eo = new Fw.Events.EventObject(this, name, params);
+            _.each(this._eventHandlers, function (er) {
+                if (er.Name === name) {
+                    try {
+                        er.BindedHandler(eo);
+                    }
+                    catch (e) {
+                        Dump.ErrorLog(e);
+                    }
+                }
+            });
+        };
+        EventableBase.prototype.SuppressEvent = function (name) {
+            if (this.IsSuppressedEvent(name))
+                return;
+            this._suppressedEvents.push(name);
+        };
+        EventableBase.prototype.IsSuppressedEvent = function (name) {
+            return (this._suppressedEvents.indexOf(name) !== -1);
+        };
+        EventableBase.prototype.ResumeEvent = function (name) {
+            if (!this.IsSuppressedEvent(name))
+                return;
+            var idx = this._suppressedEvents.indexOf(name);
+            this._suppressedEvents.splice(idx, 1);
+        };
+        EventableBase.prototype.Dispose = function () {
+            _super.prototype.Dispose.call(this);
+            this._eventHandlers = null;
+            this._suppressedEvents = null;
+        };
+        return EventableBase;
+    }(Fw.ObjectBase));
+    Fw.EventableBase = EventableBase;
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="EventableEvents.ts" />
+var Fw;
+(function (Fw) {
+    var Events;
+    (function (Events) {
+        var RootEventsClass = /** @class */ (function (_super) {
+            __extends(RootEventsClass, _super);
+            function RootEventsClass() {
+                var _this = _super !== null && _super.apply(this, arguments) || this;
+                _this.PageInitializeStarted = 'PageInitializeStarted';
+                _this.PageInitializeCompleted = 'PageInitializeCompleted';
+                _this.Resized = 'Resized';
+                _this.MaskClicked = 'MaskClicked';
+                return _this;
+            }
+            return RootEventsClass;
+        }(Events.EventableEventsClass));
+        Events.RootEventsClass = RootEventsClass;
+        Events.RootEvents = new RootEventsClass();
+    })(Events = Fw.Events || (Fw.Events = {}));
+})(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="IView.ts" />
@@ -1888,6 +1702,7 @@ var Fw;
                 _this._isVisible = true;
                 _this._isInitialized = false;
                 _this._isSuppressLayout = false;
+                _this._removeAnimatedClass = null;
                 /**
                  * デバッグ用 - 所属元文字列を再帰的に取得する
                  * @param current
@@ -1897,7 +1712,6 @@ var Fw;
                 _this._innerApplyCount = 0;
                 _this._latestStyles = {};
                 _this._newStyles = {};
-                _this._removeAnimatedClass = null;
                 //this.Log('ViewBase.Constructor');
                 _this.SetElem(jqueryElem);
                 _this.SetClassName('ViewBase');
@@ -2227,6 +2041,27 @@ var Fw;
                 recAnchor(this.Parent);
                 this.Anchor.SetHasAnchor(hasAnchorX, hasAnchorY);
             };
+            ViewBase.prototype.SetAnimatedClass = function (name) {
+                var _this = this;
+                if (this._removeAnimatedClass)
+                    return;
+                var classes = "animated " + name;
+                var animationEndEvents = 'animationend oAnimationEnd mozAnimationEnd webkitAnimationEnd';
+                this._removeAnimatedClass = function () {
+                    _this.Elem.removeClass(classes);
+                    _this.Elem.off(animationEndEvents, _this._removeAnimatedClass);
+                    _this._removeAnimatedClass = null;
+                };
+                this._removeAnimatedClass.bind(this);
+                this.Elem.on(animationEndEvents, this._removeAnimatedClass);
+                this.Elem.addClass(classes);
+            };
+            ViewBase.prototype.ClearAnimatedClass = function () {
+                if (this._removeAnimatedClass) {
+                    this._removeAnimatedClass();
+                    this._removeAnimatedClass = null;
+                }
+            };
             ViewBase.prototype.Add = function (view) {
                 //this.Log('ViewBase.Add');
                 if (this.Children.indexOf(view) == -1) {
@@ -2480,21 +2315,6 @@ var Fw;
                     };
                     animator.Invoke(duration);
                 }
-            };
-            ViewBase.prototype.SetAnimatedClass = function (name) {
-                var _this = this;
-                if (this._removeAnimatedClass)
-                    return;
-                var classes = "animated " + name;
-                var animationEndEvents = 'animationend oAnimationEnd mozAnimationEnd webkitAnimationEnd';
-                this._removeAnimatedClass = function () {
-                    _this.Elem.removeClass(classes);
-                    _this.Elem.off(animationEndEvents, _this._removeAnimatedClass);
-                    _this._removeAnimatedClass = null;
-                };
-                this._removeAnimatedClass.bind(this);
-                this.Elem.on(animationEndEvents, this._removeAnimatedClass);
-                this.Elem.addClass(classes);
             };
             ViewBase.prototype.Dispose = function () {
                 var _this = this;
@@ -5241,7 +5061,7 @@ var App;
 /// <reference path="../Models/Stores/RmStore.ts" />
 /// <reference path="../Items/OperationType.ts" />
 /// <reference path="../Items/DeviceType.ts" />
-/// <reference path="../Items/ControlSetOperationType.ts" />
+/// <reference path="../Items/ModalOperationType.ts" />
 /// <reference path="ItemSelectControllerBase.ts" />
 /// <reference path="../Views/Controls/ItemSelectButtonView.ts" />
 var App;
@@ -5264,6 +5084,7 @@ var App;
                 _this.SetClassName('ControlSetController');
                 _this.SetPageView(new Pages.ControlSetPageView());
                 _this._page = _this.View;
+                _this._controlSet = null;
                 _this._operationType = 1 /* Exec */;
                 _this._page.HeaderBar.LeftButton.Hide(0);
                 _this._page.HeaderBar.LeftButton.AddEventListener(ButtonEvents.SingleClick, function () { return __awaiter(_this, void 0, void 0, function () {
@@ -6264,23 +6085,55 @@ var App;
             __extends(ControlSetSelectController, _super);
             function ControlSetSelectController() {
                 var _this = _super.call(this, 'ControlSetSelect') || this;
+                _this._controlSets = [];
                 _this.SetClassName('ControlSetSelectController');
                 _this._page = _this.View;
-                _this.InitView();
+                _this._page.Label.Text = 'Select Remote Control';
+                _this._controlSets = null;
                 return _this;
             }
+            ControlSetSelectController.prototype.Select = function (parentController) {
+                return __awaiter(this, void 0, void 0, function () {
+                    return __generator(this, function (_a) {
+                        this.InitView();
+                        return [2 /*return*/, _super.prototype.Select.call(this, parentController)];
+                    });
+                });
+            };
+            ControlSetSelectController.prototype.RefreshControlSets = function () {
+                return __awaiter(this, void 0, void 0, function () {
+                    var _a;
+                    return __generator(this, function (_b) {
+                        switch (_b.label) {
+                            case 0:
+                                _a = this;
+                                return [4 /*yield*/, Stores.ControlSets.GetListForMainPanel()];
+                            case 1:
+                                _a._controlSets = _b.sent();
+                                return [2 /*return*/, true];
+                        }
+                    });
+                });
+            };
             ControlSetSelectController.prototype.InitView = function () {
                 return __awaiter(this, void 0, void 0, function () {
-                    var csets;
+                    var children;
                     var _this = this;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
-                                this._page.Label.Text = 'Select Remote Control';
-                                return [4 /*yield*/, Stores.ControlSets.GetListForMainPanel()];
+                                if (!!this._controlSets) return [3 /*break*/, 2];
+                                return [4 /*yield*/, this.RefreshControlSets()];
                             case 1:
-                                csets = _a.sent();
-                                _.each(csets, function (cset) {
+                                _a.sent();
+                                _a.label = 2;
+                            case 2:
+                                children = Fw.Util.Obj.Mirror(this._page.SelectorPanel.Children);
+                                _.each(children, function (v) {
+                                    _this._page.SelectorPanel.Remove(v);
+                                    v.Dispose();
+                                });
+                                _.each(this._controlSets, function (cset) {
                                     // 操作未対応のBroadlinkデバイスのとき、選択させない。
                                     if (cset.OperationType === 2 /* BroadlinkDevice */) {
                                         var pairedDev = Stores.BrDevices.Get(cset.BrDeviceId);
@@ -6305,11 +6158,13 @@ var App;
                                     btn.Value = cset;
                                     btn.Button.AddEventListener(ButtonEvents.SingleClick, function (e) {
                                         var button = e.Sender;
-                                        var controlSet = button.Value;
+                                        var lbView = button.Parent;
+                                        var controlSet = lbView.Value;
                                         _this.Commit(controlSet);
                                     });
                                     _this._page.SelectorPanel.Add(btn);
                                 });
+                                this._page.SelectorPanel.Refresh();
                                 return [2 /*return*/, true];
                         }
                     });
@@ -6324,7 +6179,7 @@ var App;
                 button.Button.BackgroundColor = App.Items.Color.MainBackground;
                 button.Button.HoverColor = App.Items.Color.ButtonHoverColors[0];
                 button.Button.Color = App.Items.Color.ButtonColors[0];
-                button.Button.ImageFitPolicy = Property.FitPolicy.Auto;
+                button.Button.ImageFitPolicy = Property.FitPolicy.Cover;
                 return button;
             };
             return ControlSetSelectController;
@@ -6593,6 +6448,35 @@ var App;
         })(Controls = Views_7.Controls || (Views_7.Controls = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/EntityBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../Items/Color.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Entities;
+        (function (Entities) {
+            var Color = App.Items.Color;
+            var Scene = /** @class */ (function (_super) {
+                __extends(Scene, _super);
+                function Scene() {
+                    var _this = _super !== null && _super.apply(this, arguments) || this;
+                    _this.Name = 'New Scene';
+                    _this.IconUrl = 'images/icons/scene/scene.png';
+                    _this.Color = Color.ButtonColors[6];
+                    _this.Order = 99999;
+                    _this.Details = [];
+                    return _this;
+                }
+                return Scene;
+            }(Fw.Models.EntityBase));
+            Entities.Scene = Scene;
+        })(Entities = Models.Entities || (Models.Entities = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Fw/Controllers/ControllerBase.ts" />
@@ -6607,6 +6491,7 @@ var App;
 /// <reference path="../Views/Controls/ControlSetButtonView.ts" />
 /// <reference path="../Models/Stores/BrDeviceStore.ts" />
 /// <reference path="../Models/Entities/ControlSet.ts" />
+/// <reference path="../Models/Entities/Scene.ts" />
 /// <reference path="../Items/OperationTemplate.ts" />
 /// <reference path="../Items/ControlSetTemplate.ts" />
 /// <reference path="../Items/OperationType.ts" />
@@ -6621,6 +6506,7 @@ var App;
         var ToggleEvents = Fw.Events.ToggleButtonInputViewEvents;
         var StuckerBoxEvents = Fw.Events.StuckerBoxViewEvents;
         var Stores = App.Models.Stores;
+        var Entities = App.Models.Entities;
         var ControlSetTemplate = App.Items.ControlSetTemplate;
         var ControlSetButtonView = App.Views.Controls.ControlSetButtonView;
         var MainController = /** @class */ (function (_super) {
@@ -6642,6 +6528,7 @@ var App;
                     var iconSelectCtr = new Controllers.IconSelectController();
                     var colorSelectCtr = new Controllers.ColorSelectController();
                     var sceneCtr = new Controllers.SceneController();
+                    var controlSetSelectStr = new Controllers.ControlSetSelectController();
                     Dump.Log('SubController Load End');
                 });
                 for (var i = 0; i < 5; i++) {
@@ -6651,7 +6538,7 @@ var App;
                         var ctr;
                         return __generator(this, function (_a) {
                             ctr = this.Manager.Get('Scene');
-                            ctr.SetOperateMode();
+                            ctr.SetExecMode();
                             ctr.ShowModal();
                             return [2 /*return*/];
                         });
@@ -6659,7 +6546,7 @@ var App;
                     _this._page.ScenePanel.Add(btn);
                 }
                 _this._page.HeaderBar.RightButton.AddEventListener(ButtonEvents.SingleClick, function () { return __awaiter(_this, void 0, void 0, function () {
-                    var ctr, item, ctrSet, _a, ctr2;
+                    var ctr, item, ctrSet, _a, ctr_1, scene, ctr2;
                     return __generator(this, function (_b) {
                         switch (_b.label) {
                             case 0:
@@ -6680,7 +6567,13 @@ var App;
                                 }
                                 return [3 /*break*/, 17];
                             case 2:
-                                alert('Not Implemented!!');
+                                ctr_1 = this.Manager.Get('Scene');
+                                scene = new Entities.Scene();
+                                scene.Details.push(new Entities.SceneDetail());
+                                ctr_1.SetEntity(scene);
+                                ctr_1.SetEditMode();
+                                ctr_1.Show();
+                                // ※シーンのみ、対象Entity/起動画面が違う。このセクションでreturnする。
                                 return [2 /*return*/];
                             case 3: return [4 /*yield*/, Stores.ControlSets.GetTemplateClone(ControlSetTemplate.Tv)];
                             case 4:
@@ -6733,8 +6626,8 @@ var App;
                                 ctrSet.Controls[0].IsAssignToggleOff = true;
                                 return [3 /*break*/, 18];
                             case 17:
-                                alert('Not Implemented!!');
-                                return [2 /*return*/];
+                                alert('ここにはこないはず');
+                                throw new Error('なんでやー！');
                             case 18:
                                 ctr2 = this.Manager.Get('ControlSet');
                                 ctr2.SetEntity(ctrSet);
@@ -7067,11 +6960,103 @@ var App;
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/EntityBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../Items/Color.ts" />
+/// <reference path="../../Items/ControlSetTemplate.ts" />
+/// <reference path="../../Items/OperationType.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Entities;
+        (function (Entities) {
+            var SceneDetail = /** @class */ (function (_super) {
+                __extends(SceneDetail, _super);
+                function SceneDetail() {
+                    var _this = _super !== null && _super.apply(this, arguments) || this;
+                    _this.ControlSetId = null;
+                    _this.ControlId = null;
+                    _this.WaitSecond = 0.5;
+                    return _this;
+                }
+                return SceneDetail;
+            }(Fw.Models.EntityBase));
+            Entities.SceneDetail = SceneDetail;
+        })(Entities = Models.Entities || (Models.Entities = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/StoreBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../../Fw/Util/Xhr/Query.ts" />
+/// <reference path="../Entities/SceneDetail.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Stores;
+        (function (Stores) {
+            var SceneDetail = App.Models.Entities.SceneDetail;
+            var SceneDetailStore = /** @class */ (function (_super) {
+                __extends(SceneDetailStore, _super);
+                function SceneDetailStore() {
+                    var _this = _super.call(this) || this;
+                    _this.SetClassName('SceneDetailStore');
+                    _this.EnableLog = true;
+                    return _this;
+                }
+                Object.defineProperty(SceneDetailStore, "Instance", {
+                    get: function () {
+                        if (SceneDetailStore._instance === null)
+                            SceneDetailStore._instance = new SceneDetailStore();
+                        return SceneDetailStore._instance;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                SceneDetailStore.prototype.GetNewEntity = function () {
+                    return new SceneDetail();
+                };
+                SceneDetailStore.prototype.Write = function (entity) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        return __generator(this, function (_a) {
+                            throw new Error('Not Supported');
+                        });
+                    });
+                };
+                SceneDetailStore.prototype.SetRange = function (entities) {
+                    var _this = this;
+                    _.each(entities, function (c) {
+                        _this.Merge(c);
+                    });
+                };
+                SceneDetailStore.prototype.GetListBySceneId = function (id) {
+                    var result = new Array();
+                    _.each(this.List, function (entity) {
+                        if (entity.SceneId === id)
+                            result.push(entity);
+                    });
+                    return result;
+                };
+                SceneDetailStore._instance = null;
+                return SceneDetailStore;
+            }(Fw.Models.StoreBase));
+            Stores.SceneDetailStore = SceneDetailStore;
+            Stores.SceneDetails = SceneDetailStore.Instance;
+        })(Stores = Models.Stores || (Models.Stores = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../../Fw/Views/ControlView.ts" />
 /// <reference path="../../../Fw/Views/Property/Anchor.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../../Fw/Events/EntityEvents.ts" />
 /// <reference path="../../Items/Color.ts" />
 /// <reference path="../../Events/Controls/ControlButtonViewEvents.ts" />
+/// <reference path="../../Models/Stores/SceneDetailStore.ts" />
 var App;
 (function (App) {
     var Views;
@@ -7081,6 +7066,8 @@ var App;
             var Views = Fw.Views;
             var Property = Fw.Views.Property;
             var Color = App.Items.Color;
+            var EntityEvents = Fw.Events.EntityEvents;
+            var Stores = App.Models.Stores;
             var SceneDetailView = /** @class */ (function (_super) {
                 __extends(SceneDetailView, _super);
                 function SceneDetailView() {
@@ -7096,16 +7083,24 @@ var App;
                     _this.HasBorder = true;
                     _this.Color = Color.MainHover;
                     _this.ControlSetButton.SetLeftTop(22, 10);
+                    _this.ControlSetButton.ImageFitPolicy = Property.FitPolicy.Contain;
                     _this.Add(_this.ControlSetButton);
-                    _this.ControlSetLabel.SetLeftTop(10, 90);
+                    _this.ControlSetLabel.SetLeftTop(5, 90);
                     _this.ControlSetLabel.SetSize(105, 21);
-                    _this.ControlSetLabel.Text = 'ABCDEFGABCDEF';
+                    _this.ControlSetLabel.AutoSize = false;
+                    _this.ControlSetLabel.TextAlign = Property.TextAlign.Center;
+                    _this.ControlSetLabel.FontSize = Property.FontSize.Small;
+                    _this.ControlSetLabel.Text = '';
                     _this.Add(_this.ControlSetLabel);
                     _this.ControlButton.SetLeftTop(137, 10);
+                    _this.ControlButton.ImageFitPolicy = Property.FitPolicy.Contain;
                     _this.Add(_this.ControlButton);
-                    _this.ControlLabel.SetLeftTop(135, 90);
+                    _this.ControlLabel.SetLeftTop(120, 90);
                     _this.ControlLabel.SetSize(105, 21);
-                    _this.ControlLabel.Text = 'ABCDEFGABCDEF';
+                    _this.ControlLabel.AutoSize = false;
+                    _this.ControlLabel.TextAlign = Property.TextAlign.Center;
+                    _this.ControlLabel.FontSize = Property.FontSize.Small;
+                    _this.ControlLabel.Text = '';
                     _this.Add(_this.ControlLabel);
                     _this.WaitTextBox.SetSize(40, 21);
                     _this.WaitTextBox.SetLeftTop(105, 115);
@@ -7114,6 +7109,23 @@ var App;
                     _this.Add(_this.WaitTextBox);
                     return _this;
                 }
+                Object.defineProperty(SceneDetailView.prototype, "Detail", {
+                    get: function () {
+                        return this._detail;
+                    },
+                    set: function (value) {
+                        if (this._detail) {
+                            this._detail.RemoveEventListener(EntityEvents.Changed, this.ApplyFromEntity, this);
+                        }
+                        this._detail = value;
+                        if (this._detail) {
+                            this._detail.AddEventListener(EntityEvents.Changed, this.ApplyFromEntity, this);
+                        }
+                        this.ApplyFromEntity();
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
                 SceneDetailView.prototype.SetWaitable = function (enable) {
                     if (enable) {
                         // 待機時間入力可能
@@ -7125,6 +7137,81 @@ var App;
                         this.SetSize(230, 115);
                         this.WaitTextBox.Hide(0);
                     }
+                };
+                SceneDetailView.prototype.ApplyFromEntity = function () {
+                    if (this._detail) {
+                        var cset = Stores.ControlSets.List[this._detail.ControlSetId];
+                        var control = Stores.Controls.List[this._detail.ControlId];
+                        if (cset) {
+                            this.ControlSetButton.ImageSrc = cset.IconUrl;
+                            this.ControlSetButton.Text = (!cset.IconUrl || cset.IconUrl === '')
+                                ? cset.Name
+                                : '';
+                            this.ControlSetLabel.Text = cset.Name;
+                            var cidx1 = Color.ButtonColors.indexOf(cset.Color);
+                            if (cidx1 === -1) {
+                                this.ControlSetButton.Color = Color.ButtonColors[0];
+                                this.ControlSetButton.BackgroundColor = Color.MainBackground;
+                                this.ControlSetButton.HoverColor = Color.ButtonHoverColors[0];
+                            }
+                            else {
+                                this.ControlSetButton.Color = cset.Color;
+                                this.ControlSetButton.BackgroundColor = cset.Color;
+                                this.ControlSetButton.HoverColor = Color.ButtonHoverColors[cidx1];
+                            }
+                        }
+                        else {
+                            this.ControlSetButton.ImageSrc = '';
+                            this.ControlSetButton.Text = 'Select<br/>Remotes';
+                            this.ControlSetLabel.Text = '';
+                            this.ControlSetButton.Color = Color.ButtonColors[0];
+                            this.ControlSetButton.BackgroundColor = Color.MainBackground;
+                            this.ControlSetButton.HoverColor = Color.ButtonHoverColors[0];
+                        }
+                        if (control) {
+                            this.ControlButton.ImageSrc = control.IconUrl;
+                            this.ControlButton.Text = (!control.IconUrl || control.IconUrl === '')
+                                ? control.Name
+                                : '';
+                            this.ControlLabel.Text = control.Name;
+                            var cidx2 = Color.ButtonColors.indexOf(control.Color);
+                            if (cidx2 === -1) {
+                                this.ControlButton.Color = Color.ButtonColors[0];
+                                this.ControlButton.BackgroundColor = Color.MainBackground;
+                                this.ControlButton.HoverColor = Color.ButtonHoverColors[0];
+                            }
+                            else {
+                                this.ControlButton.Color = control.Color;
+                                this.ControlButton.BackgroundColor = Color.MainBackground;
+                                this.ControlButton.HoverColor = Color.ButtonHoverColors[cidx2];
+                            }
+                        }
+                        else {
+                            this.ControlButton.ImageSrc = '';
+                            this.ControlButton.Text = (cset)
+                                ? 'Select<br/>Button'
+                                : '';
+                            this.ControlLabel.Text = '';
+                            this.ControlButton.Color = Color.ButtonColors[0];
+                            this.ControlButton.BackgroundColor = Color.MainBackground;
+                            this.ControlButton.HoverColor = Color.ButtonHoverColors[0];
+                        }
+                    }
+                    else {
+                        this.ControlSetButton.ImageSrc = '';
+                        this.ControlSetButton.Text = 'Select<br/>Remotes';
+                        this.ControlSetLabel.Text = '';
+                        this.ControlSetButton.Color = Color.ButtonColors[0];
+                        this.ControlSetButton.BackgroundColor = Color.ButtonColors[0];
+                        this.ControlSetButton.HoverColor = Color.ButtonHoverColors[0];
+                        this.ControlButton.ImageSrc = '';
+                        this.ControlButton.Text = '';
+                        this.ControlLabel.Text = '';
+                        this.ControlButton.Color = Color.ButtonColors[0];
+                        this.ControlButton.BackgroundColor = Color.ButtonColors[0];
+                        this.ControlButton.HoverColor = Color.ButtonHoverColors[0];
+                    }
+                    this.Refresh();
                 };
                 return SceneDetailView;
             }(Fw.Views.BoxView));
@@ -7144,17 +7231,25 @@ var App;
 /// <reference path="../Views/Pages/MainPageView.ts" />
 /// <reference path="../Views/Popup/AlertPopup.ts" />
 /// <reference path="../Views/Controls/SceneDetailView.ts" />
+/// <reference path="../Views/Controls/ItemSelectButtonView.ts" />
 /// <reference path="../Events/Controls/ControlButtonViewEvents.ts" />
 /// <reference path="../Models/Entities/ControlSet.ts" />
 /// <reference path="../Models/Stores/RmStore.ts" />
 /// <reference path="../Items/OperationType.ts" />
 /// <reference path="../Items/DeviceType.ts" />
+/// <reference path="../Items/ModalOperationType.ts" />
+/// <reference path="ControlSetSelectController.ts" />
 var App;
 (function (App) {
     var Controllers;
     (function (Controllers) {
+        var Events = Fw.Events;
         var Pages = App.Views.Pages;
-        var ButtonViewEvents = Fw.Events.ButtonViewEvents;
+        var Entities = App.Models.Entities;
+        var Util = Fw.Util;
+        var EntityEvents = Fw.Events.EntityEvents;
+        var ButtonEvents = Fw.Events.ButtonViewEvents;
+        var Stores = App.Models.Stores;
         var SceneDetailView = App.Views.Controls.SceneDetailView;
         var SceneController = /** @class */ (function (_super) {
             __extends(SceneController, _super);
@@ -7163,8 +7258,10 @@ var App;
                 _this.SetClassName('SceneController');
                 _this.SetPageView(new Pages.ScenePageView());
                 _this._page = _this.View;
+                _this._scene = null;
+                _this._operationType = 1 /* Exec */;
                 _this._page.HeaderBar.LeftButton.Hide(0);
-                _this._page.HeaderBar.LeftButton.AddEventListener(ButtonViewEvents.SingleClick, function () { return __awaiter(_this, void 0, void 0, function () {
+                _this._page.HeaderBar.LeftButton.AddEventListener(ButtonEvents.SingleClick, function () { return __awaiter(_this, void 0, void 0, function () {
                     var ctr;
                     return __generator(this, function (_a) {
                         ctr = this.Manager.Get('Main');
@@ -7172,12 +7269,12 @@ var App;
                         return [2 /*return*/];
                     });
                 }); });
-                _this._page.EditButton.AddEventListener(ButtonViewEvents.SingleClick, function () {
+                _this._page.EditButton.AddEventListener(ButtonEvents.SingleClick, function () {
                     _this.SetEditMode();
                     _this.ToUnmodal();
                 });
-                _this._page.HeaderBar.RightButton.AddEventListener(ButtonViewEvents.SingleClick, function (e) {
-                    _this.OnOrderedNewControl(e);
+                _this._page.HeaderBar.RightButton.AddEventListener(ButtonEvents.SingleClick, function (e) {
+                    _this.OnOrderedNewDetail(e);
                 });
                 _this._page.HeaderBar.Elem.on('click', function (e) {
                     _this.OnOrderedHeader(e);
@@ -7185,27 +7282,22 @@ var App;
                 _this._page.HeaderBar.Label.Elem.on('click', function (e) {
                     _this.OnOrderedHeader(e);
                 });
-                for (var i = 0; i < 5; i++) {
-                    var row = new SceneDetailView();
-                    (i === 4)
-                        ? row.SetWaitable(false)
-                        : row.SetWaitable(true);
-                    _this._page.DetailPanel.Add(row);
-                }
+                _this._page.DetailPanel.AddEventListener(Events.StuckerBoxViewEvents.OrderChanged, function () {
+                    if (!_this._scene)
+                        return;
+                    var length = _this._scene.Details.length;
+                    var idx = 1;
+                    _.each(_this._page.DetailPanel.Children, function (v) {
+                        v.Detail.Order = idx;
+                        v.SetWaitable(v.Detail.Order !== length);
+                        idx++;
+                    });
+                    _this._page.DetailPanel.Refresh();
+                });
                 return _this;
             }
-            Object.defineProperty(SceneController.prototype, "IsOnEditMode", {
-                /**
-                 * 現在リモコン編集中か否か
-                 */
-                get: function () {
-                    // 編集ボタンが見えているとき操作モード。非表示のとき編集モード
-                    return !this._page.EditButton.IsVisible;
-                },
-                enumerable: true,
-                configurable: true
-            });
             SceneController.prototype.SetEditMode = function () {
+                this._operationType = 2 /* Edit */;
                 var left = (this._page.Size.Width / 2) - (this._page.DetailPanel.Size.Width / 2);
                 this._page.DetailPanel.Position.Left = left;
                 this._page.HeaderBar.Label.Show(0);
@@ -7213,12 +7305,12 @@ var App;
                 this._page.HeaderLeftLabel.Hide(0);
                 this._page.EditButton.Hide(0);
                 this._page.HeaderBar.RightButton.Show(0);
-                _.each(this._page.DetailPanel.Children, function (v) {
-                    //if (v instanceof Controls.ControlButtonView)
-                    //    (v as Controls.ControlButtonView).SetRelocatable(true);
-                });
+                this._page.DetailPanel.StartRelocation();
+                var ctr = this.Manager.Get('ControlSetSelect');
+                ctr.RefreshControlSets();
             };
-            SceneController.prototype.SetOperateMode = function () {
+            SceneController.prototype.SetExecMode = function () {
+                this._operationType = 1 /* Exec */;
                 var left = 10;
                 this._page.DetailPanel.Position.Left = left;
                 this._page.HeaderBar.Label.Hide(0);
@@ -7226,16 +7318,123 @@ var App;
                 this._page.HeaderBar.RightButton.Hide(0);
                 this._page.HeaderLeftLabel.Show(0);
                 this._page.EditButton.Show(0);
-                _.each(this._page.DetailPanel.Children, function (v) {
-                    //if (v instanceof Controls.ControlButtonView)
-                    //    (v as Controls.ControlButtonView).SetRelocatable(false);
-                });
+                if (this._page.DetailPanel.IsChildRelocation)
+                    this._page.DetailPanel.CommitRelocation();
             };
             /**
              * 操作対象シーンEnttiyをセットする。
              * @param entity
              */
             SceneController.prototype.SetEntity = function (entity) {
+                var _this = this;
+                // View側削除処理、ButtonPanel.Childrenを削除操作するため、要素退避しておく。
+                var buttons = Util.Obj.Mirror(this._page.DetailPanel.Children);
+                _.each(buttons, function (btn) {
+                    _this._page.DetailPanel.Remove(btn);
+                    btn.Dispose();
+                });
+                if (this._scene) {
+                    this._scene.RemoveEventListener(EntityEvents.Changed, this.ApplyFromEntity, this);
+                }
+                this._scene = entity;
+                if (!this._scene)
+                    return;
+                this._scene.AddEventListener(EntityEvents.Changed, this.ApplyFromEntity, this);
+                _.each(this._scene.Details, function (detail) {
+                    _this.AddDetail(detail);
+                });
+                this.ApplyFromEntity();
+            };
+            SceneController.prototype.AddDetail = function (detail) {
+                var box = new SceneDetailView();
+                box.Detail = detail;
+                box.ControlSetButton.AddEventListener(ButtonEvents.SingleClick, this.OnControlSetClicked, this);
+                box.ControlButton.AddEventListener(ButtonEvents.SingleClick, this.OnControlClicked, this);
+                this._page.DetailPanel.Add(box);
+                var length = this._scene.Details.length;
+                _.each(this._page.DetailPanel.Children, function (v) {
+                    v.SetWaitable(v.Detail.Order !== length);
+                });
+                this._page.DetailPanel.Refresh();
+            };
+            SceneController.prototype.OnControlSetClicked = function (e) {
+                return __awaiter(this, void 0, void 0, function () {
+                    var _a, ctr, controlSet, button, sdView;
+                    return __generator(this, function (_b) {
+                        switch (_b.label) {
+                            case 0:
+                                _a = this._operationType;
+                                switch (_a) {
+                                    case 1 /* Exec */: return [3 /*break*/, 1];
+                                    case 2 /* Edit */: return [3 /*break*/, 2];
+                                    case 3 /* Select */: return [3 /*break*/, 4];
+                                }
+                                return [3 /*break*/, 4];
+                            case 1: 
+                            // なにもしない。
+                            return [3 /*break*/, 5];
+                            case 2:
+                                ctr = this.Manager.Get('ControlSetSelect');
+                                return [4 /*yield*/, ctr.Select(this)];
+                            case 3:
+                                controlSet = _b.sent();
+                                if (controlSet) {
+                                    button = e.Sender;
+                                    sdView = button.Parent;
+                                    sdView.Detail.ControlSetId = controlSet.Id;
+                                    sdView.Detail.ControlId = null;
+                                    sdView.ApplyFromEntity();
+                                }
+                                return [3 /*break*/, 5];
+                            case 4:
+                                alert('ここにはこないはず。');
+                                throw new Error('なんでー？');
+                            case 5: return [2 /*return*/];
+                        }
+                    });
+                });
+            };
+            SceneController.prototype.OnControlClicked = function (e) {
+                return __awaiter(this, void 0, void 0, function () {
+                    var _a, button, sdView, controlSet, ctr, control;
+                    return __generator(this, function (_b) {
+                        switch (_b.label) {
+                            case 0:
+                                _a = this._operationType;
+                                switch (_a) {
+                                    case 1 /* Exec */: return [3 /*break*/, 1];
+                                    case 2 /* Edit */: return [3 /*break*/, 2];
+                                    case 3 /* Select */: return [3 /*break*/, 5];
+                                }
+                                return [3 /*break*/, 5];
+                            case 1: 
+                            // なにもしない。
+                            return [3 /*break*/, 6];
+                            case 2:
+                                button = e.Sender;
+                                sdView = button.Parent;
+                                controlSet = Stores.ControlSets.List[sdView.Detail.ControlSetId];
+                                if (!controlSet) return [3 /*break*/, 4];
+                                ctr = this.Manager.Get('ControlSet');
+                                ctr.SetEntity(controlSet);
+                                ctr.SetSelectMode();
+                                return [4 /*yield*/, ctr.Select(this)];
+                            case 3:
+                                control = _b.sent();
+                                if (control) {
+                                    sdView.Detail.ControlSetId = controlSet.Id;
+                                    sdView.Detail.ControlId = control.Id;
+                                    sdView.ApplyFromEntity();
+                                }
+                                _b.label = 4;
+                            case 4: return [3 /*break*/, 6];
+                            case 5:
+                                alert('ここにはこないはず。');
+                                throw new Error('なんでー？');
+                            case 6: return [2 /*return*/];
+                        }
+                    });
+                });
             };
             SceneController.prototype.ApplyFromEntity = function () {
             };
@@ -7243,7 +7442,16 @@ var App;
              * 操作追加指示
              * @param e
              */
-            SceneController.prototype.OnOrderedNewControl = function (e) {
+            SceneController.prototype.OnOrderedNewDetail = function (e) {
+                if (this._operationType !== 2 /* Edit */)
+                    return;
+                if (!this._scene)
+                    throw new Error('Scene Not Found');
+                var detail = new Entities.SceneDetail();
+                this._scene.Details.push(detail);
+                detail.SceneId = this._scene.Id;
+                detail.Order = this._scene.Details.length;
+                this.AddDetail(detail);
             };
             /**
              * シーンヘッダ情報の編集指示
@@ -7558,6 +7766,2215 @@ var App;
         Items.Icon = Icon;
     })(Items = App.Items || (App.Items = {}));
 })(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/EntityBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Entities;
+        (function (Entities) {
+            var A1Values = /** @class */ (function (_super) {
+                __extends(A1Values, _super);
+                function A1Values() {
+                    var _this = _super !== null && _super.apply(this, arguments) || this;
+                    _this.Temperature = 0;
+                    _this.Humidity = 0;
+                    _this.Voc = 0;
+                    _this.Light = 0;
+                    _this.Noise = 0;
+                    return _this;
+                }
+                return A1Values;
+            }(Fw.Models.EntityBase));
+            Entities.A1Values = A1Values;
+        })(Entities = Models.Entities || (Models.Entities = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/EntityBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Entities;
+        (function (Entities) {
+            var Sp2Status = /** @class */ (function (_super) {
+                __extends(Sp2Status, _super);
+                function Sp2Status() {
+                    var _this = _super !== null && _super.apply(this, arguments) || this;
+                    _this.Power = false;
+                    _this.NightLight = false;
+                    return _this;
+                }
+                return Sp2Status;
+            }(Fw.Models.EntityBase));
+            Entities.Sp2Status = Sp2Status;
+        })(Entities = Models.Entities || (Models.Entities = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/StoreBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../../Fw/Util/Xhr/Query.ts" />
+/// <reference path="../Entities/ControlSet.ts" />
+/// <reference path="../Entities/Control.ts" />
+/// <reference path="../Entities/A1Values.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Stores;
+        (function (Stores) {
+            var A1Values = App.Models.Entities.A1Values;
+            var Xhr = Fw.Util.Xhr;
+            var A1Store = /** @class */ (function (_super) {
+                __extends(A1Store, _super);
+                function A1Store() {
+                    var _this = _super.call(this) || this;
+                    _this.SetClassName('A1Store');
+                    _this.EnableLog = true;
+                    return _this;
+                }
+                Object.defineProperty(A1Store, "Instance", {
+                    get: function () {
+                        if (A1Store._instance === null)
+                            A1Store._instance = new A1Store();
+                        return A1Store._instance;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                A1Store.prototype.Get = function (controlSet) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var params, res, result;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    this.Log('Get');
+                                    params = new Xhr.Params("A1s/" + controlSet.BrDeviceId, Xhr.MethodType.Get);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        result = res.Values;
+                                        controlSet.GetControlByCode('Temp').Value = String(result.Temperature);
+                                        controlSet.GetControlByCode('Humidity').Value = String(result.Humidity);
+                                        controlSet.GetControlByCode('Voc').Value = String(result.Voc);
+                                        controlSet.GetControlByCode('Light').Value = String(result.Light);
+                                        controlSet.GetControlByCode('Noise').Value = String(result.Noise);
+                                        controlSet.DispatchChanged();
+                                        return [2 /*return*/, result];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, null];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
+                A1Store.prototype.GetNewEntity = function () {
+                    return new A1Values();
+                };
+                A1Store.prototype.Write = function (entity) {
+                    throw new Error('Not Supported');
+                };
+                A1Store._instance = null;
+                return A1Store;
+            }(Fw.Models.StoreBase));
+            Stores.A1Store = A1Store;
+            Stores.A1s = A1Store.Instance;
+        })(Stores = Models.Stores || (Models.Stores = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/StoreBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../../Fw/Util/Xhr/Query.ts" />
+/// <reference path="../Entities/BrDevice.ts" />
+/// <reference path="../Entities/ControlSet.ts" />
+/// <reference path="../Entities/Control.ts" />
+/// <reference path="../../Items/OperationType.ts" />
+/// <reference path="../../Items/DeviceType.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Stores;
+        (function (Stores) {
+            var OperationStore = /** @class */ (function (_super) {
+                __extends(OperationStore, _super);
+                function OperationStore() {
+                    var _this = _super.call(this) || this;
+                    _this.SetClassName('OperationStore');
+                    _this.EnableLog = true;
+                    return _this;
+                }
+                Object.defineProperty(OperationStore, "Instance", {
+                    get: function () {
+                        if (OperationStore._instance === null)
+                            OperationStore._instance = new OperationStore();
+                        return OperationStore._instance;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                OperationStore.prototype.Exec = function (controlSet, control) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var result, _a;
+                        return __generator(this, function (_b) {
+                            switch (_b.label) {
+                                case 0:
+                                    this.Log('Exec');
+                                    // 渡し値がヘン
+                                    if (!controlSet
+                                        || !control
+                                        || !control.Code
+                                        || control.Code === '') {
+                                        return [2 /*return*/, false];
+                                    }
+                                    result = false;
+                                    _a = controlSet.OperationType;
+                                    switch (_a) {
+                                        case 1 /* RemoteControl */: return [3 /*break*/, 1];
+                                        case 2 /* BroadlinkDevice */: return [3 /*break*/, 3];
+                                        case 3 /* WakeOnLan */: return [3 /*break*/, 5];
+                                        case 4 /* Script */: return [3 /*break*/, 7];
+                                        case 5 /* RemoteHostScript */: return [3 /*break*/, 9];
+                                        case 99 /* Scene */: return [3 /*break*/, 11];
+                                    }
+                                    return [3 /*break*/, 12];
+                                case 1: return [4 /*yield*/, Stores.Rms.Exec(controlSet, control)];
+                                case 2:
+                                    result = _b.sent();
+                                    return [3 /*break*/, 13];
+                                case 3: return [4 /*yield*/, Stores.BrDevices.Exec(controlSet, control)];
+                                case 4:
+                                    result = _b.sent();
+                                    return [3 /*break*/, 13];
+                                case 5: return [4 /*yield*/, Stores.Wols.Exec(controlSet, control)];
+                                case 6:
+                                    result = _b.sent();
+                                    return [3 /*break*/, 13];
+                                case 7: return [4 /*yield*/, Stores.Scripts.Exec(controlSet, control)];
+                                case 8:
+                                    result = _b.sent();
+                                    return [3 /*break*/, 13];
+                                case 9: return [4 /*yield*/, Stores.Remotes.Exec(controlSet, control)];
+                                case 10:
+                                    result = _b.sent();
+                                    return [3 /*break*/, 13];
+                                case 11:
+                                    alert('Not Implements!');
+                                    return [3 /*break*/, 13];
+                                case 12: return [3 /*break*/, 13];
+                                case 13:
+                                    if (result === true
+                                        && (control.IsAssignToggleOn || control.IsAssignToggleOff)) {
+                                        this.EnsureToggles(controlSet, control);
+                                    }
+                                    return [2 /*return*/, result];
+                            }
+                        });
+                    });
+                };
+                OperationStore.prototype.EnsureToggles = function (controlSet, control) {
+                    // コマンド送信成功、かつトグルがアサインされているとき
+                    if (control.IsAssignToggleOn && control.IsAssignToggleOff) {
+                        // On/Off 両方アサインされているボタンのとき
+                        // 一旦Onにし、しばらく置いてOffに戻す。
+                        var changed = (controlSet.ToggleState !== true);
+                        controlSet.ToggleState = true;
+                        if (changed)
+                            controlSet.DispatchChanged();
+                        _.delay(function () {
+                            var changed2 = (controlSet.ToggleState !== false);
+                            controlSet.ToggleState = false;
+                            if (changed2)
+                                controlSet.DispatchChanged();
+                            Stores.ControlSets.UpdateHeader(controlSet);
+                        }, 1000);
+                    }
+                    else if (control.IsAssignToggleOn) {
+                        // Onだけがアサインされているボタンのとき
+                        // トグルをOnにする。
+                        var changed3 = (controlSet.ToggleState !== true);
+                        controlSet.ToggleState = true;
+                        if (changed3)
+                            controlSet.DispatchChanged();
+                        Stores.ControlSets.UpdateHeader(controlSet);
+                    }
+                    else if (control.IsAssignToggleOff) {
+                        // Offだけがアサインされているボタンのとき
+                        // トグルをOffにする。
+                        var changed4 = (controlSet.ToggleState !== false);
+                        controlSet.ToggleState = false;
+                        if (changed4)
+                            controlSet.DispatchChanged();
+                        Stores.ControlSets.UpdateHeader(controlSet);
+                    }
+                    else {
+                        // ここには来ない
+                        throw new Error('そんなばかなー！');
+                    }
+                };
+                OperationStore.prototype.GetNewEntity = function () {
+                    throw new Error('Not Supported');
+                };
+                OperationStore.prototype.Write = function (entity) {
+                    throw new Error('Not Supported');
+                };
+                OperationStore._instance = null;
+                return OperationStore;
+            }(Fw.Models.StoreBase));
+            Stores.OperationStore = OperationStore;
+            Stores.Operations = OperationStore.Instance;
+        })(Stores = Models.Stores || (Models.Stores = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/StoreBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../../Fw/Util/Xhr/Query.ts" />
+/// <reference path="../Entities/BrDevice.ts" />
+/// <reference path="../Entities/ControlSet.ts" />
+/// <reference path="../Entities/Control.ts" />
+/// <reference path="../Entities/Script.ts" />
+/// <reference path="../../Items/OperationType.ts" />
+/// <reference path="../../Items/DeviceType.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Stores;
+        (function (Stores) {
+            var Xhr = Fw.Util.Xhr;
+            var Script = App.Models.Entities.Script;
+            var RemoteStore = /** @class */ (function (_super) {
+                __extends(RemoteStore, _super);
+                function RemoteStore() {
+                    var _this = _super.call(this) || this;
+                    _this.SetClassName('RemoteStore');
+                    _this.EnableLog = true;
+                    return _this;
+                }
+                Object.defineProperty(RemoteStore, "Instance", {
+                    get: function () {
+                        if (RemoteStore._instance === null)
+                            RemoteStore._instance = new RemoteStore();
+                        return RemoteStore._instance;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                RemoteStore.prototype.GetList = function () {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var params, res, id_1;
+                        var _this = this;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    this.Log('GetList');
+                                    params = new Xhr.Params('RemoteHosts', Xhr.MethodType.Get);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        this.Clear();
+                                        id_1 = 1;
+                                        _.each(res.Values, function (e) {
+                                            e.Id = id_1;
+                                            _this.Merge(e);
+                                            id_1++;
+                                        });
+                                        return [2 /*return*/, _.values(this.List)];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, []];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
+                RemoteStore.prototype.GetIdByJson = function (scriptJson) {
+                    if (!scriptJson || scriptJson === '')
+                        return null;
+                    try {
+                        var entity = JSON.parse(scriptJson);
+                        return this.GetIdByEntity(entity);
+                    }
+                    catch (e) {
+                        return null;
+                    }
+                };
+                RemoteStore.prototype.GetIdByEntity = function (script) {
+                    if (this.Length <= 0)
+                        return null;
+                    var target = _.find(this.List, function (e) {
+                        return (e.ControlId === script.ControlId && e.RemoteHostId === script.RemoteHostId);
+                    });
+                    if (!target)
+                        return null;
+                    return target.Id;
+                };
+                RemoteStore.prototype.Exec = function (controlSet, control) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var script, params, res, result;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    this.Log('Exec');
+                                    // 渡し値がヘン
+                                    if (!controlSet
+                                        || !control
+                                        || !control.Code
+                                        || control.Code === ''
+                                        || controlSet.OperationType !== 5 /* RemoteHostScript */) {
+                                        return [2 /*return*/, false];
+                                    }
+                                    script = JSON.parse(control.Code);
+                                    params = new Xhr.Params("RemoteHosts", Xhr.MethodType.Post, script);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        result = res.Values;
+                                        // Suceededのときはtrue以外返ってこない。
+                                        return [2 /*return*/, result];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, false];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
+                RemoteStore.prototype.GetNewEntity = function () {
+                    return new Script();
+                };
+                RemoteStore.prototype.Write = function (entity) {
+                    throw new Error('Not Supported');
+                };
+                RemoteStore._instance = null;
+                return RemoteStore;
+            }(Fw.Models.StoreBase));
+            Stores.RemoteStore = RemoteStore;
+            Stores.Remotes = RemoteStore.Instance;
+        })(Stores = Models.Stores || (Models.Stores = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/StoreBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../../Fw/Util/Xhr/Query.ts" />
+/// <reference path="../Entities/BrDevice.ts" />
+/// <reference path="../Entities/ControlSet.ts" />
+/// <reference path="../Entities/Control.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Stores;
+        (function (Stores) {
+            var RmCommand = App.Models.Entities.RmCommand;
+            var Xhr = Fw.Util.Xhr;
+            var Rm2ProStore = /** @class */ (function (_super) {
+                __extends(Rm2ProStore, _super);
+                function Rm2ProStore() {
+                    var _this = _super.call(this) || this;
+                    _this.SetClassName('Rm2ProStore');
+                    _this.EnableLog = true;
+                    return _this;
+                }
+                Object.defineProperty(Rm2ProStore, "Instance", {
+                    get: function () {
+                        if (Rm2ProStore._instance === null)
+                            Rm2ProStore._instance = new Rm2ProStore();
+                        return Rm2ProStore._instance;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Rm2ProStore.prototype.GetTemperature = function (controlSet) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var params, res, result;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    this.Log('GetTemperature');
+                                    params = new Xhr.Params("Rm2Pros/GetTemperature/" + controlSet.BrDeviceId, Xhr.MethodType.Get);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        result = res.Values;
+                                        controlSet.Controls[0].Value = String(result);
+                                        controlSet.DispatchChanged();
+                                        return [2 /*return*/, result];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, null];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
+                /**
+                 * !未実装!
+                 * @param brDeviceId
+                 */
+                Rm2ProStore.prototype.GetRfLearnedCode = function (brDeviceId) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var params, res, rmCommand;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    this.Log('GetRfLearnedCode');
+                                    params = new Xhr.Params("Rm2Pros/GetRfLearnedCode/" + brDeviceId, Xhr.MethodType.Get);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        rmCommand = res.Values;
+                                        return [2 /*return*/, rmCommand];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, null];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
+                /**
+                 * !未実装!
+                 * @param brDeviceId
+                 */
+                Rm2ProStore.prototype.CancelLearning = function (brDeviceId) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var params, res, result;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    this.Log('CancelLearning');
+                                    params = new Xhr.Params("Rms/CancelLearning/" + brDeviceId, Xhr.MethodType.Post);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        result = res.Values;
+                                        return [2 /*return*/, result];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, null];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
+                Rm2ProStore.prototype.GetNewEntity = function () {
+                    return new RmCommand();
+                };
+                Rm2ProStore.prototype.Write = function (entity) {
+                    throw new Error('Not Supported');
+                };
+                Rm2ProStore._instance = null;
+                return Rm2ProStore;
+            }(Fw.Models.StoreBase));
+            Stores.Rm2ProStore = Rm2ProStore;
+            Stores.Rm2Pros = Rm2ProStore.Instance;
+        })(Stores = Models.Stores || (Models.Stores = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/StoreBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../../Fw/Util/Xhr/Query.ts" />
+/// <reference path="../../Items/ControlSetTemplate.ts" />
+/// <reference path="../Entities/Scene.ts" />
+/// <reference path="../Entities/SceneDetail.ts" />
+/// <reference path="../Entities/Header.ts" />
+/// <reference path="ControlStore.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Stores;
+        (function (Stores) {
+            var SceneDetails = App.Models.Stores.SceneDetails;
+            var Xhr = Fw.Util.Xhr;
+            var Scene = App.Models.Entities.Scene;
+            var Header = App.Models.Entities.Header;
+            var SceneStore = /** @class */ (function (_super) {
+                __extends(SceneStore, _super);
+                function SceneStore() {
+                    var _this = _super.call(this) || this;
+                    _this.SetClassName('SceneStore');
+                    _this.EnableLog = true;
+                    return _this;
+                }
+                Object.defineProperty(SceneStore, "Instance", {
+                    get: function () {
+                        if (SceneStore._instance === null)
+                            SceneStore._instance = new SceneStore();
+                        return SceneStore._instance;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                SceneStore.prototype.GetNewEntity = function () {
+                    return new Scene();
+                };
+                SceneStore.prototype.GetList = function () {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var params, res, list;
+                        var _this = this;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    params = new Xhr.Params('Scenes', Xhr.MethodType.Get);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        list = res.Values;
+                                        _.each(list, function (entity) {
+                                            var obj = _this.Merge(entity);
+                                            // API応答値を、TS側Entityに整形して保持しておく。
+                                            if (entity.Details && entity.Details.length > 0) {
+                                                SceneDetails.SetRange(entity.Details);
+                                                obj.Details = SceneDetails.GetListBySceneId(entity.Id);
+                                            }
+                                            else {
+                                                obj.Details = [];
+                                            }
+                                        });
+                                        return [2 /*return*/, _.values(this.List)];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, []];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
+                SceneStore.prototype.UpdateHeader = function (entity) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var header, params, res;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    header = new Header();
+                                    header.Id = entity.Id;
+                                    header.Order = entity.Order;
+                                    params = new Xhr.Params("Scenes/UpdateHeader/" + header.Id, Xhr.MethodType.Post, header);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        return [2 /*return*/, true];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, false];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
+                SceneStore.prototype.UpdateHeaders = function (entities) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var headers, params, res;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    headers = new Array();
+                                    _.each(entities, function (entity) {
+                                        var header = new Header();
+                                        header.Id = entity.Id;
+                                        header.Order = entity.Order;
+                                        headers.push(header);
+                                    });
+                                    params = new Xhr.Params("Scenes/UpdateHeader", Xhr.MethodType.Post, headers);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        return [2 /*return*/, true];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, false];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
+                SceneStore.prototype.Write = function (entity) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var params, res, id, result;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    params = new Xhr.Params('Scenes', Xhr.MethodType.Post, entity);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        id = res.Values.Id;
+                                        this.Merge(res.Values);
+                                        result = this.List[id];
+                                        // API応答値を、TS側Entityに整形して保持しておく。
+                                        if (res.Values.Details && res.Values.Details.length > 0) {
+                                            SceneDetails.SetRange(res.Values.Details);
+                                            result.Details = SceneDetails.GetListBySceneId(id);
+                                        }
+                                        else {
+                                            result.Details = [];
+                                        }
+                                        return [2 /*return*/, result];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, null];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
+                SceneStore.prototype.Remove = function (entity) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var params, res;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    params = new Xhr.Params("Scenes/" + entity.Id, Xhr.MethodType.Delete, entity);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        _.each(entity.Details, function (c) {
+                                            delete SceneDetails.List[c.Id];
+                                        });
+                                        delete this.List[entity.Id];
+                                        return [2 /*return*/, true];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, false];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
+                SceneStore._instance = null;
+                return SceneStore;
+            }(Fw.Models.StoreBase));
+            Stores.SceneStore = SceneStore;
+        })(Stores = Models.Stores || (Models.Stores = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/StoreBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../../Fw/Util/Xhr/Query.ts" />
+/// <reference path="../Entities/BrDevice.ts" />
+/// <reference path="../Entities/ControlSet.ts" />
+/// <reference path="../Entities/Control.ts" />
+/// <reference path="../../Items/OperationType.ts" />
+/// <reference path="../../Items/DeviceType.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Stores;
+        (function (Stores) {
+            var Xhr = Fw.Util.Xhr;
+            var ScriptStore = /** @class */ (function (_super) {
+                __extends(ScriptStore, _super);
+                function ScriptStore() {
+                    var _this = _super.call(this) || this;
+                    _this.SetClassName('ScriptStore');
+                    _this.EnableLog = true;
+                    return _this;
+                }
+                Object.defineProperty(ScriptStore, "Instance", {
+                    get: function () {
+                        if (ScriptStore._instance === null)
+                            ScriptStore._instance = new ScriptStore();
+                        return ScriptStore._instance;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                ScriptStore.prototype.Exec = function (controlSet, control) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var params, res, result;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    this.Log('Exec');
+                                    // 渡し値がヘン
+                                    if (!controlSet
+                                        || !control
+                                        || !control.Code
+                                        || control.Code === ''
+                                        || controlSet.OperationType !== 4 /* Script */) {
+                                        return [2 /*return*/, false];
+                                    }
+                                    params = new Xhr.Params("Scripts/" + control.Id, Xhr.MethodType.Post);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        result = res.Values;
+                                        // Suceededのときはtrue以外返ってこない。
+                                        return [2 /*return*/, result];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, false];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
+                ScriptStore.prototype.GetNewEntity = function () {
+                    throw new Error('Not Supported');
+                };
+                ScriptStore.prototype.Write = function (entity) {
+                    throw new Error('Not Supported');
+                };
+                ScriptStore._instance = null;
+                return ScriptStore;
+            }(Fw.Models.StoreBase));
+            Stores.ScriptStore = ScriptStore;
+            Stores.Scripts = ScriptStore.Instance;
+        })(Stores = Models.Stores || (Models.Stores = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/StoreBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../../Fw/Util/Xhr/Query.ts" />
+/// <reference path="../Entities/ControlSet.ts" />
+/// <reference path="../Entities/Control.ts" />
+/// <reference path="../Entities/Sp2Status.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Stores;
+        (function (Stores) {
+            var Sp2Status = App.Models.Entities.Sp2Status;
+            var Xhr = Fw.Util.Xhr;
+            var Sp2Store = /** @class */ (function (_super) {
+                __extends(Sp2Store, _super);
+                function Sp2Store() {
+                    var _this = _super.call(this) || this;
+                    _this.SetClassName('Sp2Store');
+                    _this.EnableLog = true;
+                    return _this;
+                }
+                Object.defineProperty(Sp2Store, "Instance", {
+                    get: function () {
+                        if (Sp2Store._instance === null)
+                            Sp2Store._instance = new Sp2Store();
+                        return Sp2Store._instance;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Sp2Store.prototype.Get = function (controlSet) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var params, res, result;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    this.Log('Get');
+                                    params = new Xhr.Params("Sp2s/" + controlSet.BrDeviceId, Xhr.MethodType.Get);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        result = res.Values;
+                                        controlSet.GetControlByCode('PowerOn').Value = (result.Power) ? 'true' : 'false';
+                                        controlSet.GetControlByCode('PowerOff').Value = (result.Power) ? 'false' : 'true';
+                                        controlSet.GetControlByCode('LightOn').Value = (result.NightLight) ? 'true' : 'false';
+                                        controlSet.GetControlByCode('LightOff').Value = (result.NightLight) ? 'false' : 'true';
+                                        controlSet.ToggleState = result.Power;
+                                        controlSet.DispatchChanged();
+                                        return [2 /*return*/, result];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, null];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
+                Sp2Store.prototype.Set = function (controlSet, control) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var status, params, res, result;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    this.Log('Set');
+                                    status = new Sp2Status();
+                                    status.Power = (controlSet.GetControlByCode('PowerOn').Value === 'true');
+                                    status.NightLight = (controlSet.GetControlByCode('LightOn').Value === 'true');
+                                    switch (control.Code) {
+                                        case 'PowerOn':
+                                            status.Power = true;
+                                            break;
+                                        case 'PowerOff':
+                                            status.Power = false;
+                                            break;
+                                        case 'LightOn':
+                                            status.NightLight = true;
+                                            break;
+                                        case 'LightOff':
+                                            status.NightLight = false;
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                    params = new Xhr.Params("Sp2s/" + controlSet.BrDeviceId, Xhr.MethodType.Post, status);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        result = res.Values;
+                                        controlSet.GetControlByCode('PowerOn').Value = (result.Power) ? 'true' : 'false';
+                                        controlSet.GetControlByCode('PowerOff').Value = (result.Power) ? 'false' : 'true';
+                                        controlSet.GetControlByCode('LightOn').Value = (result.NightLight) ? 'true' : 'false';
+                                        controlSet.GetControlByCode('LightOff').Value = (result.NightLight) ? 'false' : 'true';
+                                        controlSet.ToggleState = result.Power;
+                                        controlSet.DispatchChanged();
+                                        return [2 /*return*/, result];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, null];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
+                Sp2Store.prototype.GetNewEntity = function () {
+                    return new Sp2Status();
+                };
+                Sp2Store.prototype.Write = function (entity) {
+                    throw new Error('Not Supported');
+                };
+                Sp2Store._instance = null;
+                return Sp2Store;
+            }(Fw.Models.StoreBase));
+            Stores.Sp2Store = Sp2Store;
+            Stores.Sp2s = Sp2Store.Instance;
+        })(Stores = Models.Stores || (Models.Stores = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/StoreBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../../Fw/Util/Xhr/Query.ts" />
+/// <reference path="../Entities/BrDevice.ts" />
+/// <reference path="../Entities/ControlSet.ts" />
+/// <reference path="../Entities/Control.ts" />
+/// <reference path="../../Items/OperationType.ts" />
+/// <reference path="../../Items/DeviceType.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Stores;
+        (function (Stores) {
+            var Xhr = Fw.Util.Xhr;
+            var WolStore = /** @class */ (function (_super) {
+                __extends(WolStore, _super);
+                function WolStore() {
+                    var _this = _super.call(this) || this;
+                    _this.SetClassName('WolStore');
+                    _this.EnableLog = true;
+                    return _this;
+                }
+                Object.defineProperty(WolStore, "Instance", {
+                    get: function () {
+                        if (WolStore._instance === null)
+                            WolStore._instance = new WolStore();
+                        return WolStore._instance;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                WolStore.prototype.Exec = function (controlSet, control) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var params, res, result;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    this.Log('Exec');
+                                    // 渡し値がヘン
+                                    if (!controlSet
+                                        || !control
+                                        || !control.Code
+                                        || control.Code === ''
+                                        || controlSet.OperationType !== 3 /* WakeOnLan */) {
+                                        return [2 /*return*/, false];
+                                    }
+                                    params = new Xhr.Params("Wols/" + control.Id, Xhr.MethodType.Post);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        result = res.Values;
+                                        // Suceededのときはtrue以外返ってこない。
+                                        return [2 /*return*/, result];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, false];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
+                WolStore.prototype.GetNewEntity = function () {
+                    throw new Error('Not Supported');
+                };
+                WolStore.prototype.Write = function (entity) {
+                    throw new Error('Not Supported');
+                };
+                WolStore._instance = null;
+                return WolStore;
+            }(Fw.Models.StoreBase));
+            Stores.WolStore = WolStore;
+            Stores.Wols = WolStore.Instance;
+        })(Stores = Models.Stores || (Models.Stores = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Views/ButtonView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../Items/Color.ts" />
+var App;
+(function (App) {
+    var Views;
+    (function (Views_9) {
+        var Controls;
+        (function (Controls) {
+            var Color = App.Items.Color;
+            var ButtonView = /** @class */ (function (_super) {
+                __extends(ButtonView, _super);
+                function ButtonView() {
+                    var _this = _super.call(this) || this;
+                    _this.HasBorder = false;
+                    _this.BackgroundColor = Color.MainBackground;
+                    _this.HoverColor = Color.MainHover;
+                    _this.Color = Color.Main;
+                    return _this;
+                }
+                return ButtonView;
+            }(Fw.Views.ButtonView));
+            Controls.ButtonView = ButtonView;
+        })(Controls = Views_9.Controls || (Views_9.Controls = {}));
+    })(Views = App.Views || (App.Views = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Views/RelocatableButtonView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../../Fw/Events/EntityEvents.ts" />
+/// <reference path="../../Items/Color.ts" />
+/// <reference path="../../Events/Controls/ControlButtonViewEvents.ts" />
+var App;
+(function (App) {
+    var Views;
+    (function (Views_10) {
+        var Controls;
+        (function (Controls) {
+            var Views = Fw.Views;
+            var Property = Fw.Views.Property;
+            var Color = App.Items.Color;
+            var Events = App.Events.Controls.ControlButtonViewEvents;
+            var EntityEvents = Fw.Events.EntityEvents;
+            var ControlButtonView = /** @class */ (function (_super) {
+                __extends(ControlButtonView, _super);
+                function ControlButtonView() {
+                    var _this = _super.call(this) || this;
+                    _this._hoverEnable = true;
+                    _this._isActive = false;
+                    _this.SetSize(70, 75);
+                    _this.GridSize = 90;
+                    _this.Margin = 5;
+                    _this.Position.Policy = Property.PositionPolicy.LeftTop;
+                    _this.HasBorder = true;
+                    _this.BorderRadius = 10;
+                    _this.BackgroundColor = Color.MainBackground;
+                    _this.HoverColor = Color.ButtonHoverColors[0];
+                    _this.Color = Color.ButtonColors[0];
+                    _this.ImageFitPolicy = Property.FitPolicy.Auto;
+                    _this._name = '';
+                    _this._hoverEnable = true;
+                    _this.AddEventListener(Events.PositionChanged, function () {
+                        if (_this._control) {
+                            _this._control.PositionLeft = _this.Position.Left;
+                            _this._control.PositionTop = _this.Position.Top;
+                        }
+                    });
+                    return _this;
+                }
+                Object.defineProperty(ControlButtonView.prototype, "Name", {
+                    get: function () {
+                        return this._name;
+                    },
+                    set: function (value) {
+                        this._name = value;
+                        if (this.ImageSrc === '')
+                            this.Text = value;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(ControlButtonView.prototype, "HoverEnable", {
+                    get: function () {
+                        return this._hoverEnable;
+                    },
+                    set: function (value) {
+                        var _this = this;
+                        this._hoverEnable = value;
+                        // 一旦、Hover関連イベントを削除する。
+                        this.Elem.off('mouseenter mouseleave');
+                        if (this._hoverEnable) {
+                            // Hoverを有効にするとき
+                            this.Elem.on('mouseenter', function () {
+                                _this.Dom.style.backgroundColor = _this.HoverColor;
+                            });
+                            this.Elem.on('mouseleave', function () {
+                                _this.Dom.style.backgroundColor = _this.BackgroundColor;
+                            });
+                        }
+                        else {
+                            // Hoverを無効にするとき
+                            // なにもしない。
+                        }
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(ControlButtonView.prototype, "IsActive", {
+                    get: function () {
+                        return this._isActive;
+                    },
+                    set: function (value) {
+                        if (this._hoverEnable)
+                            throw new Error('Hover is Enable, Cannot Active-Control.');
+                        this._isActive = value;
+                        if (this._isActive) {
+                            // 有効化
+                            this.BackgroundColor = Color.GetButtonHoverColor(this.Color);
+                            this.Dom.style.backgroundColor = this.BackgroundColor;
+                        }
+                        else {
+                            // 無効化
+                            this.BackgroundColor = Color.MainBackground;
+                            this.Dom.style.backgroundColor = this.BackgroundColor;
+                        }
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(ControlButtonView.prototype, "Control", {
+                    get: function () {
+                        return this._control;
+                    },
+                    set: function (value) {
+                        if (this._control) {
+                            this._control.RemoveEventListener(EntityEvents.Changed, this.ApplyFromEntity, this);
+                        }
+                        this._control = value;
+                        if (this._control) {
+                            this._control.AddEventListener(EntityEvents.Changed, this.ApplyFromEntity, this);
+                        }
+                        this.ApplyFromEntity();
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                ControlButtonView.prototype.ApplyFromEntity = function () {
+                    if (!this._control)
+                        return;
+                    this.Name = this._control.Name;
+                    this.SetImage(this._control.IconUrl);
+                    this.SetColor(this._control.Color);
+                    this.Refresh();
+                };
+                ControlButtonView.prototype.SetImage = function (value) {
+                    if (value === undefined || value === null || value === '') {
+                        this.ImageSrc = '';
+                        this.Text = this.Name;
+                    }
+                    else {
+                        this.ImageSrc = value;
+                        this.Text = '';
+                    }
+                };
+                ControlButtonView.prototype.SetColor = function (value) {
+                    var idx = Color.ButtonColors.indexOf(value);
+                    if (idx === -1) {
+                        // 色が見つからないとき、デフォルト
+                        this.Color = Color.MainHover;
+                        this.HoverColor = Color.MainHover;
+                        if (this._control) {
+                            this._control.Color = Color.MainHover;
+                        }
+                    }
+                    else {
+                        // 色が定義済みのとき、ホバー色とともにセット
+                        this.Color = value;
+                        this.HoverColor = Color.ButtonHoverColors[idx];
+                        if (this._control) {
+                            this._control.Color = value;
+                        }
+                    }
+                    this.Refresh();
+                };
+                ControlButtonView.prototype.Dispose = function () {
+                    if (this._control) {
+                        this._control.RemoveEventListener(EntityEvents.Changed, this.ApplyFromEntity, this);
+                    }
+                    this._control = null;
+                    this._name = null;
+                    _super.prototype.Dispose.call(this);
+                };
+                return ControlButtonView;
+            }(Views.RelocatableButtonView));
+            Controls.ControlButtonView = ControlButtonView;
+        })(Controls = Views_10.Controls || (Views_10.Controls = {}));
+    })(Views = App.Views || (App.Views = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Views/ButtonView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../Items/Color.ts" />
+/// <reference path="LabelAndButtonView.ts" />
+var App;
+(function (App) {
+    var Views;
+    (function (Views_11) {
+        var Controls;
+        (function (Controls) {
+            var Color = App.Items.Color;
+            var SceneButtonView = /** @class */ (function (_super) {
+                __extends(SceneButtonView, _super);
+                function SceneButtonView() {
+                    var _this = _super.call(this) || this;
+                    _this.SetSize(200, 150);
+                    _this.Button.HasBorder = true;
+                    _this.Button.BorderRadius = 50;
+                    _this.Button.BackgroundColor = Color.MainBackground;
+                    _this.Button.HoverColor = Color.MainHover;
+                    _this.Button.Color = Color.Main;
+                    _this.Button.SetStyle('borderColor', Color.MainHover);
+                    _this.Label.Color = Color.Main;
+                    return _this;
+                }
+                SceneButtonView.prototype.InnerRefresh = function () {
+                    _super.prototype.InnerRefresh.call(this);
+                    this.Button.Dom.style.borderColor = Color.MainHover;
+                    //this.Button.SetStyle('borderColor', Color.MainHover);
+                };
+                return SceneButtonView;
+            }(Controls.LabelAndButtonView));
+            Controls.SceneButtonView = SceneButtonView;
+        })(Controls = Views_11.Controls || (Views_11.Controls = {}));
+    })(Views = App.Views || (App.Views = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Views/PageView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Events/PageViewEvents.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../Controls/HeaderBarView.ts" />
+var App;
+(function (App) {
+    var Views;
+    (function (Views_12) {
+        var Pages;
+        (function (Pages) {
+            var Views = Fw.Views;
+            var Property = Fw.Views.Property;
+            var Controls = App.Views.Controls;
+            var ControlHeaderPropertyPageView = /** @class */ (function (_super) {
+                __extends(ControlHeaderPropertyPageView, _super);
+                function ControlHeaderPropertyPageView() {
+                    var _this = _super.call(this) || this;
+                    _this.HeaderBar = new Controls.HeaderBarView();
+                    _this.InputPanel = new Views.StuckerBoxView();
+                    _this.TxtName = new Views.TextBoxInputView();
+                    _this.LabelColor = new Views.LabelView();
+                    _this.BtnColor = new Controls.ItemSelectButtonView();
+                    _this.LabelRm = new Views.LabelView();
+                    _this.SboRm = new Views.SelectBoxInputView();
+                    _this.DeleteButton = new Controls.ButtonView();
+                    _this.SetClassName('ControlHeaderPropertyPageView');
+                    var background = new Views.ImageView();
+                    background.SetAnchor(0, 0, 0, 0);
+                    background.FitPolicy = Property.FitPolicy.Cover;
+                    background.Src = 'images/Pages/ControlProperty/background.jpg';
+                    _this.Add(background);
+                    _this.HeaderBar.Text = '';
+                    _this.HeaderBar.LeftButton.Hide(0);
+                    _this.HeaderBar.RightButton.Hide(0);
+                    _this.Add(_this.HeaderBar);
+                    var label = new Views.LabelView();
+                    label.FontSize = Property.FontSize.Large;
+                    label.Color = App.Items.Color.Main;
+                    label.SetAnchor(null, 5, null, null);
+                    label.Text = 'Remote Control';
+                    _this.HeaderBar.Add(label);
+                    _this.InputPanel.Position.Policy = Property.PositionPolicy.LeftTop;
+                    _this.InputPanel.ReferencePoint = Property.ReferencePoint.LeftTop;
+                    _this.InputPanel.Size.Width = 280;
+                    _this.InputPanel.SetAnchor(70, 10, null, 10);
+                    _this.InputPanel.Color = App.Items.Color.MainBackground;
+                    _this.Add(_this.InputPanel);
+                    var lbl1 = new Views.LabelView();
+                    lbl1.Text = 'Name';
+                    lbl1.TextAlign = Property.TextAlign.Left;
+                    lbl1.AutoSize = true;
+                    lbl1.SetAnchor(null, 5, null, null);
+                    lbl1.Size.Height = 21;
+                    _this.InputPanel.Add(lbl1);
+                    _this.TxtName.SetAnchor(null, 5, 15, null);
+                    _this.TxtName.Size.Height = 30;
+                    _this.TxtName.Name = 'Name';
+                    _this.InputPanel.Add(_this.TxtName);
+                    _this.LabelColor = new Views.LabelView();
+                    _this.LabelColor.Text = 'Color';
+                    _this.LabelColor.TextAlign = Property.TextAlign.Left;
+                    _this.LabelColor.AutoSize = true;
+                    _this.LabelColor.SetAnchor(null, 5, null, null);
+                    _this.LabelColor.Size.Height = 21;
+                    _this.InputPanel.Add(_this.LabelColor);
+                    _this.InputPanel.AddSpacer();
+                    _this.InputPanel.Add(_this.BtnColor);
+                    _this.InputPanel.AddSpacer();
+                    _this.LabelRm = new Views.LabelView();
+                    _this.LabelRm.Text = 'Target';
+                    _this.LabelRm.TextAlign = Property.TextAlign.Left;
+                    _this.LabelRm.AutoSize = true;
+                    _this.LabelRm.SetAnchor(null, 5, null, null);
+                    _this.LabelRm.Size.Height = 21;
+                    _this.InputPanel.Add(_this.LabelRm);
+                    _this.SboRm.SetAnchor(null, 5, 15, null);
+                    _this.SboRm.Size.Height = 30;
+                    _this.SboRm.Name = 'Rm';
+                    _.each(App.Items.Icon.Names, function (iconName) {
+                        var dispName = iconName.substr(0, iconName.indexOf('.')).replace('_', ' ');
+                        _this.SboRm.AddItem(dispName, "images/icons/" + iconName);
+                    });
+                    _this.InputPanel.Add(_this.SboRm);
+                    _this.DeleteButton.SetAnchor(null, 5, 15, null);
+                    _this.DeleteButton.Size.Height = 30;
+                    _this.DeleteButton.Text = '*Delete*';
+                    _this.InputPanel.Add(_this.DeleteButton);
+                    return _this;
+                }
+                return ControlHeaderPropertyPageView;
+            }(Fw.Views.PageView));
+            Pages.ControlHeaderPropertyPageView = ControlHeaderPropertyPageView;
+        })(Pages = Views_12.Pages || (Views_12.Pages = {}));
+    })(Views = App.Views || (App.Views = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Views/PageView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Events/PageViewEvents.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../Controls/HeaderBarView.ts" />
+/// <reference path="../../Items/Color.ts" />
+var App;
+(function (App) {
+    var Views;
+    (function (Views_13) {
+        var Pages;
+        (function (Pages) {
+            var Views = Fw.Views;
+            var Property = Fw.Views.Property;
+            var Controls = App.Views.Controls;
+            var Color = App.Items.Color;
+            var ControlPropertyPageView = /** @class */ (function (_super) {
+                __extends(ControlPropertyPageView, _super);
+                function ControlPropertyPageView() {
+                    var _this = _super.call(this) || this;
+                    _this.HeaderBar = new Controls.HeaderBarView();
+                    _this.InputPanel = new Views.StuckerBoxView();
+                    _this.TxtName = new Views.TextBoxInputView();
+                    _this.BtnIcon = new Controls.ItemSelectButtonView();
+                    _this.BtnColor = new Controls.ItemSelectButtonView();
+                    _this.LblCode = new Views.LabelView();
+                    _this.TarCode = new Views.TextAreaInputView();
+                    _this.TxtMac = new Views.TextBoxInputView();
+                    _this.SboRemote = new Views.SelectBoxInputView();
+                    _this.BtnLearn = new Controls.ButtonView();
+                    _this.BtnSend = new Controls.ButtonView();
+                    _this.ChkToggleOn = new Views.CheckBoxInputView();
+                    _this.ChkToggleOff = new Views.CheckBoxInputView();
+                    _this.DeleteButton = new Controls.ButtonView();
+                    _this.SetClassName('ControlPropertyPageView');
+                    var background = new Views.ImageView();
+                    background.SetAnchor(0, 0, 0, 0);
+                    background.FitPolicy = Property.FitPolicy.Cover;
+                    background.Src = 'images/Pages/ControlProperty/background.jpg';
+                    _this.Add(background);
+                    _this.HeaderBar.Text = '';
+                    _this.HeaderBar.LeftButton.Hide(0);
+                    _this.HeaderBar.RightButton.Hide(0);
+                    _this.Add(_this.HeaderBar);
+                    var label = new Views.LabelView();
+                    label.FontSize = Property.FontSize.Large;
+                    label.Color = Color.Main;
+                    label.SetAnchor(null, 5, null, null);
+                    label.Text = 'Property';
+                    _this.HeaderBar.Add(label);
+                    _this.InputPanel.Position.Policy = Property.PositionPolicy.LeftTop;
+                    _this.InputPanel.ReferencePoint = Property.ReferencePoint.LeftTop;
+                    _this.InputPanel.Size.Width = 280;
+                    _this.InputPanel.SetAnchor(70, 10, null, 10);
+                    _this.InputPanel.Color = Color.MainBackground;
+                    _this.Add(_this.InputPanel);
+                    var lbl1 = new Views.LabelView();
+                    lbl1.Text = 'Name';
+                    lbl1.TextAlign = Property.TextAlign.Left;
+                    lbl1.AutoSize = true;
+                    lbl1.SetAnchor(null, 5, null, null);
+                    lbl1.Size.Height = 21;
+                    _this.InputPanel.Add(lbl1);
+                    _this.TxtName.SetAnchor(null, 5, 15, null);
+                    _this.TxtName.Size.Height = 30;
+                    _this.TxtName.Name = 'Name';
+                    _this.InputPanel.Add(_this.TxtName);
+                    var lbl2 = new Views.LabelView();
+                    lbl2.Text = 'Icon / Color';
+                    lbl2.TextAlign = Property.TextAlign.Left;
+                    lbl2.AutoSize = true;
+                    lbl2.SetAnchor(null, 5, null, null);
+                    lbl2.Size.Height = 21;
+                    _this.InputPanel.Add(lbl2);
+                    _this.InputPanel.AddSpacer();
+                    _this.InputPanel.Add(_this.BtnIcon);
+                    _this.InputPanel.Add(_this.BtnColor);
+                    _this.InputPanel.AddSpacer();
+                    _this.LblCode = new Views.LabelView();
+                    _this.LblCode.Text = 'Code';
+                    _this.LblCode.TextAlign = Property.TextAlign.Left;
+                    _this.LblCode.AutoSize = true;
+                    _this.LblCode.SetAnchor(null, 5, null, null);
+                    _this.LblCode.Size.Height = 21;
+                    _this.InputPanel.Add(_this.LblCode);
+                    _this.TarCode.SetAnchor(null, 5, 15, null);
+                    _this.TarCode.Size.Height = 90;
+                    _this.TarCode.Name = 'Code';
+                    _this.InputPanel.Add(_this.TarCode);
+                    _this.TxtMac.SetAnchor(null, 5, 15, null);
+                    _this.TxtMac.Size.Height = 30;
+                    _this.TxtMac.Name = 'Mac';
+                    _this.InputPanel.Add(_this.TxtMac);
+                    _this.SboRemote.SetAnchor(null, 5, 15, null);
+                    _this.SboRemote.Size.Height = 30;
+                    _this.InputPanel.Add(_this.SboRemote);
+                    _this.BtnLearn.SetAnchor(null, 5, 15, null);
+                    _this.BtnLearn.Size.Height = 30;
+                    _this.BtnLearn.Text = 'Learn';
+                    _this.InputPanel.Add(_this.BtnLearn);
+                    _this.BtnSend.SetAnchor(null, 5, 15, null);
+                    _this.BtnSend.Size.Height = 30;
+                    _this.BtnSend.Text = 'Test';
+                    _this.InputPanel.Add(_this.BtnSend);
+                    var lbl5 = new Views.LabelView();
+                    lbl5.Text = 'Toggle Assigns';
+                    lbl5.TextAlign = Property.TextAlign.Left;
+                    lbl5.AutoSize = true;
+                    lbl5.SetAnchor(null, 5, null, null);
+                    lbl5.Size.Height = 21;
+                    _this.InputPanel.Add(lbl5);
+                    _this.ChkToggleOn.SetAnchor(null, 5, 15, null);
+                    _this.ChkToggleOn.Size.Height = 30;
+                    _this.ChkToggleOn.Name = 'AssignToggleOn';
+                    _this.ChkToggleOn.Text = 'Main-Panel Toggle ON';
+                    _this.InputPanel.Add(_this.ChkToggleOn);
+                    _this.ChkToggleOff.SetAnchor(null, 5, 15, null);
+                    _this.ChkToggleOff.Size.Height = 30;
+                    _this.ChkToggleOff.Name = 'AssignToggleOff';
+                    _this.ChkToggleOff.Text = 'Main-Panel Toggle OFF';
+                    _this.InputPanel.Add(_this.ChkToggleOff);
+                    _this.DeleteButton.SetAnchor(null, 5, 15, null);
+                    _this.DeleteButton.Size.Height = 30;
+                    _this.DeleteButton.Text = '*Delete*';
+                    _this.InputPanel.Add(_this.DeleteButton);
+                    return _this;
+                }
+                return ControlPropertyPageView;
+            }(Fw.Views.PageView));
+            Pages.ControlPropertyPageView = ControlPropertyPageView;
+        })(Pages = Views_13.Pages || (Views_13.Pages = {}));
+    })(Views = App.Views || (App.Views = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Views/PageView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Events/PageViewEvents.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../Controls/HeaderBarView.ts" />
+/// <reference path="../../Items/Color.ts" />
+var App;
+(function (App) {
+    var Views;
+    (function (Views_14) {
+        var Pages;
+        (function (Pages) {
+            var Views = Fw.Views;
+            var Property = Fw.Views.Property;
+            var Controls = App.Views.Controls;
+            var Color = App.Items.Color;
+            var ControlSetPageView = /** @class */ (function (_super) {
+                __extends(ControlSetPageView, _super);
+                function ControlSetPageView() {
+                    var _this = _super.call(this) || this;
+                    _this.HeaderBar = new Controls.HeaderBarView();
+                    _this.EditButton = new Controls.ButtonView();
+                    _this.HeaderLeftLabel = new Views.LabelView();
+                    _this.ButtonPanel = new Views.SlidableBoxView(Property.Direction.Vertical);
+                    _this.SetClassName('ControlSetPageView');
+                    var background = new Views.ImageView();
+                    background.SetAnchor(0, 0, 0, 0);
+                    background.FitPolicy = Property.FitPolicy.Cover;
+                    background.Src = 'images/Pages/ControlSet/background.jpg';
+                    _this.Add(background);
+                    _this.HeaderBar.Text = 'Remote Control';
+                    _this.HeaderBar.RightButton.Hide(0);
+                    _this.Add(_this.HeaderBar);
+                    _this.EditButton.SetSize(40, 40);
+                    _this.EditButton.BackgroundColor = Color.HeaderButtonBackground;
+                    _this.EditButton.HoverColor = Color.HeaderButtonHover;
+                    _this.EditButton.Color = Color.Main;
+                    _this.EditButton.Text = '@';
+                    _this.EditButton.SetAnchor(null, 255, null, null);
+                    _this.HeaderBar.Add(_this.EditButton);
+                    _this.HeaderLeftLabel.FontSize = Property.FontSize.Large;
+                    _this.HeaderLeftLabel.Color = Color.Main;
+                    _this.HeaderLeftLabel.SetAnchor(null, 5, null, null);
+                    _this.HeaderBar.Add(_this.HeaderLeftLabel);
+                    _this.ButtonPanel.Position.Policy = Property.PositionPolicy.LeftTop;
+                    _this.ButtonPanel.Size.Width = 280;
+                    _this.ButtonPanel.SetAnchor(70, null, null, 10);
+                    _this.ButtonPanel.Color = Color.MainBackground;
+                    _this.Add(_this.ButtonPanel);
+                    _this.HeaderBar.Elem.hover(function () {
+                        if (_this.EditButton.IsVisible) {
+                            _this.HeaderBar.SetStyles({
+                                backgroundColor: Color.MainBackground,
+                                cursor: 'normal'
+                            });
+                            _this.HeaderBar.ApplyStyles();
+                            return;
+                        }
+                        _this.HeaderBar.SetStyles({
+                            backgroundColor: Color.MainHover,
+                            cursor: 'pointer'
+                        });
+                        _this.HeaderBar.ApplyStyles();
+                    }, function () {
+                        _this.HeaderBar.SetStyles({
+                            backgroundColor: Color.MainBackground,
+                            cursor: 'normal'
+                        });
+                        _this.HeaderBar.ApplyStyles();
+                    });
+                    return _this;
+                }
+                return ControlSetPageView;
+            }(Fw.Views.PageView));
+            Pages.ControlSetPageView = ControlSetPageView;
+        })(Pages = Views_14.Pages || (Views_14.Pages = {}));
+    })(Views = App.Views || (App.Views = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Views/PageView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Events/PageViewEvents.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../Controls/HeaderBarView.ts" />
+var App;
+(function (App) {
+    var Views;
+    (function (Views_15) {
+        var Pages;
+        (function (Pages) {
+            var Views = Fw.Views;
+            var Property = Fw.Views.Property;
+            var Controls = App.Views.Controls;
+            var ItemSelectPageView = /** @class */ (function (_super) {
+                __extends(ItemSelectPageView, _super);
+                function ItemSelectPageView() {
+                    var _this = _super.call(this) || this;
+                    _this.HeaderBar = new Controls.HeaderBarView();
+                    _this.SelectorPanel = new Views.StuckerBoxView();
+                    _this.SetClassName('ItemSelectionPageView');
+                    var background = new Views.ImageView();
+                    background.SetAnchor(0, 0, 0, 0);
+                    background.FitPolicy = Property.FitPolicy.Cover;
+                    background.Src = 'images/Pages/ControlProperty/background.jpg';
+                    _this.Add(background);
+                    _this.HeaderBar.Text = '';
+                    _this.HeaderBar.LeftButton.Hide(0);
+                    _this.HeaderBar.RightButton.Hide(0);
+                    _this.Add(_this.HeaderBar);
+                    _this.Label = new Views.LabelView();
+                    _this.Label.FontSize = Property.FontSize.Large;
+                    _this.Label.Color = App.Items.Color.Main;
+                    _this.Label.SetAnchor(null, 5, null, null);
+                    _this.Label.Text = '';
+                    _this.HeaderBar.Add(_this.Label);
+                    _this.SelectorPanel.Position.Policy = Property.PositionPolicy.LeftTop;
+                    _this.SelectorPanel.ReferencePoint = Property.ReferencePoint.LeftTop;
+                    _this.SelectorPanel.Size.Width = 280;
+                    _this.SelectorPanel.SetAnchor(70, 10, null, 10);
+                    _this.SelectorPanel.Color = App.Items.Color.MainBackground;
+                    _this.Add(_this.SelectorPanel);
+                    return _this;
+                }
+                return ItemSelectPageView;
+            }(Fw.Views.PageView));
+            Pages.ItemSelectPageView = ItemSelectPageView;
+        })(Pages = Views_15.Pages || (Views_15.Pages = {}));
+    })(Views = App.Views || (App.Views = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Views/PageView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Events/PageViewEvents.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+var App;
+(function (App) {
+    var Views;
+    (function (Views_16) {
+        var Pages;
+        (function (Pages) {
+            var Property = Fw.Views.Property;
+            var LayoutCheckPageView = /** @class */ (function (_super) {
+                __extends(LayoutCheckPageView, _super);
+                function LayoutCheckPageView() {
+                    var _this = _super.call(this) || this;
+                    _this.BtnGoSub1 = new Fw.Views.ButtonView();
+                    _this.BtnGoSub2 = new Fw.Views.ButtonView();
+                    _this.CenterControl = new Fw.Views.ControlView();
+                    _this.TmpCtl = new Fw.Views.ControlView();
+                    _this.AncCtl1 = new Fw.Views.ButtonView();
+                    _this.AncCtl2 = new Fw.Views.ButtonView();
+                    _this.AncCtl3 = new Fw.Views.ButtonView();
+                    _this.Toggle = new Fw.Views.ToggleButtonInputView();
+                    _this.AncCtl4 = new Fw.Views.ButtonView();
+                    _this.SetClassName('MainPageView');
+                    _this.BtnGoSub1.Text = 'Go Sub1';
+                    _this.BtnGoSub1.SetSize(80, 30);
+                    _this.BtnGoSub1.SetAnchor(null, 10, null, null);
+                    _this.Add(_this.BtnGoSub1);
+                    _this.BtnGoSub2.Text = 'Go Sub2';
+                    _this.BtnGoSub2.SetSize(80, 30);
+                    _this.BtnGoSub2.Position.Y = 40;
+                    _this.BtnGoSub2.SetAnchor(null, 10, null, null);
+                    _this.Add(_this.BtnGoSub2);
+                    _this.CenterControl.SetXY(0, 0);
+                    _this.CenterControl.SetSize(100, 50);
+                    _this.CenterControl.Color = '#1155FF';
+                    _this.CenterControl.Text = 'はろー<br/>どうよ？';
+                    _this.Add(_this.CenterControl);
+                    _this.TmpCtl.SetXY(-100, -100);
+                    _this.TmpCtl.SetSize(200, 200);
+                    _this.TmpCtl.Color = '#666666';
+                    _this.TmpCtl.Text = 'くりっく';
+                    _this.Add(_this.TmpCtl);
+                    _this.AncCtl1.Text = '右下';
+                    _this.AncCtl1.SetSize(200, 50);
+                    _this.AncCtl1.SetAnchor(null, null, 40, 5);
+                    _this.Add(_this.AncCtl1);
+                    _this.AncCtl2.Text = '右上';
+                    _this.AncCtl2.SetSize(200, 50);
+                    _this.AncCtl2.SetAnchor(3, null, 3, null);
+                    _this.Add(_this.AncCtl2);
+                    var label = new Fw.Views.LabelView();
+                    label.FontSize = Property.FontSize.XxLarge;
+                    label.Text = 'らべるやで';
+                    _this.AncCtl2.Add(label);
+                    _this.AncCtl3.Text = '左下';
+                    _this.AncCtl3.SetSize(300, 100);
+                    _this.AncCtl3.SetAnchor(null, 3, null, 3);
+                    _this.Add(_this.AncCtl3);
+                    var img = new Fw.Views.ImageView();
+                    img.SetSize(100, 70);
+                    img.Src = 'images/icons/home.png';
+                    img.FitPolicy = Property.FitPolicy.Cover;
+                    _this.AncCtl3.Add(img);
+                    _this.Toggle.SetAnchor(150, 10, null, null);
+                    _this.Add(_this.Toggle);
+                    _this.AncCtl4.Text = 'マスク';
+                    _this.AncCtl4.SetSize(200, 50);
+                    _this.AncCtl4.SetAnchor(60, 3, null, null);
+                    _this.Add(_this.AncCtl4);
+                    return _this;
+                    //this.AncCtl5 = new Fw.Views.ButtonView();
+                    //this.AncCtl5.Label = '左右';
+                    //this.AncCtl5.Size.Height = 50;
+                    //this.AncCtl5.SetAnchor(null, 150, 300, 100);
+                    //this.Add(this.AncCtl5);
+                    //this.AncCtl6 = new Fw.Views.ButtonView();
+                    //this.AncCtl6.Label = '上下';
+                    //this.AncCtl6.SetAnchor(200, null, null, 40);
+                    //this.AncCtl6.Size.Width = 30;
+                    //this.Add(this.AncCtl6);
+                }
+                return LayoutCheckPageView;
+            }(Fw.Views.PageView));
+            Pages.LayoutCheckPageView = LayoutCheckPageView;
+        })(Pages = Views_16.Pages || (Views_16.Pages = {}));
+    })(Views = App.Views || (App.Views = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Views/PageView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Events/PageViewEvents.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../Controls/HeaderBarView.ts" />
+/// <reference path="../../Items/Color.ts" />
+var App;
+(function (App) {
+    var Views;
+    (function (Views_17) {
+        var Pages;
+        (function (Pages) {
+            var Views = Fw.Views;
+            var Property = Fw.Views.Property;
+            var Controls = App.Views.Controls;
+            var Color = App.Items.Color;
+            var ScenePageView = /** @class */ (function (_super) {
+                __extends(ScenePageView, _super);
+                function ScenePageView() {
+                    var _this = _super.call(this) || this;
+                    _this.HeaderBar = new Controls.HeaderBarView();
+                    _this.HeaderLeftLabel = new Views.LabelView();
+                    _this.EditButton = new Controls.ButtonView();
+                    _this.DetailPanel = new Views.StuckerBoxView();
+                    _this.SetClassName('ScenePageView');
+                    var background = new Views.ImageView();
+                    background.SetAnchor(0, 0, 0, 0);
+                    background.FitPolicy = Property.FitPolicy.Cover;
+                    background.Src = 'images/Pages/ControlSet/background.jpg';
+                    _this.Add(background);
+                    _this.HeaderBar.Text = 'Scene';
+                    _this.HeaderBar.RightButton.Hide(0);
+                    _this.Add(_this.HeaderBar);
+                    _this.EditButton.SetSize(40, 40);
+                    _this.EditButton.BackgroundColor = Color.HeaderButtonBackground;
+                    _this.EditButton.HoverColor = Color.HeaderButtonHover;
+                    _this.EditButton.Color = Color.Main;
+                    _this.EditButton.Text = '@';
+                    _this.EditButton.SetAnchor(null, 255, null, null);
+                    _this.HeaderBar.Add(_this.EditButton);
+                    _this.HeaderLeftLabel.FontSize = Property.FontSize.Large;
+                    _this.HeaderLeftLabel.Color = Color.Main;
+                    _this.HeaderLeftLabel.SetAnchor(null, 5, null, null);
+                    _this.HeaderBar.Add(_this.HeaderLeftLabel);
+                    _this.DetailPanel.ReferencePoint = Property.ReferencePoint.LeftTop;
+                    _this.DetailPanel.Position.Policy = Property.PositionPolicy.LeftTop;
+                    _this.DetailPanel.Size.Width = 280;
+                    _this.DetailPanel.SetAnchor(70, null, null, 10);
+                    _this.DetailPanel.Color = Color.MainBackground;
+                    _this.Add(_this.DetailPanel);
+                    _this.HeaderBar.Elem.hover(function () {
+                        if (_this.EditButton.IsVisible) {
+                            _this.HeaderBar.SetStyles({
+                                backgroundColor: Color.MainBackground,
+                                cursor: 'normal'
+                            });
+                            _this.HeaderBar.ApplyStyles();
+                            return;
+                        }
+                        _this.HeaderBar.SetStyles({
+                            backgroundColor: Color.MainHover,
+                            cursor: 'pointer'
+                        });
+                        _this.HeaderBar.ApplyStyles();
+                    }, function () {
+                        _this.HeaderBar.SetStyles({
+                            backgroundColor: Color.MainBackground,
+                            cursor: 'normal'
+                        });
+                        _this.HeaderBar.ApplyStyles();
+                    });
+                    return _this;
+                }
+                return ScenePageView;
+            }(Fw.Views.PageView));
+            Pages.ScenePageView = ScenePageView;
+        })(Pages = Views_17.Pages || (Views_17.Pages = {}));
+    })(Views = App.Views || (App.Views = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Views/PageView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Events/PageViewEvents.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+var App;
+(function (App) {
+    var Views;
+    (function (Views_18) {
+        var Pages;
+        (function (Pages) {
+            var Views = Fw.Views;
+            var Property = Fw.Views.Property;
+            var Sub3PageView = /** @class */ (function (_super) {
+                __extends(Sub3PageView, _super);
+                function Sub3PageView() {
+                    var _this = _super.call(this) || this;
+                    _this.HeaderBar = new Views_18.Controls.HeaderBarView();
+                    _this.Stucker = new Views.StuckerBoxView();
+                    _this.SetClassName('Sub3PageView');
+                    _this.HeaderBar.Text = 'Sub 3 Page';
+                    _this.HeaderBar.RightButton.Hide(0);
+                    _this.Add(_this.HeaderBar);
+                    //this.Stucker.SetSize(600, 400);
+                    _this.Stucker.SetAnchor(70, 20, 20, null);
+                    _this.Stucker.Size.Height = 400;
+                    _this.Stucker.SetLeftTop(10, 70);
+                    _this.Add(_this.Stucker);
+                    var btn1 = new Views.ButtonView();
+                    btn1.SetSize(100, 120);
+                    btn1.Text = 'btn1: LeftTop';
+                    _this.Stucker.Add(btn1);
+                    btn1.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, function () {
+                        _this.Stucker.ReferencePoint = Property.ReferencePoint.LeftTop;
+                    });
+                    var btn2 = new Views.ButtonView();
+                    btn2.SetSize(100, 120);
+                    btn2.Text = 'btn2: RightTop';
+                    _this.Stucker.Add(btn2);
+                    btn2.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, function () {
+                        _this.Stucker.ReferencePoint = Property.ReferencePoint.RightTop;
+                    });
+                    var btn3 = new Views.ButtonView();
+                    btn3.SetSize(100, 120);
+                    btn3.Text = 'btn3: LeftBottom';
+                    _this.Stucker.Add(btn3);
+                    btn3.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, function () {
+                        _this.Stucker.ReferencePoint = Property.ReferencePoint.LeftBottom;
+                    });
+                    var btn4 = new Views.ButtonView();
+                    btn4.SetSize(100, 120);
+                    btn4.Text = 'btn4: RightBottom';
+                    _this.Stucker.Add(btn4);
+                    btn4.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, function () {
+                        _this.Stucker.ReferencePoint = Property.ReferencePoint.RightBottom;
+                    });
+                    var idx = 5;
+                    for (var i = 0; i < 20; i++) {
+                        var btn = new Views.ButtonView();
+                        btn.SetSize(100, 120);
+                        btn.Text = "btn" + (idx + i);
+                        _this.Stucker.Add(btn);
+                    }
+                    return _this;
+                }
+                return Sub3PageView;
+            }(Fw.Views.PageView));
+            Pages.Sub3PageView = Sub3PageView;
+        })(Pages = Views_18.Pages || (Views_18.Pages = {}));
+    })(Views = App.Views || (App.Views = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../../lib/MagnificPopup/index.d.ts" />
+/// <reference path="../../../Fw/Views/ButtonView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="PopupBase.ts" />
+var App;
+(function (App) {
+    var Views;
+    (function (Views_19) {
+        var Popup;
+        (function (Popup) {
+            var CancellablePopup = /** @class */ (function (_super) {
+                __extends(CancellablePopup, _super);
+                function CancellablePopup() {
+                    var _this = _super.call(this, $('#PtplCancellable')) || this;
+                    _this.CloseOnBgClick = false;
+                    _this.ShowCloseBtn = false;
+                    _this.EnableEscapeKey = false;
+                    _this.Elem.find('.ButtonCancel').on('click', function () {
+                        _this.Close();
+                        if (_this._callbackCancel)
+                            _this._callbackCancel();
+                    });
+                    return _this;
+                }
+                Object.defineProperty(CancellablePopup, "Instance", {
+                    get: function () {
+                        if (!CancellablePopup._instance)
+                            CancellablePopup._instance = new CancellablePopup();
+                        return CancellablePopup._instance;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                CancellablePopup.prototype.Open = function (params) {
+                    if (typeof params === 'object') {
+                        this._callbackCancel = _.isFunction(params.CallbackCancel)
+                            ? params.CallbackCancel
+                            : null;
+                    }
+                    _super.prototype.Open.call(this, params);
+                };
+                CancellablePopup._instance = null;
+                return CancellablePopup;
+            }(Popup.PopupBase));
+            Popup.CancellablePopup = CancellablePopup;
+            Popup.Cancellable = CancellablePopup.Instance;
+        })(Popup = Views_19.Popup || (Views_19.Popup = {}));
+    })(Views = App.Views || (App.Views = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../../lib/MagnificPopup/index.d.ts" />
+/// <reference path="../../../Fw/Views/ButtonView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="PopupBase.ts" />
+var App;
+(function (App) {
+    var Views;
+    (function (Views_20) {
+        var Popup;
+        (function (Popup) {
+            var ConfirmPopup = /** @class */ (function (_super) {
+                __extends(ConfirmPopup, _super);
+                function ConfirmPopup() {
+                    var _this = _super.call(this, $('#PtplConfirm')) || this;
+                    _this.CloseOnBgClick = false;
+                    _this.ShowCloseBtn = false;
+                    _this.EnableEscapeKey = false;
+                    _this.Elem.find('.ButtonOk').on('click', function () {
+                        _this.Close();
+                        if (_this._callbackOk)
+                            _this._callbackOk();
+                    });
+                    _this.Elem.find('.ButtonCancel').on('click', function () {
+                        _this.Close();
+                        if (_this._callbackCancel)
+                            _this._callbackCancel();
+                    });
+                    return _this;
+                }
+                Object.defineProperty(ConfirmPopup, "Instance", {
+                    get: function () {
+                        if (!ConfirmPopup._instance)
+                            ConfirmPopup._instance = new ConfirmPopup();
+                        return ConfirmPopup._instance;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                ConfirmPopup.prototype.Open = function (params) {
+                    // Callback方式で使えるけど、やめとけ、というやつ。
+                    throw new Error('OpenAsyncを使いたまへ！');
+                    if (typeof params === 'object') {
+                        this._callbackOk = _.isFunction(params.CallbackOk)
+                            ? params.CallbackOk
+                            : null;
+                        this._callbackCancel = _.isFunction(params.CallbackCancel)
+                            ? params.CallbackCancel
+                            : null;
+                    }
+                    _super.prototype.Open.call(this, params);
+                };
+                ConfirmPopup.prototype.OpenAsync = function (params) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var _this = this;
+                        return __generator(this, function (_a) {
+                            return [2 /*return*/, new Promise(function (resolve) {
+                                    _this._callbackOk = function () {
+                                        resolve(true);
+                                    };
+                                    _this._callbackCancel = function () {
+                                        resolve(false);
+                                    };
+                                    // TODO: ↓ときどき、この書き方が通らずthisのメソッドが呼ばれるようなフローがある。
+                                    // TODO: ↓いずれきちんと理解する。
+                                    // コールバックが上書きされないよう、thisでなくsuperのOpenを呼ぶ。
+                                    _super.prototype.Open.call(_this, params);
+                                })];
+                        });
+                    });
+                };
+                ConfirmPopup._instance = null;
+                return ConfirmPopup;
+            }(Popup.PopupBase));
+            Popup.ConfirmPopup = ConfirmPopup;
+            Popup.Confirm = ConfirmPopup.Instance;
+        })(Popup = Views_20.Popup || (Views_20.Popup = {}));
+    })(Views = App.Views || (App.Views = {}));
+})(App || (App = {}));
+/// <reference path="../../lib/jquery/index.d.ts" />
+/// <reference path="../../lib/underscore/index.d.ts" />
+/// <reference path="EventableBase.ts" />
+/// <reference path="Events/RootEvents.ts" />
+/// <reference path="Util/Dump.ts" />
+/// <reference path="Views/Property/Size.ts" />
+var Fw;
+(function (Fw) {
+    var Dump = Fw.Util.Dump;
+    var Events = Fw.Events.RootEvents;
+    var Property = Fw.Views.Property;
+    var Root = /** @class */ (function (_super) {
+        __extends(Root, _super);
+        function Root(jqueryElem) {
+            var _this = _super.call(this) || this;
+            _this._viewRefreshInterval = 3000;
+            _this._releaseInitialized = false;
+            _this.SetClassName('Root');
+            _this._elem = jqueryElem;
+            _this._dom = jqueryElem.get(0);
+            _this._size = new Property.Size();
+            _this._size.Width = _this.Elem.width();
+            _this._size.Height = _this.Elem.height();
+            _this._masked = false;
+            var $window = $(window);
+            $window.on('resize', function () {
+                _.defer(function () {
+                    _this.Refresh();
+                    _this.DispatchEvent(Events.Resized);
+                });
+            });
+            _this._renderInitializer = new Fw.Util.DelayedOnceExecuter(_this, function () {
+                _this._viewRefreshInterval = 30;
+                _this._releaseInitialized = true;
+                _this.DispatchEvent(Events.PageInitializeCompleted);
+                Dump.Log('Root.ReleasePageInitialize - Released');
+            }, 300, -1, true);
+            _this._renderInitializer.Name = 'RenderInitializer';
+            // Root.Init()の終了後にViewBaseからFw.Root.Instanceを呼び出す。
+            _.defer(function () {
+                _this._mask = new Fw.Views.BoxView();
+                _this._mask.Elem.removeClass('TransAnimation');
+                _this._mask.Elem.addClass('RootMask');
+                _this._mask.HasBorder = false;
+                _this._mask.BackgroundColor = '#000000';
+                _this._mask.ZIndex = -1;
+                // RootはIViewでないので、this.Addは出来ない。
+                _this.Elem.append(_this._mask.Elem);
+                _this._mask.Elem.on('click touchend', function () {
+                    _this.DispatchEvent(Events.MaskClicked);
+                });
+                _this.Refresh();
+            });
+            return _this;
+        }
+        Object.defineProperty(Root, "Instance", {
+            get: function () {
+                if (!Root._instance) {
+                    throw new Error('Root.Init() has not been executed.');
+                }
+                return Root._instance;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Root.Init = function (selectorString) {
+            Root._instance = new Root($(selectorString));
+        };
+        Object.defineProperty(Root.prototype, "Elem", {
+            get: function () {
+                return this._elem;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Root.prototype, "Dom", {
+            get: function () {
+                return this._dom;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Root.prototype, "Size", {
+            get: function () {
+                return this._size;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Root.prototype.Mask = function () {
+            //this.Log(`${this.ClassName}.Mask`);
+            this._masked = true;
+            this.Refresh();
+        };
+        Root.prototype.UnMask = function () {
+            //this.Log(`${this.ClassName}.UnMask`);
+            this._masked = false;
+            this.Refresh();
+        };
+        Root.prototype.SetTextSelection = function (enable) {
+            if (enable && this.Elem.hasClass('TextUnselect'))
+                this.Elem.removeClass('TextUnselect');
+            else if (!enable && !this.Elem.hasClass('TextUnselect'))
+                this.Elem.addClass('TextUnselect');
+        };
+        Object.defineProperty(Root.prototype, "ViewRefreshInterval", {
+            get: function () {
+                return this._viewRefreshInterval;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        /**
+         * @description ページ生成開始から一定時間、ViewのDom更新頻度を大幅に下げる。
+         */
+        Root.prototype.StartPageInitialize = function () {
+            // ViewのDom更新を抑止する。
+            this._releaseInitialized = false;
+            this._viewRefreshInterval = 3000;
+            this.DispatchEvent(Events.PageInitializeStarted);
+            Dump.Log('Root.StartPageInitialize');
+        };
+        Root.prototype.ReleasePageInitialize = function (view) {
+            if (this._releaseInitialized)
+                return;
+            //this.Log('Root.ReleasePageInitialize: ' + view.ObjectIdentifier);
+            this._renderInitializer.Exec();
+        };
+        Root.prototype.Refresh = function () {
+            // this.Sizeのセッターが無いので、フィールドに直接書き込む。
+            this._size.Width = this.Elem.width();
+            this._size.Height = this.Elem.height();
+            if (this._mask) {
+                this._mask.SetSize(this._size.Width, this._size.Height);
+                if (this._masked) {
+                    this._mask.ZIndex = 0;
+                    this._mask.Opacity = 0.4;
+                }
+                else {
+                    this._mask.ZIndex = -1;
+                    this._mask.Opacity = 0.0;
+                }
+            }
+        };
+        Root.prototype.Dispose = function () {
+            _super.prototype.Dispose.call(this);
+            this._dom = null;
+            this._size.Dispose();
+            this._size = null;
+        };
+        Root._instance = null;
+        return Root;
+    }(Fw.EventableBase));
+    Fw.Root = Root;
+})(Fw || (Fw = {}));
+/// <reference path="../../lib/jquery/index.d.ts" />
+/// <reference path="../../lib/underscore/index.d.ts" />
+/// <reference path="Util/Dump.ts" />
+/* /// <reference path="Views/Root.ts" /> */
+var Fw;
+(function (Fw) {
+    var Startup = /** @class */ (function () {
+        function Startup() {
+        }
+        Startup.Init = function () {
+            // ↓API仕様に応じて、App.Mainで書き換える。
+            Fw.Config.XhrBaseUrl
+                = location.protocol
+                    + '//' + location.hostname
+                    + ':' + location.port
+                    + '/';
+            // iOSの全体スクロール対策
+            $(window).on('touchmove', function (e) {
+                e.preventDefault();
+            });
+            $(document.body).on('touchmove', function (e) {
+                e.preventDefault();
+            });
+            $('div.body-content').on('touchmove', function (e) {
+                e.preventDefault();
+            });
+            // 画面全体のコンテナを初期化
+            Fw.Root.Init('div.body-content');
+        };
+        return Startup;
+    }());
+    Fw.Startup = Startup;
+})(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="ViewEvents.ts" />
@@ -7776,6 +10193,92 @@ var Fw;
         Events.TextBoxInputViewEventsClass = TextBoxInputViewEventsClass;
         Events.TextBoxInputViewEvents = new TextBoxInputViewEventsClass();
     })(Events = Fw.Events || (Fw.Events = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+var Fw;
+(function (Fw) {
+    var Util;
+    (function (Util) {
+        var Xhr;
+        (function (Xhr) {
+            var MethodType;
+            (function (MethodType) {
+                MethodType[MethodType["Get"] = 1] = "Get";
+                MethodType[MethodType["Post"] = 2] = "Post";
+                MethodType[MethodType["Put"] = 3] = "Put";
+                MethodType[MethodType["Delete"] = 4] = "Delete";
+            })(MethodType = Xhr.MethodType || (Xhr.MethodType = {}));
+        })(Xhr = Util.Xhr || (Util.Xhr = {}));
+    })(Util = Fw.Util || (Fw.Util = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Util/Dump.ts" />
+/// <reference path="../../Util/Obj.ts" />
+var Fw;
+(function (Fw) {
+    var Util;
+    (function (Util) {
+        var Xhr;
+        (function (Xhr) {
+            var Params = /** @class */ (function () {
+                function Params(url, method, values) {
+                    if (method === void 0) { method = null; }
+                    if (values === void 0) { values = null; }
+                    this.Method = Xhr.MethodType.Post;
+                    this.Values = {};
+                    this.Callback = function () { };
+                    this.Url = url;
+                    this.Method = method || Xhr.MethodType.Post;
+                    this.Values = (values)
+                        ? values
+                        : {};
+                }
+                return Params;
+            }());
+            Xhr.Params = Params;
+        })(Xhr = Util.Xhr || (Util.Xhr = {}));
+    })(Util = Fw.Util || (Fw.Util = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Util/Dump.ts" />
+var Fw;
+(function (Fw) {
+    var Util;
+    (function (Util) {
+        var Xhr;
+        (function (Xhr) {
+            var Error = /** @class */ (function () {
+                function Error(message, name) {
+                    this.Message = '';
+                    this.Name = '';
+                    this.Message = message;
+                    this.Name = name || '';
+                }
+                return Error;
+            }());
+            Xhr.Error = Error;
+            // まだ使わない。
+            // API仕様が固まったら、やろうかな。
+            var Result = /** @class */ (function () {
+                function Result(succeeded, values, errors) {
+                    this.Succeeded = succeeded;
+                    this.Values = values;
+                    this.Errors = errors;
+                }
+                Result.CreateSucceeded = function (values) {
+                    return new Result(true, values, []);
+                };
+                Result.CreateError = function (errors) {
+                    return new Result(false, {}, errors);
+                };
+                return Result;
+            }());
+            Xhr.Result = Result;
+        })(Xhr = Util.Xhr || (Util.Xhr = {}));
+    })(Util = Fw.Util || (Fw.Util = {}));
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
@@ -8935,7 +11438,6 @@ var Fw;
                 _this._innerBox.Elem.on('touchstart mousedown', _this.OnInnerMouseDown);
                 _this._innerBox.Elem.on('touchmove mousemove', _this.OnInnerMouseMove);
                 _this._innerBox.Elem.on('touchend mouseup mouseout', _this.OnInnerMouseUp);
-                //this._innerBox.Elem.on('click', this.OnInnerSingleClick);
                 _this._lockButton.Elem.on('click', _this.OnLockButtonClick);
                 var mouseWheelEvent = 'onwheel' in document
                     ? 'wheel'
@@ -9136,10 +11638,13 @@ var Fw;
              */
             StuckerBoxView.prototype.OnInnerSingleClick = function () {
                 //this.Log(`${this.ClassName}.OnSingleClick`);
+                var _this = this;
                 if (this._lockButton.IsVisible) {
                     // ロックボタン表示中のとき
-                    if (!this._isChildRelocation)
+                    if (!this._isChildRelocation) {
+                        this._lockButton.ClearAnimatedClass();
                         this._lockButton.Hide();
+                    }
                 }
                 else {
                     // ロックボタン非表示のとき
@@ -9149,7 +11654,15 @@ var Fw;
                         : this.LockedImage;
                     if (image !== this._lockButton.ImageSrc)
                         this._lockButton.ImageSrc = image;
+                    this._lockButton.ClearAnimatedClass();
                     this._lockButton.Show();
+                    // 再配置モードでないとき、2秒後も再配置モードにしていなければ、ボタンを消す。
+                    if (!this._isChildRelocation) {
+                        _.delay(function () {
+                            if (!_this._isChildRelocation)
+                                _this._lockButton.Hide();
+                        }, 2000);
+                    }
                 }
             };
             /**
@@ -9195,6 +11708,16 @@ var Fw;
                     v.SuppressEvent(ControlViewEvents.SingleClick);
                     v.SuppressEvent(ControlViewEvents.LongClick);
                 });
+                if (!this._lockButton.IsVisible) {
+                    _.delay(function () {
+                        if (!_this._lockButton.IsVisible) {
+                            if (_this._lockButton.ImageSrc !== _this.UnlockedImage)
+                                _this._lockButton.ImageSrc = _this.UnlockedImage;
+                            _this._lockButton.ClearAnimatedClass();
+                            _this._lockButton.Show();
+                        }
+                    }, 500);
+                }
                 this.Refresh();
             };
             StuckerBoxView.prototype.CommitRelocation = function () {
@@ -9220,6 +11743,18 @@ var Fw;
                 if (changed)
                     this.DispatchEvent(Events.OrderChanged);
                 this._childrenOrder = null;
+                if (this._lockButton.IsVisible
+                    && this._lockButton.ImageSrc !== this.LockedImage) {
+                    if (this._lockButton.ImageSrc !== this.LockedImage)
+                        this._lockButton.ImageSrc = this.LockedImage;
+                }
+                _.delay(function () {
+                    if (_this._lockButton.IsVisible) {
+                        _this._lockButton.ClearAnimatedClass();
+                        _this._lockButton.Hide();
+                        _this.Refresh();
+                    }
+                }, 700);
                 this.Refresh();
             };
             /**
@@ -9938,2228 +12473,6 @@ var Fw;
         }(Views.ControlView));
         Views.ToggleButtonInputView = ToggleButtonInputView;
     })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Models/EntityBase.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-var App;
-(function (App) {
-    var Models;
-    (function (Models) {
-        var Entities;
-        (function (Entities) {
-            var A1Values = /** @class */ (function (_super) {
-                __extends(A1Values, _super);
-                function A1Values() {
-                    var _this = _super !== null && _super.apply(this, arguments) || this;
-                    _this.Temperature = 0;
-                    _this.Humidity = 0;
-                    _this.Voc = 0;
-                    _this.Light = 0;
-                    _this.Noise = 0;
-                    return _this;
-                }
-                return A1Values;
-            }(Fw.Models.EntityBase));
-            Entities.A1Values = A1Values;
-        })(Entities = Models.Entities || (Models.Entities = {}));
-    })(Models = App.Models || (App.Models = {}));
-})(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Models/EntityBase.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-/// <reference path="../../Items/Color.ts" />
-var App;
-(function (App) {
-    var Models;
-    (function (Models) {
-        var Entities;
-        (function (Entities) {
-            var Color = App.Items.Color;
-            var Scene = /** @class */ (function (_super) {
-                __extends(Scene, _super);
-                function Scene() {
-                    var _this = _super !== null && _super.apply(this, arguments) || this;
-                    _this.Name = 'New Remote Control';
-                    _this.IconUrl = 'images/icons/main_av.png';
-                    _this.Color = Color.ButtonColors[0];
-                    _this.Order = 99999;
-                    _this.Details = [];
-                    return _this;
-                }
-                return Scene;
-            }(Fw.Models.EntityBase));
-            Entities.Scene = Scene;
-        })(Entities = Models.Entities || (Models.Entities = {}));
-    })(Models = App.Models || (App.Models = {}));
-})(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Models/EntityBase.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-/// <reference path="../../Items/Color.ts" />
-/// <reference path="../../Items/ControlSetTemplate.ts" />
-/// <reference path="../../Items/OperationType.ts" />
-var App;
-(function (App) {
-    var Models;
-    (function (Models) {
-        var Entities;
-        (function (Entities) {
-            var SceneDetail = /** @class */ (function (_super) {
-                __extends(SceneDetail, _super);
-                function SceneDetail() {
-                    return _super !== null && _super.apply(this, arguments) || this;
-                }
-                return SceneDetail;
-            }(Fw.Models.EntityBase));
-            Entities.SceneDetail = SceneDetail;
-        })(Entities = Models.Entities || (Models.Entities = {}));
-    })(Models = App.Models || (App.Models = {}));
-})(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Models/EntityBase.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-var App;
-(function (App) {
-    var Models;
-    (function (Models) {
-        var Entities;
-        (function (Entities) {
-            var Sp2Status = /** @class */ (function (_super) {
-                __extends(Sp2Status, _super);
-                function Sp2Status() {
-                    var _this = _super !== null && _super.apply(this, arguments) || this;
-                    _this.Power = false;
-                    _this.NightLight = false;
-                    return _this;
-                }
-                return Sp2Status;
-            }(Fw.Models.EntityBase));
-            Entities.Sp2Status = Sp2Status;
-        })(Entities = Models.Entities || (Models.Entities = {}));
-    })(Models = App.Models || (App.Models = {}));
-})(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Models/StoreBase.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-/// <reference path="../../../Fw/Util/Xhr/Query.ts" />
-/// <reference path="../Entities/ControlSet.ts" />
-/// <reference path="../Entities/Control.ts" />
-/// <reference path="../Entities/A1Values.ts" />
-var App;
-(function (App) {
-    var Models;
-    (function (Models) {
-        var Stores;
-        (function (Stores) {
-            var A1Values = App.Models.Entities.A1Values;
-            var Xhr = Fw.Util.Xhr;
-            var A1Store = /** @class */ (function (_super) {
-                __extends(A1Store, _super);
-                function A1Store() {
-                    var _this = _super.call(this) || this;
-                    _this.SetClassName('A1Store');
-                    _this.EnableLog = true;
-                    return _this;
-                }
-                Object.defineProperty(A1Store, "Instance", {
-                    get: function () {
-                        if (A1Store._instance === null)
-                            A1Store._instance = new A1Store();
-                        return A1Store._instance;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                A1Store.prototype.Get = function (controlSet) {
-                    return __awaiter(this, void 0, void 0, function () {
-                        var params, res, result;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    this.Log('Get');
-                                    params = new Xhr.Params("A1s/" + controlSet.BrDeviceId, Xhr.MethodType.Get);
-                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
-                                case 1:
-                                    res = _a.sent();
-                                    if (res.Succeeded) {
-                                        result = res.Values;
-                                        controlSet.GetControlByCode('Temp').Value = String(result.Temperature);
-                                        controlSet.GetControlByCode('Humidity').Value = String(result.Humidity);
-                                        controlSet.GetControlByCode('Voc').Value = String(result.Voc);
-                                        controlSet.GetControlByCode('Light').Value = String(result.Light);
-                                        controlSet.GetControlByCode('Noise').Value = String(result.Noise);
-                                        controlSet.DispatchChanged();
-                                        return [2 /*return*/, result];
-                                    }
-                                    else {
-                                        this.Log('Query Fail');
-                                        this.Log(res.Errors);
-                                        return [2 /*return*/, null];
-                                    }
-                                    return [2 /*return*/];
-                            }
-                        });
-                    });
-                };
-                A1Store.prototype.GetNewEntity = function () {
-                    return new A1Values();
-                };
-                A1Store.prototype.Write = function (entity) {
-                    throw new Error('Not Supported');
-                };
-                A1Store._instance = null;
-                return A1Store;
-            }(Fw.Models.StoreBase));
-            Stores.A1Store = A1Store;
-            Stores.A1s = A1Store.Instance;
-        })(Stores = Models.Stores || (Models.Stores = {}));
-    })(Models = App.Models || (App.Models = {}));
-})(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Models/StoreBase.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-/// <reference path="../../../Fw/Util/Xhr/Query.ts" />
-/// <reference path="../Entities/BrDevice.ts" />
-/// <reference path="../Entities/ControlSet.ts" />
-/// <reference path="../Entities/Control.ts" />
-/// <reference path="../../Items/OperationType.ts" />
-/// <reference path="../../Items/DeviceType.ts" />
-var App;
-(function (App) {
-    var Models;
-    (function (Models) {
-        var Stores;
-        (function (Stores) {
-            var OperationStore = /** @class */ (function (_super) {
-                __extends(OperationStore, _super);
-                function OperationStore() {
-                    var _this = _super.call(this) || this;
-                    _this.SetClassName('OperationStore');
-                    _this.EnableLog = true;
-                    return _this;
-                }
-                Object.defineProperty(OperationStore, "Instance", {
-                    get: function () {
-                        if (OperationStore._instance === null)
-                            OperationStore._instance = new OperationStore();
-                        return OperationStore._instance;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                OperationStore.prototype.Exec = function (controlSet, control) {
-                    return __awaiter(this, void 0, void 0, function () {
-                        var result, _a;
-                        return __generator(this, function (_b) {
-                            switch (_b.label) {
-                                case 0:
-                                    this.Log('Exec');
-                                    // 渡し値がヘン
-                                    if (!controlSet
-                                        || !control
-                                        || !control.Code
-                                        || control.Code === '') {
-                                        return [2 /*return*/, false];
-                                    }
-                                    result = false;
-                                    _a = controlSet.OperationType;
-                                    switch (_a) {
-                                        case 1 /* RemoteControl */: return [3 /*break*/, 1];
-                                        case 2 /* BroadlinkDevice */: return [3 /*break*/, 3];
-                                        case 3 /* WakeOnLan */: return [3 /*break*/, 5];
-                                        case 4 /* Script */: return [3 /*break*/, 7];
-                                        case 5 /* RemoteHostScript */: return [3 /*break*/, 9];
-                                        case 99 /* Scene */: return [3 /*break*/, 11];
-                                    }
-                                    return [3 /*break*/, 12];
-                                case 1: return [4 /*yield*/, Stores.Rms.Exec(controlSet, control)];
-                                case 2:
-                                    result = _b.sent();
-                                    return [3 /*break*/, 13];
-                                case 3: return [4 /*yield*/, Stores.BrDevices.Exec(controlSet, control)];
-                                case 4:
-                                    result = _b.sent();
-                                    return [3 /*break*/, 13];
-                                case 5: return [4 /*yield*/, Stores.Wols.Exec(controlSet, control)];
-                                case 6:
-                                    result = _b.sent();
-                                    return [3 /*break*/, 13];
-                                case 7: return [4 /*yield*/, Stores.Scripts.Exec(controlSet, control)];
-                                case 8:
-                                    result = _b.sent();
-                                    return [3 /*break*/, 13];
-                                case 9: return [4 /*yield*/, Stores.Remotes.Exec(controlSet, control)];
-                                case 10:
-                                    result = _b.sent();
-                                    return [3 /*break*/, 13];
-                                case 11:
-                                    alert('Not Implements!');
-                                    return [3 /*break*/, 13];
-                                case 12: return [3 /*break*/, 13];
-                                case 13:
-                                    if (result === true
-                                        && (control.IsAssignToggleOn || control.IsAssignToggleOff)) {
-                                        this.EnsureToggles(controlSet, control);
-                                    }
-                                    return [2 /*return*/, result];
-                            }
-                        });
-                    });
-                };
-                OperationStore.prototype.EnsureToggles = function (controlSet, control) {
-                    // コマンド送信成功、かつトグルがアサインされているとき
-                    if (control.IsAssignToggleOn && control.IsAssignToggleOff) {
-                        // On/Off 両方アサインされているボタンのとき
-                        // 一旦Onにし、しばらく置いてOffに戻す。
-                        var changed = (controlSet.ToggleState !== true);
-                        controlSet.ToggleState = true;
-                        if (changed)
-                            controlSet.DispatchChanged();
-                        _.delay(function () {
-                            var changed2 = (controlSet.ToggleState !== false);
-                            controlSet.ToggleState = false;
-                            if (changed2)
-                                controlSet.DispatchChanged();
-                            Stores.ControlSets.UpdateHeader(controlSet);
-                        }, 1000);
-                    }
-                    else if (control.IsAssignToggleOn) {
-                        // Onだけがアサインされているボタンのとき
-                        // トグルをOnにする。
-                        var changed3 = (controlSet.ToggleState !== true);
-                        controlSet.ToggleState = true;
-                        if (changed3)
-                            controlSet.DispatchChanged();
-                        Stores.ControlSets.UpdateHeader(controlSet);
-                    }
-                    else if (control.IsAssignToggleOff) {
-                        // Offだけがアサインされているボタンのとき
-                        // トグルをOffにする。
-                        var changed4 = (controlSet.ToggleState !== false);
-                        controlSet.ToggleState = false;
-                        if (changed4)
-                            controlSet.DispatchChanged();
-                        Stores.ControlSets.UpdateHeader(controlSet);
-                    }
-                    else {
-                        // ここには来ない
-                        throw new Error('そんなばかなー！');
-                    }
-                };
-                OperationStore.prototype.GetNewEntity = function () {
-                    throw new Error('Not Supported');
-                };
-                OperationStore.prototype.Write = function (entity) {
-                    throw new Error('Not Supported');
-                };
-                OperationStore._instance = null;
-                return OperationStore;
-            }(Fw.Models.StoreBase));
-            Stores.OperationStore = OperationStore;
-            Stores.Operations = OperationStore.Instance;
-        })(Stores = Models.Stores || (Models.Stores = {}));
-    })(Models = App.Models || (App.Models = {}));
-})(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Models/StoreBase.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-/// <reference path="../../../Fw/Util/Xhr/Query.ts" />
-/// <reference path="../Entities/BrDevice.ts" />
-/// <reference path="../Entities/ControlSet.ts" />
-/// <reference path="../Entities/Control.ts" />
-/// <reference path="../Entities/Script.ts" />
-/// <reference path="../../Items/OperationType.ts" />
-/// <reference path="../../Items/DeviceType.ts" />
-var App;
-(function (App) {
-    var Models;
-    (function (Models) {
-        var Stores;
-        (function (Stores) {
-            var Xhr = Fw.Util.Xhr;
-            var Script = App.Models.Entities.Script;
-            var RemoteStore = /** @class */ (function (_super) {
-                __extends(RemoteStore, _super);
-                function RemoteStore() {
-                    var _this = _super.call(this) || this;
-                    _this.SetClassName('RemoteStore');
-                    _this.EnableLog = true;
-                    return _this;
-                }
-                Object.defineProperty(RemoteStore, "Instance", {
-                    get: function () {
-                        if (RemoteStore._instance === null)
-                            RemoteStore._instance = new RemoteStore();
-                        return RemoteStore._instance;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                RemoteStore.prototype.GetList = function () {
-                    return __awaiter(this, void 0, void 0, function () {
-                        var params, res, id_1;
-                        var _this = this;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    this.Log('GetList');
-                                    params = new Xhr.Params('RemoteHosts', Xhr.MethodType.Get);
-                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
-                                case 1:
-                                    res = _a.sent();
-                                    if (res.Succeeded) {
-                                        this.Clear();
-                                        id_1 = 1;
-                                        _.each(res.Values, function (e) {
-                                            e.Id = id_1;
-                                            _this.Merge(e);
-                                            id_1++;
-                                        });
-                                        return [2 /*return*/, _.values(this.List)];
-                                    }
-                                    else {
-                                        this.Log('Query Fail');
-                                        this.Log(res.Errors);
-                                        return [2 /*return*/, []];
-                                    }
-                                    return [2 /*return*/];
-                            }
-                        });
-                    });
-                };
-                RemoteStore.prototype.GetIdByJson = function (scriptJson) {
-                    if (!scriptJson || scriptJson === '')
-                        return null;
-                    try {
-                        var entity = JSON.parse(scriptJson);
-                        return this.GetIdByEntity(entity);
-                    }
-                    catch (e) {
-                        return null;
-                    }
-                };
-                RemoteStore.prototype.GetIdByEntity = function (script) {
-                    if (this.Length <= 0)
-                        return null;
-                    var target = _.find(this.List, function (e) {
-                        return (e.ControlId === script.ControlId && e.RemoteHostId === script.RemoteHostId);
-                    });
-                    if (!target)
-                        return null;
-                    return target.Id;
-                };
-                RemoteStore.prototype.Exec = function (controlSet, control) {
-                    return __awaiter(this, void 0, void 0, function () {
-                        var script, params, res, result;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    this.Log('Exec');
-                                    // 渡し値がヘン
-                                    if (!controlSet
-                                        || !control
-                                        || !control.Code
-                                        || control.Code === ''
-                                        || controlSet.OperationType !== 5 /* RemoteHostScript */) {
-                                        return [2 /*return*/, false];
-                                    }
-                                    script = JSON.parse(control.Code);
-                                    params = new Xhr.Params("RemoteHosts", Xhr.MethodType.Post, script);
-                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
-                                case 1:
-                                    res = _a.sent();
-                                    if (res.Succeeded) {
-                                        result = res.Values;
-                                        // Suceededのときはtrue以外返ってこない。
-                                        return [2 /*return*/, result];
-                                    }
-                                    else {
-                                        this.Log('Query Fail');
-                                        this.Log(res.Errors);
-                                        return [2 /*return*/, false];
-                                    }
-                                    return [2 /*return*/];
-                            }
-                        });
-                    });
-                };
-                RemoteStore.prototype.GetNewEntity = function () {
-                    return new Script();
-                };
-                RemoteStore.prototype.Write = function (entity) {
-                    throw new Error('Not Supported');
-                };
-                RemoteStore._instance = null;
-                return RemoteStore;
-            }(Fw.Models.StoreBase));
-            Stores.RemoteStore = RemoteStore;
-            Stores.Remotes = RemoteStore.Instance;
-        })(Stores = Models.Stores || (Models.Stores = {}));
-    })(Models = App.Models || (App.Models = {}));
-})(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Models/StoreBase.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-/// <reference path="../../../Fw/Util/Xhr/Query.ts" />
-/// <reference path="../Entities/BrDevice.ts" />
-/// <reference path="../Entities/ControlSet.ts" />
-/// <reference path="../Entities/Control.ts" />
-var App;
-(function (App) {
-    var Models;
-    (function (Models) {
-        var Stores;
-        (function (Stores) {
-            var RmCommand = App.Models.Entities.RmCommand;
-            var Xhr = Fw.Util.Xhr;
-            var Rm2ProStore = /** @class */ (function (_super) {
-                __extends(Rm2ProStore, _super);
-                function Rm2ProStore() {
-                    var _this = _super.call(this) || this;
-                    _this.SetClassName('Rm2ProStore');
-                    _this.EnableLog = true;
-                    return _this;
-                }
-                Object.defineProperty(Rm2ProStore, "Instance", {
-                    get: function () {
-                        if (Rm2ProStore._instance === null)
-                            Rm2ProStore._instance = new Rm2ProStore();
-                        return Rm2ProStore._instance;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Rm2ProStore.prototype.GetTemperature = function (controlSet) {
-                    return __awaiter(this, void 0, void 0, function () {
-                        var params, res, result;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    this.Log('GetTemperature');
-                                    params = new Xhr.Params("Rm2Pros/GetTemperature/" + controlSet.BrDeviceId, Xhr.MethodType.Get);
-                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
-                                case 1:
-                                    res = _a.sent();
-                                    if (res.Succeeded) {
-                                        result = res.Values;
-                                        controlSet.Controls[0].Value = String(result);
-                                        controlSet.DispatchChanged();
-                                        return [2 /*return*/, result];
-                                    }
-                                    else {
-                                        this.Log('Query Fail');
-                                        this.Log(res.Errors);
-                                        return [2 /*return*/, null];
-                                    }
-                                    return [2 /*return*/];
-                            }
-                        });
-                    });
-                };
-                /**
-                 * !未実装!
-                 * @param brDeviceId
-                 */
-                Rm2ProStore.prototype.GetRfLearnedCode = function (brDeviceId) {
-                    return __awaiter(this, void 0, void 0, function () {
-                        var params, res, rmCommand;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    this.Log('GetRfLearnedCode');
-                                    params = new Xhr.Params("Rm2Pros/GetRfLearnedCode/" + brDeviceId, Xhr.MethodType.Get);
-                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
-                                case 1:
-                                    res = _a.sent();
-                                    if (res.Succeeded) {
-                                        rmCommand = res.Values;
-                                        return [2 /*return*/, rmCommand];
-                                    }
-                                    else {
-                                        this.Log('Query Fail');
-                                        this.Log(res.Errors);
-                                        return [2 /*return*/, null];
-                                    }
-                                    return [2 /*return*/];
-                            }
-                        });
-                    });
-                };
-                /**
-                 * !未実装!
-                 * @param brDeviceId
-                 */
-                Rm2ProStore.prototype.CancelLearning = function (brDeviceId) {
-                    return __awaiter(this, void 0, void 0, function () {
-                        var params, res, result;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    this.Log('CancelLearning');
-                                    params = new Xhr.Params("Rms/CancelLearning/" + brDeviceId, Xhr.MethodType.Post);
-                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
-                                case 1:
-                                    res = _a.sent();
-                                    if (res.Succeeded) {
-                                        result = res.Values;
-                                        return [2 /*return*/, result];
-                                    }
-                                    else {
-                                        this.Log('Query Fail');
-                                        this.Log(res.Errors);
-                                        return [2 /*return*/, null];
-                                    }
-                                    return [2 /*return*/];
-                            }
-                        });
-                    });
-                };
-                Rm2ProStore.prototype.GetNewEntity = function () {
-                    return new RmCommand();
-                };
-                Rm2ProStore.prototype.Write = function (entity) {
-                    throw new Error('Not Supported');
-                };
-                Rm2ProStore._instance = null;
-                return Rm2ProStore;
-            }(Fw.Models.StoreBase));
-            Stores.Rm2ProStore = Rm2ProStore;
-            Stores.Rm2Pros = Rm2ProStore.Instance;
-        })(Stores = Models.Stores || (Models.Stores = {}));
-    })(Models = App.Models || (App.Models = {}));
-})(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Models/StoreBase.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-/// <reference path="../../../Fw/Util/Xhr/Query.ts" />
-/// <reference path="../Entities/SceneDetail.ts" />
-var App;
-(function (App) {
-    var Models;
-    (function (Models) {
-        var Stores;
-        (function (Stores) {
-            var SceneDetail = App.Models.Entities.SceneDetail;
-            var SceneDetailStore = /** @class */ (function (_super) {
-                __extends(SceneDetailStore, _super);
-                function SceneDetailStore() {
-                    var _this = _super.call(this) || this;
-                    _this.SetClassName('SceneDetailStore');
-                    _this.EnableLog = true;
-                    return _this;
-                }
-                Object.defineProperty(SceneDetailStore, "Instance", {
-                    get: function () {
-                        if (SceneDetailStore._instance === null)
-                            SceneDetailStore._instance = new SceneDetailStore();
-                        return SceneDetailStore._instance;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                SceneDetailStore.prototype.GetNewEntity = function () {
-                    return new SceneDetail();
-                };
-                SceneDetailStore.prototype.Write = function (entity) {
-                    return __awaiter(this, void 0, void 0, function () {
-                        return __generator(this, function (_a) {
-                            throw new Error('Not Supported');
-                        });
-                    });
-                };
-                SceneDetailStore.prototype.SetRange = function (entities) {
-                    var _this = this;
-                    _.each(entities, function (c) {
-                        _this.Merge(c);
-                    });
-                };
-                SceneDetailStore.prototype.GetListBySceneId = function (id) {
-                    var result = new Array();
-                    _.each(this.List, function (entity) {
-                        if (entity.SceneId === id)
-                            result.push(entity);
-                    });
-                    return result;
-                };
-                SceneDetailStore._instance = null;
-                return SceneDetailStore;
-            }(Fw.Models.StoreBase));
-            Stores.SceneDetailStore = SceneDetailStore;
-            Stores.SceneDetails = SceneDetailStore.Instance;
-        })(Stores = Models.Stores || (Models.Stores = {}));
-    })(Models = App.Models || (App.Models = {}));
-})(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Models/StoreBase.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-/// <reference path="../../../Fw/Util/Xhr/Query.ts" />
-/// <reference path="../../Items/ControlSetTemplate.ts" />
-/// <reference path="../Entities/Scene.ts" />
-/// <reference path="../Entities/SceneDetail.ts" />
-/// <reference path="../Entities/Header.ts" />
-/// <reference path="ControlStore.ts" />
-var App;
-(function (App) {
-    var Models;
-    (function (Models) {
-        var Stores;
-        (function (Stores) {
-            var SceneDetails = App.Models.Stores.SceneDetails;
-            var Xhr = Fw.Util.Xhr;
-            var Scene = App.Models.Entities.Scene;
-            var Header = App.Models.Entities.Header;
-            var SceneStore = /** @class */ (function (_super) {
-                __extends(SceneStore, _super);
-                function SceneStore() {
-                    var _this = _super.call(this) || this;
-                    _this.SetClassName('SceneStore');
-                    _this.EnableLog = true;
-                    return _this;
-                }
-                Object.defineProperty(SceneStore, "Instance", {
-                    get: function () {
-                        if (SceneStore._instance === null)
-                            SceneStore._instance = new SceneStore();
-                        return SceneStore._instance;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                SceneStore.prototype.GetNewEntity = function () {
-                    return new Scene();
-                };
-                SceneStore.prototype.GetList = function () {
-                    return __awaiter(this, void 0, void 0, function () {
-                        var params, res, list;
-                        var _this = this;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    params = new Xhr.Params('Scenes', Xhr.MethodType.Get);
-                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
-                                case 1:
-                                    res = _a.sent();
-                                    if (res.Succeeded) {
-                                        list = res.Values;
-                                        _.each(list, function (entity) {
-                                            var obj = _this.Merge(entity);
-                                            // API応答値を、TS側Entityに整形して保持しておく。
-                                            if (entity.Details && entity.Details.length > 0) {
-                                                SceneDetails.SetRange(entity.Details);
-                                                obj.Details = SceneDetails.GetListBySceneId(entity.Id);
-                                            }
-                                            else {
-                                                obj.Details = [];
-                                            }
-                                        });
-                                        return [2 /*return*/, _.values(this.List)];
-                                    }
-                                    else {
-                                        this.Log('Query Fail');
-                                        this.Log(res.Errors);
-                                        return [2 /*return*/, []];
-                                    }
-                                    return [2 /*return*/];
-                            }
-                        });
-                    });
-                };
-                SceneStore.prototype.UpdateHeader = function (entity) {
-                    return __awaiter(this, void 0, void 0, function () {
-                        var header, params, res;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    header = new Header();
-                                    header.Id = entity.Id;
-                                    header.Order = entity.Order;
-                                    params = new Xhr.Params("Scenes/UpdateHeader/" + header.Id, Xhr.MethodType.Post, header);
-                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
-                                case 1:
-                                    res = _a.sent();
-                                    if (res.Succeeded) {
-                                        return [2 /*return*/, true];
-                                    }
-                                    else {
-                                        this.Log('Query Fail');
-                                        this.Log(res.Errors);
-                                        return [2 /*return*/, false];
-                                    }
-                                    return [2 /*return*/];
-                            }
-                        });
-                    });
-                };
-                SceneStore.prototype.UpdateHeaders = function (entities) {
-                    return __awaiter(this, void 0, void 0, function () {
-                        var headers, params, res;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    headers = new Array();
-                                    _.each(entities, function (entity) {
-                                        var header = new Header();
-                                        header.Id = entity.Id;
-                                        header.Order = entity.Order;
-                                        headers.push(header);
-                                    });
-                                    params = new Xhr.Params("Scenes/UpdateHeader", Xhr.MethodType.Post, headers);
-                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
-                                case 1:
-                                    res = _a.sent();
-                                    if (res.Succeeded) {
-                                        return [2 /*return*/, true];
-                                    }
-                                    else {
-                                        this.Log('Query Fail');
-                                        this.Log(res.Errors);
-                                        return [2 /*return*/, false];
-                                    }
-                                    return [2 /*return*/];
-                            }
-                        });
-                    });
-                };
-                SceneStore.prototype.Write = function (entity) {
-                    return __awaiter(this, void 0, void 0, function () {
-                        var params, res, id, result;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    params = new Xhr.Params('Scenes', Xhr.MethodType.Post, entity);
-                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
-                                case 1:
-                                    res = _a.sent();
-                                    if (res.Succeeded) {
-                                        id = res.Values.Id;
-                                        this.Merge(res.Values);
-                                        result = this.List[id];
-                                        // API応答値を、TS側Entityに整形して保持しておく。
-                                        if (res.Values.Details && res.Values.Details.length > 0) {
-                                            SceneDetails.SetRange(res.Values.Details);
-                                            result.Details = SceneDetails.GetListBySceneId(id);
-                                        }
-                                        else {
-                                            result.Details = [];
-                                        }
-                                        return [2 /*return*/, result];
-                                    }
-                                    else {
-                                        this.Log('Query Fail');
-                                        this.Log(res.Errors);
-                                        return [2 /*return*/, null];
-                                    }
-                                    return [2 /*return*/];
-                            }
-                        });
-                    });
-                };
-                SceneStore.prototype.Remove = function (entity) {
-                    return __awaiter(this, void 0, void 0, function () {
-                        var params, res;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    params = new Xhr.Params("Scenes/" + entity.Id, Xhr.MethodType.Delete, entity);
-                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
-                                case 1:
-                                    res = _a.sent();
-                                    if (res.Succeeded) {
-                                        _.each(entity.Details, function (c) {
-                                            delete SceneDetails.List[c.Id];
-                                        });
-                                        delete this.List[entity.Id];
-                                        return [2 /*return*/, true];
-                                    }
-                                    else {
-                                        this.Log('Query Fail');
-                                        this.Log(res.Errors);
-                                        return [2 /*return*/, false];
-                                    }
-                                    return [2 /*return*/];
-                            }
-                        });
-                    });
-                };
-                SceneStore._instance = null;
-                return SceneStore;
-            }(Fw.Models.StoreBase));
-            Stores.SceneStore = SceneStore;
-        })(Stores = Models.Stores || (Models.Stores = {}));
-    })(Models = App.Models || (App.Models = {}));
-})(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Models/StoreBase.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-/// <reference path="../../../Fw/Util/Xhr/Query.ts" />
-/// <reference path="../Entities/BrDevice.ts" />
-/// <reference path="../Entities/ControlSet.ts" />
-/// <reference path="../Entities/Control.ts" />
-/// <reference path="../../Items/OperationType.ts" />
-/// <reference path="../../Items/DeviceType.ts" />
-var App;
-(function (App) {
-    var Models;
-    (function (Models) {
-        var Stores;
-        (function (Stores) {
-            var Xhr = Fw.Util.Xhr;
-            var ScriptStore = /** @class */ (function (_super) {
-                __extends(ScriptStore, _super);
-                function ScriptStore() {
-                    var _this = _super.call(this) || this;
-                    _this.SetClassName('ScriptStore');
-                    _this.EnableLog = true;
-                    return _this;
-                }
-                Object.defineProperty(ScriptStore, "Instance", {
-                    get: function () {
-                        if (ScriptStore._instance === null)
-                            ScriptStore._instance = new ScriptStore();
-                        return ScriptStore._instance;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                ScriptStore.prototype.Exec = function (controlSet, control) {
-                    return __awaiter(this, void 0, void 0, function () {
-                        var params, res, result;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    this.Log('Exec');
-                                    // 渡し値がヘン
-                                    if (!controlSet
-                                        || !control
-                                        || !control.Code
-                                        || control.Code === ''
-                                        || controlSet.OperationType !== 4 /* Script */) {
-                                        return [2 /*return*/, false];
-                                    }
-                                    params = new Xhr.Params("Scripts/" + control.Id, Xhr.MethodType.Post);
-                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
-                                case 1:
-                                    res = _a.sent();
-                                    if (res.Succeeded) {
-                                        result = res.Values;
-                                        // Suceededのときはtrue以外返ってこない。
-                                        return [2 /*return*/, result];
-                                    }
-                                    else {
-                                        this.Log('Query Fail');
-                                        this.Log(res.Errors);
-                                        return [2 /*return*/, false];
-                                    }
-                                    return [2 /*return*/];
-                            }
-                        });
-                    });
-                };
-                ScriptStore.prototype.GetNewEntity = function () {
-                    throw new Error('Not Supported');
-                };
-                ScriptStore.prototype.Write = function (entity) {
-                    throw new Error('Not Supported');
-                };
-                ScriptStore._instance = null;
-                return ScriptStore;
-            }(Fw.Models.StoreBase));
-            Stores.ScriptStore = ScriptStore;
-            Stores.Scripts = ScriptStore.Instance;
-        })(Stores = Models.Stores || (Models.Stores = {}));
-    })(Models = App.Models || (App.Models = {}));
-})(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Models/StoreBase.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-/// <reference path="../../../Fw/Util/Xhr/Query.ts" />
-/// <reference path="../Entities/ControlSet.ts" />
-/// <reference path="../Entities/Control.ts" />
-/// <reference path="../Entities/Sp2Status.ts" />
-var App;
-(function (App) {
-    var Models;
-    (function (Models) {
-        var Stores;
-        (function (Stores) {
-            var Sp2Status = App.Models.Entities.Sp2Status;
-            var Xhr = Fw.Util.Xhr;
-            var Sp2Store = /** @class */ (function (_super) {
-                __extends(Sp2Store, _super);
-                function Sp2Store() {
-                    var _this = _super.call(this) || this;
-                    _this.SetClassName('Sp2Store');
-                    _this.EnableLog = true;
-                    return _this;
-                }
-                Object.defineProperty(Sp2Store, "Instance", {
-                    get: function () {
-                        if (Sp2Store._instance === null)
-                            Sp2Store._instance = new Sp2Store();
-                        return Sp2Store._instance;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Sp2Store.prototype.Get = function (controlSet) {
-                    return __awaiter(this, void 0, void 0, function () {
-                        var params, res, result;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    this.Log('Get');
-                                    params = new Xhr.Params("Sp2s/" + controlSet.BrDeviceId, Xhr.MethodType.Get);
-                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
-                                case 1:
-                                    res = _a.sent();
-                                    if (res.Succeeded) {
-                                        result = res.Values;
-                                        controlSet.GetControlByCode('PowerOn').Value = (result.Power) ? 'true' : 'false';
-                                        controlSet.GetControlByCode('PowerOff').Value = (result.Power) ? 'false' : 'true';
-                                        controlSet.GetControlByCode('LightOn').Value = (result.NightLight) ? 'true' : 'false';
-                                        controlSet.GetControlByCode('LightOff').Value = (result.NightLight) ? 'false' : 'true';
-                                        controlSet.ToggleState = result.Power;
-                                        controlSet.DispatchChanged();
-                                        return [2 /*return*/, result];
-                                    }
-                                    else {
-                                        this.Log('Query Fail');
-                                        this.Log(res.Errors);
-                                        return [2 /*return*/, null];
-                                    }
-                                    return [2 /*return*/];
-                            }
-                        });
-                    });
-                };
-                Sp2Store.prototype.Set = function (controlSet, control) {
-                    return __awaiter(this, void 0, void 0, function () {
-                        var status, params, res, result;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    this.Log('Set');
-                                    status = new Sp2Status();
-                                    status.Power = (controlSet.GetControlByCode('PowerOn').Value === 'true');
-                                    status.NightLight = (controlSet.GetControlByCode('LightOn').Value === 'true');
-                                    switch (control.Code) {
-                                        case 'PowerOn':
-                                            status.Power = true;
-                                            break;
-                                        case 'PowerOff':
-                                            status.Power = false;
-                                            break;
-                                        case 'LightOn':
-                                            status.NightLight = true;
-                                            break;
-                                        case 'LightOff':
-                                            status.NightLight = false;
-                                            break;
-                                        default:
-                                            break;
-                                    }
-                                    params = new Xhr.Params("Sp2s/" + controlSet.BrDeviceId, Xhr.MethodType.Post, status);
-                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
-                                case 1:
-                                    res = _a.sent();
-                                    if (res.Succeeded) {
-                                        result = res.Values;
-                                        controlSet.GetControlByCode('PowerOn').Value = (result.Power) ? 'true' : 'false';
-                                        controlSet.GetControlByCode('PowerOff').Value = (result.Power) ? 'false' : 'true';
-                                        controlSet.GetControlByCode('LightOn').Value = (result.NightLight) ? 'true' : 'false';
-                                        controlSet.GetControlByCode('LightOff').Value = (result.NightLight) ? 'false' : 'true';
-                                        controlSet.ToggleState = result.Power;
-                                        controlSet.DispatchChanged();
-                                        return [2 /*return*/, result];
-                                    }
-                                    else {
-                                        this.Log('Query Fail');
-                                        this.Log(res.Errors);
-                                        return [2 /*return*/, null];
-                                    }
-                                    return [2 /*return*/];
-                            }
-                        });
-                    });
-                };
-                Sp2Store.prototype.GetNewEntity = function () {
-                    return new Sp2Status();
-                };
-                Sp2Store.prototype.Write = function (entity) {
-                    throw new Error('Not Supported');
-                };
-                Sp2Store._instance = null;
-                return Sp2Store;
-            }(Fw.Models.StoreBase));
-            Stores.Sp2Store = Sp2Store;
-            Stores.Sp2s = Sp2Store.Instance;
-        })(Stores = Models.Stores || (Models.Stores = {}));
-    })(Models = App.Models || (App.Models = {}));
-})(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Models/StoreBase.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-/// <reference path="../../../Fw/Util/Xhr/Query.ts" />
-/// <reference path="../Entities/BrDevice.ts" />
-/// <reference path="../Entities/ControlSet.ts" />
-/// <reference path="../Entities/Control.ts" />
-/// <reference path="../../Items/OperationType.ts" />
-/// <reference path="../../Items/DeviceType.ts" />
-var App;
-(function (App) {
-    var Models;
-    (function (Models) {
-        var Stores;
-        (function (Stores) {
-            var Xhr = Fw.Util.Xhr;
-            var WolStore = /** @class */ (function (_super) {
-                __extends(WolStore, _super);
-                function WolStore() {
-                    var _this = _super.call(this) || this;
-                    _this.SetClassName('WolStore');
-                    _this.EnableLog = true;
-                    return _this;
-                }
-                Object.defineProperty(WolStore, "Instance", {
-                    get: function () {
-                        if (WolStore._instance === null)
-                            WolStore._instance = new WolStore();
-                        return WolStore._instance;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                WolStore.prototype.Exec = function (controlSet, control) {
-                    return __awaiter(this, void 0, void 0, function () {
-                        var params, res, result;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    this.Log('Exec');
-                                    // 渡し値がヘン
-                                    if (!controlSet
-                                        || !control
-                                        || !control.Code
-                                        || control.Code === ''
-                                        || controlSet.OperationType !== 3 /* WakeOnLan */) {
-                                        return [2 /*return*/, false];
-                                    }
-                                    params = new Xhr.Params("Wols/" + control.Id, Xhr.MethodType.Post);
-                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
-                                case 1:
-                                    res = _a.sent();
-                                    if (res.Succeeded) {
-                                        result = res.Values;
-                                        // Suceededのときはtrue以外返ってこない。
-                                        return [2 /*return*/, result];
-                                    }
-                                    else {
-                                        this.Log('Query Fail');
-                                        this.Log(res.Errors);
-                                        return [2 /*return*/, false];
-                                    }
-                                    return [2 /*return*/];
-                            }
-                        });
-                    });
-                };
-                WolStore.prototype.GetNewEntity = function () {
-                    throw new Error('Not Supported');
-                };
-                WolStore.prototype.Write = function (entity) {
-                    throw new Error('Not Supported');
-                };
-                WolStore._instance = null;
-                return WolStore;
-            }(Fw.Models.StoreBase));
-            Stores.WolStore = WolStore;
-            Stores.Wols = WolStore.Instance;
-        })(Stores = Models.Stores || (Models.Stores = {}));
-    })(Models = App.Models || (App.Models = {}));
-})(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Views/ButtonView.ts" />
-/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-/// <reference path="../../Items/Color.ts" />
-var App;
-(function (App) {
-    var Views;
-    (function (Views_9) {
-        var Controls;
-        (function (Controls) {
-            var Color = App.Items.Color;
-            var ButtonView = /** @class */ (function (_super) {
-                __extends(ButtonView, _super);
-                function ButtonView() {
-                    var _this = _super.call(this) || this;
-                    _this.HasBorder = false;
-                    _this.BackgroundColor = Color.MainBackground;
-                    _this.HoverColor = Color.MainHover;
-                    _this.Color = Color.Main;
-                    return _this;
-                }
-                return ButtonView;
-            }(Fw.Views.ButtonView));
-            Controls.ButtonView = ButtonView;
-        })(Controls = Views_9.Controls || (Views_9.Controls = {}));
-    })(Views = App.Views || (App.Views = {}));
-})(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Views/RelocatableButtonView.ts" />
-/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-/// <reference path="../../../Fw/Events/EntityEvents.ts" />
-/// <reference path="../../Items/Color.ts" />
-/// <reference path="../../Events/Controls/ControlButtonViewEvents.ts" />
-var App;
-(function (App) {
-    var Views;
-    (function (Views_10) {
-        var Controls;
-        (function (Controls) {
-            var Views = Fw.Views;
-            var Property = Fw.Views.Property;
-            var Color = App.Items.Color;
-            var Events = App.Events.Controls.ControlButtonViewEvents;
-            var EntityEvents = Fw.Events.EntityEvents;
-            var ControlButtonView = /** @class */ (function (_super) {
-                __extends(ControlButtonView, _super);
-                function ControlButtonView() {
-                    var _this = _super.call(this) || this;
-                    _this._hoverEnable = true;
-                    _this._isActive = false;
-                    _this.SetSize(70, 75);
-                    _this.GridSize = 90;
-                    _this.Margin = 5;
-                    _this.Position.Policy = Property.PositionPolicy.LeftTop;
-                    _this.HasBorder = true;
-                    _this.BorderRadius = 10;
-                    _this.BackgroundColor = Color.MainBackground;
-                    _this.HoverColor = Color.ButtonHoverColors[0];
-                    _this.Color = Color.ButtonColors[0];
-                    _this.ImageFitPolicy = Property.FitPolicy.Auto;
-                    _this._name = '';
-                    _this._hoverEnable = true;
-                    _this.AddEventListener(Events.PositionChanged, function () {
-                        if (_this._control) {
-                            _this._control.PositionLeft = _this.Position.Left;
-                            _this._control.PositionTop = _this.Position.Top;
-                        }
-                    });
-                    return _this;
-                }
-                Object.defineProperty(ControlButtonView.prototype, "Name", {
-                    get: function () {
-                        return this._name;
-                    },
-                    set: function (value) {
-                        this._name = value;
-                        if (this.ImageSrc === '')
-                            this.Text = value;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Object.defineProperty(ControlButtonView.prototype, "HoverEnable", {
-                    get: function () {
-                        return this._hoverEnable;
-                    },
-                    set: function (value) {
-                        var _this = this;
-                        this._hoverEnable = value;
-                        // 一旦、Hover関連イベントを削除する。
-                        this.Elem.off('mouseenter mouseleave');
-                        if (this._hoverEnable) {
-                            // Hoverを有効にするとき
-                            this.Elem.on('mouseenter', function () {
-                                _this.Dom.style.backgroundColor = _this.HoverColor;
-                            });
-                            this.Elem.on('mouseleave', function () {
-                                _this.Dom.style.backgroundColor = _this.BackgroundColor;
-                            });
-                        }
-                        else {
-                            // Hoverを無効にするとき
-                            // なにもしない。
-                        }
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Object.defineProperty(ControlButtonView.prototype, "IsActive", {
-                    get: function () {
-                        return this._isActive;
-                    },
-                    set: function (value) {
-                        if (this._hoverEnable)
-                            throw new Error('Hover is Enable, Cannot Active-Control.');
-                        this._isActive = value;
-                        if (this._isActive) {
-                            // 有効化
-                            this.BackgroundColor = Color.GetButtonHoverColor(this.Color);
-                            this.Dom.style.backgroundColor = this.BackgroundColor;
-                        }
-                        else {
-                            // 無効化
-                            this.BackgroundColor = Color.MainBackground;
-                            this.Dom.style.backgroundColor = this.BackgroundColor;
-                        }
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Object.defineProperty(ControlButtonView.prototype, "Control", {
-                    get: function () {
-                        return this._control;
-                    },
-                    set: function (value) {
-                        if (this._control) {
-                            this._control.RemoveEventListener(EntityEvents.Changed, this.ApplyFromEntity, this);
-                        }
-                        this._control = value;
-                        if (this._control) {
-                            this._control.AddEventListener(EntityEvents.Changed, this.ApplyFromEntity, this);
-                        }
-                        this.ApplyFromEntity();
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                ControlButtonView.prototype.ApplyFromEntity = function () {
-                    if (!this._control)
-                        return;
-                    this.Name = this._control.Name;
-                    this.SetImage(this._control.IconUrl);
-                    this.SetColor(this._control.Color);
-                    this.Refresh();
-                };
-                ControlButtonView.prototype.SetImage = function (value) {
-                    if (value === undefined || value === null || value === '') {
-                        this.ImageSrc = '';
-                        this.Text = this.Name;
-                    }
-                    else {
-                        this.Text = '';
-                        this.ImageSrc = value;
-                    }
-                };
-                ControlButtonView.prototype.SetColor = function (value) {
-                    var idx = Color.ButtonColors.indexOf(value);
-                    if (idx === -1) {
-                        // 色が見つからないとき、デフォルト
-                        this.Color = Color.MainHover;
-                        this.HoverColor = Color.MainHover;
-                        if (this._control) {
-                            this._control.Color = Color.MainHover;
-                        }
-                    }
-                    else {
-                        // 色が定義済みのとき、ホバー色とともにセット
-                        this.Color = value;
-                        this.HoverColor = Color.ButtonHoverColors[idx];
-                        if (this._control) {
-                            this._control.Color = value;
-                        }
-                    }
-                    this.Refresh();
-                };
-                ControlButtonView.prototype.Dispose = function () {
-                    if (this._control) {
-                        this._control.RemoveEventListener(EntityEvents.Changed, this.ApplyFromEntity, this);
-                    }
-                    this._control = null;
-                    this._name = null;
-                    _super.prototype.Dispose.call(this);
-                };
-                return ControlButtonView;
-            }(Views.RelocatableButtonView));
-            Controls.ControlButtonView = ControlButtonView;
-        })(Controls = Views_10.Controls || (Views_10.Controls = {}));
-    })(Views = App.Views || (App.Views = {}));
-})(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Views/ButtonView.ts" />
-/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-/// <reference path="../../Items/Color.ts" />
-/// <reference path="LabelAndButtonView.ts" />
-var App;
-(function (App) {
-    var Views;
-    (function (Views_11) {
-        var Controls;
-        (function (Controls) {
-            var Color = App.Items.Color;
-            var SceneButtonView = /** @class */ (function (_super) {
-                __extends(SceneButtonView, _super);
-                function SceneButtonView() {
-                    var _this = _super.call(this) || this;
-                    _this.SetSize(200, 150);
-                    _this.Button.HasBorder = true;
-                    _this.Button.BorderRadius = 50;
-                    _this.Button.BackgroundColor = Color.MainBackground;
-                    _this.Button.HoverColor = Color.MainHover;
-                    _this.Button.Color = Color.Main;
-                    _this.Button.SetStyle('borderColor', Color.MainHover);
-                    _this.Label.Color = Color.Main;
-                    return _this;
-                }
-                SceneButtonView.prototype.InnerRefresh = function () {
-                    _super.prototype.InnerRefresh.call(this);
-                    this.Button.Dom.style.borderColor = Color.MainHover;
-                    //this.Button.SetStyle('borderColor', Color.MainHover);
-                };
-                return SceneButtonView;
-            }(Controls.LabelAndButtonView));
-            Controls.SceneButtonView = SceneButtonView;
-        })(Controls = Views_11.Controls || (Views_11.Controls = {}));
-    })(Views = App.Views || (App.Views = {}));
-})(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Views/PageView.ts" />
-/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
-/// <reference path="../../../Fw/Events/PageViewEvents.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-/// <reference path="../Controls/HeaderBarView.ts" />
-var App;
-(function (App) {
-    var Views;
-    (function (Views_12) {
-        var Pages;
-        (function (Pages) {
-            var Views = Fw.Views;
-            var Property = Fw.Views.Property;
-            var Controls = App.Views.Controls;
-            var ControlHeaderPropertyPageView = /** @class */ (function (_super) {
-                __extends(ControlHeaderPropertyPageView, _super);
-                function ControlHeaderPropertyPageView() {
-                    var _this = _super.call(this) || this;
-                    _this.HeaderBar = new Controls.HeaderBarView();
-                    _this.InputPanel = new Views.StuckerBoxView();
-                    _this.TxtName = new Views.TextBoxInputView();
-                    _this.LabelColor = new Views.LabelView();
-                    _this.BtnColor = new Controls.ItemSelectButtonView();
-                    _this.LabelRm = new Views.LabelView();
-                    _this.SboRm = new Views.SelectBoxInputView();
-                    _this.DeleteButton = new Controls.ButtonView();
-                    _this.SetClassName('ControlHeaderPropertyPageView');
-                    var background = new Views.ImageView();
-                    background.SetAnchor(0, 0, 0, 0);
-                    background.FitPolicy = Property.FitPolicy.Cover;
-                    background.Src = 'images/Pages/ControlProperty/background.jpg';
-                    _this.Add(background);
-                    _this.HeaderBar.Text = '';
-                    _this.HeaderBar.LeftButton.Hide(0);
-                    _this.HeaderBar.RightButton.Hide(0);
-                    _this.Add(_this.HeaderBar);
-                    var label = new Views.LabelView();
-                    label.FontSize = Property.FontSize.Large;
-                    label.Color = App.Items.Color.Main;
-                    label.SetAnchor(null, 5, null, null);
-                    label.Text = 'Remote Control';
-                    _this.HeaderBar.Add(label);
-                    _this.InputPanel.Position.Policy = Property.PositionPolicy.LeftTop;
-                    _this.InputPanel.ReferencePoint = Property.ReferencePoint.LeftTop;
-                    _this.InputPanel.Size.Width = 280;
-                    _this.InputPanel.SetAnchor(70, 10, null, 10);
-                    _this.InputPanel.Color = App.Items.Color.MainBackground;
-                    _this.Add(_this.InputPanel);
-                    var lbl1 = new Views.LabelView();
-                    lbl1.Text = 'Name';
-                    lbl1.TextAlign = Property.TextAlign.Left;
-                    lbl1.AutoSize = true;
-                    lbl1.SetAnchor(null, 5, null, null);
-                    lbl1.Size.Height = 21;
-                    _this.InputPanel.Add(lbl1);
-                    _this.TxtName.SetAnchor(null, 5, 15, null);
-                    _this.TxtName.Size.Height = 30;
-                    _this.TxtName.Name = 'Name';
-                    _this.InputPanel.Add(_this.TxtName);
-                    _this.LabelColor = new Views.LabelView();
-                    _this.LabelColor.Text = 'Color';
-                    _this.LabelColor.TextAlign = Property.TextAlign.Left;
-                    _this.LabelColor.AutoSize = true;
-                    _this.LabelColor.SetAnchor(null, 5, null, null);
-                    _this.LabelColor.Size.Height = 21;
-                    _this.InputPanel.Add(_this.LabelColor);
-                    _this.InputPanel.AddSpacer();
-                    _this.InputPanel.Add(_this.BtnColor);
-                    _this.InputPanel.AddSpacer();
-                    _this.LabelRm = new Views.LabelView();
-                    _this.LabelRm.Text = 'Target';
-                    _this.LabelRm.TextAlign = Property.TextAlign.Left;
-                    _this.LabelRm.AutoSize = true;
-                    _this.LabelRm.SetAnchor(null, 5, null, null);
-                    _this.LabelRm.Size.Height = 21;
-                    _this.InputPanel.Add(_this.LabelRm);
-                    _this.SboRm.SetAnchor(null, 5, 15, null);
-                    _this.SboRm.Size.Height = 30;
-                    _this.SboRm.Name = 'Rm';
-                    _.each(App.Items.Icon.Names, function (iconName) {
-                        var dispName = iconName.substr(0, iconName.indexOf('.')).replace('_', ' ');
-                        _this.SboRm.AddItem(dispName, "images/icons/" + iconName);
-                    });
-                    _this.InputPanel.Add(_this.SboRm);
-                    _this.DeleteButton.SetAnchor(null, 5, 15, null);
-                    _this.DeleteButton.Size.Height = 30;
-                    _this.DeleteButton.Text = '*Delete*';
-                    _this.InputPanel.Add(_this.DeleteButton);
-                    return _this;
-                }
-                return ControlHeaderPropertyPageView;
-            }(Fw.Views.PageView));
-            Pages.ControlHeaderPropertyPageView = ControlHeaderPropertyPageView;
-        })(Pages = Views_12.Pages || (Views_12.Pages = {}));
-    })(Views = App.Views || (App.Views = {}));
-})(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Views/PageView.ts" />
-/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
-/// <reference path="../../../Fw/Events/PageViewEvents.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-/// <reference path="../Controls/HeaderBarView.ts" />
-/// <reference path="../../Items/Color.ts" />
-var App;
-(function (App) {
-    var Views;
-    (function (Views_13) {
-        var Pages;
-        (function (Pages) {
-            var Views = Fw.Views;
-            var Property = Fw.Views.Property;
-            var Controls = App.Views.Controls;
-            var Color = App.Items.Color;
-            var ControlPropertyPageView = /** @class */ (function (_super) {
-                __extends(ControlPropertyPageView, _super);
-                function ControlPropertyPageView() {
-                    var _this = _super.call(this) || this;
-                    _this.HeaderBar = new Controls.HeaderBarView();
-                    _this.InputPanel = new Views.StuckerBoxView();
-                    _this.TxtName = new Views.TextBoxInputView();
-                    _this.BtnIcon = new Controls.ItemSelectButtonView();
-                    _this.BtnColor = new Controls.ItemSelectButtonView();
-                    _this.LblCode = new Views.LabelView();
-                    _this.TarCode = new Views.TextAreaInputView();
-                    _this.TxtMac = new Views.TextBoxInputView();
-                    _this.SboRemote = new Views.SelectBoxInputView();
-                    _this.BtnLearn = new Controls.ButtonView();
-                    _this.BtnSend = new Controls.ButtonView();
-                    _this.ChkToggleOn = new Views.CheckBoxInputView();
-                    _this.ChkToggleOff = new Views.CheckBoxInputView();
-                    _this.DeleteButton = new Controls.ButtonView();
-                    _this.SetClassName('ControlPropertyPageView');
-                    var background = new Views.ImageView();
-                    background.SetAnchor(0, 0, 0, 0);
-                    background.FitPolicy = Property.FitPolicy.Cover;
-                    background.Src = 'images/Pages/ControlProperty/background.jpg';
-                    _this.Add(background);
-                    _this.HeaderBar.Text = '';
-                    _this.HeaderBar.LeftButton.Hide(0);
-                    _this.HeaderBar.RightButton.Hide(0);
-                    _this.Add(_this.HeaderBar);
-                    var label = new Views.LabelView();
-                    label.FontSize = Property.FontSize.Large;
-                    label.Color = Color.Main;
-                    label.SetAnchor(null, 5, null, null);
-                    label.Text = 'Property';
-                    _this.HeaderBar.Add(label);
-                    _this.InputPanel.Position.Policy = Property.PositionPolicy.LeftTop;
-                    _this.InputPanel.ReferencePoint = Property.ReferencePoint.LeftTop;
-                    _this.InputPanel.Size.Width = 280;
-                    _this.InputPanel.SetAnchor(70, 10, null, 10);
-                    _this.InputPanel.Color = Color.MainBackground;
-                    _this.Add(_this.InputPanel);
-                    var lbl1 = new Views.LabelView();
-                    lbl1.Text = 'Name';
-                    lbl1.TextAlign = Property.TextAlign.Left;
-                    lbl1.AutoSize = true;
-                    lbl1.SetAnchor(null, 5, null, null);
-                    lbl1.Size.Height = 21;
-                    _this.InputPanel.Add(lbl1);
-                    _this.TxtName.SetAnchor(null, 5, 15, null);
-                    _this.TxtName.Size.Height = 30;
-                    _this.TxtName.Name = 'Name';
-                    _this.InputPanel.Add(_this.TxtName);
-                    var lbl2 = new Views.LabelView();
-                    lbl2.Text = 'Icon / Color';
-                    lbl2.TextAlign = Property.TextAlign.Left;
-                    lbl2.AutoSize = true;
-                    lbl2.SetAnchor(null, 5, null, null);
-                    lbl2.Size.Height = 21;
-                    _this.InputPanel.Add(lbl2);
-                    _this.InputPanel.AddSpacer();
-                    _this.InputPanel.Add(_this.BtnIcon);
-                    _this.InputPanel.Add(_this.BtnColor);
-                    _this.InputPanel.AddSpacer();
-                    _this.LblCode = new Views.LabelView();
-                    _this.LblCode.Text = 'Code';
-                    _this.LblCode.TextAlign = Property.TextAlign.Left;
-                    _this.LblCode.AutoSize = true;
-                    _this.LblCode.SetAnchor(null, 5, null, null);
-                    _this.LblCode.Size.Height = 21;
-                    _this.InputPanel.Add(_this.LblCode);
-                    _this.TarCode.SetAnchor(null, 5, 15, null);
-                    _this.TarCode.Size.Height = 90;
-                    _this.TarCode.Name = 'Code';
-                    _this.InputPanel.Add(_this.TarCode);
-                    _this.TxtMac.SetAnchor(null, 5, 15, null);
-                    _this.TxtMac.Size.Height = 30;
-                    _this.TxtMac.Name = 'Mac';
-                    _this.InputPanel.Add(_this.TxtMac);
-                    _this.SboRemote.SetAnchor(null, 5, 15, null);
-                    _this.SboRemote.Size.Height = 30;
-                    _this.InputPanel.Add(_this.SboRemote);
-                    _this.BtnLearn.SetAnchor(null, 5, 15, null);
-                    _this.BtnLearn.Size.Height = 30;
-                    _this.BtnLearn.Text = 'Learn';
-                    _this.InputPanel.Add(_this.BtnLearn);
-                    _this.BtnSend.SetAnchor(null, 5, 15, null);
-                    _this.BtnSend.Size.Height = 30;
-                    _this.BtnSend.Text = 'Test';
-                    _this.InputPanel.Add(_this.BtnSend);
-                    var lbl5 = new Views.LabelView();
-                    lbl5.Text = 'Toggle Assigns';
-                    lbl5.TextAlign = Property.TextAlign.Left;
-                    lbl5.AutoSize = true;
-                    lbl5.SetAnchor(null, 5, null, null);
-                    lbl5.Size.Height = 21;
-                    _this.InputPanel.Add(lbl5);
-                    _this.ChkToggleOn.SetAnchor(null, 5, 15, null);
-                    _this.ChkToggleOn.Size.Height = 30;
-                    _this.ChkToggleOn.Name = 'AssignToggleOn';
-                    _this.ChkToggleOn.Text = 'Main-Panel Toggle ON';
-                    _this.InputPanel.Add(_this.ChkToggleOn);
-                    _this.ChkToggleOff.SetAnchor(null, 5, 15, null);
-                    _this.ChkToggleOff.Size.Height = 30;
-                    _this.ChkToggleOff.Name = 'AssignToggleOff';
-                    _this.ChkToggleOff.Text = 'Main-Panel Toggle OFF';
-                    _this.InputPanel.Add(_this.ChkToggleOff);
-                    _this.DeleteButton.SetAnchor(null, 5, 15, null);
-                    _this.DeleteButton.Size.Height = 30;
-                    _this.DeleteButton.Text = '*Delete*';
-                    _this.InputPanel.Add(_this.DeleteButton);
-                    return _this;
-                }
-                return ControlPropertyPageView;
-            }(Fw.Views.PageView));
-            Pages.ControlPropertyPageView = ControlPropertyPageView;
-        })(Pages = Views_13.Pages || (Views_13.Pages = {}));
-    })(Views = App.Views || (App.Views = {}));
-})(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Views/PageView.ts" />
-/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
-/// <reference path="../../../Fw/Events/PageViewEvents.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-/// <reference path="../Controls/HeaderBarView.ts" />
-/// <reference path="../../Items/Color.ts" />
-var App;
-(function (App) {
-    var Views;
-    (function (Views_14) {
-        var Pages;
-        (function (Pages) {
-            var Views = Fw.Views;
-            var Property = Fw.Views.Property;
-            var Controls = App.Views.Controls;
-            var Color = App.Items.Color;
-            var ControlSetPageView = /** @class */ (function (_super) {
-                __extends(ControlSetPageView, _super);
-                function ControlSetPageView() {
-                    var _this = _super.call(this) || this;
-                    _this.HeaderBar = new Controls.HeaderBarView();
-                    _this.EditButton = new Controls.ButtonView();
-                    _this.HeaderLeftLabel = new Views.LabelView();
-                    _this.ButtonPanel = new Views.SlidableBoxView(Property.Direction.Vertical);
-                    _this.SetClassName('ControlSetPageView');
-                    var background = new Views.ImageView();
-                    background.SetAnchor(0, 0, 0, 0);
-                    background.FitPolicy = Property.FitPolicy.Cover;
-                    background.Src = 'images/Pages/ControlSet/background.jpg';
-                    _this.Add(background);
-                    _this.HeaderBar.Text = 'Remote Control';
-                    _this.HeaderBar.RightButton.Hide(0);
-                    _this.Add(_this.HeaderBar);
-                    _this.EditButton.SetSize(40, 40);
-                    _this.EditButton.BackgroundColor = Color.HeaderButtonBackground;
-                    _this.EditButton.HoverColor = Color.HeaderButtonHover;
-                    _this.EditButton.Color = Color.Main;
-                    _this.EditButton.Text = '@';
-                    _this.EditButton.SetAnchor(null, 255, null, null);
-                    _this.HeaderBar.Add(_this.EditButton);
-                    _this.HeaderLeftLabel.FontSize = Property.FontSize.Large;
-                    _this.HeaderLeftLabel.Color = Color.Main;
-                    _this.HeaderLeftLabel.SetAnchor(null, 5, null, null);
-                    _this.HeaderBar.Add(_this.HeaderLeftLabel);
-                    _this.ButtonPanel.Position.Policy = Property.PositionPolicy.LeftTop;
-                    _this.ButtonPanel.Size.Width = 280;
-                    _this.ButtonPanel.SetAnchor(70, null, null, 10);
-                    _this.ButtonPanel.Color = Color.MainBackground;
-                    _this.Add(_this.ButtonPanel);
-                    _this.HeaderBar.Elem.hover(function () {
-                        if (_this.EditButton.IsVisible) {
-                            _this.HeaderBar.SetStyles({
-                                backgroundColor: Color.MainBackground,
-                                cursor: 'normal'
-                            });
-                            _this.HeaderBar.ApplyStyles();
-                            return;
-                        }
-                        _this.HeaderBar.SetStyles({
-                            backgroundColor: Color.MainHover,
-                            cursor: 'pointer'
-                        });
-                        _this.HeaderBar.ApplyStyles();
-                    }, function () {
-                        _this.HeaderBar.SetStyles({
-                            backgroundColor: Color.MainBackground,
-                            cursor: 'normal'
-                        });
-                        _this.HeaderBar.ApplyStyles();
-                    });
-                    return _this;
-                }
-                return ControlSetPageView;
-            }(Fw.Views.PageView));
-            Pages.ControlSetPageView = ControlSetPageView;
-        })(Pages = Views_14.Pages || (Views_14.Pages = {}));
-    })(Views = App.Views || (App.Views = {}));
-})(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Views/PageView.ts" />
-/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
-/// <reference path="../../../Fw/Events/PageViewEvents.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-/// <reference path="../Controls/HeaderBarView.ts" />
-var App;
-(function (App) {
-    var Views;
-    (function (Views_15) {
-        var Pages;
-        (function (Pages) {
-            var Views = Fw.Views;
-            var Property = Fw.Views.Property;
-            var Controls = App.Views.Controls;
-            var ItemSelectPageView = /** @class */ (function (_super) {
-                __extends(ItemSelectPageView, _super);
-                function ItemSelectPageView() {
-                    var _this = _super.call(this) || this;
-                    _this.HeaderBar = new Controls.HeaderBarView();
-                    _this.SelectorPanel = new Views.StuckerBoxView();
-                    _this.SetClassName('ItemSelectionPageView');
-                    var background = new Views.ImageView();
-                    background.SetAnchor(0, 0, 0, 0);
-                    background.FitPolicy = Property.FitPolicy.Cover;
-                    background.Src = 'images/Pages/ControlProperty/background.jpg';
-                    _this.Add(background);
-                    _this.HeaderBar.Text = '';
-                    _this.HeaderBar.LeftButton.Hide(0);
-                    _this.HeaderBar.RightButton.Hide(0);
-                    _this.Add(_this.HeaderBar);
-                    _this.Label = new Views.LabelView();
-                    _this.Label.FontSize = Property.FontSize.Large;
-                    _this.Label.Color = App.Items.Color.Main;
-                    _this.Label.SetAnchor(null, 5, null, null);
-                    _this.Label.Text = '';
-                    _this.HeaderBar.Add(_this.Label);
-                    _this.SelectorPanel.Position.Policy = Property.PositionPolicy.LeftTop;
-                    _this.SelectorPanel.ReferencePoint = Property.ReferencePoint.LeftTop;
-                    _this.SelectorPanel.Size.Width = 280;
-                    _this.SelectorPanel.SetAnchor(70, 10, null, 10);
-                    _this.SelectorPanel.Color = App.Items.Color.MainBackground;
-                    _this.Add(_this.SelectorPanel);
-                    return _this;
-                }
-                return ItemSelectPageView;
-            }(Fw.Views.PageView));
-            Pages.ItemSelectPageView = ItemSelectPageView;
-        })(Pages = Views_15.Pages || (Views_15.Pages = {}));
-    })(Views = App.Views || (App.Views = {}));
-})(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Views/PageView.ts" />
-/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
-/// <reference path="../../../Fw/Events/PageViewEvents.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-var App;
-(function (App) {
-    var Views;
-    (function (Views_16) {
-        var Pages;
-        (function (Pages) {
-            var Property = Fw.Views.Property;
-            var LayoutCheckPageView = /** @class */ (function (_super) {
-                __extends(LayoutCheckPageView, _super);
-                function LayoutCheckPageView() {
-                    var _this = _super.call(this) || this;
-                    _this.BtnGoSub1 = new Fw.Views.ButtonView();
-                    _this.BtnGoSub2 = new Fw.Views.ButtonView();
-                    _this.CenterControl = new Fw.Views.ControlView();
-                    _this.TmpCtl = new Fw.Views.ControlView();
-                    _this.AncCtl1 = new Fw.Views.ButtonView();
-                    _this.AncCtl2 = new Fw.Views.ButtonView();
-                    _this.AncCtl3 = new Fw.Views.ButtonView();
-                    _this.Toggle = new Fw.Views.ToggleButtonInputView();
-                    _this.AncCtl4 = new Fw.Views.ButtonView();
-                    _this.SetClassName('MainPageView');
-                    _this.BtnGoSub1.Text = 'Go Sub1';
-                    _this.BtnGoSub1.SetSize(80, 30);
-                    _this.BtnGoSub1.SetAnchor(null, 10, null, null);
-                    _this.Add(_this.BtnGoSub1);
-                    _this.BtnGoSub2.Text = 'Go Sub2';
-                    _this.BtnGoSub2.SetSize(80, 30);
-                    _this.BtnGoSub2.Position.Y = 40;
-                    _this.BtnGoSub2.SetAnchor(null, 10, null, null);
-                    _this.Add(_this.BtnGoSub2);
-                    _this.CenterControl.SetXY(0, 0);
-                    _this.CenterControl.SetSize(100, 50);
-                    _this.CenterControl.Color = '#1155FF';
-                    _this.CenterControl.Text = 'はろー<br/>どうよ？';
-                    _this.Add(_this.CenterControl);
-                    _this.TmpCtl.SetXY(-100, -100);
-                    _this.TmpCtl.SetSize(200, 200);
-                    _this.TmpCtl.Color = '#666666';
-                    _this.TmpCtl.Text = 'くりっく';
-                    _this.Add(_this.TmpCtl);
-                    _this.AncCtl1.Text = '右下';
-                    _this.AncCtl1.SetSize(200, 50);
-                    _this.AncCtl1.SetAnchor(null, null, 40, 5);
-                    _this.Add(_this.AncCtl1);
-                    _this.AncCtl2.Text = '右上';
-                    _this.AncCtl2.SetSize(200, 50);
-                    _this.AncCtl2.SetAnchor(3, null, 3, null);
-                    _this.Add(_this.AncCtl2);
-                    var label = new Fw.Views.LabelView();
-                    label.FontSize = Property.FontSize.XxLarge;
-                    label.Text = 'らべるやで';
-                    _this.AncCtl2.Add(label);
-                    _this.AncCtl3.Text = '左下';
-                    _this.AncCtl3.SetSize(300, 100);
-                    _this.AncCtl3.SetAnchor(null, 3, null, 3);
-                    _this.Add(_this.AncCtl3);
-                    var img = new Fw.Views.ImageView();
-                    img.SetSize(100, 70);
-                    img.Src = 'images/icons/home.png';
-                    img.FitPolicy = Property.FitPolicy.Cover;
-                    _this.AncCtl3.Add(img);
-                    _this.Toggle.SetAnchor(150, 10, null, null);
-                    _this.Add(_this.Toggle);
-                    _this.AncCtl4.Text = 'マスク';
-                    _this.AncCtl4.SetSize(200, 50);
-                    _this.AncCtl4.SetAnchor(60, 3, null, null);
-                    _this.Add(_this.AncCtl4);
-                    return _this;
-                    //this.AncCtl5 = new Fw.Views.ButtonView();
-                    //this.AncCtl5.Label = '左右';
-                    //this.AncCtl5.Size.Height = 50;
-                    //this.AncCtl5.SetAnchor(null, 150, 300, 100);
-                    //this.Add(this.AncCtl5);
-                    //this.AncCtl6 = new Fw.Views.ButtonView();
-                    //this.AncCtl6.Label = '上下';
-                    //this.AncCtl6.SetAnchor(200, null, null, 40);
-                    //this.AncCtl6.Size.Width = 30;
-                    //this.Add(this.AncCtl6);
-                }
-                return LayoutCheckPageView;
-            }(Fw.Views.PageView));
-            Pages.LayoutCheckPageView = LayoutCheckPageView;
-        })(Pages = Views_16.Pages || (Views_16.Pages = {}));
-    })(Views = App.Views || (App.Views = {}));
-})(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Views/PageView.ts" />
-/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
-/// <reference path="../../../Fw/Events/PageViewEvents.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-/// <reference path="../Controls/HeaderBarView.ts" />
-/// <reference path="../../Items/Color.ts" />
-var App;
-(function (App) {
-    var Views;
-    (function (Views_17) {
-        var Pages;
-        (function (Pages) {
-            var Views = Fw.Views;
-            var Property = Fw.Views.Property;
-            var Controls = App.Views.Controls;
-            var Color = App.Items.Color;
-            var ScenePageView = /** @class */ (function (_super) {
-                __extends(ScenePageView, _super);
-                function ScenePageView() {
-                    var _this = _super.call(this) || this;
-                    _this.HeaderBar = new Controls.HeaderBarView();
-                    _this.HeaderLeftLabel = new Views.LabelView();
-                    _this.EditButton = new Controls.ButtonView();
-                    _this.DetailPanel = new Views.StuckerBoxView();
-                    _this.SetClassName('ScenePageView');
-                    var background = new Views.ImageView();
-                    background.SetAnchor(0, 0, 0, 0);
-                    background.FitPolicy = Property.FitPolicy.Cover;
-                    background.Src = 'images/Pages/ControlSet/background.jpg';
-                    _this.Add(background);
-                    _this.HeaderBar.Text = 'Scene';
-                    _this.HeaderBar.RightButton.Hide(0);
-                    _this.Add(_this.HeaderBar);
-                    _this.EditButton.SetSize(40, 40);
-                    _this.EditButton.BackgroundColor = Color.HeaderButtonBackground;
-                    _this.EditButton.HoverColor = Color.HeaderButtonHover;
-                    _this.EditButton.Color = Color.Main;
-                    _this.EditButton.Text = '@';
-                    _this.EditButton.SetAnchor(null, 255, null, null);
-                    _this.HeaderBar.Add(_this.EditButton);
-                    _this.HeaderLeftLabel.FontSize = Property.FontSize.Large;
-                    _this.HeaderLeftLabel.Color = Color.Main;
-                    _this.HeaderLeftLabel.SetAnchor(null, 5, null, null);
-                    _this.HeaderBar.Add(_this.HeaderLeftLabel);
-                    _this.DetailPanel.ReferencePoint = Property.ReferencePoint.LeftTop;
-                    _this.DetailPanel.Position.Policy = Property.PositionPolicy.LeftTop;
-                    _this.DetailPanel.Size.Width = 280;
-                    _this.DetailPanel.SetAnchor(70, null, null, 10);
-                    _this.DetailPanel.Color = Color.MainBackground;
-                    _this.Add(_this.DetailPanel);
-                    _this.HeaderBar.Elem.hover(function () {
-                        if (_this.EditButton.IsVisible) {
-                            _this.HeaderBar.SetStyles({
-                                backgroundColor: Color.MainBackground,
-                                cursor: 'normal'
-                            });
-                            _this.HeaderBar.ApplyStyles();
-                            return;
-                        }
-                        _this.HeaderBar.SetStyles({
-                            backgroundColor: Color.MainHover,
-                            cursor: 'pointer'
-                        });
-                        _this.HeaderBar.ApplyStyles();
-                    }, function () {
-                        _this.HeaderBar.SetStyles({
-                            backgroundColor: Color.MainBackground,
-                            cursor: 'normal'
-                        });
-                        _this.HeaderBar.ApplyStyles();
-                    });
-                    return _this;
-                }
-                return ScenePageView;
-            }(Fw.Views.PageView));
-            Pages.ScenePageView = ScenePageView;
-        })(Pages = Views_17.Pages || (Views_17.Pages = {}));
-    })(Views = App.Views || (App.Views = {}));
-})(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Views/PageView.ts" />
-/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
-/// <reference path="../../../Fw/Events/PageViewEvents.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-var App;
-(function (App) {
-    var Views;
-    (function (Views_18) {
-        var Pages;
-        (function (Pages) {
-            var Views = Fw.Views;
-            var Property = Fw.Views.Property;
-            var Sub3PageView = /** @class */ (function (_super) {
-                __extends(Sub3PageView, _super);
-                function Sub3PageView() {
-                    var _this = _super.call(this) || this;
-                    _this.HeaderBar = new Views_18.Controls.HeaderBarView();
-                    _this.Stucker = new Views.StuckerBoxView();
-                    _this.SetClassName('Sub3PageView');
-                    _this.HeaderBar.Text = 'Sub 3 Page';
-                    _this.HeaderBar.RightButton.Hide(0);
-                    _this.Add(_this.HeaderBar);
-                    //this.Stucker.SetSize(600, 400);
-                    _this.Stucker.SetAnchor(70, 20, 20, null);
-                    _this.Stucker.Size.Height = 400;
-                    _this.Stucker.SetLeftTop(10, 70);
-                    _this.Add(_this.Stucker);
-                    var btn1 = new Views.ButtonView();
-                    btn1.SetSize(100, 120);
-                    btn1.Text = 'btn1: LeftTop';
-                    _this.Stucker.Add(btn1);
-                    btn1.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, function () {
-                        _this.Stucker.ReferencePoint = Property.ReferencePoint.LeftTop;
-                    });
-                    var btn2 = new Views.ButtonView();
-                    btn2.SetSize(100, 120);
-                    btn2.Text = 'btn2: RightTop';
-                    _this.Stucker.Add(btn2);
-                    btn2.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, function () {
-                        _this.Stucker.ReferencePoint = Property.ReferencePoint.RightTop;
-                    });
-                    var btn3 = new Views.ButtonView();
-                    btn3.SetSize(100, 120);
-                    btn3.Text = 'btn3: LeftBottom';
-                    _this.Stucker.Add(btn3);
-                    btn3.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, function () {
-                        _this.Stucker.ReferencePoint = Property.ReferencePoint.LeftBottom;
-                    });
-                    var btn4 = new Views.ButtonView();
-                    btn4.SetSize(100, 120);
-                    btn4.Text = 'btn4: RightBottom';
-                    _this.Stucker.Add(btn4);
-                    btn4.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, function () {
-                        _this.Stucker.ReferencePoint = Property.ReferencePoint.RightBottom;
-                    });
-                    var idx = 5;
-                    for (var i = 0; i < 20; i++) {
-                        var btn = new Views.ButtonView();
-                        btn.SetSize(100, 120);
-                        btn.Text = "btn" + (idx + i);
-                        _this.Stucker.Add(btn);
-                    }
-                    return _this;
-                }
-                return Sub3PageView;
-            }(Fw.Views.PageView));
-            Pages.Sub3PageView = Sub3PageView;
-        })(Pages = Views_18.Pages || (Views_18.Pages = {}));
-    })(Views = App.Views || (App.Views = {}));
-})(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../../lib/MagnificPopup/index.d.ts" />
-/// <reference path="../../../Fw/Views/ButtonView.ts" />
-/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-/// <reference path="PopupBase.ts" />
-var App;
-(function (App) {
-    var Views;
-    (function (Views_19) {
-        var Popup;
-        (function (Popup) {
-            var CancellablePopup = /** @class */ (function (_super) {
-                __extends(CancellablePopup, _super);
-                function CancellablePopup() {
-                    var _this = _super.call(this, $('#PtplCancellable')) || this;
-                    _this.CloseOnBgClick = false;
-                    _this.ShowCloseBtn = false;
-                    _this.EnableEscapeKey = false;
-                    _this.Elem.find('.ButtonCancel').on('click', function () {
-                        _this.Close();
-                        if (_this._callbackCancel)
-                            _this._callbackCancel();
-                    });
-                    return _this;
-                }
-                Object.defineProperty(CancellablePopup, "Instance", {
-                    get: function () {
-                        if (!CancellablePopup._instance)
-                            CancellablePopup._instance = new CancellablePopup();
-                        return CancellablePopup._instance;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                CancellablePopup.prototype.Open = function (params) {
-                    if (typeof params === 'object') {
-                        this._callbackCancel = _.isFunction(params.CallbackCancel)
-                            ? params.CallbackCancel
-                            : null;
-                    }
-                    _super.prototype.Open.call(this, params);
-                };
-                CancellablePopup._instance = null;
-                return CancellablePopup;
-            }(Popup.PopupBase));
-            Popup.CancellablePopup = CancellablePopup;
-            Popup.Cancellable = CancellablePopup.Instance;
-        })(Popup = Views_19.Popup || (Views_19.Popup = {}));
-    })(Views = App.Views || (App.Views = {}));
-})(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../../lib/MagnificPopup/index.d.ts" />
-/// <reference path="../../../Fw/Views/ButtonView.ts" />
-/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-/// <reference path="PopupBase.ts" />
-var App;
-(function (App) {
-    var Views;
-    (function (Views_20) {
-        var Popup;
-        (function (Popup) {
-            var ConfirmPopup = /** @class */ (function (_super) {
-                __extends(ConfirmPopup, _super);
-                function ConfirmPopup() {
-                    var _this = _super.call(this, $('#PtplConfirm')) || this;
-                    _this.CloseOnBgClick = false;
-                    _this.ShowCloseBtn = false;
-                    _this.EnableEscapeKey = false;
-                    _this.Elem.find('.ButtonOk').on('click', function () {
-                        _this.Close();
-                        if (_this._callbackOk)
-                            _this._callbackOk();
-                    });
-                    _this.Elem.find('.ButtonCancel').on('click', function () {
-                        _this.Close();
-                        if (_this._callbackCancel)
-                            _this._callbackCancel();
-                    });
-                    return _this;
-                }
-                Object.defineProperty(ConfirmPopup, "Instance", {
-                    get: function () {
-                        if (!ConfirmPopup._instance)
-                            ConfirmPopup._instance = new ConfirmPopup();
-                        return ConfirmPopup._instance;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                ConfirmPopup.prototype.Open = function (params) {
-                    // Callback方式で使えるけど、やめとけ、というやつ。
-                    throw new Error('OpenAsyncを使いたまへ！');
-                    if (typeof params === 'object') {
-                        this._callbackOk = _.isFunction(params.CallbackOk)
-                            ? params.CallbackOk
-                            : null;
-                        this._callbackCancel = _.isFunction(params.CallbackCancel)
-                            ? params.CallbackCancel
-                            : null;
-                    }
-                    _super.prototype.Open.call(this, params);
-                };
-                ConfirmPopup.prototype.OpenAsync = function (params) {
-                    return __awaiter(this, void 0, void 0, function () {
-                        var _this = this;
-                        return __generator(this, function (_a) {
-                            return [2 /*return*/, new Promise(function (resolve) {
-                                    _this._callbackOk = function () {
-                                        resolve(true);
-                                    };
-                                    _this._callbackCancel = function () {
-                                        resolve(false);
-                                    };
-                                    // TODO: ↓ときどき、この書き方が通らずthisのメソッドが呼ばれるようなフローがある。
-                                    // TODO: ↓いずれきちんと理解する。
-                                    // コールバックが上書きされないよう、thisでなくsuperのOpenを呼ぶ。
-                                    _super.prototype.Open.call(_this, params);
-                                })];
-                        });
-                    });
-                };
-                ConfirmPopup._instance = null;
-                return ConfirmPopup;
-            }(Popup.PopupBase));
-            Popup.ConfirmPopup = ConfirmPopup;
-            Popup.Confirm = ConfirmPopup.Instance;
-        })(Popup = Views_20.Popup || (Views_20.Popup = {}));
-    })(Views = App.Views || (App.Views = {}));
-})(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-var Fw;
-(function (Fw) {
-    var Util;
-    (function (Util) {
-        var Xhr;
-        (function (Xhr) {
-            var MethodType;
-            (function (MethodType) {
-                MethodType[MethodType["Get"] = 1] = "Get";
-                MethodType[MethodType["Post"] = 2] = "Post";
-                MethodType[MethodType["Put"] = 3] = "Put";
-                MethodType[MethodType["Delete"] = 4] = "Delete";
-            })(MethodType = Xhr.MethodType || (Xhr.MethodType = {}));
-        })(Xhr = Util.Xhr || (Util.Xhr = {}));
-    })(Util = Fw.Util || (Fw.Util = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../Util/Dump.ts" />
-/// <reference path="../../Util/Obj.ts" />
-var Fw;
-(function (Fw) {
-    var Util;
-    (function (Util) {
-        var Xhr;
-        (function (Xhr) {
-            var Params = /** @class */ (function () {
-                function Params(url, method, values) {
-                    if (method === void 0) { method = null; }
-                    if (values === void 0) { values = null; }
-                    this.Method = Xhr.MethodType.Post;
-                    this.Values = {};
-                    this.Callback = function () { };
-                    this.Url = url;
-                    this.Method = method || Xhr.MethodType.Post;
-                    this.Values = (values)
-                        ? values
-                        : {};
-                }
-                return Params;
-            }());
-            Xhr.Params = Params;
-        })(Xhr = Util.Xhr || (Util.Xhr = {}));
-    })(Util = Fw.Util || (Fw.Util = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../Util/Dump.ts" />
-var Fw;
-(function (Fw) {
-    var Util;
-    (function (Util) {
-        var Xhr;
-        (function (Xhr) {
-            var Error = /** @class */ (function () {
-                function Error(message, name) {
-                    this.Message = '';
-                    this.Name = '';
-                    this.Message = message;
-                    this.Name = name || '';
-                }
-                return Error;
-            }());
-            Xhr.Error = Error;
-            // まだ使わない。
-            // API仕様が固まったら、やろうかな。
-            var Result = /** @class */ (function () {
-                function Result(succeeded, values, errors) {
-                    this.Succeeded = succeeded;
-                    this.Values = values;
-                    this.Errors = errors;
-                }
-                Result.CreateSucceeded = function (values) {
-                    return new Result(true, values, []);
-                };
-                Result.CreateError = function (errors) {
-                    return new Result(false, {}, errors);
-                };
-                return Result;
-            }());
-            Xhr.Result = Result;
-        })(Xhr = Util.Xhr || (Util.Xhr = {}));
-    })(Util = Fw.Util || (Fw.Util = {}));
 })(Fw || (Fw = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />

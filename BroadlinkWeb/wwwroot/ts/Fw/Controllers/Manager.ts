@@ -32,8 +32,10 @@ namespace Fw.Controllers {
         }
 
         public Get(id: string): IController {
-            if (!this._controllers[id])
-                throw new Error(`Id[${id}] not found`);
+            if (!this._controllers[id]) {
+                alert(`Controller Id[${id}] not found`)
+                throw new Error(`Controller Id[${id}] not found`);
+            }
 
             return this._controllers[id];
         }
