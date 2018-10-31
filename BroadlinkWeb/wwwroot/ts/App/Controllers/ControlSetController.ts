@@ -58,8 +58,7 @@ namespace App.Controllers {
             this._page.HeaderBar.LeftButton.Hide(0);
             this._page.HeaderBar.LeftButton.AddEventListener(ButtonEvents.SingleClick, async () => {
                 // 編集モードの状態で、戻るボタンクリック。
-                // ここでControlSetエンティティを保存する。
-
+                // ControlSetエンティティを保存する。
                 const controlSet = this._controlSet;
                 const ctr = this.Manager.Get('Main') as MainController;
                 ctr.Show();
@@ -83,9 +82,20 @@ namespace App.Controllers {
                 if (!isSave)
                     return;
 
-                const res = await App.Models.Stores.ControlSets.Write(controlSet);
+                const res = await Stores.ControlSets.Write(controlSet);
 
-                ctr.RefreshControlSets();
+                if (!res) {
+                    // 保存失敗
+                    this.SetEntity(controlSet);
+                    this.SetEditMode();
+                    this.Show();
+                    Popup.Alert.Open({
+                        Message: 'Ouch! Save Failure.<br/>Server online?'
+                    });
+                } else {
+                    // 保存成功
+                    ctr.RefreshControlSets();
+                }
             });
 
             this._page.EditButton.AddEventListener(ButtonEvents.SingleClick, () => {

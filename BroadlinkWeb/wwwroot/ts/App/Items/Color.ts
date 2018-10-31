@@ -72,6 +72,12 @@ namespace App.Items {
 
             // 7.brown (Free)
             '#B5743B',
+
+            // 8. deep blue
+            '#2068F9',
+
+            // 9. deep orange
+            '#F93220'
         ];
 
         /**
@@ -85,7 +91,9 @@ namespace App.Items {
             'orange',
             'red',
             'purple',
-            'brown'
+            'brown',
+            'deep blue',
+            'deep orange'
         ];
 
         /**
@@ -99,7 +107,9 @@ namespace App.Items {
             '#ffd856',
             '#ff538c',
             '#8463e6',
-            '#d88e4e'
+            '#d88e4e',
+            '#427ff9',
+            '#f75a4c'
         ];
 
         public static GetButtonHoverColor(color: string): string {

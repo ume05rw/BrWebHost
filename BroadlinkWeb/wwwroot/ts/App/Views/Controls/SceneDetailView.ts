@@ -5,6 +5,7 @@
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../../../Fw/Events/EntityEvents.ts" />
 /// <reference path="../../../Fw/Events/BoxViewEvents.ts" />
+/// <reference path="../../../Fw/Events/TextBoxInputViewEvents.ts" />
 /// <reference path="../../Items/Color.ts" />
 /// <reference path="../../Events/Controls/ControlButtonViewEvents.ts" />
 /// <reference path="../../Models/Stores/SceneDetailStore.ts" />
@@ -15,7 +16,7 @@ namespace App.Views.Controls {
     import Property = Fw.Views.Property;
     import Color = App.Items.Color;
     import BoxEvents = Fw.Events.BoxViewEvents;
-    import ControlButtonViewEvents = App.Events.Controls.ControlButtonViewEvents;
+    import TextBoxEvents = Fw.Events.TextBoxInputViewEvents;
     import EntityEvents = Fw.Events.EntityEvents;
     import Stores = App.Models.Stores;
 
@@ -115,6 +116,20 @@ namespace App.Views.Controls {
             this.WaitTextBox.SetSize(40, 21);
             this.WaitTextBox.Value = '1.0';
             this.WaitTextBox.TextAlign = Property.TextAlign.Center;
+
+            this.WaitTextBox.Elem.on('keypress', (e) => {
+                // 数字以外の不要な文字を削除
+                var st = String.fromCharCode(e.which);
+                return ("0123456789-.".indexOf(st, 0) < 0)
+                    ? false
+                    : true;
+            });
+            this.WaitTextBox.AddEventListener(TextBoxEvents.Changed, () => {
+                let value = this.WaitTextBox.Value;
+                if ($.isNumeric(value) && this.Detail) {
+                    this.Detail.WaitSecond = parseFloat(value);
+                }
+            });
             this.Add(this.WaitTextBox);
 
             this.DeleteButton.SetSize(30, 30);
@@ -227,6 +242,8 @@ namespace App.Views.Controls {
                 this.ControlButton.Color = Color.ButtonColors[0];
                 this.ControlButton.BackgroundColor = Color.ButtonColors[0];
                 this.ControlButton.HoverColor = Color.ButtonHoverColors[0];
+
+                this.WaitTextBox.Value = '0.0';
             }
 
             this.Refresh();

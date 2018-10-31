@@ -45,8 +45,8 @@ namespace App.Models.Stores {
             if (res.Succeeded) {
                 var result = res.Values as A1Values;
 
-                controlSet.GetControlByCode('Temp').Value = String(result.Temperature.toFixed(1));
-                controlSet.GetControlByCode('Humidity').Value = String(result.Humidity.toFixed(1));
+                controlSet.GetControlByCode('Temp').Value = result.Temperature.toFixed(1);
+                controlSet.GetControlByCode('Humidity').Value = result.Humidity.toFixed(1);
                 controlSet.GetControlByCode('Voc').Value = this.GetVodString(result.Voc);
                 controlSet.GetControlByCode('Light').Value = this.GetLightString(result.Light);
                 controlSet.GetControlByCode('Noise').Value = this.GetNoiseString(result.Noise);

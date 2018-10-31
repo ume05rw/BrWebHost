@@ -66,15 +66,44 @@ namespace App.Controllers {
 
             this._page.HeaderBar.LeftButton.AddEventListener(ButtonEvents.SingleClick, async () => {
                 // 編集モードの状態で、戻るボタンクリック。
-                // ここでSceneエンティティを保存する。
-
-
+                // Sceneエンティティを保存する。
+                const scene = this._scene;
                 const ctr = this.Manager.Get('Main') as MainController;
                 ctr.Show();
+                this._scene = null;
 
+                // View側削除処理、ButtonPanel.Childrenを削除操作するため、要素退避しておく。
+                const buttons = Util.Obj.Mirror(this._page.DetailPanel.Children);
+                _.each(buttons, (btn: Fw.Views.IView) => {
+                    this._page.DetailPanel.Remove(btn);
+                    btn.Dispose();
+                });
 
+                // 登録処理、結果を確認せず画面を閉じる。
+                let isSave = true;
+                if (scene.Details.length <= 0) {
+                    isSave = await App.Views.Popup.Confirm.OpenAsync({
+                        Message: 'No operations.<br/>Save OK?'
+                    });
+                }
 
-                //ctr.RefreshScenes();
+                if (!isSave)
+                    return;
+
+                const res = await Stores.Scenes.Write(scene);
+
+                if (!res) {
+                    // 保存失敗
+                    this.SetEntity(scene);
+                    this.SetEditMode();
+                    this.Show();
+                    Popup.Alert.Open({
+                        Message: 'Ouch! Save Failure.<br/>Server online?'
+                    });
+                } else {
+                    // 保存成功
+                    //ctr.RefreshControlSets();
+                }
             });
 
             this._page.EditButton.AddEventListener(ButtonEvents.SingleClick, () => {
@@ -221,8 +250,17 @@ namespace App.Controllers {
                         const button: ItemSelectButtonView = e.Sender as ItemSelectButtonView;
                         const sdView: SceneDetailView = button.Parent as SceneDetailView;
                         sdView.Detail.ControlSetId = controlSet.Id;
-                        sdView.Detail.ControlId = null;
-                        sdView.ApplyFromEntity();
+
+                        if (controlSet.Controls.length === 1) {
+                            sdView.Detail.ControlId = controlSet.Controls[0].Id;
+                            sdView.ApplyFromEntity();
+                        } else {
+                            sdView.Detail.ControlId = null;
+                            sdView.ApplyFromEntity();
+
+                            // eのイベント発生元ボタンが異なるが、Parentが同じなので良しとする。
+                            this.OnControlClicked(e);
+                        }
                     }
 
                     break;
