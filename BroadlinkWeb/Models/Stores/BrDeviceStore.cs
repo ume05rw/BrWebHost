@@ -23,6 +23,14 @@ namespace BroadlinkWeb.Models.Stores
         {
             BrDeviceStore.Provider = provider;
 
+            // 最初の一回目は同期的に行う。
+            using (var serviceScope = BrDeviceStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                Xb.Util.Out("First Broadlink Device Scan");
+                var store = serviceScope.ServiceProvider.GetService<BrDeviceStore>();
+                store.Refresh();
+            }
+
             // なんか違和感がある実装。
             // 代替案はあるか？
             BrDeviceStore.LoopScan = Task.Run(async () =>
@@ -44,11 +52,11 @@ namespace BroadlinkWeb.Models.Stores
 
                         using (var serviceScope = BrDeviceStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
                         {
+                            await Task.Delay(1000 * 60 * 5);
+
                             Xb.Util.Out("Regularly Broadlink Device Scan");
                             var store = serviceScope.ServiceProvider.GetService<BrDeviceStore>();
                             store.Refresh();
-
-                            await Task.Delay(1000 * 60 * 5);
                         }
                     }
                     catch (Exception ex)
@@ -211,40 +219,30 @@ namespace BroadlinkWeb.Models.Stores
                 this._dbc.SaveChanges();
             }
 
-            // 投げっぱなし、待機なし。
-            this.DelayedAuth(entities);
+            // 認証処理終了まで待機する。
+            this.DelayedAuth(entities)
+                .ConfigureAwait(false)
+                .GetAwaiter()
+                .GetResult();
 
             return entities;
         }
 
         private async Task<bool> DelayedAuth(IEnumerable<BrDevice> entities)
         {
-            var tasks = new List<Task>();
-
             foreach (var entity in entities)
             {
                 if (entity.SbDevice == null)
                     continue;
 
-                // 注)非同期で認証はNG。何故かはまだ追及してない。
-                if (!this.IsDeviceAuthed(entity.SbDevice))
-                {
-                    //Xb.Util.Out("BrDevicesController.GetList - Auth");
-                    var task = Task.Run(() => {
-                        Xb.Util.Out("BrDevicesController.DelayedAuth - Auth");
-                        var res = entity.SbDevice.Auth().GetAwaiter().GetResult();
-                        if (!res)
-                        {
-                            Xb.Util.Out($"BrDevicesController.GetList - Auth Failed! {entity.IpAddressString}");
-                            //throw new Exception($"BrDevicesController.GetList - Auth Failed! {entity.IpAddressString}");
-                        }
-                    });
-                    task.ConfigureAwait(false);
-                    tasks.Add(task);
-                }
+                // 注)非同期で認証はNG。
+                // UDPのため、要求パケットを複数一斉に送信すると、要求に応する応答パケットが
+                // どのソケットからのものか判別出来ず、ちぐはぐな応答を受け取ってしまう。
+                // 送信と受信を一回ずつ、順番に行う。
+                Xb.Util.Out($"Auth Try: {entity.SbDevice.DeviceType}[{entity.IpAddressString}]");
+                var res = await entity.SbDevice.Auth();
+                Xb.Util.Out($"Auth OK?: {entity.SbDevice.DeviceType}[{entity.IpAddressString}] => {this.IsDeviceAuthed(entity.SbDevice)}");
             }
-
-            await Task.WhenAll(tasks.ToArray());
 
             return true;
         }

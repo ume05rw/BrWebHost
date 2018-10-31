@@ -52,6 +52,14 @@ namespace BroadlinkWeb.Models.Stores
 
         private static void SetScanner()
         {
+            // 最初の一回目は同期的に行う。
+            using (var serviceScope = RemoteHostStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                Xb.Util.Out("First Remote Host Scan");
+                var store = serviceScope.ServiceProvider.GetService<RemoteHostStore>();
+                store.Refresh();
+            }
+
             // なんか違和感がある実装。
             // 代替案はあるか？
             RemoteHostStore.LoopScan = Task.Run(async () =>
@@ -71,14 +79,13 @@ namespace BroadlinkWeb.Models.Stores
                             break;
                         }
 
-
                         using (var serviceScope = RemoteHostStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
                         {
+                            await Task.Delay(1000 * 60 * 5);
+
                             Xb.Util.Out("Regularly Remote Host Scan");
                             var store = serviceScope.ServiceProvider.GetService<RemoteHostStore>();
                             store.Refresh();
-
-                            await Task.Delay(1000 * 60 * 5);
                         }
                     }
                     catch (Exception ex)

@@ -77,6 +77,11 @@ namespace BroadlinkWeb
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IApplicationLifetime applicationLifetime, IHostingEnvironment env)
         {
+            // なんか違和感がある実装。
+            // 代替案はあるか？
+            BrDeviceStore.SetScanner(app.ApplicationServices);
+            RemoteHostStore.SetScannerAndReciever(app.ApplicationServices);
+
             // アプリケーション起動／終了をハンドルする。
             // https://stackoverflow.com/questions/41675577/where-can-i-log-an-asp-net-core-apps-start-stop-error-events
             applicationLifetime.ApplicationStopping.Register(this.OnShutdown);
@@ -106,11 +111,6 @@ namespace BroadlinkWeb
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
-
-            // なんか違和感がある実装。
-            // 代替案はあるか？
-            BrDeviceStore.SetScanner(app.ApplicationServices);
-            RemoteHostStore.SetScannerAndReciever(app.ApplicationServices);
         }
 
         private void OnShutdown()
