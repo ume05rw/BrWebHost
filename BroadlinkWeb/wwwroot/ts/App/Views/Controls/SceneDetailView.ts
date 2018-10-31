@@ -26,7 +26,7 @@ namespace App.Views.Controls {
         public readonly ControlSetLabel: Views.LabelView;
         public readonly ControlButton: ItemSelectButtonView;
         public readonly ControlLabel: Views.LabelView;
-        public readonly WaitTextBox: Views.TextBoxInputView;
+        public readonly WaitNumberBox: Views.NumberBoxInputView;
         public readonly WaitPreLabel: Views.LabelView;
         public readonly WaitPostLabel: Views.LabelView;
         public readonly DeleteButton: Views.ButtonView;
@@ -57,7 +57,7 @@ namespace App.Views.Controls {
             this.ControlSetLabel = new Views.LabelView();
             this.ControlButton = new ItemSelectButtonView();
             this.ControlLabel = new Views.LabelView();
-            this.WaitTextBox = new Views.TextBoxInputView();
+            this.WaitNumberBox = new Views.NumberBoxInputView();
             this.WaitPreLabel = new Views.LabelView();
             this.WaitPostLabel = new Views.LabelView();
             this.DeleteButton = new Views.ButtonView();
@@ -112,25 +112,26 @@ namespace App.Views.Controls {
             this.WaitPostLabel.SetTransAnimation(true);
             this.Add(this.WaitPostLabel);
 
-            this.WaitTextBox.SetLeftTop(95, 115);
-            this.WaitTextBox.SetSize(40, 21);
-            this.WaitTextBox.Value = '1.0';
-            this.WaitTextBox.TextAlign = Property.TextAlign.Center;
+            this.WaitNumberBox.SetLeftTop(95, 115);
+            this.WaitNumberBox.SetSize(40, 21);
+            this.WaitNumberBox.Value = '1.0';
+            this.WaitNumberBox.TextAlign = Property.TextAlign.Center;
+            this.WaitNumberBox.DecimalPoint = 1;
 
-            this.WaitTextBox.Elem.on('keypress', (e) => {
-                // 数字以外の不要な文字を削除
-                var st = String.fromCharCode(e.which);
-                return ("0123456789-.".indexOf(st, 0) < 0)
-                    ? false
-                    : true;
-            });
-            this.WaitTextBox.AddEventListener(TextBoxEvents.Changed, () => {
-                let value = this.WaitTextBox.Value;
+            //this.WaitTextBox.Elem.on('keypress', (e) => {
+            //    // 数字以外の不要な文字を削除
+            //    var st = String.fromCharCode(e.which);
+            //    return ("0123456789-.".indexOf(st, 0) < 0)
+            //        ? false
+            //        : true;
+            //});
+            this.WaitNumberBox.AddEventListener(TextBoxEvents.Changed, () => {
+                let value = this.WaitNumberBox.Value;
                 if ($.isNumeric(value) && this.Detail) {
-                    this.Detail.WaitSecond = parseFloat(value);
+                    this.Detail.WaitSecond = this.WaitNumberBox.NumberValue;
                 }
             });
-            this.Add(this.WaitTextBox);
+            this.Add(this.WaitNumberBox);
 
             this.DeleteButton.SetSize(30, 30);
             this.DeleteButton.Position.Policy = Property.PositionPolicy.LeftTop;
@@ -157,11 +158,11 @@ namespace App.Views.Controls {
             if (enable) {
                 // 待機時間入力可能
                 this.SetSize(230, 145);
-                this.WaitTextBox.Show(0);
+                this.WaitNumberBox.Show(0);
             } else {
                 // 待機時間入力NG(=末尾要素)
                 this.SetSize(230, 115);
-                this.WaitTextBox.Hide(0);
+                this.WaitNumberBox.Hide(0);
             }
         }
 
@@ -226,7 +227,7 @@ namespace App.Views.Controls {
                     this.ControlButton.HoverColor = Color.ButtonHoverColors[0];
                 }
 
-                this.WaitTextBox.Value = this._detail.WaitSecond.toFixed(1);
+                this.WaitNumberBox.NumberValue = this._detail.WaitSecond;
 
             } else {
                 this.ControlSetButton.ImageSrc = '';
@@ -243,18 +244,18 @@ namespace App.Views.Controls {
                 this.ControlButton.BackgroundColor = Color.ButtonColors[0];
                 this.ControlButton.HoverColor = Color.ButtonHoverColors[0];
 
-                this.WaitTextBox.Value = '0.0';
+                this.WaitNumberBox.NumberValue = 0;
             }
 
             this.Refresh();
         }
 
         public SetEditMode(): void {
-            this.WaitTextBox.Elem.attr('readonly', 'false');
+            this.WaitNumberBox.IsReadOnly = false;
         }
 
         public SetExecMode(): void {
-            this.WaitTextBox.Elem.attr('readonly', 'true');
+            this.WaitNumberBox.IsReadOnly = true;
         }
 
         public CalcLayout(): void {
@@ -270,7 +271,7 @@ namespace App.Views.Controls {
                 this.ControlLabel.SetLeftTop(107, 90);
                 this.ControlLabel.SetSize(92, 21);
 
-                this.WaitTextBox.SetLeftTop(82, 115);
+                this.WaitNumberBox.SetLeftTop(82, 115);
                 this.WaitPreLabel.SetLeftTop(37, 121);
                 this.WaitPostLabel.SetLeftTop(127, 121);
 
@@ -287,7 +288,7 @@ namespace App.Views.Controls {
                 this.ControlLabel.SetLeftTop(120, 90);
                 this.ControlLabel.SetSize(105, 21);
 
-                this.WaitTextBox.SetLeftTop(95, 115);
+                this.WaitNumberBox.SetLeftTop(95, 115);
                 this.WaitPreLabel.SetLeftTop(50, 121);
                 this.WaitPostLabel.SetLeftTop(140, 121);
             }

@@ -27,7 +27,6 @@ namespace Fw.Views {
             this.Elem.addClass(this.ClassName);
 
             this._textAlign = Property.TextAlign.Left;
-
         }
 
         protected InnerRefresh(): void {

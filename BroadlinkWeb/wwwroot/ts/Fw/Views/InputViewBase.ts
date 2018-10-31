@@ -41,6 +41,19 @@ namespace Fw.Views {
             }
         }
 
+        private _isReadOnly: boolean;
+        public get IsReadOnly(): boolean {
+            return this._isReadOnly;
+        }
+        public set IsReadOnly(value: boolean) {
+            const changed = (this._isReadOnly !== value);
+
+            if (changed) {
+                this._isReadOnly = value;
+                this.Elem.attr('readonly', this._isReadOnly);
+            }
+        }
+
         constructor(jqueryElem: JQuery) {
             super(jqueryElem);
 
@@ -49,6 +62,7 @@ namespace Fw.Views {
 
             this._name = '';
             this._value = '';
+            this._isReadOnly = false;
 
             this.BackgroundColor = '#FFFFFF';
 
