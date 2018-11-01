@@ -63,7 +63,6 @@ namespace BroadlinkWeb
 
                     // 無限ループ検出時の動作。
                     // シリアライズエラー時、デフォルトでは途中状態の文字列を返してしまう。
-                    // どんだけクソ仕様なんだ。
                     options.SerializerSettings.ReferenceLoopHandling
                         = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
                 });

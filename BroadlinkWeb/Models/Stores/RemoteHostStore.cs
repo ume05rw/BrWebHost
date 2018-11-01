@@ -17,10 +17,10 @@ namespace BroadlinkWeb.Models.Stores
 {
     public class RemoteHostStore
     {
-        private const int AckUdpPort = 52891;
         private const string CallString = "hello?";
         private const string ResponseString = "here!";
 
+        // VS停止時に正常に破棄されないため、ローカルで保持しない。
         //private static Xb.Net.Udp Socket = null;
         private static Xb.App.Process Replyer = null;
         private static IServiceProvider Provider = null;
@@ -45,7 +45,7 @@ namespace BroadlinkWeb.Models.Stores
                 var dir = System.IO.Path.Combine(Environment.CurrentDirectory, "lib/UdpReplyer");
                 var arg = $"lib/UdpReplyer/UdpReplyer.dll";
                 RemoteHostStore.Replyer
-                    = Xb.App.Process.Create("dotnet", $"UdpReplyer.dll {AckUdpPort}", false, dir);
+                    = Xb.App.Process.Create("dotnet", $"UdpReplyer.dll {Program.Port}", false, dir);
             }
             catch (Exception ex)
             {
@@ -149,7 +149,7 @@ namespace BroadlinkWeb.Models.Stores
 
                 cs.OnRecieved += this.OnResponseRecieved;
 
-                cs.SendTo(packet, IPAddress.Broadcast, RemoteHostStore.AckUdpPort);
+                cs.SendTo(packet, IPAddress.Broadcast, Program.Port);
 
                 var startTime = DateTime.Now;
                 var timeout = 3;
