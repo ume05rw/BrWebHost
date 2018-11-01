@@ -203,6 +203,46 @@ namespace BroadlinkWeb.Migrations
                     );
                 });
 
+            modelBuilder.Entity("BroadlinkWeb.Models.Entities.Job", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int(11)");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime");
+
+                    b.Property<byte>("IsCompleted")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<byte>("IsError")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("Json")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<decimal>("Progress")
+                        .HasColumnType("decimal(3, 2)");
+
+                    b.Property<DateTime?>("Updated")
+                        .HasColumnType("datetime");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("jobs");
+
+                    b.HasAnnotation("MySQL:Charset", "utf8");
+
+                    b.HasAnnotation("MySQL:Collation", "utf8_general_ci ");
+                });
+
             modelBuilder.Entity("BroadlinkWeb.Models.Entities.RemoteHost", b =>
                 {
                     b.Property<int>("Id")

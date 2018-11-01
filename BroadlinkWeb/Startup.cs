@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Serialization;
 using BroadlinkWeb.Extensions;
 using BroadlinkWeb.Models.Stores;
+using BroadlinkWeb.Models.Entities;
 
 namespace BroadlinkWeb
 {
@@ -67,11 +68,17 @@ namespace BroadlinkWeb
                         = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
                 });
 
-            // DI対象にStoreを追加。
+            // DI対象にStore/Entityを追加。
             services
                 .AddDbStore<BrDeviceStore>()
                 .AddDbStore<ControlSetStore>()
-                .AddDbStore<RemoteHostStore>();
+                .AddDbStore<RemoteHostStore>()
+                .AddDbStore<JobStore>()
+                .AddDbStore<SceneStore>()
+                .AddDbStore<WolStore>()
+                .AddDbStore<ScriptStore>()
+                .AddDbStore<Sp2Store>()
+                .AddDbStore<A1Store>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -79,6 +86,10 @@ namespace BroadlinkWeb
         {
             try
             {
+                // スコープされていないサービスプロバイダをセットしておく。
+                Job.InitServiceProvider(app.ApplicationServices);
+                SceneStore.InitServiceProvider(app.ApplicationServices);
+
                 // TODO: マイグレーション時にも以下が実行されてしまい、落ちる。
                 // マイグレーションと通常起動の区別がつかないか？
                 // なんか違和感がある実装。

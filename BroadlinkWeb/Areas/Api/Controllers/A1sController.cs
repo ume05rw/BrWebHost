@@ -13,17 +13,20 @@ namespace BroadlinkWeb.Areas.Api.Controllers
     public class A1sController : Controller
     {
         private readonly Dbc _dbc;
-        private BrDeviceStore _store;
+        private BrDeviceStore _brdStore;
+        private A1Store _a1Store;
 
         public A1sController(
             Dbc dbc,
-            BrDeviceStore brDeviceStore
+            BrDeviceStore brdStore,
+            A1Store a1Store
         )
         {
             Xb.Util.Out("A1Controller.Constructor");
 
             this._dbc = dbc;
-            this._store = brDeviceStore;
+            this._brdStore = brdStore;
+            this._a1Store = a1Store;
         }
 
         // GET: api/A1s/5
@@ -31,47 +34,22 @@ namespace BroadlinkWeb.Areas.Api.Controllers
         public async Task<XhrResult> GetA1SensorValues([FromRoute] int? id)
         {
             Xb.Util.Out("A1Controller.GetA1SensorValues");
+            
+            if (!ModelState.IsValid)
+                return XhrResult.CreateError(ModelState);
+
+            if (id == null)
+                return XhrResult.CreateError("Entity Not Found");
+
             try
             {
-                if (!ModelState.IsValid)
-                    return XhrResult.CreateError(ModelState);
-
-                if (id == null)
-                    return XhrResult.CreateError("Entity Not Found");
-
-                var entity = await this._store.Get((int)id);
-
-                if (entity == null)
-                    return XhrResult.CreateError("Entity Not Found");
-                else if (!entity.IsActive)
-                    return XhrResult.CreateError("Device is not Active");
-                else if (entity.SbDevice.DeviceType != DeviceType.A1)
-                    return XhrResult.CreateError("Device is not A1 Sensor");
-
-                var a1Dev = (A1)entity.SbDevice;
-                var a1Res = await a1Dev.CheckSensorsRaw();
-
-                // 時々取得に失敗する。Authが通っていないとか？
-                if (a1Res == null)
-                {
-                    await this._store.RefreshDevice(a1Dev);
-                    return XhrResult.CreateError("Device not Ready");
-                }
-
-                var result = new A1Values()
-                {
-                    Temperature = a1Res.Temperature,
-                    Humidity = a1Res.Humidity,
-                    Voc = a1Res.AirQuality,
-                    Light = a1Res.Light,
-                    Noise = a1Res.Noise
-                };
+                var result = await this._a1Store.GetValues((int)id);
 
                 return XhrResult.CreateSucceeded(result);
             }
             catch (System.Exception ex)
             {
-                return XhrResult.CreateError(ex);
+                return XhrResult.CreateError(ex.Message);
             }
         }
     }

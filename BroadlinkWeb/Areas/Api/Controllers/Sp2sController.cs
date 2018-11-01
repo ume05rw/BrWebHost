@@ -13,54 +13,41 @@ namespace BroadlinkWeb.Areas.Api.Controllers
     public class Sp2sController : Controller
     {
         private readonly Dbc _dbc;
-        private BrDeviceStore _store;
+        private BrDeviceStore _brdStore;
+        private Sp2Store _sp2Store;
 
         public Sp2sController(
             Dbc dbc,
-            BrDeviceStore brDeviceStore
+            BrDeviceStore brDeviceStore,
+            Sp2Store sp2Store
         )
         {
             Xb.Util.Out("Sp2sController.Constructor");
 
             this._dbc = dbc;
-            this._store = brDeviceStore;
+            this._brdStore = brDeviceStore;
+            this._sp2Store = sp2Store;
         }
 
         // GET: api/Sp2s/5
         [HttpGet("{id?}")]
         public async Task<XhrResult> GetSp2Status([FromRoute] int? id)
         {
+            if (!ModelState.IsValid)
+                return XhrResult.CreateError(ModelState);
+
+            if (id == null)
+                return XhrResult.CreateError("Entity Not Found");
+
             try
             {
-                if (!ModelState.IsValid)
-                    return XhrResult.CreateError(ModelState);
+                var status = await this._sp2Store.GetStatus((int)id);
 
-                if (id == null)
-                    return XhrResult.CreateError("Entity Not Found");
-
-                var entity = await this._store.Get((int)id);
-
-                if (entity == null)
-                    return XhrResult.CreateError("Entity Not Found");
-                else if (!entity.IsActive)
-                    return XhrResult.CreateError("Device is not Active");
-                else if (entity.SbDevice.DeviceType != DeviceType.Sp2)
-                    return XhrResult.CreateError("Device is not SP2 Sensor");
-
-                var sp2Dev = (Sp2)entity.SbDevice;
-                var sp2Status = await sp2Dev.CheckStatus();
-
-                var result = new Sp2Status()
-                {
-                    Power = sp2Status.Power,
-                    NightLight = sp2Status.NightLight
-                };
-
-                return XhrResult.CreateSucceeded(result);
+                return XhrResult.CreateSucceeded(status);
             }
             catch (System.Exception ex)
             {
-                return XhrResult.CreateError(ex);
+                return XhrResult.CreateError(ex.Message);
             }
         }
 
@@ -68,54 +55,20 @@ namespace BroadlinkWeb.Areas.Api.Controllers
         [HttpPost("{id?}")]
         public async Task<XhrResult> SetSp2Status([FromRoute] int? id, [FromBody] Sp2Status sp2Status)
         {
+            if (!ModelState.IsValid)
+                return XhrResult.CreateError(ModelState);
+
+            if (id == null)
+                return XhrResult.CreateError("Entity Not Found");
+
             try
             {
-                if (!ModelState.IsValid)
-                    return XhrResult.CreateError(ModelState);
-
-                if (id == null)
-                    return XhrResult.CreateError("Entity Not Found");
-
-                var entity = await this._store.Get((int)id);
-
-                if (entity == null)
-                    return XhrResult.CreateError("Entity Not Found");
-                else if (!entity.IsActive)
-                    return XhrResult.CreateError("Device is not Active");
-                else if (entity.SbDevice.DeviceType != DeviceType.Sp2)
-                    return XhrResult.CreateError("Device is not SP2 Sensor");
-
-
-                var sp2Dev = (Sp2)entity.SbDevice;
-                var current = await sp2Dev.CheckStatus();
-
-                if (current.Power != sp2Status.Power)
-                {
-                    var result = await sp2Dev.SetPower(sp2Status.Power);
-
-                    if (!result)
-                    {
-                        await this._store.RefreshDevice(sp2Dev);
-                        return XhrResult.CreateError("Set Power Failure.");
-                    }
-                }
-
-                if (current.NightLight != sp2Status.NightLight)
-                {
-                    var result = await sp2Dev.SetNightLight(sp2Status.NightLight);
-
-                    if (!result)
-                    {
-                        await this._store.RefreshDevice(sp2Dev);
-                        return XhrResult.CreateError("Set Night-Light Failure.");
-                    }
-                }
-
+                await this._sp2Store.SetStatus((int)id, sp2Status);
                 return XhrResult.CreateSucceeded(sp2Status);
             }
             catch (System.Exception ex)
             {
-                return XhrResult.CreateError(ex);
+                return XhrResult.CreateError(ex.Message);
             }
         }
     }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BroadlinkWeb.Models;
 using BroadlinkWeb.Models.Entities;
+using BroadlinkWeb.Models.Stores;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -65,7 +66,10 @@ namespace BroadlinkWeb.Areas.Api.Controllers
 
         // POST: /api/Scripts/5
         [HttpPost("{controlId?}")]
-        public async Task<XhrResult> Exec([FromRoute] int? controlId)
+        public async Task<XhrResult> Exec(
+            [FromRoute] int? controlId,
+            [FromServices] ScriptStore scriptStore
+        )
         {
             try
             {
@@ -91,38 +95,11 @@ namespace BroadlinkWeb.Areas.Api.Controllers
                 else if (controlSet.OperationType != OperationType.Script)
                     return XhrResult.CreateError("Invalid Request");
 
-                var rows = control.Code
-                    .Replace("\r\n", "\n")
-                    .Replace("\r", "\n")
-                    .Split('\n');
+                var res = await scriptStore.Exec(control.Code);
 
-                // タイムアウトを設定し、1秒以上は結果を待たないことにした。
-                //// 一行ずつ実行、結果取得はしない。
-                //// UI付きプログラムの場合、プログラム終了まで応答を返さないため。
-                //foreach (var row in rows)
-                //    Xb.App.Process.GetConsoleResultAsync(row)
-                //        .ConfigureAwait(false);
-
-                var results = new List<string>();
-                var isSucceeded = true;
-                foreach (var row in rows)
-                {
-                    results.Add(row);
-                    var res = await Xb.App.Process.GetConsoleResultAsync(row, null, 1);
-                    results.Add(res.Message);
-
-                    if (!res.Succeeded && res.Message != "No Response")
-                    {
-                        isSucceeded = false;
-                        break;
-                    }
-                }
-
-                var result = string.Join("\n", results.ToArray());
-
-                return (isSucceeded)
-                    ? XhrResult.CreateSucceeded(result)
-                    : XhrResult.CreateError(result, "ConsoleFailure");
+                return (res.IsSucceeded)
+                    ? XhrResult.CreateSucceeded(res.Result)
+                    : XhrResult.CreateError(res.Result, "ConsoleFailure");
             }
             catch (Exception ex)
             {

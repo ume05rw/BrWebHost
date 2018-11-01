@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BroadlinkWeb.Models;
 using BroadlinkWeb.Models.Entities;
+using BroadlinkWeb.Models.Stores;
 
 namespace BroadlinkWeb.Areas.Api.Controllers
 {
@@ -224,6 +225,41 @@ namespace BroadlinkWeb.Areas.Api.Controllers
                 await this._dbc.SaveChangesAsync();
 
                 return XhrResult.CreateSucceeded();
+            }
+            catch (Exception ex)
+            {
+                return XhrResult.CreateError(ex);
+            }
+        }
+
+        // GET: api/Scenes/Exec/5
+        [HttpGet("Exec/{id?}")]
+        public async Task<XhrResult> Exec(
+            [FromServices] SceneStore sceneStore,
+            [FromRoute] int? id
+        )
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                    return XhrResult.CreateError(ModelState);
+
+                var scene = await this._dbc.Scenes
+                    .Include(s => s.Details)
+                        .ThenInclude(detail => detail.ControlSet)
+                    .Include(s => s.Details)
+                        .ThenInclude(detail => detail.Control)
+                    .SingleOrDefaultAsync(m => m.Id == id);
+
+                if (scene == null)
+                    return XhrResult.CreateError("Entity Not Found");
+                else if (scene.Details.Count <= 0)
+                    return XhrResult.CreateError("No Operations");
+
+                // 投げっぱなし、終了監視はJobから行う。
+                var job = await sceneStore.Exec(scene);
+
+                return XhrResult.CreateSucceeded(job);
             }
             catch (Exception ex)
             {

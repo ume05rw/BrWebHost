@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 using BroadlinkWeb.Models;
 using BroadlinkWeb.Models.Entities;
+using BroadlinkWeb.Models.Stores;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,7 +27,10 @@ namespace BroadlinkWeb.Areas.Api.Controllers
 
         // POST: /api/Wols/5
         [HttpPost("{controlId?}")]
-        public async Task<XhrResult> Exec([FromRoute] int? controlId)
+        public async Task<XhrResult> Exec(
+            [FromRoute] int? controlId,
+            [FromServices] WolStore wolStore
+        )
         {
             try
             {
@@ -52,46 +56,14 @@ namespace BroadlinkWeb.Areas.Api.Controllers
                 else if (controlSet.OperationType != OperationType.WakeOnLan)
                     return XhrResult.CreateError("Invalid Request");
 
-                var mac = control.Code
-                    .Replace("\r\n", "\n")
-                    .Replace("\r", "\n")
-                    .Replace("::", "-")
-                    .Replace(":", "-")
-                    .Split('\n')[0].Trim();
-
-                var bStrs = mac.Split("-");
-                var macBytes = new List<byte>();
                 try
                 {
-                    foreach (var str in bStrs)
-                        macBytes.Add(Convert.ToByte(str, 16));
+                    await wolStore.Exec(control.Code);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    return XhrResult.CreateError("Invalid Hex String");
+                    return XhrResult.CreateError(ex.Message);
                 }
-
-                if (macBytes.Count != 6)
-                    return XhrResult.CreateError("Invalid Mac-Address Format");
-
-                var bytes = new List<byte>();
-
-                // 先頭6バイトをFFに
-                for (var i = 0; i < 6; i++)
-                    bytes.Add((byte)255);
-
-                // 以降、MACアドレスを16回繰り返す。
-                for (var i = 0; i < 16; i++)
-                {
-                    foreach (var b in macBytes)
-                        bytes.Add(b);
-                }
-
-                // UDP7番ポート
-                await Xb.Net.Udp.SendOnceAsync(bytes.ToArray(), IPAddress.Broadcast, 7);
-
-                // UDP9番ポート
-                await Xb.Net.Udp.SendOnceAsync(bytes.ToArray(), IPAddress.Broadcast, 9);
 
                 return XhrResult.CreateSucceeded(true);
             }

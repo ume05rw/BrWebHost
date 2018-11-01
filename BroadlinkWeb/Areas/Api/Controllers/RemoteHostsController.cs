@@ -7,6 +7,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using BroadlinkWeb.Models;
 using BroadlinkWeb.Models.Entities;
+using BroadlinkWeb.Models.Stores;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -121,52 +122,22 @@ namespace BroadlinkWeb.Areas.Api.Controllers
 
         // POST: /api/RemoteHosts/
         [HttpPost()]
-        public async Task<XhrResult> Exec([FromBody] Script script)
+        public async Task<XhrResult> Exec(
+            [FromBody] Script script,
+            [FromServices] RemoteHostStore remoteHostStore
+        )
         {
             try
             {
                 if (!ModelState.IsValid)
                     return XhrResult.CreateError(ModelState);
 
-                if (script == null)
-                    return XhrResult.CreateError("Entity Not Found");
-                else if (script.RemoteHostId == null)
-                    return XhrResult.CreateError("Remote Host Not Specified");
+                var result = await remoteHostStore.Exec(script);
 
-                var remote = await this._dbc.RemoteHosts
-                    .SingleOrDefaultAsync(r => r.Id == (int)script.RemoteHostId);
-
-                if (remote == null)
-                    return XhrResult.CreateError("Remote Host Not Found");
-
-                var url = $"http://{remote.IpAddressString}:{BroadlinkWeb.Program.Port}/api/Scripts/{script.ControlId}";
-                var client = new HttpClient();
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(
-                    new MediaTypeWithQualityHeaderValue("application/vnd.github.v3+json")
-                );
-                client.DefaultRequestHeaders.Add("User-Agent", ".NET Foundation Repository Reporter");
-
-                // POSTのとき
-                var content = new StringContent("");
-                HttpResponseMessage response;
-                try
-                {
-                    response = await client.PostAsync(url, content);
-                }
-                catch (Exception ex)
-                {
-                    return XhrResult.CreateError("Remote Host No-Response");
-                }
-
-                var json = await response.Content.ReadAsStringAsync();
-                var remoteResult = JsonConvert.DeserializeObject<XhrResult.Items>(json);
-
-                if (remoteResult.Succeeded)
+                if (result.IsSucceeded)
                     return XhrResult.CreateSucceeded(true);
                 else
-                    return XhrResult.CreateError(remoteResult.Errors);
-
+                    return XhrResult.CreateError(result.Result);
             }
             catch (Exception ex)
             {

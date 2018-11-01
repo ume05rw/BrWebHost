@@ -9,6 +9,9 @@ using Microsoft.EntityFrameworkCore;
 using SharpBroadlink;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text;
+using Newtonsoft.Json;
+using System.Net.Http;
+using System.Net.Http.Headers;
 
 namespace BroadlinkWeb.Models.Stores
 {
@@ -22,6 +25,7 @@ namespace BroadlinkWeb.Models.Stores
         private static Xb.App.Process Replyer = null;
         private static IServiceProvider Provider = null;
         private static Task LoopScan = null;
+        private static Job _loopScanJob = null;
 
         public static void SetScannerAndReciever(IServiceProvider provider)
         {
@@ -52,18 +56,27 @@ namespace BroadlinkWeb.Models.Stores
 
         private static void SetScanner()
         {
-            // 最初の一回目は同期的に行う。
             using (var serviceScope = RemoteHostStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
+                // ジョブを取得する。
+                var jobStore = serviceScope.ServiceProvider.GetService<JobStore>();
+                RemoteHostStore._loopScanJob = jobStore.CreateJob("RemoteHost LoopScanner")
+                    .ConfigureAwait(false)
+                    .GetAwaiter()
+                    .GetResult();
+
+                // 最初の一回目スキャンは同期的に行う。
                 Xb.Util.Out("First Remote Host Scan");
-                var store = serviceScope.ServiceProvider.GetService<RemoteHostStore>();
-                store.Refresh();
+                var rhStore = serviceScope.ServiceProvider.GetService<RemoteHostStore>();
+                rhStore.Refresh();
             }
 
             // なんか違和感がある実装。
             // 代替案はあるか？
             RemoteHostStore.LoopScan = Task.Run(async () =>
             {
+                var status = new LoopJobStatus();
+
                 // 5分に1回、LAN上のBroadlink-Webホストをスキャンする。
                 while (true)
                 {
@@ -86,6 +99,10 @@ namespace BroadlinkWeb.Models.Stores
                             Xb.Util.Out("Regularly Remote Host Scan");
                             var store = serviceScope.ServiceProvider.GetService<RemoteHostStore>();
                             store.Refresh();
+
+                            status.Count++;
+                            var json = JsonConvert.SerializeObject(status);
+                            await RemoteHostStore._loopScanJob.SetProgress((decimal)0.5, json);
                         }
                     }
                     catch (Exception ex)
@@ -93,7 +110,12 @@ namespace BroadlinkWeb.Models.Stores
                         Xb.Util.Out(ex);
                         Xb.Util.Out("FUUUUUUUUUUUUUUUUUUUUUUCK!!!");
                         Xb.Util.Out("Regularly Scan FAIL!!!!!!!!!!!!");
-                        //throw;
+
+                        status.Count++;
+                        status.ErrorCount++;
+                        status.LatestError = string.Join(" ", Xb.Util.GetErrorString(ex));
+                        var json = JsonConvert.SerializeObject(status);
+                        await RemoteHostStore._loopScanJob.SetProgress((decimal)0.5, json);
                     }
                 }
 
@@ -210,6 +232,48 @@ namespace BroadlinkWeb.Models.Stores
                 dbc.Add(entity);
                 dbc.SaveChanges();
             }
+        }
+
+        public async Task<(bool IsSucceeded, string Result)> Exec(Script script)
+        {
+            if (script == null)
+                return (false, "Entity Not Found");
+            else if (script.RemoteHostId == null)
+                return (false, "Remote Host Not Specified");
+
+            var remote = await this._dbc.RemoteHosts
+                .SingleOrDefaultAsync(r => r.Id == (int)script.RemoteHostId);
+
+            if (remote == null)
+                return (false, "Remote Host Not Found");
+
+            var url = $"http://{remote.IpAddressString}:{BroadlinkWeb.Program.Port}/api/Scripts/{script.ControlId}";
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/vnd.github.v3+json")
+            );
+            client.DefaultRequestHeaders.Add("User-Agent", ".NET Foundation Repository Reporter");
+
+            // POSTのとき
+            var content = new StringContent("");
+            HttpResponseMessage response;
+            try
+            {
+                response = await client.PostAsync(url, content);
+            }
+            catch (Exception ex)
+            {
+                return (false, "Remote Host No-Response");
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
+            var remoteResult = JsonConvert.DeserializeObject<XhrResult.Items>(json);
+
+            if (remoteResult.Succeeded)
+                return (true, remoteResult.Values.ToString());
+            else
+                return (false, JsonConvert.SerializeObject(remoteResult.Errors));
         }
     }
 }

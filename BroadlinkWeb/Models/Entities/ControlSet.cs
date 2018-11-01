@@ -21,6 +21,7 @@ namespace BroadlinkWeb.Models.Entities
 
         [Column(Order = 1, TypeName = "varchar(50)")]
         [Description("Control-Set Name")]
+        [StringLength(50)]
         public string Name { get; set; }
 
         [Column(Order = 2, TypeName = "int(11)")]
@@ -29,11 +30,13 @@ namespace BroadlinkWeb.Models.Entities
 
         [Column(Order = 3, TypeName = "varchar(255)")]
         [Description("Icon Url")]
+        [StringLength(255)]
         public string IconUrl { get; set; }
 
         [Required]
         [Column(Order = 4, TypeName = "varchar(255)")]
         [Description("Color String")]
+        [StringLength(255)]
         public string Color { get; set; }
 
         [Column(Order = 5, TypeName = "int(11)")]

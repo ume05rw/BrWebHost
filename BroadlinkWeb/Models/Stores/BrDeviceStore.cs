@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using SharpBroadlink;
 using Microsoft.Extensions.DependencyInjection;
 using SharpBroadlink.Devices;
+using Newtonsoft.Json;
 
 namespace BroadlinkWeb.Models.Stores
 {
@@ -18,14 +19,22 @@ namespace BroadlinkWeb.Models.Stores
             = new List<SharpBroadlink.Devices.IDevice>();
         private static IServiceProvider Provider = null;
         private static Task LoopScan = null;
+        private static Job _loopScanJob = null;
 
         public static void SetScanner(IServiceProvider provider)
         {
             BrDeviceStore.Provider = provider;
 
-            // 最初の一回目は同期的に行う。
             using (var serviceScope = BrDeviceStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
+                // ジョブを取得する。
+                var jobStore = serviceScope.ServiceProvider.GetService<JobStore>();
+                BrDeviceStore._loopScanJob = jobStore.CreateJob("Broadlink-Device LoopScanner")
+                    .ConfigureAwait(false)
+                    .GetAwaiter()
+                    .GetResult();
+
+                // 最初の一回目スキャンは同期的に行う。
                 Xb.Util.Out("First Broadlink Device Scan");
                 var store = serviceScope.ServiceProvider.GetService<BrDeviceStore>();
                 store.Refresh();
@@ -35,6 +44,8 @@ namespace BroadlinkWeb.Models.Stores
             // 代替案はあるか？
             BrDeviceStore.LoopScan = Task.Run(async () =>
             {
+                var status = new LoopJobStatus();
+
                 // 5分に1回、LAN上のBroadlinkデバイスをスキャンする。
                 while (true)
                 {
@@ -57,6 +68,11 @@ namespace BroadlinkWeb.Models.Stores
                             Xb.Util.Out("Regularly Broadlink Device Scan");
                             var store = serviceScope.ServiceProvider.GetService<BrDeviceStore>();
                             store.Refresh();
+
+                            status.Count++;
+                            var json = JsonConvert.SerializeObject(status);
+
+                            await BrDeviceStore._loopScanJob.SetProgress((decimal)0.5, json);
                         }
                     }
                     catch (Exception ex)
@@ -65,6 +81,12 @@ namespace BroadlinkWeb.Models.Stores
                         Xb.Util.Out("FUUUUUUUUUUUUUUUUUUUUUUCK!!!");
                         Xb.Util.Out("Regularly Scan FAIL!!!!!!!!!!!!");
                         //throw;
+
+                        status.Count++;
+                        status.ErrorCount++;
+                        status.LatestError = string.Join(" ", Xb.Util.GetErrorString(ex));
+                        var json = JsonConvert.SerializeObject(status);
+                        await BrDeviceStore._loopScanJob.SetProgress((decimal)0.5, json);
                     }
                 }
 

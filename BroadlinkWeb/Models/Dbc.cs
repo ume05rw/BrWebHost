@@ -24,6 +24,8 @@ namespace BroadlinkWeb.Models
 
         public DbSet<RemoteHost> RemoteHosts { get; set; }
 
+        public DbSet<Job> Jobs { get; set; }
+
         /// <summary>
         /// Constructor
         /// </summary>

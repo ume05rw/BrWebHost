@@ -27,6 +27,7 @@ namespace BroadlinkWeb.Models.Entities
         //[Required] //<- 空でもOK
         [Column(Order = 2, TypeName = "varchar(50)")]
         [Description("Name")]
+        [StringLength(50)]
         public string Name { get; set; }
 
         [Required]
@@ -42,14 +43,17 @@ namespace BroadlinkWeb.Models.Entities
         [Required]
         [Column(Order = 5, TypeName = "varchar(255)")]
         [Description("Color String")]
+        [StringLength(255)]
         public string Color { get; set; }
 
         [Column(Order = 6, TypeName = "varchar(255)")]
         [Description("Icon Url")]
+        [StringLength(255)]
         public string IconUrl { get; set; }
 
         [Column(Order = 7, TypeName = "text")]
         [Description("IR Code Byte String")]
+        [StringLength(1000)]
         public string Code { get; set; }
 
         [Column(Order = 8, TypeName = "tinyint(1)")]

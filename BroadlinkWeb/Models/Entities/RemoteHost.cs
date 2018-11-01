@@ -21,10 +21,12 @@ namespace BroadlinkWeb.Models.Entities
 
         [Column(Order = 1, TypeName = "varchar(50)")]
         [Description("Remote Host Name")]
+        [StringLength(50)]
         public string Name { get; set; }
 
         [Column(Order = 2, TypeName = "varchar(255)")]
         [Description("IP Address String")]
+        [StringLength(255)]
         public string IpAddressString { get; set; }
     }
 }
