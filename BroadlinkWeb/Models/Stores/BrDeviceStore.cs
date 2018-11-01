@@ -18,10 +18,10 @@ namespace BroadlinkWeb.Models.Stores
         private static List<SharpBroadlink.Devices.IDevice> SbDevices
             = new List<SharpBroadlink.Devices.IDevice>();
         private static IServiceProvider Provider = null;
-        private static Task LoopScan = null;
-        private static Job _loopScanJob = null;
+        private static Task LoopRunner = null;
+        private static Job _loopRunnerJob = null;
 
-        public static void SetScanner(IServiceProvider provider)
+        public static void SetLoopRunner(IServiceProvider provider)
         {
             BrDeviceStore.Provider = provider;
 
@@ -29,7 +29,7 @@ namespace BroadlinkWeb.Models.Stores
             {
                 // ジョブを取得する。
                 var jobStore = serviceScope.ServiceProvider.GetService<JobStore>();
-                BrDeviceStore._loopScanJob = jobStore.CreateJob("Broadlink-Device LoopScanner")
+                BrDeviceStore._loopRunnerJob = jobStore.CreateJob("Broadlink-Device LoopScanner")
                     .ConfigureAwait(false)
                     .GetAwaiter()
                     .GetResult();
@@ -42,7 +42,7 @@ namespace BroadlinkWeb.Models.Stores
 
             // なんか違和感がある実装。
             // 代替案はあるか？
-            BrDeviceStore.LoopScan = Task.Run(async () =>
+            BrDeviceStore.LoopRunner = Task.Run(async () =>
             {
                 var status = new LoopJobStatus();
 
@@ -72,7 +72,7 @@ namespace BroadlinkWeb.Models.Stores
                             status.Count++;
                             var json = JsonConvert.SerializeObject(status);
 
-                            await BrDeviceStore._loopScanJob.SetProgress((decimal)0.5, json);
+                            await BrDeviceStore._loopRunnerJob.SetProgress((decimal)0.5, json);
                         }
                     }
                     catch (Exception ex)
@@ -86,7 +86,7 @@ namespace BroadlinkWeb.Models.Stores
                         status.ErrorCount++;
                         status.LatestError = string.Join(" ", Xb.Util.GetErrorString(ex));
                         var json = JsonConvert.SerializeObject(status);
-                        await BrDeviceStore._loopScanJob.SetProgress((decimal)0.5, json);
+                        await BrDeviceStore._loopRunnerJob.SetProgress((decimal)0.5, json);
                     }
                 }
 

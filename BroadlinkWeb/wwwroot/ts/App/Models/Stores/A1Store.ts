@@ -44,6 +44,7 @@ namespace App.Models.Stores {
 
             if (res.Succeeded) {
                 var result = res.Values as A1Values;
+                console.log(result);
 
                 controlSet.GetControlByCode('Temp').Value = result.Temperature.toFixed(1);
                 controlSet.GetControlByCode('Humidity').Value = result.Humidity.toFixed(1);

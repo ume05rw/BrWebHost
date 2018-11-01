@@ -106,6 +106,7 @@
     <Content Remove="wwwroot\ts\Fw\ObjectBase.ts" />
     <Content Remove="wwwroot\ts\Fw\Startup.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\App.ts" />
+    <Content Remove="wwwroot\ts\Fw\Util\Date.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\Dump.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\Num.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\Obj.ts" />
@@ -279,6 +280,7 @@
     <TypeScriptCompile Include="wwwroot\ts\Fw\ObjectBase.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Startup.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\App.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Date.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Dump.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Num.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Obj.ts" />

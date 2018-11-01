@@ -431,7 +431,7 @@ namespace App.Controllers {
          * シーンを実行する。
          */
         public async Exec(): Promise<boolean> {
-            // 編集中、テスト実行することがある。
+            // 編集中、テスト実行する機能を作るかも。
             //if (this._operationType !== ModalOperationType.Exec)
             //    return;
 
@@ -445,7 +445,7 @@ namespace App.Controllers {
 
                     // ここで、VisualStudioは、JSON.parse()されたオブジェクトの取得が出来ないらしい。
                     // 実際には取得出来ているので良しとする。
-                    const status = job.GetJsonObject() as SceneStatus;
+                    const status = job.JsonObject as SceneStatus;
 
                     if (step !== status.Step) {
                         const before = this._page.DetailPanel.Children[(status.Step - 2)] as SceneDetailView;
@@ -465,17 +465,13 @@ namespace App.Controllers {
                     await Fw.Util.App.Wait(300);
                 }
 
-                //_.each(this._page.DetailPanel.Children, (v: SceneDetailView) => {
-                //    v.ClearAnimatedClass();
-                //});
-
                 if (this._operationType === ModalOperationType.Exec) {
                     _.delay(() => {
                         if (this._page.IsVisible && this._page.IsModal) {
                             this.HideModal();
                         }
                         
-                    }, 800);
+                    }, 3000);
                 }
 
             } catch (e) {

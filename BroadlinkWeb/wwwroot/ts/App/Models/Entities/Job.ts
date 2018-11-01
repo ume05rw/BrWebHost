@@ -18,12 +18,20 @@ namespace App.Models.Entities {
         public Created: string;
         public Updated: string;
 
-        public GetJsonObject(): any {
+        public get JsonObject(): any {
             if (!this.Json)
                 return null;
 
             //Dump.Log(this.Json);
             return JSON.parse(this.Json);
+        }
+
+        public get CreatedDate(): Date {
+            return Fw.Util.DateTime.GetDate(this.Created);
+        }
+
+        public get UpdatedDate(): Date {
+            return Fw.Util.DateTime.GetDate(this.Updated);
         }
     }
 }

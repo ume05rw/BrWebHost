@@ -16,6 +16,48 @@ namespace BroadlinkWeb.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.1.4-rtm-31024");
 
+            modelBuilder.Entity("BroadlinkWeb.Models.Entities.A1Values", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int(11)");
+
+                    b.Property<int?>("BrDeviceId")
+                        .HasColumnType("int(11)");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime");
+
+                    b.Property<decimal>("Humidity")
+                        .HasColumnType("decimal(5, 2)");
+
+                    b.Property<decimal>("Light")
+                        .HasColumnType("decimal(5, 2)");
+
+                    b.Property<decimal>("Noise")
+                        .HasColumnType("decimal(5, 2)");
+
+                    b.Property<DateTime>("Recorded")
+                        .HasColumnType("datetime");
+
+                    b.Property<decimal>("Temperature")
+                        .HasColumnType("decimal(5, 2)");
+
+                    b.Property<DateTime?>("Updated")
+                        .HasColumnType("datetime");
+
+                    b.Property<decimal>("Voc")
+                        .HasColumnType("decimal(5, 2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("a1sensors");
+
+                    b.HasAnnotation("MySQL:Charset", "utf8");
+
+                    b.HasAnnotation("MySQL:Collation", "utf8_general_ci ");
+                });
+
             modelBuilder.Entity("BroadlinkWeb.Models.Entities.BrDevice", b =>
                 {
                     b.Property<int>("Id")

@@ -7722,12 +7722,30 @@ var App;
                     _this.Json = '';
                     return _this;
                 }
-                Job.prototype.GetJsonObject = function () {
-                    if (!this.Json)
-                        return null;
-                    //Dump.Log(this.Json);
-                    return JSON.parse(this.Json);
-                };
+                Object.defineProperty(Job.prototype, "JsonObject", {
+                    get: function () {
+                        if (!this.Json)
+                            return null;
+                        //Dump.Log(this.Json);
+                        return JSON.parse(this.Json);
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(Job.prototype, "CreatedDate", {
+                    get: function () {
+                        return Fw.Util.DateTime.GetDate(this.Created);
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(Job.prototype, "UpdatedDate", {
+                    get: function () {
+                        return Fw.Util.DateTime.GetDate(this.Updated);
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
                 return Job;
             }(Fw.Models.EntityBase));
             Entities.Job = Job;
@@ -8179,7 +8197,7 @@ var App;
                                 return [4 /*yield*/, Stores.Jobs.Get(job.Id)];
                             case 3:
                                 job = _a.sent();
-                                status_1 = job.GetJsonObject();
+                                status_1 = job.JsonObject;
                                 if (step !== status_1.Step) {
                                     before = this._page.DetailPanel.Children[(status_1.Step - 2)];
                                     current = this._page.DetailPanel.Children[(status_1.Step - 1)];
@@ -8196,15 +8214,12 @@ var App;
                                 _a.sent();
                                 return [3 /*break*/, 2];
                             case 5:
-                                //_.each(this._page.DetailPanel.Children, (v: SceneDetailView) => {
-                                //    v.ClearAnimatedClass();
-                                //});
                                 if (this._operationType === 1 /* Exec */) {
                                     _.delay(function () {
                                         if (_this._page.IsVisible && _this._page.IsModal) {
                                             _this.HideModal();
                                         }
-                                    }, 800);
+                                    }, 3000);
                                 }
                                 return [3 /*break*/, 7];
                             case 6:
@@ -8853,6 +8868,31 @@ var Fw;
         Events.TextAreaInputViewEventsClass = TextAreaInputViewEventsClass;
         Events.TextAreaInputViewEvents = new TextAreaInputViewEventsClass();
     })(Events = Fw.Events || (Fw.Events = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="./Dump.ts" />
+var Fw;
+(function (Fw) {
+    var Util;
+    (function (Util) {
+        var DateTime = /** @class */ (function () {
+            function DateTime() {
+            }
+            DateTime.GetDate = function (dateString) {
+                if (!dateString || dateString === '')
+                    return null;
+                try {
+                    return new Date(Date.parse(dateString));
+                }
+                catch (e) {
+                    return null;
+                }
+            };
+            return DateTime;
+        }());
+        Util.DateTime = DateTime;
+    })(Util = Fw.Util || (Fw.Util = {}));
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
@@ -9508,13 +9548,16 @@ var Fw;
                 _this._decimalPoint = 0;
                 _this._thousandSeparator = false;
                 _this._textAlign = Views.Property.TextAlign.Left;
-                _this.Elem.on('keypress', function (e) {
-                    // 数字以外の不要な文字を削除
-                    var st = String.fromCharCode(e.which);
-                    return ("0123456789-.,".indexOf(st, 0) < 0)
-                        ? false
-                        : true;
-                });
+                // タブや方向キー、BackSpaceなども無効化してしまう。
+                // ちょうどいい具合のものがないか、検討中。
+                // 数値以外の入力値を禁止する。
+                //this.Elem.on('keypress', (e) => {
+                //    // 数字以外の不要な文字を削除
+                //    var st = String.fromCharCode(e.which);
+                //    return ("0123456789-.,".indexOf(st, 0) < 0)
+                //        ? false
+                //        : true;
+                //});
                 _this.Elem.on('change', function () {
                     var value = _this.Elem.val().replace(/,/g, '');
                     if ($.isNumeric(value)) {
@@ -11251,6 +11294,27 @@ var App;
                     _this.Noise = 0;
                     return _this;
                 }
+                Object.defineProperty(A1Values.prototype, "RecordedDate", {
+                    get: function () {
+                        return Fw.Util.DateTime.GetDate(this.Recorded);
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(A1Values.prototype, "CreatedDate", {
+                    get: function () {
+                        return Fw.Util.DateTime.GetDate(this.Created);
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(A1Values.prototype, "UpdatedDate", {
+                    get: function () {
+                        return Fw.Util.DateTime.GetDate(this.Updated);
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
                 return A1Values;
             }(Fw.Models.EntityBase));
             Entities.A1Values = A1Values;
@@ -11327,6 +11391,7 @@ var App;
                                     res = _a.sent();
                                     if (res.Succeeded) {
                                         result = res.Values;
+                                        console.log(result);
                                         controlSet.GetControlByCode('Temp').Value = result.Temperature.toFixed(1);
                                         controlSet.GetControlByCode('Humidity').Value = result.Humidity.toFixed(1);
                                         controlSet.GetControlByCode('Voc').Value = this.GetVodString(result.Voc);

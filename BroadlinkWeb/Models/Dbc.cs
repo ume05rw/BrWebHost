@@ -26,6 +26,8 @@ namespace BroadlinkWeb.Models
 
         public DbSet<Job> Jobs { get; set; }
 
+        public DbSet<A1Values> A1Values { get; set; }
+
         /// <summary>
         /// Constructor
         /// </summary>

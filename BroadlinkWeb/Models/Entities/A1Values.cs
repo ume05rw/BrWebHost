@@ -1,22 +1,68 @@
+using MySql.Data.EntityFrameworkCore.DataAnnotations;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace BroadlinkWeb.Models.Entities
 {
-    [NotMapped]
+    [Table("a1sensors")] // テーブル名を小文字指定しないとLinuxで動作しない。
+    [MySqlCharset("utf8")]
+    [MySqlCollation("utf8_general_ci ")]
     public class A1Values
     {
-        public double Temperature { get; set; }
+        [Key]
+        [Column(Order = 0, TypeName = "int(11)")] // Orderプロパティは、EFCore未サポート
+        [Description("Sensor Value ID")] // Description属性は、EFCore未サポート
+        public int Id { get; set; }
 
-        public double Humidity { get; set; }
+        [Column(Order = 2, TypeName = "int(11)")]
+        [Description("Broadlink Device ID")]
+        public int? BrDeviceId { get; set; }
 
-        public int Voc { get; set; }
+        [Column(Order = 1, TypeName = "decimal(5, 2)")]
+        [Description("Temperature Celsius")]
+        [Range(-999.99, 999.991)]
+        public decimal Temperature { get; set; }
 
-        public int Light { get; set; }
+        [Column(Order = 1, TypeName = "decimal(5, 2)")]
+        [Description("Humidity")]
+        [Range(0.0, 100.00)]
+        public decimal Humidity { get; set; }
 
-        public int Noise { get; set; }
+        [Column(Order = 1, TypeName = "decimal(5, 2)")]
+        [Description("Voc")]
+        [Range(0.0, 3.00)]
+        public decimal Voc { get; set; }
+
+        [Column(Order = 1, TypeName = "decimal(5, 2)")]
+        [Description("Light")]
+        [Range(0.0, 3.00)]
+        public decimal Light { get; set; }
+
+        [Column(Order = 1, TypeName = "decimal(5, 2)")]
+        [Description("Noise")]
+        [Range(0.0, 2.00)]
+        public decimal Noise { get; set; }
+
+        [Required]
+        [Column(Order = 1, TypeName = "datetime")]
+        [Description("Record Time")]
+        [DataType(DataType.DateTime)]
+        public DateTime Recorded { get; set; }
+
+        [Required]
+        [Column(Order = 1, TypeName = "datetime")]
+        [Description("Created Time")]
+        [DataType(DataType.DateTime)]
+        public DateTime Created { get; set; }
+
+        [Column(Order = 1, TypeName = "datetime")]
+        [Description("Updated Time")]
+        [DataType(DataType.DateTime)]
+        public DateTime? Updated { get; set; }
     }
 }

@@ -24,14 +24,14 @@ namespace BroadlinkWeb.Models.Stores
         //private static Xb.Net.Udp Socket = null;
         private static Xb.App.Process Replyer = null;
         private static IServiceProvider Provider = null;
-        private static Task LoopScan = null;
-        private static Job _loopScanJob = null;
+        private static Task LoopRunner = null;
+        private static Job _loopRunnerJob = null;
 
-        public static void SetScannerAndReciever(IServiceProvider provider)
+        public static void SetLoopRunnerAndReciever(IServiceProvider provider)
         {
             RemoteHostStore.Provider = provider;
             RemoteHostStore.SetReciever();
-            RemoteHostStore.SetScanner();
+            RemoteHostStore.SetLoopRunner();
         }
 
         private static void SetReciever()
@@ -54,13 +54,13 @@ namespace BroadlinkWeb.Models.Stores
             }
         }
 
-        private static void SetScanner()
+        private static void SetLoopRunner()
         {
             using (var serviceScope = RemoteHostStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 // ジョブを取得する。
                 var jobStore = serviceScope.ServiceProvider.GetService<JobStore>();
-                RemoteHostStore._loopScanJob = jobStore.CreateJob("RemoteHost LoopScanner")
+                RemoteHostStore._loopRunnerJob = jobStore.CreateJob("RemoteHost LoopScanner")
                     .ConfigureAwait(false)
                     .GetAwaiter()
                     .GetResult();
@@ -73,7 +73,7 @@ namespace BroadlinkWeb.Models.Stores
 
             // なんか違和感がある実装。
             // 代替案はあるか？
-            RemoteHostStore.LoopScan = Task.Run(async () =>
+            RemoteHostStore.LoopRunner = Task.Run(async () =>
             {
                 var status = new LoopJobStatus();
 
@@ -102,7 +102,7 @@ namespace BroadlinkWeb.Models.Stores
 
                             status.Count++;
                             var json = JsonConvert.SerializeObject(status);
-                            await RemoteHostStore._loopScanJob.SetProgress((decimal)0.5, json);
+                            await RemoteHostStore._loopRunnerJob.SetProgress((decimal)0.5, json);
                         }
                     }
                     catch (Exception ex)
@@ -115,7 +115,7 @@ namespace BroadlinkWeb.Models.Stores
                         status.ErrorCount++;
                         status.LatestError = string.Join(" ", Xb.Util.GetErrorString(ex));
                         var json = JsonConvert.SerializeObject(status);
-                        await RemoteHostStore._loopScanJob.SetProgress((decimal)0.5, json);
+                        await RemoteHostStore._loopRunnerJob.SetProgress((decimal)0.5, json);
                     }
                 }
 

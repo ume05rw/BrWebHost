@@ -94,8 +94,9 @@ namespace BroadlinkWeb
                 // マイグレーションと通常起動の区別がつかないか？
                 // なんか違和感がある実装。
                 // 代替案はあるか？
-                BrDeviceStore.SetScanner(app.ApplicationServices);
-                RemoteHostStore.SetScannerAndReciever(app.ApplicationServices);
+                BrDeviceStore.SetLoopRunner(app.ApplicationServices);
+                RemoteHostStore.SetLoopRunnerAndReciever(app.ApplicationServices);
+                A1Store.SetLoopRunner(app.ApplicationServices);
             }
             catch (Exception ex)
             {

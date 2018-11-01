@@ -96,13 +96,17 @@ namespace Fw.Views {
             this._thousandSeparator = false;
             this._textAlign = Property.TextAlign.Left;
 
-            this.Elem.on('keypress', (e) => {
-                // 数字以外の不要な文字を削除
-                var st = String.fromCharCode(e.which);
-                return ("0123456789-.,".indexOf(st, 0) < 0)
-                    ? false
-                    : true;
-            });
+            
+            // タブや方向キー、BackSpaceなども無効化してしまう。
+            // ちょうどいい具合のものがないか、検討中。
+            // 数値以外の入力値を禁止する。
+            //this.Elem.on('keypress', (e) => {
+            //    // 数字以外の不要な文字を削除
+            //    var st = String.fromCharCode(e.which);
+            //    return ("0123456789-.,".indexOf(st, 0) < 0)
+            //        ? false
+            //        : true;
+            //});
             this.Elem.on('change', () => {
                 let value = this.Elem.val().replace(/,/g, '');
 
