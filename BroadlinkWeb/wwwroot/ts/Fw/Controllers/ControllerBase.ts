@@ -65,7 +65,7 @@ namespace Fw.Controllers {
         }
 
         public HideModal(): void {
-            this.View.HideModal();
+            this.Manager.HideModal(this.Id);
         }
 
         public ToUnmodal(): void {

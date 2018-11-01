@@ -74,9 +74,9 @@ namespace BroadlinkWeb.Models.Entities
         [Range(0, 1.0)]
         public decimal Progress { get; set; }
 
-        [Column(Order = 1, TypeName = "varchar(255)")]
+        [Column(Order = 1, TypeName = "text")]
         [Description("Message")]
-        [StringLength(255)]
+        [StringLength(1000)]
         public string Message { get; set; }
 
         [Column(Order = 1, TypeName = "text")]
@@ -101,6 +101,7 @@ namespace BroadlinkWeb.Models.Entities
             try
             {
                 this.Json = JsonConvert.SerializeObject(value);
+                Xb.Util.Out(this.Json);
             }
             catch (Exception ex)
             {
@@ -132,10 +133,10 @@ namespace BroadlinkWeb.Models.Entities
         }
         public async Task<bool> SetProgress(decimal progress, object jsonValues)
         {
-            if (jsonValues == null)
-                return await this.SetProgress(progress, null);
-            else 
-                return await this.SetProgress(progress, JsonConvert.SerializeObject(jsonValues));
+            if (jsonValues != null)
+                this.SetJson(jsonValues);
+
+            return await this.SetProgress(progress);
         }
 
         public async Task<bool> SetFinish(bool isError = false, string json = null, string message = null)
@@ -155,10 +156,10 @@ namespace BroadlinkWeb.Models.Entities
         }
         public async Task<bool> SetFinish(bool isError = false, object jsonValues = null, string message = null)
         {
-            if (jsonValues == null)
-                return await this.SetFinish(isError, null, null);
-            else
-                return await this.SetFinish(isError, JsonConvert.SerializeObject(jsonValues), message);
+            if (jsonValues != null)
+                this.SetJson(jsonValues);
+
+            return await this.SetFinish(isError, null, message);
         }
 
         private async Task<bool> Save()

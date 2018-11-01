@@ -16,6 +16,8 @@
 /// <reference path="../Events/Controls/ControlButtonViewEvents.ts" />
 /// <reference path="../Models/Entities/ControlSet.ts" />
 /// <reference path="../Models/Stores/RmStore.ts" />
+/// <reference path="../Models/Entities/Job.ts" />
+/// <reference path="../Models/Entities/SceneStatus.ts" />
 /// <reference path="../Items/OperationType.ts" />
 /// <reference path="../Items/DeviceType.ts" />
 /// <reference path="../Items/ModalOperationType.ts" />
@@ -44,6 +46,8 @@ namespace App.Controllers {
     import ControlSetSelectController = App.Controllers.ControlSetSelectController;
     import ControlSet = App.Models.Entities.ControlSet;
     import Control = App.Models.Entities.Control;
+    import Job = App.Models.Entities.Job;
+    import SceneStatus = App.Models.Entities.SceneStatus;
 
     export class SceneController extends Fw.Controllers.ControllerBase {
 
@@ -187,7 +191,11 @@ namespace App.Controllers {
             this._page.HeaderBar.LeftButton.Hide(0);
             this._page.HeaderBar.RightButton.Hide(0);
             this._page.HeaderLeftLabel.Show(0);
-            this._page.EditButton.Show(0);
+
+            // 編集ボタンは使用しないことにする。
+            // ボタン長押しで編集画面に行ってもらう。
+            //this._page.EditButton.Show(0);
+            this._page.EditButton.Hide(0);
 
             if (this._page.DetailPanel.IsChildRelocation)
                 this._page.DetailPanel.CommitRelocation();
@@ -417,6 +425,65 @@ namespace App.Controllers {
             await Stores.Scenes.Remove(scene);
 
             ctr.RefreshScenes();
+        }
+
+        /**
+         * シーンを実行する。
+         */
+        public async Exec(): Promise<boolean> {
+            // 編集中、テスト実行することがある。
+            //if (this._operationType !== ModalOperationType.Exec)
+            //    return;
+
+            try {
+                let job = await Stores.Scenes.Exec(this._scene);
+                let step = 0;
+
+                while (true) {
+
+                    job = await Stores.Jobs.Get(job.Id);
+
+                    // ここで、VisualStudioは、JSON.parse()されたオブジェクトの取得が出来ないらしい。
+                    // 実際には取得出来ているので良しとする。
+                    const status = job.GetJsonObject() as SceneStatus;
+
+                    if (step !== status.Step) {
+                        const before = this._page.DetailPanel.Children[(status.Step - 2)] as SceneDetailView;
+                        const current = this._page.DetailPanel.Children[(status.Step - 1)] as SceneDetailView;
+
+                        if (before)
+                            before.ClearAnimatedClass();
+
+                        if (current) {
+                            current.SetAnimatedClass('flash infinite');
+                        }
+                    }
+
+                    if (job.IsCompleted)
+                        break;
+
+                    await Fw.Util.App.Wait(300);
+                }
+
+                //_.each(this._page.DetailPanel.Children, (v: SceneDetailView) => {
+                //    v.ClearAnimatedClass();
+                //});
+
+                if (this._operationType === ModalOperationType.Exec) {
+                    _.delay(() => {
+                        if (this._page.IsVisible && this._page.IsModal) {
+                            this.HideModal();
+                        }
+                        
+                    }, 800);
+                }
+
+            } catch (e) {
+                Dump.Log(e);
+                return false;
+            }
+
+            return true;
         }
     }
 }

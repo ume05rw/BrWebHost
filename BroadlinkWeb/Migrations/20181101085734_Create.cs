@@ -1,8 +1,9 @@
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BroadlinkWeb.Migrations
 {
-    public partial class CreateTables : Migration
+    public partial class Create : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -23,13 +24,33 @@ namespace BroadlinkWeb.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "jobs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int(11)", nullable: false)
+                        .Annotation("MySQL:AutoIncrement", true),
+                    Name = table.Column<string>(type: "varchar(50)", nullable: false),
+                    IsCompleted = table.Column<byte>(type: "tinyint(1)", nullable: false),
+                    IsError = table.Column<byte>(type: "tinyint(1)", nullable: false),
+                    Progress = table.Column<decimal>(type: "decimal(3, 2)", nullable: false),
+                    Message = table.Column<string>(type: "text", maxLength: 1000, nullable: true),
+                    Json = table.Column<string>(type: "text", maxLength: 1000, nullable: true),
+                    Created = table.Column<DateTime>(type: "datetime", nullable: false),
+                    Updated = table.Column<DateTime>(type: "datetime", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_jobs", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "remotehost",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int(11)", nullable: false)
                         .Annotation("MySQL:AutoIncrement", true),
-                    Name = table.Column<string>(type: "varchar(50)", nullable: true),
-                    IpAddressString = table.Column<string>(type: "varchar(255)", nullable: true)
+                    Name = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true),
+                    IpAddressString = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -58,10 +79,10 @@ namespace BroadlinkWeb.Migrations
                 {
                     Id = table.Column<int>(type: "int(11)", nullable: false)
                         .Annotation("MySQL:AutoIncrement", true),
-                    Name = table.Column<string>(type: "varchar(50)", nullable: true),
+                    Name = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true),
                     BrDeviceId = table.Column<int>(type: "int(11)", nullable: true),
-                    IconUrl = table.Column<string>(type: "varchar(255)", nullable: true),
-                    Color = table.Column<string>(type: "varchar(255)", nullable: false),
+                    IconUrl = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true),
+                    Color = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false),
                     Order = table.Column<int>(type: "int(11)", nullable: false),
                     ToggleState = table.Column<byte>(type: "tinyint(1)", nullable: false),
                     IsMainPanelReady = table.Column<byte>(type: "tinyint(1)", nullable: false),
@@ -87,12 +108,12 @@ namespace BroadlinkWeb.Migrations
                     Id = table.Column<int>(type: "int(11)", nullable: false)
                         .Annotation("MySQL:AutoIncrement", true),
                     ControlSetId = table.Column<int>(type: "int(11)", nullable: false),
-                    Name = table.Column<string>(type: "varchar(50)", nullable: true),
+                    Name = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true),
                     PositionLeft = table.Column<int>(type: "int(11)", nullable: false),
                     PositionTop = table.Column<int>(type: "int(11)", nullable: false),
-                    Color = table.Column<string>(type: "varchar(255)", nullable: false),
-                    IconUrl = table.Column<string>(type: "varchar(255)", nullable: true),
-                    Code = table.Column<string>(type: "text", nullable: true),
+                    Color = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false),
+                    IconUrl = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true),
+                    Code = table.Column<string>(type: "text", maxLength: 1000, nullable: true),
                     IsAssignToggleOn = table.Column<byte>(type: "tinyint(1)", nullable: false),
                     IsAssignToggleOff = table.Column<byte>(type: "tinyint(1)", nullable: false)
                 },
@@ -133,13 +154,13 @@ namespace BroadlinkWeb.Migrations
                         column: x => x.ControlSetId,
                         principalTable: "controlsets",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_scenedetails_scenes_SceneId",
                         column: x => x.SceneId,
                         principalTable: "scenes",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
@@ -243,6 +264,9 @@ namespace BroadlinkWeb.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "jobs");
+
             migrationBuilder.DropTable(
                 name: "remotehost");
 

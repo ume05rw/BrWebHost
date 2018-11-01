@@ -19,6 +19,14 @@ namespace Fw.Util {
             App._ids.push(id);
             return id;
         }
+
+        public static async Wait(msec: number): Promise<boolean> {
+            return new Promise<boolean>((resolve: (value: boolean) => void) => {
+                setTimeout(() => {
+                    resolve(true);
+                }, msec);
+            });
+        }
     }
 
     export class DelayedOnceExecuter extends ObjectBase {

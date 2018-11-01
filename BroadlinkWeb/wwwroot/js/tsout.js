@@ -1382,7 +1382,7 @@ var Fw;
                 this.Manager.SetModal(this.Id);
             };
             ControllerBase.prototype.HideModal = function () {
-                this.View.HideModal();
+                this.Manager.HideModal(this.Id);
             };
             ControllerBase.prototype.ToUnmodal = function () {
                 this.Manager.SetUnmodal(this.Id);
@@ -1536,6 +1536,17 @@ var Fw;
                 }
                 App._ids.push(id);
                 return id;
+            };
+            App.Wait = function (msec) {
+                return __awaiter(this, void 0, void 0, function () {
+                    return __generator(this, function (_a) {
+                        return [2 /*return*/, new Promise(function (resolve) {
+                                setTimeout(function () {
+                                    resolve(true);
+                                }, msec);
+                            })];
+                    });
+                });
             };
             App._ids = new Array();
             return App;
@@ -5392,7 +5403,10 @@ var App;
                 this._page.HeaderBar.LeftButton.Hide(0);
                 this._page.HeaderBar.RightButton.Hide(0);
                 this._page.HeaderLeftLabel.Show(0);
-                this._page.EditButton.Show(0);
+                // 編集ボタンは使用しないことにする。
+                // ボタン長押しで編集画面に行ってもらう。
+                //this._page.EditButton.Show(0);
+                this._page.EditButton.Hide(0);
                 _.each(this._page.ButtonPanel.Children, function (v) {
                     if (v instanceof Controls.ControlButtonView)
                         v.SetRelocatable(false);
@@ -6966,6 +6980,17 @@ var App;
                                         ctr.SetExecMode();
                                         ctr.ShowModal();
                                     });
+                                    btn.Button.AddEventListener(ButtonEvents.LongClick, function (e) {
+                                        // 子View再配置中のとき、何もしない。
+                                        if (_this._page.ControlSetPanel.IsChildRelocation)
+                                            return;
+                                        // メインボタンの長押し - リモコンを編集表示する。
+                                        var button = e.Sender.Parent;
+                                        var ctr = _this.Manager.Get('ControlSet');
+                                        ctr.SetEntity(button.ControlSet);
+                                        ctr.SetEditMode();
+                                        ctr.Show();
+                                    });
                                     btn.Toggle.AddEventListener(ToggleEvents.Changed, function (e) {
                                         // 子View再配置中のとき、何もしない。
                                         if (_this._page.ControlSetPanel.IsChildRelocation)
@@ -7039,12 +7064,24 @@ var App;
                                         // 子View再配置中のとき、何もしない。
                                         if (_this._page.ScenePanel.IsChildRelocation)
                                             return;
-                                        // メインボタンクリック - リモコンをスライドイン表示する。
+                                        // シーンボタンクリック - シーンViewをスライドイン表示し、実行する。
                                         var button = e.Sender.Parent;
                                         var ctr = _this.Manager.Get('Scene');
                                         ctr.SetEntity(button.Scene);
                                         ctr.SetExecMode();
                                         ctr.ShowModal();
+                                        ctr.Exec();
+                                    });
+                                    btn.Button.AddEventListener(ButtonEvents.LongClick, function (e) {
+                                        // 子View再配置中のとき、何もしない。
+                                        if (_this._page.ScenePanel.IsChildRelocation)
+                                            return;
+                                        // シーンボタン長押し - シーンViewを編集状態で表示する。
+                                        var button = e.Sender.Parent;
+                                        var ctr = _this.Manager.Get('Scene');
+                                        ctr.SetEntity(button.Scene);
+                                        ctr.SetEditMode();
+                                        ctr.Show();
                                     });
                                     scene.AddEventListener(Events.EntityEvents.Changed, function (e) {
                                         // ボタンに乗せたControlSetEntityの値変更イベント
@@ -7662,6 +7699,66 @@ var App;
         })(Controls = Views_9.Controls || (Views_9.Controls = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/EntityBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../Items/Color.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Entities;
+        (function (Entities) {
+            var Job = /** @class */ (function (_super) {
+                __extends(Job, _super);
+                function Job() {
+                    var _this = _super !== null && _super.apply(this, arguments) || this;
+                    _this.Name = '';
+                    _this.IsCompleted = false;
+                    _this.IsError = false;
+                    _this.Progress = 0;
+                    _this.Message = '';
+                    _this.Json = '';
+                    return _this;
+                }
+                Job.prototype.GetJsonObject = function () {
+                    if (!this.Json)
+                        return null;
+                    //Dump.Log(this.Json);
+                    return JSON.parse(this.Json);
+                };
+                return Job;
+            }(Fw.Models.EntityBase));
+            Entities.Job = Job;
+        })(Entities = Models.Entities || (Models.Entities = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/EntityBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Entities;
+        (function (Entities) {
+            var SceneStatus = /** @class */ (function (_super) {
+                __extends(SceneStatus, _super);
+                function SceneStatus() {
+                    var _this = _super !== null && _super.apply(this, arguments) || this;
+                    _this.Step = 0;
+                    _this.TotalStep = 0;
+                    _this.Error = '';
+                    return _this;
+                }
+                return SceneStatus;
+            }(Fw.Models.EntityBase));
+            Entities.SceneStatus = SceneStatus;
+        })(Entities = Models.Entities || (Models.Entities = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Fw/Controllers/ControllerBase.ts" />
@@ -7680,6 +7777,8 @@ var App;
 /// <reference path="../Events/Controls/ControlButtonViewEvents.ts" />
 /// <reference path="../Models/Entities/ControlSet.ts" />
 /// <reference path="../Models/Stores/RmStore.ts" />
+/// <reference path="../Models/Entities/Job.ts" />
+/// <reference path="../Models/Entities/SceneStatus.ts" />
 /// <reference path="../Items/OperationType.ts" />
 /// <reference path="../Items/DeviceType.ts" />
 /// <reference path="../Items/ModalOperationType.ts" />
@@ -7688,6 +7787,7 @@ var App;
 (function (App) {
     var Controllers;
     (function (Controllers) {
+        var Dump = Fw.Util.Dump;
         var Pages = App.Views.Pages;
         var Entities = App.Models.Entities;
         var Util = Fw.Util;
@@ -7822,7 +7922,10 @@ var App;
                 this._page.HeaderBar.LeftButton.Hide(0);
                 this._page.HeaderBar.RightButton.Hide(0);
                 this._page.HeaderLeftLabel.Show(0);
-                this._page.EditButton.Show(0);
+                // 編集ボタンは使用しないことにする。
+                // ボタン長押しで編集画面に行ってもらう。
+                //this._page.EditButton.Show(0);
+                this._page.EditButton.Hide(0);
                 if (this._page.DetailPanel.IsChildRelocation)
                     this._page.DetailPanel.CommitRelocation();
                 _.each(this._page.DetailPanel.Children, function (v) {
@@ -8051,6 +8154,64 @@ var App;
                                 _a.sent();
                                 ctr.RefreshScenes();
                                 return [2 /*return*/];
+                        }
+                    });
+                });
+            };
+            /**
+             * シーンを実行する。
+             */
+            SceneController.prototype.Exec = function () {
+                return __awaiter(this, void 0, void 0, function () {
+                    var job, step, status_1, before, current, e_1;
+                    var _this = this;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                _a.trys.push([0, 6, , 7]);
+                                return [4 /*yield*/, Stores.Scenes.Exec(this._scene)];
+                            case 1:
+                                job = _a.sent();
+                                step = 0;
+                                _a.label = 2;
+                            case 2:
+                                if (!true) return [3 /*break*/, 5];
+                                return [4 /*yield*/, Stores.Jobs.Get(job.Id)];
+                            case 3:
+                                job = _a.sent();
+                                status_1 = job.GetJsonObject();
+                                if (step !== status_1.Step) {
+                                    before = this._page.DetailPanel.Children[(status_1.Step - 2)];
+                                    current = this._page.DetailPanel.Children[(status_1.Step - 1)];
+                                    if (before)
+                                        before.ClearAnimatedClass();
+                                    if (current) {
+                                        current.SetAnimatedClass('flash infinite');
+                                    }
+                                }
+                                if (job.IsCompleted)
+                                    return [3 /*break*/, 5];
+                                return [4 /*yield*/, Fw.Util.App.Wait(300)];
+                            case 4:
+                                _a.sent();
+                                return [3 /*break*/, 2];
+                            case 5:
+                                //_.each(this._page.DetailPanel.Children, (v: SceneDetailView) => {
+                                //    v.ClearAnimatedClass();
+                                //});
+                                if (this._operationType === 1 /* Exec */) {
+                                    _.delay(function () {
+                                        if (_this._page.IsVisible && _this._page.IsModal) {
+                                            _this.HideModal();
+                                        }
+                                    }, 800);
+                                }
+                                return [3 /*break*/, 7];
+                            case 6:
+                                e_1 = _a.sent();
+                                Dump.Log(e_1);
+                                return [2 /*return*/, false];
+                            case 7: return [2 /*return*/, true];
                         }
                     });
                 });
@@ -11229,6 +11390,75 @@ var App;
 /// <reference path="../../../Fw/Models/StoreBase.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../../../Fw/Util/Xhr/Query.ts" />
+/// <reference path="../Entities/Job.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Stores;
+        (function (Stores) {
+            var Xhr = Fw.Util.Xhr;
+            var Job = App.Models.Entities.Job;
+            var JobStore = /** @class */ (function (_super) {
+                __extends(JobStore, _super);
+                function JobStore() {
+                    var _this = _super.call(this) || this;
+                    _this.SetClassName('JobStore');
+                    _this.EnableLog = true;
+                    return _this;
+                }
+                Object.defineProperty(JobStore, "Instance", {
+                    get: function () {
+                        if (JobStore._instance === null)
+                            JobStore._instance = new JobStore();
+                        return JobStore._instance;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                JobStore.prototype.Get = function (id) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var params, res, obj;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    params = new Xhr.Params("Jobs/" + id, Xhr.MethodType.Get);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        obj = this.Merge(res.Values);
+                                        return [2 /*return*/, obj];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, null];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
+                JobStore.prototype.Write = function (entity) {
+                    throw new Error("Method not implemented.");
+                };
+                JobStore.prototype.GetNewEntity = function () {
+                    return new Job();
+                };
+                JobStore._instance = null;
+                return JobStore;
+            }(Fw.Models.StoreBase));
+            Stores.JobStore = JobStore;
+            Stores.Jobs = JobStore.Instance;
+        })(Stores = Models.Stores || (Models.Stores = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/StoreBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../../Fw/Util/Xhr/Query.ts" />
 /// <reference path="../Entities/BrDevice.ts" />
 /// <reference path="../Entities/ControlSet.ts" />
 /// <reference path="../Entities/Control.ts" />
@@ -11649,6 +11879,7 @@ var App;
 /// <reference path="../Entities/Scene.ts" />
 /// <reference path="../Entities/SceneDetail.ts" />
 /// <reference path="../Entities/Header.ts" />
+/// <reference path="../Entities/Job.ts" />
 /// <reference path="ControlStore.ts" />
 var App;
 (function (App) {
@@ -11832,6 +12063,35 @@ var App;
                                         return [2 /*return*/, false];
                                     }
                                     return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
+                SceneStore.prototype.Exec = function (entity) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var params, res, job;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    params = new Xhr.Params("Scenes/Exec/" + entity.Id, Xhr.MethodType.Get);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (!res.Succeeded) return [3 /*break*/, 3];
+                                    job = res.Values;
+                                    return [4 /*yield*/, Stores.Jobs.Get(job.Id)];
+                                case 2:
+                                    job = _a.sent();
+                                    if (!job) {
+                                        this.Log('Job Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, null];
+                                    }
+                                    return [2 /*return*/, job];
+                                case 3:
+                                    this.Log('Query Fail');
+                                    this.Log(res.Errors);
+                                    return [2 /*return*/, null];
                             }
                         });
                     });

@@ -31,6 +31,14 @@ namespace BroadlinkWeb.Models.Stores
             this._jobStore = jobStore;
         }
 
+        /// <summary>
+        /// シーンを実行する。
+        /// </summary>
+        /// <param name="scene"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// 順次実行処理を起動だけ行い、ジョブを生成して返す。
+        /// </remarks>
         public async Task<Job> Exec(Scene scene)
         {
             var status = new SceneStatus();
@@ -43,6 +51,13 @@ namespace BroadlinkWeb.Models.Stores
             return job;
         }
 
+        /// <summary>
+        /// シーン順次実行処理
+        /// </summary>
+        /// <param name="job"></param>
+        /// <param name="scene"></param>
+        /// <param name="status"></param>
+        /// <returns></returns>
         public async Task<bool> InnerExec(Job job, Scene scene, SceneStatus status)
         {
             foreach (var detail in scene.Details)
@@ -86,7 +101,12 @@ namespace BroadlinkWeb.Models.Stores
                                 break;
                             }
 
-
+                            var brError = await this.ExecBrDevice(detail, brd2);
+                            if (!string.IsNullOrEmpty(error))
+                            {
+                                error = brError;
+                                break;
+                            }
 
                             break;
                         case OperationType.WakeOnLan:
@@ -183,6 +203,67 @@ namespace BroadlinkWeb.Models.Stores
             await job.SetFinish(false, status);
 
             return true;
+        }
+
+        private async Task<string> ExecBrDevice(SceneDetail detail, BrDevice device)
+        {
+            var error = "";
+            using (var serviceScope = SceneStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                switch (device.DeviceType)
+                {
+                    case DeviceType.Sp2:
+                        var sp2Store = serviceScope.ServiceProvider.GetService<Sp2Store>();
+                        var control = detail.Control;
+                        var sp2Status = await sp2Store.GetStatus(device.Id);
+
+                        switch (detail.Control.Code)
+                        {
+                            case "PowerOn":
+                                sp2Status.Power = true;
+                                break;
+                            case "PowerOff":
+                                sp2Status.Power = false;
+                                break;
+                            case "LightOn":
+                                sp2Status.NightLight = true;
+                                break;
+                            case "LightOff":
+                                sp2Status.NightLight = false;
+                                break;
+                            default:
+                                throw new Exception("ここにはこないはず");
+                        }
+
+                        var res = await sp2Store.SetStatus(device.Id, sp2Status);
+                        if (res == false)
+                        {
+                            error = "Sp2 Switch Set Failure.";
+                            break;
+                        }
+
+                        break;
+                    case DeviceType.A1:
+                        var a1Store = serviceScope.ServiceProvider.GetService<A1Store>();
+
+                        // 値を取得して何をするでもない。
+                        var a1Values = await a1Store.GetValues(device.Id);
+
+                        break;
+                    case DeviceType.S1c:
+                    case DeviceType.Sp1:
+                    case DeviceType.Rm:
+                    case DeviceType.Rm2Pro:
+                    case DeviceType.Dooya:
+                    case DeviceType.Hysen:
+                    case DeviceType.Mp1:
+                    case DeviceType.Unknown:
+                    default:
+                        break;
+                }
+            }
+
+            return error;
         }
 
         private async Task<BrDevice> GetBrDevice(int? id)

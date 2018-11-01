@@ -7,6 +7,7 @@
 /// <reference path="../Entities/Scene.ts" />
 /// <reference path="../Entities/SceneDetail.ts" />
 /// <reference path="../Entities/Header.ts" />
+/// <reference path="../Entities/Job.ts" />
 /// <reference path="ControlStore.ts" />
 
 
@@ -18,6 +19,7 @@ namespace App.Models.Stores {
     import Scene = App.Models.Entities.Scene;
     import SceneDetail = App.Models.Entities.SceneDetail;
     import Header = App.Models.Entities.Header;
+    import Job = App.Models.Entities.Job;
 
     export class SceneStore extends Fw.Models.StoreBase<Scene> {
 
@@ -77,7 +79,6 @@ namespace App.Models.Stores {
             }
         }
 
-
         public async UpdateHeader(entity: Scene): Promise<boolean> {
 
             const header = new Header();
@@ -131,7 +132,6 @@ namespace App.Models.Stores {
             }
         }
 
-
         public async Write(entity: Scene): Promise<Scene> {
 
             const params = new Xhr.Params(
@@ -165,7 +165,6 @@ namespace App.Models.Stores {
             }
         }
 
-
         public async Remove(entity: Scene): Promise<boolean> {
 
             const params = new Xhr.Params(
@@ -189,6 +188,34 @@ namespace App.Models.Stores {
                 this.Log('Query Fail');
                 this.Log(res.Errors);
                 return false;
+            }
+        }
+
+        public async Exec(entity: Scene): Promise<Job> {
+
+            const params = new Xhr.Params(
+                `Scenes/Exec/${entity.Id}`,
+                Xhr.MethodType.Get
+            );
+
+            const res = await Xhr.Query.Invoke(params);
+
+            if (res.Succeeded) {
+
+                let job: Job = res.Values as Job;
+                job = await Stores.Jobs.Get(job.Id);
+                if (!job) {
+                    this.Log('Job Query Fail');
+                    this.Log(res.Errors);
+                    return null;
+                }
+
+                return job;
+
+            } else {
+                this.Log('Query Fail');
+                this.Log(res.Errors);
+                return null;
             }
         }
     }

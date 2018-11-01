@@ -219,6 +219,19 @@ namespace App.Controllers {
                     ctr.ShowModal();
                 });
 
+                btn.Button.AddEventListener(ButtonEvents.LongClick, (e) => {
+                    // 子View再配置中のとき、何もしない。
+                    if (this._page.ControlSetPanel.IsChildRelocation)
+                        return;
+
+                    // メインボタンの長押し - リモコンを編集表示する。
+                    const button = (e.Sender as Fw.Views.IView).Parent as ControlSetButtonView;
+                    const ctr = this.Manager.Get('ControlSet') as ControlSetController;
+                    ctr.SetEntity(button.ControlSet);
+                    ctr.SetEditMode();
+                    ctr.Show();
+                });
+
                 btn.Toggle.AddEventListener(ToggleEvents.Changed, (e) => {
                     // 子View再配置中のとき、何もしない。
                     if (this._page.ControlSetPanel.IsChildRelocation)
@@ -298,12 +311,26 @@ namespace App.Controllers {
                     if (this._page.ScenePanel.IsChildRelocation)
                         return;
 
-                    // メインボタンクリック - リモコンをスライドイン表示する。
+                    // シーンボタンクリック - シーンViewをスライドイン表示し、実行する。
                     const button = (e.Sender as Fw.Views.IView).Parent as SceneButtonView;
                     const ctr = this.Manager.Get('Scene') as SceneController;
                     ctr.SetEntity(button.Scene);
                     ctr.SetExecMode();
                     ctr.ShowModal();
+                    ctr.Exec();
+                });
+
+                btn.Button.AddEventListener(ButtonEvents.LongClick, (e) => {
+                    // 子View再配置中のとき、何もしない。
+                    if (this._page.ScenePanel.IsChildRelocation)
+                        return;
+
+                    // シーンボタン長押し - シーンViewを編集状態で表示する。
+                    const button = (e.Sender as Fw.Views.IView).Parent as SceneButtonView;
+                    const ctr = this.Manager.Get('Scene') as SceneController;
+                    ctr.SetEntity(button.Scene);
+                    ctr.SetEditMode();
+                    ctr.Show();
                 });
 
                 scene.AddEventListener(Events.EntityEvents.Changed, (e) => {

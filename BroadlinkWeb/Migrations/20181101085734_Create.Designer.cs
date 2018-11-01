@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BroadlinkWeb.Migrations
 {
     [DbContext(typeof(Dbc))]
-    [Migration("20181101010803_CreateJobs")]
-    partial class CreateJobs
+    [Migration("20181101085734_Create")]
+    partial class Create
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -54,17 +54,20 @@ namespace BroadlinkWeb.Migrations
                         .HasColumnType("int(11)");
 
                     b.Property<string>("Code")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasMaxLength(1000);
 
                     b.Property<string>("Color")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("varchar(255)")
+                        .HasMaxLength(255);
 
                     b.Property<int>("ControlSetId")
                         .HasColumnType("int(11)");
 
                     b.Property<string>("IconUrl")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("varchar(255)")
+                        .HasMaxLength(255);
 
                     b.Property<byte>("IsAssignToggleOff")
                         .HasColumnType("tinyint(1)");
@@ -73,7 +76,8 @@ namespace BroadlinkWeb.Migrations
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("varchar(50)")
+                        .HasMaxLength(50);
 
                     b.Property<int>("PositionLeft")
                         .HasColumnType("int(11)");
@@ -156,10 +160,12 @@ namespace BroadlinkWeb.Migrations
 
                     b.Property<string>("Color")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("varchar(255)")
+                        .HasMaxLength(255);
 
                     b.Property<string>("IconUrl")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("varchar(255)")
+                        .HasMaxLength(255);
 
                     b.Property<byte>("IsMainPanelReady")
                         .HasColumnType("tinyint(1)");
@@ -171,7 +177,8 @@ namespace BroadlinkWeb.Migrations
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("varchar(50)")
+                        .HasMaxLength(50);
 
                     b.Property<byte>("OperationType")
                         .HasColumnType("tinyint(2)");
@@ -221,18 +228,21 @@ namespace BroadlinkWeb.Migrations
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Json")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasMaxLength(1000);
 
                     b.Property<string>("Message")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("text")
+                        .HasMaxLength(1000);
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("varchar(50)");
 
                     b.Property<decimal>("Progress")
                         .HasColumnType("decimal(3, 2)");
 
-                    b.Property<DateTime>("Updated")
+                    b.Property<DateTime?>("Updated")
                         .HasColumnType("datetime");
 
                     b.HasKey("Id");
@@ -251,10 +261,12 @@ namespace BroadlinkWeb.Migrations
                         .HasColumnType("int(11)");
 
                     b.Property<string>("IpAddressString")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("varchar(255)")
+                        .HasMaxLength(255);
 
                     b.Property<string>("Name")
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("varchar(50)")
+                        .HasMaxLength(50);
 
                     b.HasKey("Id");
 
