@@ -222,7 +222,7 @@ namespace BroadlinkWeb.Models.Stores
 
             // 認証処理終了まで待機する。
             Xb.Util.Out("BrDevicesController.Refresh - Device Auth");
-            this.DelayedAuth(entities)
+            this.DelayedAuth(entities, true)
                 .ConfigureAwait(false)
                 .GetAwaiter()
                 .GetResult();
@@ -240,20 +240,23 @@ namespace BroadlinkWeb.Models.Stores
             return entities;
         }
 
-        private async Task<bool> DelayedAuth(IEnumerable<BrDevice> entities)
+        private async Task<bool> DelayedAuth(IEnumerable<BrDevice> entities, bool force = false)
         {
             foreach (var entity in entities)
             {
                 if (entity.SbDevice == null)
                     continue;
 
-                // 注)非同期で認証はNG。
-                // UDPのため、要求パケットを複数一斉に送信すると、要求に応する応答パケットが
-                // どのソケットからのものか判別出来ず、ちぐはぐな応答を受け取ってしまう。
-                // 送信と受信を一回ずつ、順番に行う。
-                Xb.Util.Out($"Auth Try: {entity.SbDevice.DeviceType}[{entity.IpAddressString}]");
-                var res = await entity.SbDevice.Auth();
-                Xb.Util.Out($"Auth OK?: {entity.SbDevice.DeviceType}[{entity.IpAddressString}] => {this.IsDeviceAuthed(entity.SbDevice)}");
+                if (force || !this.IsDeviceAuthed(entity.SbDevice))
+                {
+                    // 注)非同期で認証はNG。
+                    // UDPのため、要求パケットを複数一斉に送信すると、要求に応する応答パケットが
+                    // どのソケットからのものか判別出来ず、ちぐはぐな応答を受け取ってしまう。
+                    // 送信と受信を一回ずつ、順番に行う。
+                    Xb.Util.Out($"Auth Try: {entity.SbDevice.DeviceType}[{entity.IpAddressString}]");
+                    var res = await entity.SbDevice.Auth();
+                    Xb.Util.Out($"Auth OK?: {entity.SbDevice.DeviceType}[{entity.IpAddressString}] => {this.IsDeviceAuthed(entity.SbDevice)}");
+                }
             }
 
             return true;

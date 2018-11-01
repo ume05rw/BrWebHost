@@ -6593,7 +6593,6 @@ var App;
                 _this.SetClassName('MainController');
                 _this.SetPageView(new Pages.MainPageView());
                 _this._page = _this.View;
-                Dump.Log('Store Initialize Start');
                 _this.InitStores()
                     .then(function () {
                     Dump.Log('SubController Load Start');
@@ -6608,16 +6607,6 @@ var App;
                     var sceneHeaderPropertyCtr = new Controllers.SceneHeaderPropertyController();
                     Dump.Log('SubController Load End');
                 });
-                //for (let i = 0; i < 5; i++) {
-                //    const btn = new App.Views.Controls.SceneButtonView();
-                //    btn.Label.Text = `Scene ${i + 1}`;
-                //    btn.Button.AddEventListener(ButtonEvents.SingleClick, async () => {
-                //        const ctr = this.Manager.Get('Scene') as SceneController;
-                //        ctr.SetExecMode();
-                //        ctr.ShowModal();
-                //    });
-                //    this._page.ScenePanel.Add(btn);
-                //}
                 _this._page.HeaderBar.RightButton.AddEventListener(ButtonEvents.SingleClick, function () { return __awaiter(_this, void 0, void 0, function () {
                     var ctr, item, ctrSet, _a, ctr_1, scene, detail, ctr2;
                     return __generator(this, function (_b) {
@@ -6729,17 +6718,23 @@ var App;
             }
             MainController.prototype.InitStores = function () {
                 return __awaiter(this, void 0, void 0, function () {
+                    var promises;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
-                            case 0: return [4 /*yield*/, Stores.BrDevices.GetList()];
+                            case 0:
+                                Dump.Log('Store Initialize Start');
+                                return [4 /*yield*/, Stores.BrDevices.GetList()];
                             case 1:
                                 _a.sent();
-                                return [4 /*yield*/, this.RefreshControlSets()];
+                                Dump.Log('Store Initialize - BrDevices OK.');
+                                promises = [];
+                                promises.push(this.RefreshControlSets());
+                                promises.push(this.RefreshScenes());
+                                return [4 /*yield*/, Promise.all(promises)];
                             case 2:
                                 _a.sent();
-                                return [4 /*yield*/, this.RefreshScenes()];
-                            case 3:
-                                _a.sent();
+                                Dump.Log('Store Initialize - ControlSets/Scenes OK.');
+                                Dump.Log('Store Initialize End');
                                 return [2 /*return*/, true];
                         }
                     });
@@ -7305,13 +7300,6 @@ var App;
                     _this.WaitNumberBox.Value = '1.0';
                     _this.WaitNumberBox.TextAlign = Property.TextAlign.Center;
                     _this.WaitNumberBox.DecimalPoint = 1;
-                    //this.WaitTextBox.Elem.on('keypress', (e) => {
-                    //    // 数字以外の不要な文字を削除
-                    //    var st = String.fromCharCode(e.which);
-                    //    return ("0123456789-.".indexOf(st, 0) < 0)
-                    //        ? false
-                    //        : true;
-                    //});
                     _this.WaitNumberBox.AddEventListener(TextBoxEvents.Changed, function () {
                         var value = _this.WaitNumberBox.Value;
                         if ($.isNumeric(value) && _this.Detail) {
@@ -11520,6 +11508,163 @@ var Fw;
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Events/InputViewEvents.ts" />
+/// <reference path="../Util/Dump.ts" />
+/// <reference path="InputViewBase.ts" />
+/// <reference path="Property/FitPolicy.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Dump = Fw.Util.Dump;
+        var Events = Fw.Events.InputViewEvents;
+        var NumberBoxInputView = /** @class */ (function (_super) {
+            __extends(NumberBoxInputView, _super);
+            function NumberBoxInputView() {
+                var _this = _super.call(this, $('<input type="text"></input>')) || this;
+                _this.SetClassName('TextBoxInputView');
+                _this.Elem.addClass(_this.ClassName);
+                _this._numberValue = 0;
+                _this._decimalPoint = 0;
+                _this._thousandSeparator = false;
+                _this._textAlign = Views.Property.TextAlign.Left;
+                _this.Elem.on('keypress', function (e) {
+                    // 数字以外の不要な文字を削除
+                    var st = String.fromCharCode(e.which);
+                    return ("0123456789-.,".indexOf(st, 0) < 0)
+                        ? false
+                        : true;
+                });
+                _this.Elem.on('change', function () {
+                    var value = _this.Elem.val().replace(/,/g, '');
+                    if ($.isNumeric(value)) {
+                        _this.SetNumberValue(parseFloat(value));
+                    }
+                    else {
+                        _this.SetNumberValue(0);
+                    }
+                    _this.Refresh();
+                });
+                return _this;
+            }
+            Object.defineProperty(NumberBoxInputView.prototype, "TextAlign", {
+                get: function () {
+                    return this._textAlign;
+                },
+                set: function (value) {
+                    this._textAlign = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(NumberBoxInputView.prototype, "DecimalPoint", {
+                get: function () {
+                    return this._decimalPoint;
+                },
+                set: function (value) {
+                    var changed = (this._decimalPoint !== value);
+                    if (changed) {
+                        this._decimalPoint = value;
+                        this.Refresh();
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(NumberBoxInputView.prototype, "ThousandSeparator", {
+                get: function () {
+                    return this._thousandSeparator;
+                },
+                set: function (value) {
+                    var changed = (this._thousandSeparator !== value);
+                    if (changed) {
+                        this._thousandSeparator = value;
+                        this.Refresh();
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(NumberBoxInputView.prototype, "NumberValue", {
+                get: function () {
+                    return this._numberValue;
+                },
+                set: function (value) {
+                    var changed = (this._numberValue !== value);
+                    if (changed)
+                        this.SetNumberValue(value);
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(NumberBoxInputView.prototype, "Value", {
+                get: function () {
+                    return (this._numberValue === null)
+                        ? null
+                        : this._numberValue.toFixed(this._decimalPoint);
+                },
+                set: function (value) {
+                    this.SetValue(value);
+                },
+                enumerable: true,
+                configurable: true
+            });
+            NumberBoxInputView.prototype.SetValue = function (value, eventDispatch) {
+                if (eventDispatch === void 0) { eventDispatch = true; }
+                if (!$.isNumeric(value)) {
+                    Dump.Log('Not Number value: ' + value);
+                    throw new Error('Not Number value: ' + value);
+                }
+                this.SetNumberValue(parseFloat(value), eventDispatch);
+            };
+            NumberBoxInputView.prototype.SetNumberValue = function (value, eventDispatch) {
+                if (eventDispatch === void 0) { eventDispatch = true; }
+                var changed = (this._numberValue !== value);
+                this._numberValue = value;
+                this.Refresh();
+                if (changed && eventDispatch) {
+                    this.DispatchEvent(Events.Changed, this.Value);
+                }
+            };
+            NumberBoxInputView.prototype.InnerRefresh = function () {
+                try {
+                    if (this.IsDisposed !== false)
+                        return;
+                    _super.prototype.InnerRefresh.call(this);
+                    var textValue = this._numberValue.toFixed(this._decimalPoint);
+                    if (this.ThousandSeparator) {
+                        textValue = this.addCommnas(textValue);
+                    }
+                    this.Elem.val(textValue);
+                    this.SetStyles({
+                        textAlign: this._textAlign,
+                    });
+                }
+                catch (e) {
+                    Dump.ErrorLog(e, this.ClassName);
+                }
+            };
+            NumberBoxInputView.prototype.addCommnas = function (numString) {
+                numString += '';
+                var x = numString.split('.');
+                var x1 = x[0];
+                var x2 = x.length > 1
+                    ? '.' + x[1]
+                    : '';
+                var rgx = /(\d+)(\d{3})/;
+                while (rgx.test(x1)) {
+                    x1 = x1.replace(rgx, '$1' + ',' + '$2');
+                }
+                return x1 + x2;
+            };
+            return NumberBoxInputView;
+        }(Views.InputViewBase));
+        Views.NumberBoxInputView = NumberBoxInputView;
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Events/ViewEvents.ts" />
 /// <reference path="../Util/Dump.ts" />
 /// <reference path="../Util/Num.ts" />
@@ -13457,163 +13602,6 @@ var Fw;
                 TextAlign["JustifyAll"] = "justify-all";
             })(TextAlign = Property.TextAlign || (Property.TextAlign = {}));
         })(Property = Views.Property || (Views.Property = {}));
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../Events/InputViewEvents.ts" />
-/// <reference path="../Util/Dump.ts" />
-/// <reference path="InputViewBase.ts" />
-/// <reference path="Property/FitPolicy.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var Dump = Fw.Util.Dump;
-        var Events = Fw.Events.InputViewEvents;
-        var NumberBoxInputView = /** @class */ (function (_super) {
-            __extends(NumberBoxInputView, _super);
-            function NumberBoxInputView() {
-                var _this = _super.call(this, $('<input type="text"></input>')) || this;
-                _this.SetClassName('TextBoxInputView');
-                _this.Elem.addClass(_this.ClassName);
-                _this._numberValue = 0;
-                _this._decimalPoint = 0;
-                _this._thousandSeparator = false;
-                _this._textAlign = Views.Property.TextAlign.Left;
-                _this.Elem.on('keypress', function (e) {
-                    // 数字以外の不要な文字を削除
-                    var st = String.fromCharCode(e.which);
-                    return ("0123456789-.,".indexOf(st, 0) < 0)
-                        ? false
-                        : true;
-                });
-                _this.Elem.on('change', function () {
-                    var value = _this.Elem.val().replace(/,/g, '');
-                    if ($.isNumeric(value)) {
-                        _this.SetNumberValue(parseFloat(value));
-                    }
-                    else {
-                        _this.SetNumberValue(0);
-                    }
-                    _this.Refresh();
-                });
-                return _this;
-            }
-            Object.defineProperty(NumberBoxInputView.prototype, "TextAlign", {
-                get: function () {
-                    return this._textAlign;
-                },
-                set: function (value) {
-                    this._textAlign = value;
-                    this.Refresh();
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(NumberBoxInputView.prototype, "DecimalPoint", {
-                get: function () {
-                    return this._decimalPoint;
-                },
-                set: function (value) {
-                    var changed = (this._decimalPoint !== value);
-                    if (changed) {
-                        this._decimalPoint = value;
-                        this.Refresh();
-                    }
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(NumberBoxInputView.prototype, "ThousandSeparator", {
-                get: function () {
-                    return this._thousandSeparator;
-                },
-                set: function (value) {
-                    var changed = (this._thousandSeparator !== value);
-                    if (changed) {
-                        this._thousandSeparator = value;
-                        this.Refresh();
-                    }
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(NumberBoxInputView.prototype, "NumberValue", {
-                get: function () {
-                    return this._numberValue;
-                },
-                set: function (value) {
-                    var changed = (this._numberValue !== value);
-                    if (changed)
-                        this.SetNumberValue(value);
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(NumberBoxInputView.prototype, "Value", {
-                get: function () {
-                    return (this._numberValue === null)
-                        ? null
-                        : this._numberValue.toFixed(this._decimalPoint);
-                },
-                set: function (value) {
-                    this.SetValue(value);
-                },
-                enumerable: true,
-                configurable: true
-            });
-            NumberBoxInputView.prototype.SetValue = function (value, eventDispatch) {
-                if (eventDispatch === void 0) { eventDispatch = true; }
-                if (!$.isNumeric(value)) {
-                    Dump.Log('Not Number value: ' + value);
-                    throw new Error('Not Number value: ' + value);
-                }
-                this.SetNumberValue(parseFloat(value), eventDispatch);
-            };
-            NumberBoxInputView.prototype.SetNumberValue = function (value, eventDispatch) {
-                if (eventDispatch === void 0) { eventDispatch = true; }
-                var changed = (this._numberValue !== value);
-                this._numberValue = value;
-                this.Refresh();
-                if (changed && eventDispatch) {
-                    this.DispatchEvent(Events.Changed, this.Value);
-                }
-            };
-            NumberBoxInputView.prototype.InnerRefresh = function () {
-                try {
-                    if (this.IsDisposed !== false)
-                        return;
-                    _super.prototype.InnerRefresh.call(this);
-                    var textValue = this._numberValue.toFixed(this._decimalPoint);
-                    if (this.ThousandSeparator) {
-                        textValue = this.addCommnas(textValue);
-                    }
-                    this.Elem.val(textValue);
-                    this.SetStyles({
-                        textAlign: this._textAlign,
-                    });
-                }
-                catch (e) {
-                    Dump.ErrorLog(e, this.ClassName);
-                }
-            };
-            NumberBoxInputView.prototype.addCommnas = function (numString) {
-                numString += '';
-                var x = numString.split('.');
-                var x1 = x[0];
-                var x2 = x.length > 1
-                    ? '.' + x[1]
-                    : '';
-                var rgx = /(\d+)(\d{3})/;
-                while (rgx.test(x1)) {
-                    x1 = x1.replace(rgx, '$1' + ',' + '$2');
-                }
-                return x1 + x2;
-            };
-            return NumberBoxInputView;
-        }(Views.InputViewBase));
-        Views.NumberBoxInputView = NumberBoxInputView;
     })(Views = Fw.Views || (Fw.Views = {}));
 })(Fw || (Fw = {}));
 //# sourceMappingURL=tsout.js.map

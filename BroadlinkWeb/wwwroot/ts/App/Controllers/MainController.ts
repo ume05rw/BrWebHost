@@ -48,7 +48,6 @@ namespace App.Controllers {
             this.SetPageView(new Pages.MainPageView());
             this._page = this.View as Pages.MainPageView;
 
-            Dump.Log('Store Initialize Start');
             this.InitStores()
                 .then(() => {
                     Dump.Log('SubController Load Start');
@@ -66,20 +65,6 @@ namespace App.Controllers {
 
                     Dump.Log('SubController Load End');
                 });
-
-
-            //for (let i = 0; i < 5; i++) {
-            //    const btn = new App.Views.Controls.SceneButtonView();
-            //    btn.Label.Text = `Scene ${i + 1}`;
-            //    btn.Button.AddEventListener(ButtonEvents.SingleClick, async () => {
-            //        const ctr = this.Manager.Get('Scene') as SceneController;
-            //        ctr.SetExecMode();
-            //        ctr.ShowModal();
-            //    });
-
-            //    this._page.ScenePanel.Add(btn);
-            //}
-
 
             this._page.HeaderBar.RightButton.AddEventListener(ButtonEvents.SingleClick, async () => {
                 // ヘッダの追加ボタンクリック - 新規リモコンのテンプレート選択後に編集画面へ。
@@ -175,11 +160,23 @@ namespace App.Controllers {
 
         private async InitStores(): Promise<boolean> {
 
+            Dump.Log('Store Initialize Start');
+
             await Stores.BrDevices.GetList();
 
-            await this.RefreshControlSets();
+            Dump.Log('Store Initialize - BrDevices OK.');
 
-            await this.RefreshScenes();
+            // ControlSetとSceneは並列に実行する。
+            //await this.RefreshControlSets();
+            //await this.RefreshScenes();
+            const promises: Promise<boolean>[] = [];
+            promises.push(this.RefreshControlSets());
+            promises.push(this.RefreshScenes());
+            await Promise.all(promises);
+
+            Dump.Log('Store Initialize - ControlSets/Scenes OK.');
+
+            Dump.Log('Store Initialize End');
 
             return true;
         }

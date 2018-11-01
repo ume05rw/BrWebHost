@@ -118,13 +118,6 @@ namespace App.Views.Controls {
             this.WaitNumberBox.TextAlign = Property.TextAlign.Center;
             this.WaitNumberBox.DecimalPoint = 1;
 
-            //this.WaitTextBox.Elem.on('keypress', (e) => {
-            //    // 数字以外の不要な文字を削除
-            //    var st = String.fromCharCode(e.which);
-            //    return ("0123456789-.".indexOf(st, 0) < 0)
-            //        ? false
-            //        : true;
-            //});
             this.WaitNumberBox.AddEventListener(TextBoxEvents.Changed, () => {
                 let value = this.WaitNumberBox.Value;
                 if ($.isNumeric(value) && this.Detail) {
