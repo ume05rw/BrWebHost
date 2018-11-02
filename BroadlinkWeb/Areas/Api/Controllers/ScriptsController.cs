@@ -44,7 +44,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
                 {
                     foreach (var control in cset.Controls)
                     {
-                        var detailName = string.IsNullOrEmpty(control.Name)
+                        var detailName = !string.IsNullOrEmpty(control.Name)
                             ? " - " + control.Name
                             : "";
                         result.Add(new Script()
