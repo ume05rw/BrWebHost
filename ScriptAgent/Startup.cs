@@ -43,7 +43,11 @@ namespace BroadlinkWeb
                     options.UseLoggerFactory(loggreFactory);
                 }
 
-                options.UseSqlite("Data Source=scriptagent.db");
+                var dbPath = System.IO.Path.Combine(Program.ExecPath, "scriptagent.db");
+                if (!System.IO.File.Exists(dbPath))
+                    throw new Exception("DB-File Not Found!!: " + dbPath);
+
+                options.UseSqlite($"Data Source=\"{dbPath}\"");
             });
 
             services
