@@ -8,14 +8,9 @@
   <ItemGroup>
     <Content Remove="wwwroot\js\Page.ts" />
     <Content Remove="wwwroot\ts\App\Color.ts" />
-    <Content Remove="wwwroot\ts\App\Controllers\ColorSelectController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\ControlHeaderPropertyController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\ControlPropertyController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\ControlSetController.ts" />
-    <Content Remove="wwwroot\ts\App\Controllers\IconSelectController.ts" />
-    <Content Remove="wwwroot\ts\App\Controllers\ItemSelectControllerBase.ts" />
-    <Content Remove="wwwroot\ts\App\Controllers\MouseEventsController.ts" />
-    <Content Remove="wwwroot\ts\App\Events\Controls\ControlButtonViewEvents.ts" />
     <Content Remove="wwwroot\ts\App\Icon.ts" />
     <Content Remove="wwwroot\ts\App\Items\ControlSetTemplate.ts" />
     <Content Remove="wwwroot\ts\App\Items\DeviceType.ts" />
@@ -45,80 +40,36 @@
     <Content Remove="wwwroot\ts\App\Views\Popup\Cancellable.ts" />
     <Content Remove="wwwroot\ts\App\Views\Popup\ConfirmPopup.ts" />
     <Content Remove="wwwroot\ts\App\Views\Popup\PopupBase.ts" />
-    <Content Remove="wwwroot\ts\Fw\Config.ts" />
-    <Content Remove="wwwroot\ts\Fw\EventableBase.ts" />
-    <Content Remove="wwwroot\ts\Fw\Events\BoxViewEvents.ts" />
-    <Content Remove="wwwroot\ts\Fw\Events\ButtonViewEvents.ts" />
-    <Content Remove="wwwroot\ts\Fw\Events\CheckBoxInputViewEvents.ts" />
-    <Content Remove="wwwroot\ts\Fw\Events\ControlViewEvents.ts" />
-    <Content Remove="wwwroot\ts\Fw\Events\EntityEvents.ts" />
-    <Content Remove="wwwroot\ts\Fw\Events\EventableEvents.ts" />
-    <Content Remove="wwwroot\ts\Fw\Events\EventObject.ts" />
-    <Content Remove="wwwroot\ts\Fw\Events\EventReference.ts" />
-    <Content Remove="wwwroot\ts\Fw\Events\ImageViewEvents.ts" />
-    <Content Remove="wwwroot\ts\Fw\Events\InputViewEvents.ts" />
-    <Content Remove="wwwroot\ts\Fw\Events\LabelViewEvents.ts" />
-    <Content Remove="wwwroot\ts\Fw\Events\LineViewEvents.ts" />
-    <Content Remove="wwwroot\ts\Fw\Events\PageViewEvents.ts" />
-    <Content Remove="wwwroot\ts\Fw\Events\RelocatableButtonViewEvents.ts" />
-    <Content Remove="wwwroot\ts\Fw\Events\RootEvents.ts" />
-    <Content Remove="wwwroot\ts\Fw\Events\SelectBoxInputViewEvents.ts" />
-    <Content Remove="wwwroot\ts\Fw\Events\SlidableBoxViewEvents.ts" />
-    <Content Remove="wwwroot\ts\Fw\Events\StoreEvents.ts" />
-    <Content Remove="wwwroot\ts\Fw\Events\StuckerBoxViewEvents.ts" />
-    <Content Remove="wwwroot\ts\Fw\Events\TextAreaInputViewEvents.ts" />
-    <Content Remove="wwwroot\ts\Fw\Events\TextBoxInputViewEvents.ts" />
-    <Content Remove="wwwroot\ts\Fw\Events\ToggleButtonInputViewEvents.ts" />
-    <Content Remove="wwwroot\ts\Fw\Events\ViewEvents.ts" />
-    <Content Remove="wwwroot\ts\Fw\IEventable.ts" />
-    <Content Remove="wwwroot\ts\Fw\IObject.ts" />
-    <Content Remove="wwwroot\ts\Fw\ObjectBase.ts" />
-    <Content Remove="wwwroot\ts\Fw\Startup.ts" />
-    <Content Remove="wwwroot\ts\Fw\Util\App.ts" />
-    <Content Remove="wwwroot\ts\Fw\Util\Date.ts" />
-    <Content Remove="wwwroot\ts\Fw\Util\Dump.ts" />
-    <Content Remove="wwwroot\ts\Fw\Util\Num.ts" />
-    <Content Remove="wwwroot\ts\Fw\Util\Obj.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\Xhr.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\XhrMethodType.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\XhrParams.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\XhrResult.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\Anchor.ts" />
-    <Content Remove="wwwroot\ts\Fw\Views\Animation\Animator.ts" />
-    <Content Remove="wwwroot\ts\Fw\Views\Animation\Params.ts" />
-    <Content Remove="wwwroot\ts\Fw\Views\BoxView.ts" />
-    <Content Remove="wwwroot\ts\Fw\Views\ButtonView.ts" />
-    <Content Remove="wwwroot\ts\Fw\Views\CheckBoxView.ts" />
-    <Content Remove="wwwroot\ts\Fw\Views\ControlView.ts" />
-    <Content Remove="wwwroot\ts\Fw\Views\HtmlView.ts" />
-    <Content Remove="wwwroot\ts\Fw\Views\IInputView.ts" />
-    <Content Remove="wwwroot\ts\Fw\Views\ImageView.ts" />
-    <Content Remove="wwwroot\ts\Fw\Views\InputViewBase.ts" />
-    <Content Remove="wwwroot\ts\Fw\Views\IView.ts" />
-    <Content Remove="wwwroot\ts\Fw\Views\LabelView.ts" />
-    <Content Remove="wwwroot\ts\Fw\Views\LineView.ts" />
-    <Content Remove="wwwroot\ts\Fw\Views\NumberBoxInputView.ts" />
-    <Content Remove="wwwroot\ts\Fw\Views\PageView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\Position.ts" />
-    <Content Remove="wwwroot\ts\Fw\Views\Property\Direction.ts" />
-    <Content Remove="wwwroot\ts\Fw\Views\Property\FitPolicy.ts" />
-    <Content Remove="wwwroot\ts\Fw\Views\Property\FontSize.ts" />
-    <Content Remove="wwwroot\ts\Fw\Views\Property\FontWeight.ts" />
-    <Content Remove="wwwroot\ts\Fw\Views\Property\MouseLocation.ts" />
-    <Content Remove="wwwroot\ts\Fw\Views\Property\PositionPolicy.ts" />
-    <Content Remove="wwwroot\ts\Fw\Views\Property\ReferencePoint.ts" />
-    <Content Remove="wwwroot\ts\Fw\Views\Property\TextAlign.ts" />
-    <Content Remove="wwwroot\ts\Fw\Views\RelocatableButtonView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\Root.ts" />
-    <Content Remove="wwwroot\ts\Fw\Views\SelectBoxInputView.ts" />
     <Content Remove="wwwroot\ts\Fw\Views\Size.ts" />
-    <Content Remove="wwwroot\ts\Fw\Views\SlidableBoxView.ts" />
-    <Content Remove="wwwroot\ts\Fw\Views\StuckerBoxView.ts" />
-    <Content Remove="wwwroot\ts\Fw\Views\TextAreaInputView.ts" />
-    <Content Remove="wwwroot\ts\Fw\Views\TextBoxInputView.ts" />
-    <Content Remove="wwwroot\ts\Fw\Views\ToggleButtonInputView.ts" />
-    <Content Remove="wwwroot\ts\Fw\Views\ViewBase.ts" />
     <Content Remove="wwwroot\ts\PageManager.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\BroadlinkWeb\Areas\Api\Controllers\ControlSetsController.cs" Link="Areas\Api\Controllers\ControlSetsController.cs" />
+    <Compile Include="..\BroadlinkWeb\Areas\Api\Controllers\ScriptsController.cs" Link="Areas\Api\Controllers\ScriptsController.cs" />
+    <Compile Include="..\BroadlinkWeb\Controllers\HomeController.cs" Link="Controllers\HomeController.cs" />
+    <Compile Include="..\BroadlinkWeb\Extensions\ServiceCollectionExtensions.cs" Link="Extensions\ServiceCollectionExtensions.cs" />
+    <Compile Include="..\BroadlinkWeb\Extensions\WebHostServiceExtensions.cs" Link="Extensions\WebHostServiceExtensions.cs" />
+    <Compile Include="..\BroadlinkWeb\Models\Entities\Enums.cs" Link="Models\Entities\Enums.cs" />
+    <Compile Include="..\BroadlinkWeb\Models\Entities\Error.cs" Link="Models\Entities\Error.cs" />
+    <Compile Include="..\BroadlinkWeb\Models\Entities\Header.cs" Link="Models\Entities\Header.cs" />
+    <Compile Include="..\BroadlinkWeb\Models\Entities\LoopJobStatus.cs" Link="Models\Entities\LoopJobStatus.cs" />
+    <Compile Include="..\BroadlinkWeb\Models\Entities\Script.cs" Link="Models\Entities\Script.cs" />
+    <Compile Include="..\BroadlinkWeb\Models\Entities\XhrResult.cs" Link="Models\Entities\XhrResult.cs" />
+    <Compile Include="..\BroadlinkWeb\Models\Stores\ScriptStore.cs" Link="Models\Stores\ScriptStore.cs" />
+    <Compile Include="..\BroadlinkWeb\Models\ViewModels\ErrorViewModel.cs" Link="Models\ViewModels\ErrorViewModel.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\BroadlinkWeb\wwwroot\ts\Fw\Events\_ExtendTree.txt" Link="wwwroot\ts\Fw\Events\_ExtendTree.txt" />
+    <Content Include="..\BroadlinkWeb\wwwroot\ts\Fw\_ExtendTree.txt" Link="wwwroot\ts\Fw\_ExtendTree.txt" />
   </ItemGroup>
 
   <ItemGroup>
@@ -144,17 +95,261 @@
   </ItemGroup>
 
   <ItemGroup>
-    <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ColorSelectController.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\App\Controllers\IconSelectController.ts" />
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\App\Controllers\ColorSelectController.ts">
+      <Link>wwwroot\ts\App\Controllers\ColorSelectController.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\App\Controllers\IconSelectController.ts">
+      <Link>wwwroot\ts\App\Controllers\IconSelectController.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\App\Controllers\ItemSelectControllerBase.ts">
+      <Link>wwwroot\ts\App\Controllers\ItemSelectControllerBase.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Config.ts">
+      <Link>wwwroot\ts\Fw\Config.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Controllers\ControllerBase.ts">
+      <Link>wwwroot\ts\Fw\Controllers\ControllerBase.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Controllers\IController.ts">
+      <Link>wwwroot\ts\Fw\Controllers\IController.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Controllers\Manager.ts">
+      <Link>wwwroot\ts\Fw\Controllers\Manager.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\EventableBase.ts">
+      <Link>wwwroot\ts\Fw\EventableBase.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Events\BoxViewEvents.ts">
+      <Link>wwwroot\ts\Fw\Events\BoxViewEvents.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Events\ButtonViewEvents.ts">
+      <Link>wwwroot\ts\Fw\Events\ButtonViewEvents.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Events\CheckBoxInputViewEvents.ts">
+      <Link>wwwroot\ts\Fw\Events\CheckBoxInputViewEvents.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Events\ControlViewEvents.ts">
+      <Link>wwwroot\ts\Fw\Events\ControlViewEvents.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Events\EntityEvents.ts">
+      <Link>wwwroot\ts\Fw\Events\EntityEvents.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Events\EventableEvents.ts">
+      <Link>wwwroot\ts\Fw\Events\EventableEvents.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Events\EventObject.ts">
+      <Link>wwwroot\ts\Fw\Events\EventObject.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Events\EventReference.ts">
+      <Link>wwwroot\ts\Fw\Events\EventReference.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Events\ImageViewEvents.ts">
+      <Link>wwwroot\ts\Fw\Events\ImageViewEvents.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Events\InputViewEvents.ts">
+      <Link>wwwroot\ts\Fw\Events\InputViewEvents.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Events\LabelViewEvents.ts">
+      <Link>wwwroot\ts\Fw\Events\LabelViewEvents.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Events\LineViewEvents.ts">
+      <Link>wwwroot\ts\Fw\Events\LineViewEvents.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Events\PageViewEvents.ts">
+      <Link>wwwroot\ts\Fw\Events\PageViewEvents.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Events\RelocatableButtonViewEvents.ts">
+      <Link>wwwroot\ts\Fw\Events\RelocatableButtonViewEvents.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Events\RootEvents.ts">
+      <Link>wwwroot\ts\Fw\Events\RootEvents.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Events\SelectBoxInputViewEvents.ts">
+      <Link>wwwroot\ts\Fw\Events\SelectBoxInputViewEvents.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Events\SlidableBoxViewEvents.ts">
+      <Link>wwwroot\ts\Fw\Events\SlidableBoxViewEvents.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Events\StoreEvents.ts">
+      <Link>wwwroot\ts\Fw\Events\StoreEvents.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Events\StuckerBoxViewEvents.ts">
+      <Link>wwwroot\ts\Fw\Events\StuckerBoxViewEvents.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Events\TextAreaInputViewEvents.ts">
+      <Link>wwwroot\ts\Fw\Events\TextAreaInputViewEvents.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Events\TextBoxInputViewEvents.ts">
+      <Link>wwwroot\ts\Fw\Events\TextBoxInputViewEvents.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Events\ToggleButtonInputViewEvents.ts">
+      <Link>wwwroot\ts\Fw\Events\ToggleButtonInputViewEvents.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Events\ViewEvents.ts">
+      <Link>wwwroot\ts\Fw\Events\ViewEvents.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\IEventable.ts">
+      <Link>wwwroot\ts\Fw\IEventable.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\IObject.ts">
+      <Link>wwwroot\ts\Fw\IObject.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Models\EntityBase.ts">
+      <Link>wwwroot\ts\Fw\Models\EntityBase.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Models\IEntity.ts">
+      <Link>wwwroot\ts\Fw\Models\IEntity.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Models\IStore.ts">
+      <Link>wwwroot\ts\Fw\Models\IStore.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Models\StoreBase.ts">
+      <Link>wwwroot\ts\Fw\Models\StoreBase.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\ObjectBase.ts">
+      <Link>wwwroot\ts\Fw\ObjectBase.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Root.ts">
+      <Link>wwwroot\ts\Fw\Root.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Startup.ts">
+      <Link>wwwroot\ts\Fw\Startup.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Util\App.ts">
+      <Link>wwwroot\ts\Fw\Util\App.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Util\Date.ts">
+      <Link>wwwroot\ts\Fw\Util\Date.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Util\Dump.ts">
+      <Link>wwwroot\ts\Fw\Util\Dump.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Util\Num.ts">
+      <Link>wwwroot\ts\Fw\Util\Num.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Util\Obj.ts">
+      <Link>wwwroot\ts\Fw\Util\Obj.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Util\Xhr\MethodType.ts">
+      <Link>wwwroot\ts\Fw\Util\Xhr\MethodType.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Util\Xhr\Params.ts">
+      <Link>wwwroot\ts\Fw\Util\Xhr\Params.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Util\Xhr\Query.ts">
+      <Link>wwwroot\ts\Fw\Util\Xhr\Query.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Util\Xhr\Result.ts">
+      <Link>wwwroot\ts\Fw\Util\Xhr\Result.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Views\Animation\Animator.ts">
+      <Link>wwwroot\ts\Fw\Views\Animation\Animator.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Views\Animation\Params.ts">
+      <Link>wwwroot\ts\Fw\Views\Animation\Params.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Views\BoxView.ts">
+      <Link>wwwroot\ts\Fw\Views\BoxView.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Views\ButtonView.ts">
+      <Link>wwwroot\ts\Fw\Views\ButtonView.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Views\CheckBoxView.ts">
+      <Link>wwwroot\ts\Fw\Views\CheckBoxView.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Views\ControlView.ts">
+      <Link>wwwroot\ts\Fw\Views\ControlView.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Views\HtmlView.ts">
+      <Link>wwwroot\ts\Fw\Views\HtmlView.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Views\IInputView.ts">
+      <Link>wwwroot\ts\Fw\Views\IInputView.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Views\ImageView.ts">
+      <Link>wwwroot\ts\Fw\Views\ImageView.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Views\InputViewBase.ts">
+      <Link>wwwroot\ts\Fw\Views\InputViewBase.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Views\IView.ts">
+      <Link>wwwroot\ts\Fw\Views\IView.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Views\LabelView.ts">
+      <Link>wwwroot\ts\Fw\Views\LabelView.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Views\LineView.ts">
+      <Link>wwwroot\ts\Fw\Views\LineView.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Views\NumberBoxInputView.ts">
+      <Link>wwwroot\ts\Fw\Views\NumberBoxInputView.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Views\PageView.ts">
+      <Link>wwwroot\ts\Fw\Views\PageView.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Views\Property\Anchor.ts">
+      <Link>wwwroot\ts\Fw\Views\Property\Anchor.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Views\Property\Direction.ts">
+      <Link>wwwroot\ts\Fw\Views\Property\Direction.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Views\Property\FitPolicy.ts">
+      <Link>wwwroot\ts\Fw\Views\Property\FitPolicy.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Views\Property\FontSize.ts">
+      <Link>wwwroot\ts\Fw\Views\Property\FontSize.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Views\Property\FontWeight.ts">
+      <Link>wwwroot\ts\Fw\Views\Property\FontWeight.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Views\Property\MouseLocation.ts">
+      <Link>wwwroot\ts\Fw\Views\Property\MouseLocation.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Views\Property\Position.ts">
+      <Link>wwwroot\ts\Fw\Views\Property\Position.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Views\Property\PositionPolicy.ts">
+      <Link>wwwroot\ts\Fw\Views\Property\PositionPolicy.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Views\Property\ReferencePoint.ts">
+      <Link>wwwroot\ts\Fw\Views\Property\ReferencePoint.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Views\Property\Size.ts">
+      <Link>wwwroot\ts\Fw\Views\Property\Size.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Views\Property\TextAlign.ts">
+      <Link>wwwroot\ts\Fw\Views\Property\TextAlign.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Views\RelocatableButtonView.ts">
+      <Link>wwwroot\ts\Fw\Views\RelocatableButtonView.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Views\SelectBoxInputView.ts">
+      <Link>wwwroot\ts\Fw\Views\SelectBoxInputView.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Views\SlidableBoxView.ts">
+      <Link>wwwroot\ts\Fw\Views\SlidableBoxView.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Views\StuckerBoxView.ts">
+      <Link>wwwroot\ts\Fw\Views\StuckerBoxView.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Views\TextAreaInputView.ts">
+      <Link>wwwroot\ts\Fw\Views\TextAreaInputView.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Views\TextBoxInputView.ts">
+      <Link>wwwroot\ts\Fw\Views\TextBoxInputView.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Views\ToggleButtonInputView.ts">
+      <Link>wwwroot\ts\Fw\Views\ToggleButtonInputView.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\BroadlinkWeb\wwwroot\ts\Fw\Views\ViewBase.ts">
+      <Link>wwwroot\ts\Fw\Views\ViewBase.ts</Link>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="wwwroot\ts\App\Items\ModalOperationType.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Items\DeviceType.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Items\Color.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ControlHeaderPropertyController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ControlPropertyController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ControlSetController.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ItemSelectControllerBase.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\App\Controllers\MouseEventsController.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\App\Events\Controls\ControlButtonViewEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Items\ControlSetTemplate.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Items\OperationType.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Items\Icon.ts" />
@@ -183,86 +378,6 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Popup\Cancellable.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Popup\ConfirmPopup.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Popup\PopupBase.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Config.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\IController.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\ControllerBase.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\Manager.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\EventableBase.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\BoxViewEvents.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\ButtonViewEvents.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\CheckBoxInputViewEvents.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\EntityEvents.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\EventObject.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\InputViewEvents.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\EventableEvents.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\SelectBoxInputViewEvents.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\StoreEvents.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\StuckerBoxViewEvents.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\ControlViewEvents.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\EventReference.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\ImageViewEvents.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\LabelViewEvents.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\LineViewEvents.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\PageViewEvents.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\RelocatableButtonViewEvents.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\RootEvents.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\SlidableBoxViewEvents.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\TextAreaInputViewEvents.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\TextBoxInputViewEvents.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\ToggleButtonInputViewEvents.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\ViewEvents.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\IEventable.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\IObject.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Models\EntityBase.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Models\IEntity.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Models\IStore.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Models\StoreBase.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\ObjectBase.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Startup.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Util\App.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Date.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Dump.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Num.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Obj.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Xhr\Query.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Xhr\MethodType.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Xhr\Params.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Xhr\Result.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\BoxView.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ButtonView.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\CheckBoxView.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\HtmlView.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\IInputView.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\InputViewBase.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\MouseLocation.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\TextAlign.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\ReferencePoint.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\SelectBoxInputView.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\StuckerBoxView.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ImageView.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\LineView.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\Anchor.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Animation\Animator.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Animation\Params.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ControlView.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\IView.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\LabelView.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\PageView.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\Direction.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\FitPolicy.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\FontSize.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\FontWeight.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\Position.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\PositionPolicy.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\RelocatableButtonView.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\Size.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Root.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\SlidableBoxView.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\TextAreaInputView.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\NumberBoxInputView.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\TextBoxInputView.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ToggleButtonInputView.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ViewBase.ts" />
   </ItemGroup>
 
   <ItemGroup>
@@ -287,6 +402,33 @@
     <None Update="lib\UdpReplyer\Xb.Net.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Areas\Api\Controllers\" />
+    <Folder Include="Controllers\" />
+    <Folder Include="Extensions\" />
+    <Folder Include="Models\ViewModels\" />
+    <Folder Include="Views\Home\" />
+    <Folder Include="Views\Shared\" />
+    <Folder Include="wwwroot\ts\App\Events\Controls\" />
+    <Folder Include="wwwroot\ts\Fw\Controllers\" />
+    <Folder Include="wwwroot\ts\Fw\Events\" />
+    <Folder Include="wwwroot\ts\Fw\Models\" />
+    <Folder Include="wwwroot\ts\Fw\Util\Xhr\" />
+    <Folder Include="wwwroot\ts\Fw\Views\Animation\" />
+    <Folder Include="wwwroot\ts\Fw\Views\Property\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\BroadlinkWeb\Views\Home\Index.cshtml" Link="Views\Home\Index.cshtml" />
+    <None Include="..\BroadlinkWeb\Views\Shared\Error.cshtml" Link="Views\Shared\Error.cshtml" />
+    <None Include="..\BroadlinkWeb\Views\Shared\PopupTemplates.cshtml" Link="Views\Shared\PopupTemplates.cshtml" />
+    <None Include="..\BroadlinkWeb\Views\Shared\UnderscoreTemplates.cshtml" Link="Views\Shared\UnderscoreTemplates.cshtml" />
+    <None Include="..\BroadlinkWeb\Views\Shared\_Layout.cshtml" Link="Views\Shared\_Layout.cshtml" />
+    <None Include="..\BroadlinkWeb\Views\Shared\_ValidationScriptsPartial.cshtml" Link="Views\Shared\_ValidationScriptsPartial.cshtml" />
+    <None Include="..\BroadlinkWeb\Views\_ViewImports.cshtml" Link="Views\_ViewImports.cshtml" />
+    <None Include="..\BroadlinkWeb\Views\_ViewStart.cshtml" Link="Views\_ViewStart.cshtml" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">

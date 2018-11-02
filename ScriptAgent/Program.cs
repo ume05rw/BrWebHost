@@ -22,7 +22,7 @@ namespace BroadlinkWeb
     /// </remarks>
     public class Program
     {
-        public const int Port = 5004;
+        public static int Port = 5004;
 
         public static string _currentPath = "";
         public static string CurrentPath
@@ -46,6 +46,10 @@ namespace BroadlinkWeb
             // サービスとして起動するかどうかのフラグ
             // デバッグ実行時にサービスとして実行しないようにする
             bool isService = !(Debugger.IsAttached || args.Contains("--console"));
+
+            // VSから起動したとき、ポートを変更。
+            if (Debugger.IsAttached)
+                Program.Port = 5005;
 
             // 1.サービスとして起動する場合
             //   1) WebRoot = 実行ファイルパス
@@ -113,12 +117,12 @@ namespace BroadlinkWeb
         /// </remarks>
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseKestrel()
-                .UseContentRoot(Program._currentPath)
+                //.UseKestrel()
+                //.UseContentRoot(Program._currentPath)
+                .UseStartup<Startup>()
                 .UseUrls($"http://*:{Program.Port}")
                 //.UseUrls("http://0.0.0.0:5004")
                 //.UseUrls("http://localhost:5004") //<-ホスト名をlocalhostに限定するとき
-                .UseStartup<Startup>()
                 .Build();
     }
 }
