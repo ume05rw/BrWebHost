@@ -32,10 +32,10 @@ namespace BroadlinkWeb.Models.Stores
                 // socketが保持され続ける現象が発生する。
                 // 対策として、UDP応答を返すプログラムを別途起動するようにした。
                 // VS中断時などはプロセスが残るので、必要に応じてdotnetプロセスを殺す。
-                var dir = System.IO.Path.Combine(Environment.CurrentDirectory, "lib/UdpReplyer");
-                var arg = $"lib/UdpReplyer/UdpReplyer.dll";
+                var execPath = System.IO.Path.Combine(Program.CurrentPath, "lib/UdpReplyer");
+                var dllPath = System.IO.Path.Combine(Program.CurrentPath, "lib/UdpReplyer/UdpReplyer.dll");
                 RemoteHostStore.Replyer
-                    = Xb.App.Process.Create("dotnet", $"UdpReplyer.dll {Program.Port}", false, dir);
+                    = Xb.App.Process.Create("dotnet", $"\"{dllPath}\" {Program.Port}", false, execPath);
             }
             catch (Exception ex)
             {

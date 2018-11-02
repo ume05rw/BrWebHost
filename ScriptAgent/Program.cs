@@ -33,15 +33,6 @@ namespace BroadlinkWeb
             }
         }
 
-        public static string _execPath = "";
-        public static string ExecPath
-        {
-            get
-            {
-                return Program._execPath;
-            }
-        }
-
         /// <summary>
         /// 
         /// </summary>
@@ -56,22 +47,40 @@ namespace BroadlinkWeb
             // デバッグ実行時にサービスとして実行しないようにする
             bool isService = !(Debugger.IsAttached || args.Contains("--console"));
 
-            foreach (var arg in args)
-            {
-                Console.WriteLine("Arg: " + arg);
-            }
+            // 1.サービスとして起動する場合
+            //   1) WebRoot = 実行ファイルパス
+            //   2) DBパス  = 実行ファイルパス/scriptagent.db
+            //   3) Replyer = 実行ファイルパス/lib/UdpReplyer/UdpReplyer.dll
 
-            // サービス実行時のルートディレクトリの指定
-            Program._currentPath = Directory.GetCurrentDirectory();
-            Program._execPath = Directory.GetCurrentDirectory();
-            if (isService)
-            {
-                string pathToExe = Process.GetCurrentProcess().MainModule.FileName;
-                Program._execPath = Path.GetDirectoryName(pathToExe);
-            }
+            // 2.publishしたexeを起動する場合
+            //   1) WebRoot = 実行ファイルパス
+            //   2) DBパス  = 実行ファイルパス/scriptagent.db
+            //   3) Replyer = 実行ファイルパス/lib/UdpReplyer/UdpReplyer.dll
 
-            Console.WriteLine("Current Path : " + Program._currentPath);
-            Console.WriteLine("Exec Path    : " + Program._execPath);
+
+            // 3.コマンドラインから、dotnetコマンドで起動する場合
+            //   1) WebRoot = カレントパス/
+            //   2) DBパス  = カレントパス/scriptagent.db
+            //   3) Replyer = カレントパス/lib/UdpReplyer/UdpReplyer.dll
+
+            // 4.Visual Studioで起動する場合
+            //   1) WebRoot = カレントパス/
+            //   2) DBパス  = カレントパス/scriptagent.db
+            //   3) Replyer = カレントパス/lib/UdpReplyer/UdpReplyer.dll
+
+            string pathToExe = Process.GetCurrentProcess().MainModule.FileName;
+            if (pathToExe.EndsWith("dotnet") || pathToExe.EndsWith("dotnet.exe"))
+            {
+                // dotnetコマンドから起動している。
+                // VisualStudio、コマンドライン等から実行している。
+                Program._currentPath = Directory.GetCurrentDirectory();
+            }
+            else
+            {
+                // dotnetコマンド以外から起動している。
+                // 実行ファイルのパスを取得してルートとする。
+                Program._currentPath = Path.GetDirectoryName(pathToExe);
+            }
 
             // コマンドライン引数のパースでエラーになるので、引数を渡さず握りつぶす。
             // 1) .NetCoreコマンドライン引数は、常に キーと値のペアである必要がある。
@@ -81,25 +90,35 @@ namespace BroadlinkWeb
             //         --> args = [ "./XXX.dll", "--console", "true" ]
             //    2-2) XXX.exe --console true
             //         --> args = [ "--console", "true" ]
-            //IWebHost host = WebHost.CreateDefaultBuilder(args)
-            IWebHost host = WebHost.CreateDefaultBuilder(new string[] { })
+
+
+            // サービスかどうかで起動方法を分ける
+            if (isService)
+            {
+                Program.BuildWebHost(new string[] { }).RunAsCustomService();
+            }
+            else
+            {
+                Program.BuildWebHost(new string[] { }).Run();
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// このメソッドはマイグレーション時に必要。
+        /// </remarks>
+        public static IWebHost BuildWebHost(string[] args) =>
+            WebHost.CreateDefaultBuilder(args)
                 .UseKestrel()
-                .UseContentRoot(Program._execPath)
+                .UseContentRoot(Program._currentPath)
                 .UseUrls($"http://*:{Program.Port}")
                 //.UseUrls("http://0.0.0.0:5004")
                 //.UseUrls("http://localhost:5004") //<-ホスト名をlocalhostに限定するとき
                 .UseStartup<Startup>()
                 .Build();
-
-            // サービスかどうかで起動方法を分ける
-            if (isService)
-            {
-                host.RunAsCustomService();
-            }
-            else
-            {
-                host.Run();
-            }
-        }
     }
 }

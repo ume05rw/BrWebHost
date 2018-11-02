@@ -43,9 +43,11 @@ namespace BroadlinkWeb
                     options.UseLoggerFactory(loggreFactory);
                 }
 
-                var dbPath = System.IO.Path.Combine(Program.ExecPath, "scriptagent.db");
-                if (!System.IO.File.Exists(dbPath))
-                    throw new Exception("DB-File Not Found!!: " + dbPath);
+                var dbPath = System.IO.Path.Combine(Program.CurrentPath, "scriptagent.db");
+
+                // マイグレーション時は例外にしないように。
+                //if (!System.IO.File.Exists(dbPath))
+                //    throw new Exception("DB-File Not Found!!: " + dbPath);
 
                 options.UseSqlite($"Data Source=\"{dbPath}\"");
             });
