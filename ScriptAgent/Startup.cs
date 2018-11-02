@@ -46,10 +46,8 @@ namespace BroadlinkWeb
                 var dbPath = System.IO.Path.Combine(Program.CurrentPath, "scriptagent.db");
 
                 // マイグレーション時は例外にしないように。
-                if (!System.IO.File.Exists(dbPath))
-                    throw new Exception("DB-File Not Found!!: " + dbPath);
-
-                Xb.Util.Out("FUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUCK!!!!!!!!!");
+                //if (!System.IO.File.Exists(dbPath))
+                //    throw new Exception("DB-File Not Found!!: " + dbPath);
 
                 options.UseSqlite($"Data Source=\"{dbPath}\"");
             });

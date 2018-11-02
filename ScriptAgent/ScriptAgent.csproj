@@ -402,6 +402,9 @@
     <None Update="lib\UdpReplyer\Xb.Net.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="scriptagent.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
@@ -409,8 +412,6 @@
     <Folder Include="Controllers\" />
     <Folder Include="Extensions\" />
     <Folder Include="Models\ViewModels\" />
-    <Folder Include="Views\Home\" />
-    <Folder Include="Views\Shared\" />
     <Folder Include="wwwroot\ts\App\Events\Controls\" />
     <Folder Include="wwwroot\ts\Fw\Controllers\" />
     <Folder Include="wwwroot\ts\Fw\Events\" />
@@ -418,17 +419,6 @@
     <Folder Include="wwwroot\ts\Fw\Util\Xhr\" />
     <Folder Include="wwwroot\ts\Fw\Views\Animation\" />
     <Folder Include="wwwroot\ts\Fw\Views\Property\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\BroadlinkWeb\Views\Home\Index.cshtml" Link="Views\Home\Index.cshtml" />
-    <None Include="..\BroadlinkWeb\Views\Shared\Error.cshtml" Link="Views\Shared\Error.cshtml" />
-    <None Include="..\BroadlinkWeb\Views\Shared\PopupTemplates.cshtml" Link="Views\Shared\PopupTemplates.cshtml" />
-    <None Include="..\BroadlinkWeb\Views\Shared\UnderscoreTemplates.cshtml" Link="Views\Shared\UnderscoreTemplates.cshtml" />
-    <None Include="..\BroadlinkWeb\Views\Shared\_Layout.cshtml" Link="Views\Shared\_Layout.cshtml" />
-    <None Include="..\BroadlinkWeb\Views\Shared\_ValidationScriptsPartial.cshtml" Link="Views\Shared\_ValidationScriptsPartial.cshtml" />
-    <None Include="..\BroadlinkWeb\Views\_ViewImports.cshtml" Link="Views\_ViewImports.cshtml" />
-    <None Include="..\BroadlinkWeb\Views\_ViewStart.cshtml" Link="Views\_ViewStart.cshtml" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">

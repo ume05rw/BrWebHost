@@ -95,7 +95,6 @@ namespace BroadlinkWeb
             //    2-2) XXX.exe --console true
             //         --> args = [ "--console", "true" ]
 
-
             // サービスかどうかで起動方法を分ける
             if (isService)
             {
@@ -117,8 +116,8 @@ namespace BroadlinkWeb
         /// </remarks>
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                //.UseKestrel()
-                //.UseContentRoot(Program._currentPath)
+                .UseKestrel()
+                .UseContentRoot(Program._currentPath)
                 .UseStartup<Startup>()
                 .UseUrls($"http://*:{Program.Port}")
                 //.UseUrls("http://0.0.0.0:5004")
