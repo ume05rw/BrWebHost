@@ -467,7 +467,7 @@ namespace App.Controllers {
                 Popup.Alert.Open({
                     Message: 'Select your Rm-Device,<br/>' + guide,
                 });
-                return null;
+                return false;
             }
 
             if (!control.Code || control.Code === '') {
@@ -504,7 +504,43 @@ namespace App.Controllers {
                     Message: message,
                 });
 
-                return null;
+                return false;
+            }
+
+            const newCs = await Stores.ControlSets.Write(this._controlSet);
+
+            if (newCs !== null) {
+                this._controlSet = newCs;
+                this.SetEntity(this._controlSet);
+
+                const newCtl = _.find(newCs.Controls, (c: Entities.Control) => {
+                    return (c.PositionLeft === control.PositionLeft
+                        && c.PositionTop === control.PositionTop
+                        && c.Name === control.Name
+                        && c.Code === control.Code);
+                });
+
+                if (!newCtl) {
+                    Popup.Alert.Open({
+                        Message: 'Unexpected...Control not Found.'
+                    });
+                    return false;
+                }
+                control = newCtl;
+
+                const ctr1 = this.Manager.Get('ControlProperty') as ControlPropertyController;
+                if (ctr1.View.IsVisible)
+                    ctr1.SetEntity(control, this._controlSet);
+
+                const ctr2 = this.Manager.Get('ControlHeaderProperty') as ControlHeaderPropertyController;
+                if (ctr2.View.IsVisible)
+                    ctr2.SetEntity(this._controlSet);
+
+            } else {
+                Popup.Alert.Open({
+                    Message: 'Ouch! Save Failure.<br/>Server online?'
+                });
+                return false;
             }
 
             const result = await Stores.Operations.Exec(this._controlSet, control);

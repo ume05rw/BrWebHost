@@ -1,0 +1,307 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TypeScriptToolsVersion>3.0</TypeScriptToolsVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\js\Page.ts" />
+    <Content Remove="wwwroot\ts\App\Color.ts" />
+    <Content Remove="wwwroot\ts\App\Controllers\ColorSelectController.ts" />
+    <Content Remove="wwwroot\ts\App\Controllers\ControlHeaderPropertyController.ts" />
+    <Content Remove="wwwroot\ts\App\Controllers\ControlPropertyController.ts" />
+    <Content Remove="wwwroot\ts\App\Controllers\ControlSetController.ts" />
+    <Content Remove="wwwroot\ts\App\Controllers\IconSelectController.ts" />
+    <Content Remove="wwwroot\ts\App\Controllers\ItemSelectControllerBase.ts" />
+    <Content Remove="wwwroot\ts\App\Controllers\MouseEventsController.ts" />
+    <Content Remove="wwwroot\ts\App\Events\Controls\ControlButtonViewEvents.ts" />
+    <Content Remove="wwwroot\ts\App\Icon.ts" />
+    <Content Remove="wwwroot\ts\App\Items\ControlSetTemplate.ts" />
+    <Content Remove="wwwroot\ts\App\Items\DeviceType.ts" />
+    <Content Remove="wwwroot\ts\App\Items\ModalOperationType.ts" />
+    <Content Remove="wwwroot\ts\App\Items\OperationTemplate.ts" />
+    <Content Remove="wwwroot\ts\App\Items\OperationType.ts" />
+    <Content Remove="wwwroot\ts\App\Main.ts" />
+    <Content Remove="wwwroot\ts\App\Models\Entities\Control.ts" />
+    <Content Remove="wwwroot\ts\App\Models\Entities\ControlSet.ts" />
+    <Content Remove="wwwroot\ts\App\Models\Entities\Header.ts" />
+    <Content Remove="wwwroot\ts\App\Models\Entities\Script.ts" />
+    <Content Remove="wwwroot\ts\App\Models\Stores\ControlSetStore.ts" />
+    <Content Remove="wwwroot\ts\App\Models\Stores\ControlStore.ts" />
+    <Content Remove="wwwroot\ts\App\Models\Stores\OperationStore.ts" />
+    <Content Remove="wwwroot\ts\App\Models\Stores\RemoteStore.ts" />
+    <Content Remove="wwwroot\ts\App\Models\Stores\ScriptStore.ts" />
+    <Content Remove="wwwroot\ts\App\Views\Controls\ButtonView.ts" />
+    <Content Remove="wwwroot\ts\App\Views\Controls\ControlButtonView.ts" />
+    <Content Remove="wwwroot\ts\App\Views\Controls\ControlSetButtonView.ts" />
+    <Content Remove="wwwroot\ts\App\Views\Controls\HeaderBarView.ts" />
+    <Content Remove="wwwroot\ts\App\Views\Controls\ItemSelectButtonView.ts" />
+    <Content Remove="wwwroot\ts\App\Views\Controls\LabelAndButtonView.ts" />
+    <Content Remove="wwwroot\ts\App\Views\Pages\ControlHeaderPropertyPageView.ts" />
+    <Content Remove="wwwroot\ts\App\Views\Pages\ItemSelectPageView.ts" />
+    <Content Remove="wwwroot\ts\App\Views\Pages\MainPageView.ts" />
+    <Content Remove="wwwroot\ts\App\Views\Popup\AlertPopup.ts" />
+    <Content Remove="wwwroot\ts\App\Views\Popup\Cancellable.ts" />
+    <Content Remove="wwwroot\ts\App\Views\Popup\ConfirmPopup.ts" />
+    <Content Remove="wwwroot\ts\App\Views\Popup\PopupBase.ts" />
+    <Content Remove="wwwroot\ts\Fw\Config.ts" />
+    <Content Remove="wwwroot\ts\Fw\EventableBase.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\BoxViewEvents.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\ButtonViewEvents.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\CheckBoxInputViewEvents.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\ControlViewEvents.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\EntityEvents.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\EventableEvents.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\EventObject.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\EventReference.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\ImageViewEvents.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\InputViewEvents.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\LabelViewEvents.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\LineViewEvents.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\PageViewEvents.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\RelocatableButtonViewEvents.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\RootEvents.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\SelectBoxInputViewEvents.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\SlidableBoxViewEvents.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\StoreEvents.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\StuckerBoxViewEvents.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\TextAreaInputViewEvents.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\TextBoxInputViewEvents.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\ToggleButtonInputViewEvents.ts" />
+    <Content Remove="wwwroot\ts\Fw\Events\ViewEvents.ts" />
+    <Content Remove="wwwroot\ts\Fw\IEventable.ts" />
+    <Content Remove="wwwroot\ts\Fw\IObject.ts" />
+    <Content Remove="wwwroot\ts\Fw\ObjectBase.ts" />
+    <Content Remove="wwwroot\ts\Fw\Startup.ts" />
+    <Content Remove="wwwroot\ts\Fw\Util\App.ts" />
+    <Content Remove="wwwroot\ts\Fw\Util\Date.ts" />
+    <Content Remove="wwwroot\ts\Fw\Util\Dump.ts" />
+    <Content Remove="wwwroot\ts\Fw\Util\Num.ts" />
+    <Content Remove="wwwroot\ts\Fw\Util\Obj.ts" />
+    <Content Remove="wwwroot\ts\Fw\Util\Xhr.ts" />
+    <Content Remove="wwwroot\ts\Fw\Util\XhrMethodType.ts" />
+    <Content Remove="wwwroot\ts\Fw\Util\XhrParams.ts" />
+    <Content Remove="wwwroot\ts\Fw\Util\XhrResult.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\Anchor.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\Animation\Animator.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\Animation\Params.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\BoxView.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\ButtonView.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\CheckBoxView.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\ControlView.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\HtmlView.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\IInputView.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\ImageView.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\InputViewBase.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\IView.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\LabelView.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\LineView.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\NumberBoxInputView.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\PageView.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\Position.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\Property\Direction.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\Property\FitPolicy.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\Property\FontSize.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\Property\FontWeight.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\Property\MouseLocation.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\Property\PositionPolicy.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\Property\ReferencePoint.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\Property\TextAlign.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\RelocatableButtonView.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\Root.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\SelectBoxInputView.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\Size.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\SlidableBoxView.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\StuckerBoxView.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\TextAreaInputView.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\TextBoxInputView.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\ToggleButtonInputView.ts" />
+    <Content Remove="wwwroot\ts\Fw\Views\ViewBase.ts" />
+    <Content Remove="wwwroot\ts\PageManager.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.1.4" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.3" />
+    <PackageReference Include="MySql.Data" Version="8.0.13" />
+    <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="8.0.13" />
+    <PackageReference Include="MySql.Data.EntityFrameworkCore.Design" Version="8.0.13" />
+    <PackageReference Include="SharpBroadlink" Version="1.0.1.7" />
+    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
+    <PackageReference Include="Xb.App.Process" Version="1.0.2" />
+    <PackageReference Include="Xb.Net" Version="1.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ColorSelectController.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Controllers\IconSelectController.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Items\ModalOperationType.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Items\DeviceType.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Items\Color.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ControlHeaderPropertyController.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ControlPropertyController.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ControlSetController.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ItemSelectControllerBase.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Controllers\MouseEventsController.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Events\Controls\ControlButtonViewEvents.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Items\ControlSetTemplate.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Items\OperationType.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Items\Icon.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Items\OperationTemplate.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Main.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Controllers\MainController.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\Control.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\Header.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\ControlSet.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\Script.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\ControlSetStore.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\ControlStore.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\OperationStore.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\RemoteStore.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\ScriptStore.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\ButtonView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\ControlButtonView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\HeaderBarView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\ItemSelectButtonView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\LabelAndButtonView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\ControlSetButtonView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\ControlHeaderPropertyPageView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\ItemSelectPageView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\MainPageView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Views\Popup\AlertPopup.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Views\Popup\Cancellable.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Views\Popup\ConfirmPopup.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Views\Popup\PopupBase.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Config.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\IController.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\ControllerBase.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Controllers\Manager.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\EventableBase.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\BoxViewEvents.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\ButtonViewEvents.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\CheckBoxInputViewEvents.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\EntityEvents.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\EventObject.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\InputViewEvents.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\EventableEvents.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\SelectBoxInputViewEvents.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\StoreEvents.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\StuckerBoxViewEvents.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\ControlViewEvents.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\EventReference.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\ImageViewEvents.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\LabelViewEvents.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\LineViewEvents.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\PageViewEvents.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\RelocatableButtonViewEvents.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\RootEvents.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\SlidableBoxViewEvents.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\TextAreaInputViewEvents.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\TextBoxInputViewEvents.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\ToggleButtonInputViewEvents.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Events\ViewEvents.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\IEventable.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\IObject.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Models\EntityBase.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Models\IEntity.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Models\IStore.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Models\StoreBase.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\ObjectBase.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Startup.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Util\App.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Date.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Dump.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Num.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Obj.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Xhr\Query.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Xhr\MethodType.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Xhr\Params.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Xhr\Result.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\BoxView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ButtonView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\CheckBoxView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\HtmlView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\IInputView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\InputViewBase.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\MouseLocation.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\TextAlign.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\ReferencePoint.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\SelectBoxInputView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\StuckerBoxView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ImageView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\LineView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\Anchor.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Animation\Animator.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Animation\Params.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ControlView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\IView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\LabelView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\PageView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\Direction.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\FitPolicy.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\FontSize.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\FontWeight.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\Position.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\PositionPolicy.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\RelocatableButtonView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\Property\Size.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Root.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\SlidableBoxView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\TextAreaInputView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\NumberBoxInputView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\TextBoxInputView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ToggleButtonInputView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Views\ViewBase.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="lib\UdpReplyer\UdpReplyer.deps.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="lib\UdpReplyer\UdpReplyer.runtimeconfig.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="lib\UdpReplyer\UdpReplyer.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="lib\UdpReplyer\Xb.App.Process.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="lib\UdpReplyer\Xb.Core.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="lib\UdpReplyer\Xb.Net.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="scriptagent.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <TypeScriptTarget>ES5</TypeScriptTarget>
+    <TypeScriptJSXEmit>None</TypeScriptJSXEmit>
+    <TypeScriptModuleKind />
+    <TypeScriptCompileOnSaveEnabled>True</TypeScriptCompileOnSaveEnabled>
+    <TypeScriptNoImplicitAny>False</TypeScriptNoImplicitAny>
+    <TypeScriptRemoveComments>False</TypeScriptRemoveComments>
+    <TypeScriptOutFile>wwwroot/js/tsout.js</TypeScriptOutFile>
+    <TypeScriptOutDir></TypeScriptOutDir>
+    <TypeScriptGeneratesDeclarations>True</TypeScriptGeneratesDeclarations>
+    <TypeScriptNoEmitOnError>True</TypeScriptNoEmitOnError>
+    <TypeScriptSourceMap>True</TypeScriptSourceMap>
+    <TypeScriptMapRoot />
+    <TypeScriptSourceRoot></TypeScriptSourceRoot>
+  </PropertyGroup>
+
+</Project>

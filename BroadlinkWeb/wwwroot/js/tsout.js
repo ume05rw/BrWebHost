@@ -513,7 +513,7 @@ var Fw;
                 if (!controller)
                     throw new Error("id not found: " + id);
                 _.each(this._controllers, function (c) {
-                    if (c !== controller && c.View.IsVisible)
+                    if (c !== controller && c.View.IsVisible && !c.View.IsModal)
                         c.View.Mask();
                 });
                 controller.View.ShowModal();
@@ -522,10 +522,15 @@ var Fw;
                 var controller = this._controllers[id];
                 if (!controller)
                     throw new Error("id not found: " + id);
+                // 指定ID以外で、モーダルのPageが在るか否か
+                var existsModal = false;
                 _.each(this._controllers, function (c) {
-                    if (c !== controller && c.View.IsVisible)
-                        c.View.UnMask();
+                    if (c !== controller && c.View.IsVisible && c.View.IsModal)
+                        existsModal = true;
                 });
+                // 全員モーダルでない場合、マスクを消す。
+                if (!existsModal)
+                    Fw.Root.Instance.UnMask();
                 controller.View.HideModal();
             };
             Manager.prototype.SetUnmodal = function (id) {
@@ -735,7 +740,8 @@ var Fw;
                         && er.BindObject === bindObject);
                 });
                 if (!eRef) {
-                    throw new Error(this.ClassName + "." + name + " event not found.");
+                    //throw new Error(`${this.ClassName}.${name} event not found.`);
+                    Dump.Log(this.ClassName + "." + name + " event not found.");
                 }
                 //this.Elem.off(eRef.Name, eRef.BindedHandler);
                 this._eventHandlers.splice(key_1, 1);
@@ -5665,7 +5671,7 @@ var App;
              */
             ControlSetController.prototype.ExecCode = function (control) {
                 return __awaiter(this, void 0, void 0, function () {
-                    var id, guide, message, guide, result;
+                    var id, guide, message, guide, newCs, newCtl, ctr1, ctr2, result;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
@@ -5680,7 +5686,7 @@ var App;
                                     Popup.Alert.Open({
                                         Message: 'Select your Rm-Device,<br/>' + guide,
                                     });
-                                    return [2 /*return*/, null];
+                                    return [2 /*return*/, false];
                                 }
                                 if (!control.Code || control.Code === '') {
                                     message = '';
@@ -5713,10 +5719,42 @@ var App;
                                     Popup.Alert.Open({
                                         Message: message,
                                     });
-                                    return [2 /*return*/, null];
+                                    return [2 /*return*/, false];
+                                }
+                                return [4 /*yield*/, Stores.ControlSets.Write(this._controlSet)];
+                            case 1:
+                                newCs = _a.sent();
+                                if (newCs !== null) {
+                                    this._controlSet = newCs;
+                                    this.SetEntity(this._controlSet);
+                                    newCtl = _.find(newCs.Controls, function (c) {
+                                        return (c.PositionLeft === control.PositionLeft
+                                            && c.PositionTop === control.PositionTop
+                                            && c.Name === control.Name
+                                            && c.Code === control.Code);
+                                    });
+                                    if (!newCtl) {
+                                        Popup.Alert.Open({
+                                            Message: 'Unexpected...Control not Found.'
+                                        });
+                                        return [2 /*return*/, false];
+                                    }
+                                    control = newCtl;
+                                    ctr1 = this.Manager.Get('ControlProperty');
+                                    if (ctr1.View.IsVisible)
+                                        ctr1.SetEntity(control, this._controlSet);
+                                    ctr2 = this.Manager.Get('ControlHeaderProperty');
+                                    if (ctr2.View.IsVisible)
+                                        ctr2.SetEntity(this._controlSet);
+                                }
+                                else {
+                                    Popup.Alert.Open({
+                                        Message: 'Ouch! Save Failure.<br/>Server online?'
+                                    });
+                                    return [2 /*return*/, false];
                                 }
                                 return [4 /*yield*/, Stores.Operations.Exec(this._controlSet, control)];
-                            case 1:
+                            case 2:
                                 result = _a.sent();
                                 if (result) {
                                     if (control.IsAssignToggleOn === true

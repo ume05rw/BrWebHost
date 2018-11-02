@@ -1,0 +1,15 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "noImplicitAny": false,
+    "noEmitOnError": true,
+    "removeComments": false,
+    "sourceMap": true,
+    "target": "es5",
+    "outFile": "wwwroot/js/tsout.js",
+    "lib": [ "dom", "es2015.promise", "es5" ]
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}
