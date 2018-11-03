@@ -61,58 +61,14 @@ namespace BroadlinkWeb.Areas.Api.Controllers
                     localAddrs.Add(addr.GetAddressBytes());
 
                 var remotes = await this._dbc.RemoteHosts.ToArrayAsync();
-                var result = new List<Script>();
-
-                foreach (var remote in remotes)
+                var result = this._dbc.RemoteScripts.Select(e => new Script()
                 {
-                    // ローカルIPのとき、スキップ。
-                    var addrBytes = IPAddress.Parse(remote.IpAddressString).GetAddressBytes();
-                    if (localAddrs.Any(la => la.SequenceEqual(addrBytes)))
-                        continue;
+                    ControlId = e.ControlId,
+                    RemoteHostId = e.RemoteHostId,
+                    Name = e.Name
+                }).ToArray();
 
-                    var url = $"http://{remote.IpAddressString}:{BroadlinkWeb.Program.Port}/api/Scripts/";
-                    var client = new HttpClient();
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(
-                        new MediaTypeWithQualityHeaderValue("application/vnd.github.v3+json")
-                    );
-                    client.DefaultRequestHeaders.Add("User-Agent", ".NET Foundation Repository Reporter");
-
-                    // POSTのとき
-                    //var content = new StringContent("");
-                    //var response = await client.PostAsync(url, content);
-
-                    // GETのとき
-                    HttpResponseMessage response;
-                    try
-                    {
-                        response = await client.GetAsync(url);
-                    }
-                    catch (Exception ex)
-                    {
-                        // リモートから応答が無いとき、スキップする。
-                        //return XhrResult.CreateError("Remote Host No-Response");
-                        continue;
-                    }
-                    
-                    var json = await response.Content.ReadAsStringAsync();
-                    var remoteResult = JsonConvert.DeserializeObject<XhrResult.Items>(json);
-                    if (remoteResult.Succeeded)
-                    {
-                        var jarray = (JArray)remoteResult.Values;
-                        var scripts = jarray
-                            .Select(o => new Script
-                            {
-                                ControlId = (int)o["ControlId"],
-                                RemoteHostId = remote.Id,
-                                Name = $"{remote.Name}[{remote.IpAddressString}] - {(string)o["Name"]}"
-                            })
-                            .ToArray();
-                        result.AddRange(scripts);
-                    }
-                }
-
-                return XhrResult.CreateSucceeded(result.ToArray());
+                return XhrResult.CreateSucceeded(result);
             }
             catch (Exception ex)
             {

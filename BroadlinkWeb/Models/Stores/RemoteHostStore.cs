@@ -74,7 +74,6 @@ namespace BroadlinkWeb.Models.Stores
                 scriptStore.Refresh()
                     .GetAwaiter()
                     .GetResult();
-
             }
 
             // なんか違和感がある実装。
