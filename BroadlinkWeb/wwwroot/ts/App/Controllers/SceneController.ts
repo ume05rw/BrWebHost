@@ -444,7 +444,7 @@ namespace App.Controllers {
 
                     job = await Stores.Jobs.Get(job.Id);
 
-                    // ここで、VisualStudioは、JSON.parse()されたオブジェクトの取得が出来ないらしい。
+                    // ここで、VisualStudioは、JSON.parse()されたオブジェクトの値取得が出来ないらしい。
                     // 実際には取得出来ているので良しとする。
                     const status = job.JsonObject as SceneStatus;
 
@@ -471,7 +471,11 @@ namespace App.Controllers {
                         if (this._page.IsVisible && this._page.IsModal) {
                             this.HideModal();
                         }
-                        
+
+                        // トグル状態の変更を適用する。
+                        const ctr = this.Manager.Get('Main') as MainController;
+                        ctr.RefreshControlSets();
+
                     }, 3000);
                 }
 

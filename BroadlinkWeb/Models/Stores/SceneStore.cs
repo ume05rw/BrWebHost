@@ -1,5 +1,6 @@
 using BroadlinkWeb.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SharpBroadlink;
 using SharpBroadlink.Devices;
@@ -60,59 +61,59 @@ namespace BroadlinkWeb.Models.Stores
         /// <returns></returns>
         public async Task<bool> InnerExec(Job job, Scene scene, SceneStatus status)
         {
-            foreach (var detail in scene.Details)
+            using (var serviceScope = SceneStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
-                if (detail.ControlSet == null || detail.Control == null)
+                foreach (var detail in scene.Details)
                 {
-                    status.Error = $"Operation Not Found by Step: {status.Step}";
-                    await job.SetFinish(true, status, status.Error);
-                    return false;
-                }
-
-                var error = "";
-                try
-                {
-                    switch (detail.ControlSet.OperationType)
+                    if (detail.ControlSet == null || detail.Control == null)
                     {
-                        case OperationType.RemoteControl:
-                            var brd1 = await this.GetBrDevice(detail.ControlSet.BrDeviceId);
-                            if (brd1 == null)
-                            {
-                                error = "Not Found Broadlink Device.";
+                        status.Error = $"Operation Not Found by Step: {status.Step}";
+                        await job.SetFinish(true, status, status.Error);
+                        return false;
+                    }
+
+                    var error = "";
+                    try
+                    {
+                        switch (detail.ControlSet.OperationType)
+                        {
+                            case OperationType.RemoteControl:
+                                var brd1 = await this.GetBrDevice(detail.ControlSet.BrDeviceId);
+                                if (brd1 == null)
+                                {
+                                    error = "Not Found Broadlink Device.";
+                                    break;
+                                }
+
+                                var rm = (Rm)brd1.SbDevice;
+                                var pBytes = Signals.String2ProntoBytes(detail.Control.Code);
+                                var result = await rm.SendPronto(pBytes);
+
+                                if (result == false)
+                                {
+                                    error = "Command Exec Failure.";
+                                    break;
+                                }
+
                                 break;
-                            }
+                            case OperationType.BroadlinkDevice:
+                                var brd2 = await this.GetBrDevice(detail.ControlSet.BrDeviceId);
+                                if (brd2 == null)
+                                {
+                                    error = "Not Found Broadlink Device.";
+                                    break;
+                                }
 
-                            var rm = (Rm)brd1.SbDevice;
-                            var pBytes = Signals.String2ProntoBytes(detail.Control.Code);
-                            var result = await rm.SendPronto(pBytes);
+                                var brError = await this.ExecBrDevice(detail, brd2);
+                                if (!string.IsNullOrEmpty(error))
+                                {
+                                    error = brError;
+                                    break;
+                                }
 
-                            if (result == false)
-                            {
-                                error = "Command Exec Failure.";
                                 break;
-                            }
-
-                            break;
-                        case OperationType.BroadlinkDevice:
-                            var brd2 = await this.GetBrDevice(detail.ControlSet.BrDeviceId);
-                            if (brd2 == null)
-                            {
-                                error = "Not Found Broadlink Device.";
-                                break;
-                            }
-
-                            var brError = await this.ExecBrDevice(detail, brd2);
-                            if (!string.IsNullOrEmpty(error))
-                            {
-                                error = brError;
-                                break;
-                            }
-
-                            break;
-                        case OperationType.WakeOnLan:
-                            try
-                            {
-                                using (var serviceScope = SceneStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+                            case OperationType.WakeOnLan:
+                                try
                                 {
                                     var wolStore = serviceScope.ServiceProvider.GetService<WolStore>();
                                     var res = await wolStore.Exec(detail.Control.Code);
@@ -122,18 +123,15 @@ namespace BroadlinkWeb.Models.Stores
                                         break;
                                     }
                                 }
-                            }
-                            catch (Exception ex)
-                            {
-                                error = ex.Message;
-                                break;
-                            }
+                                catch (Exception ex)
+                                {
+                                    error = ex.Message;
+                                    break;
+                                }
 
-                            break;
-                        case OperationType.Script:
-                            try
-                            {
-                                using (var serviceScope = SceneStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+                                break;
+                            case OperationType.Script:
+                                try
                                 {
                                     var scriptStore = serviceScope.ServiceProvider.GetService<ScriptStore>();
                                     var res = await scriptStore.Exec(detail.Control.Code);
@@ -143,18 +141,15 @@ namespace BroadlinkWeb.Models.Stores
                                         break;
                                     }
                                 }
-                            }
-                            catch (Exception ex)
-                            {
-                                error = ex.Message;
-                                break;
-                            }
+                                catch (Exception ex)
+                                {
+                                    error = ex.Message;
+                                    break;
+                                }
 
-                            break;
-                        case OperationType.RemoteHost:
-                            try
-                            {
-                                using (var serviceScope = SceneStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+                                break;
+                            case OperationType.RemoteHost:
+                                try
                                 {
                                     var rhStore = serviceScope.ServiceProvider.GetService<RemoteHostStore>();
                                     var res = await rhStore.Exec(null);
@@ -164,39 +159,78 @@ namespace BroadlinkWeb.Models.Stores
                                         break;
                                     }
                                 }
-                            }
-                            catch (Exception ex)
-                            {
-                                error = ex.Message;
+                                catch (Exception ex)
+                                {
+                                    error = ex.Message;
+                                    break;
+                                }
                                 break;
-                            }
-                            break;
-                        case OperationType.Scene:
-                        default:
-                            // ここにはこないはず。
-                            throw new Exception("なんでー！？");
+                            case OperationType.Scene:
+                            default:
+                                // ここにはこないはず。
+                                throw new Exception("なんでー！？");
+                        }
                     }
-                }
-                catch (Exception ex)
-                {
-                    error = "Unexpected Error: " + string.Join(" ", Xb.Util.GetErrorString(ex));
-                }
+                    catch (Exception ex)
+                    {
+                        error = "Unexpected Error: " + string.Join(" ", Xb.Util.GetErrorString(ex));
+                    }
 
 
-                if (!string.IsNullOrEmpty(error))
-                {
-                    status.Error = $"Operation Failure by Step: {status.Step}, {error}";
-                    await job.SetFinish(true, status, status.Error);
-                    return false;
-                }
+                    if (!string.IsNullOrEmpty(error))
+                    {
+                        status.Error = $"Operation Failure by Step: {status.Step}, {error}";
+                        await job.SetFinish(true, status, status.Error);
+                        return false;
+                    }
 
-                await job.SetProgress(status.Step / status.TotalStep, status);
-                status.Step++;
+                    if (detail.Control.IsAssignToggleOn
+                        || detail.Control.IsAssignToggleOff
+                        )
+                    {
+                        var isChanged = false;
 
-                if (detail.WaitSecond > 0)
-                {
-                    await Task.Delay((int)(detail.WaitSecond * 1000))
-                        .ConfigureAwait(false);
+                        if (detail.Control.IsAssignToggleOn
+                            && detail.Control.IsAssignToggleOff
+                        )
+                        {
+                            // トグルOn/Off両方アサインされているとき
+                            // 何もしない。
+                        }
+                        else if (detail.Control.IsAssignToggleOn)
+                        {
+                            // トグルOnのみアサインされているとき
+                            isChanged = true;
+                            detail.ControlSet.ToggleState = true;
+                        }
+                        else if (detail.Control.IsAssignToggleOff)
+                        {
+                            // トグルOffのみアサインされているとき
+                            isChanged = true;
+                            detail.ControlSet.ToggleState = false;
+                        }
+                        else
+                        {
+                            // ここには来ないはず。
+                            throw new Exception("なんでやー");
+                        }
+
+                        if (isChanged)
+                        {
+                            var dbc = serviceScope.ServiceProvider.GetService<Dbc>();
+                            dbc.Entry(detail.ControlSet).State = EntityState.Modified;
+                            await dbc.SaveChangesAsync();
+                        }
+                    }
+
+                    await job.SetProgress(status.Step / status.TotalStep, status);
+                    status.Step++;
+
+                    if (detail.WaitSecond > 0)
+                    {
+                        await Task.Delay((int)(detail.WaitSecond * 1000))
+                            .ConfigureAwait(false);
+                    }
                 }
             }
 

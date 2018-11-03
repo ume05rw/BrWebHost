@@ -106,7 +106,6 @@ namespace BroadlinkWeb.Areas.Api.Controllers
                     if (removes.Length > 0)
                         this._dbc.Controls.RemoveRange(removes);
 
-
                     // ヘッダと明細を一括保存
                     await _dbc.SaveChangesAsync();
                 }
