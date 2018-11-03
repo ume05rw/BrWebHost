@@ -97,21 +97,15 @@ namespace BroadlinkWeb.Areas.Api.Controllers
                             this._dbc.Entry(detail).State = EntityState.Modified;
                     }
 
-                    // 既存の明細レコードを取得
-                    var children = this._dbc.SceneDetails
+                    // 既存の明細のうち、渡し値に存在しないものを取得
+                    var removes = this._dbc.SceneDetails
                         .Where(c => c.SceneId == scene.Id)
+                        .Where(c1 => scene.Details.All(c2 => c2.Id != c1.Id))
                         .ToArray();
 
-                    // 既存の明細のうち、渡し値に存在しないものを削除。
-                    if (children.Length > 0)
-                    {
-                        var removes = children
-                            .Where(c => !scene.Details.Any(c2 => c2.Id == c.Id));
-                        foreach (var detail in removes)
-                        {
-                            this._dbc.SceneDetails.Remove(detail);
-                        }
-                    }
+                    // 渡し値に存在しない既存レコードを削除。
+                    if (removes.Length > 0)
+                        this._dbc.SceneDetails.RemoveRange(removes);
 
                     // ヘッダと明細を一括保存
                     await _dbc.SaveChangesAsync();

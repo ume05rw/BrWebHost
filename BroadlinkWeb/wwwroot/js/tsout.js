@@ -11431,7 +11431,7 @@ var App;
                                     res = _a.sent();
                                     if (res.Succeeded) {
                                         result = res.Values;
-                                        console.log(result);
+                                        //console.log(result);
                                         controlSet.GetControlByCode('Temp').Value = result.Temperature.toFixed(1);
                                         controlSet.GetControlByCode('Humidity').Value = result.Humidity.toFixed(1);
                                         controlSet.GetControlByCode('Voc').Value = this.GetVodString(result.Voc);
