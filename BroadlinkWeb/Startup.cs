@@ -72,6 +72,7 @@ namespace BroadlinkWeb
                 .AddDbStore<BrDeviceStore>()
                 .AddDbStore<ControlSetStore>()
                 .AddDbStore<RemoteHostStore>()
+                .AddDbStore<RemoteScriptStore>()
                 .AddDbStore<JobStore>()
                 .AddDbStore<SceneStore>()
                 .AddDbStore<WolStore>()

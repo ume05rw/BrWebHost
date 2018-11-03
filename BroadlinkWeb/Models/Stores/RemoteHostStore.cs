@@ -67,8 +67,14 @@ namespace BroadlinkWeb.Models.Stores
 
                 // 最初の一回目スキャンは同期的に行う。
                 Xb.Util.Out("First Remote Host Scan");
-                var rhStore = serviceScope.ServiceProvider.GetService<RemoteHostStore>();
-                rhStore.Refresh();
+                var hostStore = serviceScope.ServiceProvider.GetService<RemoteHostStore>();
+                hostStore.Refresh();
+
+                var scriptStore = serviceScope.ServiceProvider.GetService<RemoteScriptStore>();
+                scriptStore.Refresh()
+                    .GetAwaiter()
+                    .GetResult();
+
             }
 
             // なんか違和感がある実装。
@@ -97,8 +103,14 @@ namespace BroadlinkWeb.Models.Stores
                             await Task.Delay(1000 * 60 * 5);
 
                             Xb.Util.Out("Regularly Remote Host Scan");
-                            var store = serviceScope.ServiceProvider.GetService<RemoteHostStore>();
-                            var hosts = store.Refresh();
+                            var hostStore = serviceScope.ServiceProvider.GetService<RemoteHostStore>();
+                            var hosts = hostStore.Refresh();
+
+                            var scriptStore = serviceScope.ServiceProvider.GetService<RemoteScriptStore>();
+                            var scripts = scriptStore.Refresh()
+                                .ConfigureAwait(false)
+                                .GetAwaiter()
+                                .GetResult();
 
                             status.Count++;
                             status.StatusMessage = $"Remote Hosts Count: {hosts.Count()}";

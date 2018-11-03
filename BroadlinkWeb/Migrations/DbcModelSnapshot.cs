@@ -320,6 +320,33 @@ namespace BroadlinkWeb.Migrations
                     b.HasAnnotation("MySQL:Collation", "utf8_general_ci ");
                 });
 
+            modelBuilder.Entity("BroadlinkWeb.Models.Entities.RemoteScript", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int(11)");
+
+                    b.Property<int>("ControlId")
+                        .HasColumnType("int(11)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("varchar(255)")
+                        .HasMaxLength(255);
+
+                    b.Property<int>("RemoteHostId")
+                        .HasColumnType("int(11)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RemoteHostId");
+
+                    b.ToTable("remotescripts");
+
+                    b.HasAnnotation("MySQL:Charset", "utf8");
+
+                    b.HasAnnotation("MySQL:Collation", "utf8_general_ci ");
+                });
+
             modelBuilder.Entity("BroadlinkWeb.Models.Entities.Scene", b =>
                 {
                     b.Property<int>("Id")
@@ -397,6 +424,14 @@ namespace BroadlinkWeb.Migrations
                     b.HasOne("BroadlinkWeb.Models.Entities.BrDevice", "BrDevice")
                         .WithMany()
                         .HasForeignKey("BrDeviceId");
+                });
+
+            modelBuilder.Entity("BroadlinkWeb.Models.Entities.RemoteScript", b =>
+                {
+                    b.HasOne("BroadlinkWeb.Models.Entities.RemoteHost", "RemoteHost")
+                        .WithMany()
+                        .HasForeignKey("RemoteHostId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("BroadlinkWeb.Models.Entities.SceneDetail", b =>
