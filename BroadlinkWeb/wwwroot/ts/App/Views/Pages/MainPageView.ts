@@ -59,7 +59,7 @@ namespace App.Views.Pages {
             this.Add(this.ControlSetPanel);
 
             const iconRights = new Views.HtmlView('a');
-            iconRights.SetSize(200, 16);
+            iconRights.SetSize(210, 16);
             iconRights.SetAnchor(null, null, 5, 2);
             iconRights.Color = '#9d9e9e';
             iconRights.InnerHtml = 'designed by Lucy G from Flaticon';

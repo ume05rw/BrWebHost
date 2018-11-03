@@ -98,9 +98,10 @@ namespace BroadlinkWeb.Models.Stores
 
                             Xb.Util.Out("Regularly Remote Host Scan");
                             var store = serviceScope.ServiceProvider.GetService<RemoteHostStore>();
-                            store.Refresh();
+                            var hosts = store.Refresh();
 
                             status.Count++;
+                            status.StatusMessage = $"Remote Hosts Count: {hosts.Count()}";
                             var json = JsonConvert.SerializeObject(status);
                             await RemoteHostStore._loopRunnerJob.SetProgress((decimal)0.5, json);
                         }

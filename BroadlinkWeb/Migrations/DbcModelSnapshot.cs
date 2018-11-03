@@ -22,6 +22,9 @@ namespace BroadlinkWeb.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int(11)");
 
+                    b.Property<int>("AcquiredCount")
+                        .HasColumnType("int(5)");
+
                     b.Property<int?>("BrDeviceId")
                         .HasColumnType("int(11)");
 

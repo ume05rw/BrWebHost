@@ -192,10 +192,11 @@ namespace App.Controllers {
             this._page.HeaderBar.RightButton.Hide(0);
             this._page.HeaderLeftLabel.Show(0);
 
-            // 編集ボタンは使用しないことにする。
-            // ボタン長押しで編集画面に行ってもらう。
-            //this._page.EditButton.Show(0);
-            this._page.EditButton.Hide(0);
+            // ↓と、思ったけど、やめ。
+            //// 編集ボタンは使用しないことにする。
+            //// ボタン長押しで編集画面に行ってもらう。
+            //this._page.EditButton.Hide(0);
+            this._page.EditButton.Show(0);
 
             if (this._page.DetailPanel.IsChildRelocation)
                 this._page.DetailPanel.CommitRelocation();

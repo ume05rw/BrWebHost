@@ -23,44 +23,48 @@ namespace BroadlinkWeb.Models.Entities
         [Description("Broadlink Device ID")]
         public int? BrDeviceId { get; set; }
 
-        [Column(Order = 1, TypeName = "decimal(5, 2)")]
+        [Column(Order = 3, TypeName = "decimal(5, 2)")]
         [Description("Temperature Celsius")]
         [Range(-999.99, 999.991)]
         public decimal Temperature { get; set; }
 
-        [Column(Order = 1, TypeName = "decimal(5, 2)")]
+        [Column(Order = 4, TypeName = "decimal(5, 2)")]
         [Description("Humidity")]
         [Range(0.0, 100.00)]
         public decimal Humidity { get; set; }
 
-        [Column(Order = 1, TypeName = "decimal(5, 2)")]
+        [Column(Order = 5, TypeName = "decimal(5, 2)")]
         [Description("Voc")]
         [Range(0.0, 3.00)]
         public decimal Voc { get; set; }
 
-        [Column(Order = 1, TypeName = "decimal(5, 2)")]
+        [Column(Order = 6, TypeName = "decimal(5, 2)")]
         [Description("Light")]
         [Range(0.0, 3.00)]
         public decimal Light { get; set; }
 
-        [Column(Order = 1, TypeName = "decimal(5, 2)")]
+        [Column(Order = 7, TypeName = "decimal(5, 2)")]
         [Description("Noise")]
         [Range(0.0, 2.00)]
         public decimal Noise { get; set; }
 
+        [Column(Order = 8, TypeName = "int(5)")]
+        [Description("Data Acquired Count")]
+        public int AcquiredCount { get; set; }
+
         [Required]
-        [Column(Order = 1, TypeName = "datetime")]
+        [Column(Order = 9, TypeName = "datetime")]
         [Description("Record Time")]
         [DataType(DataType.DateTime)]
         public DateTime Recorded { get; set; }
 
         [Required]
-        [Column(Order = 1, TypeName = "datetime")]
+        [Column(Order = 10, TypeName = "datetime")]
         [Description("Created Time")]
         [DataType(DataType.DateTime)]
         public DateTime Created { get; set; }
 
-        [Column(Order = 1, TypeName = "datetime")]
+        [Column(Order = 11, TypeName = "datetime")]
         [Description("Updated Time")]
         [DataType(DataType.DateTime)]
         public DateTime? Updated { get; set; }

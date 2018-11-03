@@ -67,9 +67,10 @@ namespace BroadlinkWeb.Models.Stores
 
                             Xb.Util.Out("Regularly Broadlink Device Scan");
                             var store = serviceScope.ServiceProvider.GetService<BrDeviceStore>();
-                            store.Refresh();
+                            var devs = store.Refresh();
 
                             status.Count++;
+                            status.StatusMessage = $"Cached Device Count: {devs.Count()}";
                             var json = JsonConvert.SerializeObject(status);
 
                             await BrDeviceStore._loopRunnerJob.SetProgress((decimal)0.5, json);

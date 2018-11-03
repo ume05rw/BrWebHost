@@ -11,6 +11,7 @@ namespace BroadlinkWeb.Models.Entities
     {
         public int Count { get; set; } = 0;
         public int ErrorCount { get; set; } = 0;
+        public string StatusMessage { get; set; } = "";
         public string LatestError { get; set; } = "";
     }
 }

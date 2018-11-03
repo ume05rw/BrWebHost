@@ -88,6 +88,7 @@ namespace BroadlinkWeb.Models.Stores
                                         Light = 0,
                                         Noise = 0,
                                         BrDeviceId = a1.Id,
+                                        AcquiredCount = 0,
                                         Created = DateTime.Now,
                                         Updated = DateTime.Now
                                     });
@@ -99,6 +100,7 @@ namespace BroadlinkWeb.Models.Stores
                                         Light = 0,
                                         Noise = 0,
                                         BrDeviceId = a1.Id,
+                                        AcquiredCount = 0,
                                         Created = DateTime.Now,
                                         Updated = DateTime.Now
                                     });
@@ -114,11 +116,12 @@ namespace BroadlinkWeb.Models.Stores
                                 sums[a1.Id].Noise += values.Noise;
 
                                 // 累積値を取得回数で割り、平均値を取る。
-                                records[a1.Id].Temperature = sums[a1.Id].Temperature / sumCount;
-                                records[a1.Id].Humidity = sums[a1.Id].Humidity / sumCount;
-                                records[a1.Id].Voc = sums[a1.Id].Voc / sumCount;
-                                records[a1.Id].Light = sums[a1.Id].Light / sumCount;
-                                records[a1.Id].Noise = sums[a1.Id].Noise / sumCount;
+                                records[a1.Id].AcquiredCount++;
+                                records[a1.Id].Temperature = sums[a1.Id].Temperature / records[a1.Id].AcquiredCount;
+                                records[a1.Id].Humidity = sums[a1.Id].Humidity / records[a1.Id].AcquiredCount;
+                                records[a1.Id].Voc = sums[a1.Id].Voc / records[a1.Id].AcquiredCount;
+                                records[a1.Id].Light = sums[a1.Id].Light / records[a1.Id].AcquiredCount;
+                                records[a1.Id].Noise = sums[a1.Id].Noise / records[a1.Id].AcquiredCount;
                                 records[a1.Id].Recorded = DateTime.Now;
                                 records[a1.Id].Updated = DateTime.Now;
 
@@ -142,6 +145,7 @@ namespace BroadlinkWeb.Models.Stores
 
                             // ジョブ状態を記録
                             status.Count++;
+                            status.StatusMessage = $"A1 Device Count: {records.Count}";
                             var json = JsonConvert.SerializeObject(status);
                             await A1Store._loopRunnerJob.SetProgress((decimal)0.5, json);
 
