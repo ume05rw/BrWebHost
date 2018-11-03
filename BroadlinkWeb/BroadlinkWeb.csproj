@@ -8,12 +8,14 @@
   <ItemGroup>
     <Content Remove="wwwroot\js\Page.ts" />
     <Content Remove="wwwroot\ts\App\Color.ts" />
+    <Content Remove="wwwroot\ts\App\Controllers\A1SetController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\ColorSelectController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\ControlHeaderPropertyController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\ControlPropertyController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\ControlSetController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\ControlSetSelectController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\IconSelectController.ts" />
+    <Content Remove="wwwroot\ts\App\Controllers\IControlSetController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\ItemSelectControllerBase.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\LayoutCheckController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\MouseEventsController.ts" />
@@ -172,7 +174,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Include="wwwroot\ts\App\Controllers\A1SetController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ColorSelectController.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Controllers\IControlSetController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\SceneHeaderPropertyController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\IconSelectController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ControlSetSelectController.ts" />

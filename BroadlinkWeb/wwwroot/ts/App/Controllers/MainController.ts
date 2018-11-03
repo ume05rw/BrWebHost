@@ -52,6 +52,7 @@ namespace App.Controllers {
                 .then(() => {
                     Dump.Log('SubController Load Start');
                     const controlSetCtr = new ControlSetController();
+                    const a1SetCtr = new A1SetController();
                     const functionSelectCtr = new OperationSelectController();
 
                     const controlHeaderPropertyCtr = new ControlHeaderPropertyController();

@@ -40,12 +40,12 @@ namespace App.Controllers {
 
     export class ControlSetController extends ItemSelectControllerBase {
 
-        private _page: Pages.ControlSetPageView;
-        private _controlSet: Entities.ControlSet;
-        private _operationType: ModalOperationType;
+        protected _page: Pages.ControlSetPageView;
+        protected _controlSet: Entities.ControlSet;
+        protected _operationType: ModalOperationType;
 
-        constructor() {
-            super('ControlSet');
+        constructor(controllerId: string = null) {
+            super(controllerId || 'ControlSet');
 
             this.SetClassName('ControlSetController');
 
@@ -228,7 +228,7 @@ namespace App.Controllers {
             this.ApplyFromEntity();
         }
 
-        private async OnButtonClicked(e: Fw.Events.EventObject) {
+        protected async OnButtonClicked(e: Fw.Events.EventObject) {
 
             switch (this._operationType) {
                 case ModalOperationType.Exec:
@@ -276,7 +276,7 @@ namespace App.Controllers {
             }
         }
 
-        private ApplyFromEntity(): void {
+        protected ApplyFromEntity(): void {
             if (!this._controlSet)
                 return;
 
