@@ -26,11 +26,11 @@ namespace App.Views.Pages {
         public TarCode: Views.TextAreaInputView;
         public TxtMac: Views.TextBoxInputView;
         public SboRemote: Views.SelectBoxInputView;
-        public BtnLearn: Controls.ButtonView;
-        public BtnSend: Controls.ButtonView;
+        public BtnLearn: Controls.PropertyButtonView;
+        public BtnSend: Controls.PropertyButtonView;
         public ChkToggleOn: Views.CheckBoxInputView;
         public ChkToggleOff: Views.CheckBoxInputView;
-        public DeleteButton: Controls.ButtonView;
+        public DeleteButton: Controls.PropertyButtonView;
 
         constructor() {
             super();
@@ -44,11 +44,11 @@ namespace App.Views.Pages {
             this.TarCode = new Views.TextAreaInputView();
             this.TxtMac = new Views.TextBoxInputView();
             this.SboRemote = new Views.SelectBoxInputView();
-            this.BtnLearn = new Controls.ButtonView();
-            this.BtnSend = new Controls.ButtonView();
+            this.BtnLearn = new Controls.PropertyButtonView();
+            this.BtnSend = new Controls.PropertyButtonView();
             this.ChkToggleOn = new Views.CheckBoxInputView();
             this.ChkToggleOff = new Views.CheckBoxInputView();
-            this.DeleteButton = new Controls.ButtonView();
+            this.DeleteButton = new Controls.PropertyButtonView();
 
             this.SetClassName('ControlPropertyPageView');
 

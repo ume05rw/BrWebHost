@@ -26,7 +26,7 @@ namespace App.Controllers {
     export class A1SetController extends ControlSetController {
 
         
-        private _btnChartChange: Controls.ButtonView;
+        private _btnChartChange: Controls.PropertyButtonView;
         private _canvasDiv: Fw.Views.HtmlView;
         private _chart: Chart;
         private _chartType: ChartType;
@@ -37,7 +37,7 @@ namespace App.Controllers {
             this.SetClassName('A1SetController');
 
             this._canvasDiv = new Fw.Views.HtmlView('div');
-            this._btnChartChange = new Controls.ButtonView();
+            this._btnChartChange = new Controls.PropertyButtonView();
             this._chart = null;
             this._chartType = ChartType.Hourly;
 
@@ -51,17 +51,17 @@ namespace App.Controllers {
 
             this._btnChartChange.SetAnchor(550, 5, 5, null);
             this._btnChartChange.Size.Height = 30;
-            this._btnChartChange.Text = 'Change Daily';
+            this._btnChartChange.Text = 'to Daily';
             this._page.ButtonPanel.Add(this._btnChartChange);
 
             this._btnChartChange.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, () => {
                 if (this._chartType === ChartType.Hourly) {
                     this._chartType = ChartType.Daily;
-                    this._btnChartChange.Text = 'Change Hourly';
+                    this._btnChartChange.Text = 'to Hourly';
                     this.SetChart();
                 } else if (this._chartType === ChartType.Daily) {
                     this._chartType = ChartType.Hourly;
-                    this._btnChartChange.Text = 'Change Daily';
+                    this._btnChartChange.Text = 'to Daily';
                     this.SetChart();
                 } else {
                     // グラフタイプが追加された？

@@ -3126,8 +3126,8 @@ var App;
                 __extends(ButtonView, _super);
                 function ButtonView() {
                     var _this = _super.call(this) || this;
-                    _this.HasBorder = true;
-                    _this.BorderRadius = 0;
+                    _this.HasBorder = false;
+                    _this.BorderRadius = 10;
                     _this.BackgroundColor = Color.Transparent;
                     _this.HoverColor = Color.MainHover;
                     _this.Color = Color.Main;
@@ -5216,7 +5216,7 @@ var App;
                 var _this = _super.call(this, 'A1Set') || this;
                 _this.SetClassName('A1SetController');
                 _this._canvasDiv = new Fw.Views.HtmlView('div');
-                _this._btnChartChange = new Controls.ButtonView();
+                _this._btnChartChange = new Controls.PropertyButtonView();
                 _this._chart = null;
                 _this._chartType = 1 /* Hourly */;
                 _this._canvasDiv.SetAnchor(280, 5, null, null);
@@ -5228,17 +5228,17 @@ var App;
                 _this._page.ButtonPanel.Add(_this._canvasDiv);
                 _this._btnChartChange.SetAnchor(550, 5, 5, null);
                 _this._btnChartChange.Size.Height = 30;
-                _this._btnChartChange.Text = 'Change Daily';
+                _this._btnChartChange.Text = 'to Daily';
                 _this._page.ButtonPanel.Add(_this._btnChartChange);
                 _this._btnChartChange.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, function () {
                     if (_this._chartType === 1 /* Hourly */) {
                         _this._chartType = 2 /* Daily */;
-                        _this._btnChartChange.Text = 'Change Hourly';
+                        _this._btnChartChange.Text = 'to Hourly';
                         _this.SetChart();
                     }
                     else if (_this._chartType === 2 /* Daily */) {
                         _this._chartType = 1 /* Hourly */;
-                        _this._btnChartChange.Text = 'Change Daily';
+                        _this._btnChartChange.Text = 'to Daily';
                         _this.SetChart();
                     }
                     else {
@@ -10345,7 +10345,7 @@ var App;
                     _this.BtnColor = new Controls.ItemSelectButtonView();
                     _this.LabelRm = new Views.LabelView();
                     _this.SboRm = new Views.SelectBoxInputView();
-                    _this.DeleteButton = new Controls.ButtonView();
+                    _this.DeleteButton = new Controls.PropertyButtonView();
                     _this.SetClassName('ControlHeaderPropertyPageView');
                     var background = new Views.ImageView();
                     background.SetAnchor(0, 0, 0, 0);
@@ -10447,11 +10447,11 @@ var App;
                     _this.TarCode = new Views.TextAreaInputView();
                     _this.TxtMac = new Views.TextBoxInputView();
                     _this.SboRemote = new Views.SelectBoxInputView();
-                    _this.BtnLearn = new Controls.ButtonView();
-                    _this.BtnSend = new Controls.ButtonView();
+                    _this.BtnLearn = new Controls.PropertyButtonView();
+                    _this.BtnSend = new Controls.PropertyButtonView();
                     _this.ChkToggleOn = new Views.CheckBoxInputView();
                     _this.ChkToggleOff = new Views.CheckBoxInputView();
-                    _this.DeleteButton = new Controls.ButtonView();
+                    _this.DeleteButton = new Controls.PropertyButtonView();
                     _this.SetClassName('ControlPropertyPageView');
                     var background = new Views.ImageView();
                     background.SetAnchor(0, 0, 0, 0);
@@ -14531,4 +14531,34 @@ var Fw;
         })(Property = Views.Property || (Views.Property = {}));
     })(Views = Fw.Views || (Fw.Views = {}));
 })(Fw || (Fw = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Views/ButtonView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../Items/Color.ts" />
+var App;
+(function (App) {
+    var Views;
+    (function (Views_22) {
+        var Controls;
+        (function (Controls) {
+            var Color = App.Items.Color;
+            var PropertyButtonView = /** @class */ (function (_super) {
+                __extends(PropertyButtonView, _super);
+                function PropertyButtonView() {
+                    var _this = _super.call(this) || this;
+                    _this.HasBorder = true;
+                    _this.BorderRadius = 0;
+                    _this.BackgroundColor = Color.Transparent;
+                    _this.HoverColor = Color.MainHover;
+                    _this.Color = Color.Main;
+                    return _this;
+                }
+                return PropertyButtonView;
+            }(Fw.Views.ButtonView));
+            Controls.PropertyButtonView = PropertyButtonView;
+        })(Controls = Views_22.Controls || (Views_22.Controls = {}));
+    })(Views = App.Views || (App.Views = {}));
+})(App || (App = {}));
 //# sourceMappingURL=tsout.js.map
