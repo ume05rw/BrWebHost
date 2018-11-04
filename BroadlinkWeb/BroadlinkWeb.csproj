@@ -18,12 +18,10 @@
     <Content Remove="wwwroot\ts\App\Controllers\IconSelectController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\IControlSetController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\ItemSelectControllerBase.ts" />
-    <Content Remove="wwwroot\ts\App\Controllers\LayoutCheckController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\MouseEventsController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\OperationSelectController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\SceneController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\SceneHeaderPropertyController.ts" />
-    <Content Remove="wwwroot\ts\App\Controllers\Sub3Controller.ts" />
     <Content Remove="wwwroot\ts\App\Events\Controls\ControlButtonViewEvents.ts" />
     <Content Remove="wwwroot\ts\App\Icon.ts" />
     <Content Remove="wwwroot\ts\App\Items\ChartType.ts" />
@@ -73,11 +71,9 @@
     <Content Remove="wwwroot\ts\App\Views\Pages\ControlPropertyPageView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Pages\ControlSetPageView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Pages\ItemSelectPageView.ts" />
-    <Content Remove="wwwroot\ts\App\Views\Pages\LayoutCheckPageView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Pages\MainPageView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Pages\SceneHeaderPropertyPageView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Pages\ScenePageView.ts" />
-    <Content Remove="wwwroot\ts\App\Views\Pages\Sub3PageView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Popup\AlertPopup.ts" />
     <Content Remove="wwwroot\ts\App\Views\Popup\Cancellable.ts" />
     <Content Remove="wwwroot\ts\App\Views\Popup\ConfirmPopup.ts" />
@@ -196,9 +192,7 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ControlSetController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\OperationSelectController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ItemSelectControllerBase.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\App\Controllers\LayoutCheckController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\MouseEventsController.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\App\Controllers\Sub3Controller.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Events\Controls\ControlButtonViewEvents.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Items\ControlSetTemplate.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Items\OperationType.ts" />
@@ -206,8 +200,6 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Items\OperationTemplate.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Main.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\MainController.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\App\Controllers\Sub1Controller.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\App\Controllers\Sub2Controller.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\A1Values.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\BrDevice.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\Control.ts" />
@@ -250,9 +242,7 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\ControlSetPageView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\ItemSelectPageView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\ScenePageView.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\Sub3PageView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\MainPageView.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\LayoutCheckPageView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Popup\AlertPopup.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Popup\Cancellable.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Popup\ConfirmPopup.ts" />

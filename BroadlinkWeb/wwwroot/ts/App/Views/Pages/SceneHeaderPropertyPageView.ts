@@ -21,7 +21,7 @@ namespace App.Views.Pages {
         public TxtName: Views.TextBoxInputView;
         public LabelColor: Views.LabelView;
         public BtnColor: Controls.ItemSelectButtonView;
-        public DeleteButton: Controls.ButtonView;
+        public DeleteButton: Controls.PropertyButtonView;
 
         constructor() {
             super();
@@ -31,7 +31,7 @@ namespace App.Views.Pages {
             this.TxtName = new Views.TextBoxInputView();
             this.LabelColor = new Views.LabelView();
             this.BtnColor = new Controls.ItemSelectButtonView();
-            this.DeleteButton = new Controls.ButtonView();
+            this.DeleteButton = new Controls.PropertyButtonView();
 
             this.SetClassName('SceneHeaderPropertyPageView');
 
@@ -50,7 +50,7 @@ namespace App.Views.Pages {
             label.FontSize = Property.FontSize.Large;
             label.Color = App.Items.Color.Main;
             label.SetAnchor(null, 5, null, null);
-            label.Text = 'Remote Control';
+            label.Text = 'Property';
             this.HeaderBar.Add(label);
 
             this.InputPanel.Position.Policy = Property.PositionPolicy.LeftTop;
