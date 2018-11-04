@@ -38,7 +38,7 @@ namespace App.Controllers {
     import ItemSelectControllerBase = App.Controllers.ItemSelectControllerBase;
     import ItemSelectButtonView = App.Views.Controls.ItemSelectButtonView;
 
-    export class ControlSetController extends ItemSelectControllerBase {
+    export class ControlSetController extends ItemSelectControllerBase implements IControlSetController {
 
         protected _page: Pages.ControlSetPageView;
         protected _controlSet: Entities.ControlSet;

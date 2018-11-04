@@ -3,7 +3,7 @@
 namespace App.Controllers {
     import Entities = App.Models.Entities;
 
-    export interface IControlSetController {
+    export interface IControlSetController extends Fw.Controllers.IController {
         Select(parentController: Fw.Controllers.IController): Promise<any>;
         SetEditMode(): void;
         SetExecMode(): void;

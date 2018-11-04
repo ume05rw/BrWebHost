@@ -14,6 +14,7 @@
     <Content Remove="wwwroot\ts\App\Controllers\ControlPropertyController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\ControlSetController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\ControlSetSelectController.ts" />
+    <Content Remove="wwwroot\ts\App\Controllers\CSControllerFactory.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\IconSelectController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\IControlSetController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\ItemSelectControllerBase.ts" />
@@ -176,6 +177,7 @@
   <ItemGroup>
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\A1SetController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ColorSelectController.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Controllers\CSControllerFactory.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\IControlSetController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\SceneHeaderPropertyController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\IconSelectController.ts" />

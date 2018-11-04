@@ -52,6 +52,8 @@ namespace BroadlinkWeb.Models.Stores
                     new MediaTypeWithQualityHeaderValue("application/vnd.github.v3+json")
                 );
                 client.DefaultRequestHeaders.Add("User-Agent", ".NET Foundation Repository Reporter");
+                // タイムアウトを3秒に。デフォルトは30秒くらい？待ってしまう。
+                client.Timeout = TimeSpan.FromMilliseconds(3000);
 
                 HttpResponseMessage resMsg;
                 try

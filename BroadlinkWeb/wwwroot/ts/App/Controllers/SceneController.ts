@@ -299,7 +299,7 @@ namespace App.Controllers {
                     const controlSet: ControlSet = Stores.ControlSets.List[sdView.Detail.ControlSetId];
 
                     if (controlSet) {
-                        const ctr = this.Manager.Get('ControlSet') as ControlSetController;
+                        const ctr = App.Controllers.CSControllerFactory.Get(controlSet);
                         ctr.SetEntity(controlSet);
                         ctr.SetSelectMode();
                         const control: Control = await ctr.Select(this);

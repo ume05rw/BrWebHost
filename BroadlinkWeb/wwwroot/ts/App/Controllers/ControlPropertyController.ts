@@ -101,7 +101,7 @@ namespace App.Controllers {
                 if (!this._control)
                     return;
 
-                const ctr = this.Manager.Get('ControlSet') as ControlSetController;
+                const ctr = App.Controllers.CSControllerFactory.Get(this._controlSet);
                 const code = await ctr.GetLearnedCode();
 
                 if (!code)
@@ -116,7 +116,7 @@ namespace App.Controllers {
                 if (!this._control)
                     return;
 
-                const ctr = this.Manager.Get('ControlSet') as ControlSetController;
+                const ctr = App.Controllers.CSControllerFactory.Get(this._controlSet);
                 ctr.ExecCode(this._control);
             });
 
@@ -139,7 +139,7 @@ namespace App.Controllers {
                 if (res !== true)
                     return;
 
-                const ctr = this.Manager.Get('ControlSet') as ControlSetController;
+                const ctr = App.Controllers.CSControllerFactory.Get(this._controlSet);
                 ctr.RemoveControl(this._control);
 
                 this._control = null;
@@ -262,14 +262,14 @@ namespace App.Controllers {
 
             if (this._control.IsAssignToggleOn !== this._page.ChkToggleOn.BoolValue) {
                 this._control.IsAssignToggleOn = this._page.ChkToggleOn.BoolValue;
-                const ctr = this.Manager.Get('ControlSet') as ControlSetController;
+                const ctr = App.Controllers.CSControllerFactory.Get(this._controlSet);
                 ctr.ResetToggleAssign(this._control, true);
                 changed = true;
             }
 
             if (this._control.IsAssignToggleOff !== this._page.ChkToggleOff.BoolValue) {
                 this._control.IsAssignToggleOff = this._page.ChkToggleOff.BoolValue;
-                const ctr = this.Manager.Get('ControlSet') as ControlSetController;
+                const ctr = App.Controllers.CSControllerFactory.Get(this._controlSet);
                 ctr.ResetToggleAssign(this._control, false);
                 changed = true;
             }

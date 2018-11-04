@@ -138,7 +138,7 @@ namespace App.Controllers {
                         throw new Error('なんでやー！');
                 }
 
-                const ctr2 = this.Manager.Get('ControlSet') as ControlSetController;
+                const ctr2 = App.Controllers.CSControllerFactory.Get(ctrSet);
                 ctr2.SetEntity(ctrSet);
                 ctr2.SetEditMode();
                 ctr2.Show();
@@ -214,7 +214,9 @@ namespace App.Controllers {
 
                     // メインボタンクリック - リモコンをスライドイン表示する。
                     const button = (e.Sender as Fw.Views.IView).Parent as ControlSetButtonView;
-                    const ctr = this.Manager.Get('ControlSet') as ControlSetController;
+
+                    const ctr = App.Controllers.CSControllerFactory.Get(button.ControlSet);
+
                     ctr.SetEntity(button.ControlSet);
                     ctr.SetExecMode();
                     ctr.ShowModal();
@@ -227,7 +229,7 @@ namespace App.Controllers {
 
                     // メインボタンの長押し - リモコンを編集表示する。
                     const button = (e.Sender as Fw.Views.IView).Parent as ControlSetButtonView;
-                    const ctr = this.Manager.Get('ControlSet') as ControlSetController;
+                    const ctr = App.Controllers.CSControllerFactory.Get(button.ControlSet);
                     ctr.SetEntity(button.ControlSet);
                     ctr.SetEditMode();
                     ctr.Show();
