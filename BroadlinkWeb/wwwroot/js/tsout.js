@@ -3035,6 +3035,8 @@ var Fw;
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../lib/popperjs/index.d.ts" />
+/// <reference path="../../../lib/tippyjs/index.d.ts" />
 /// <reference path="../Events/ControlViewEvents.ts" />
 /// <reference path="../Util/Dump.ts" />
 /// <reference path="ControlView.ts" />
@@ -3053,6 +3055,7 @@ var Fw;
                 _this.Elem.addClass(_this.ClassName);
                 _this.BackgroundColor = '#add8e6';
                 _this.HoverColor = '#6495ed';
+                _this._tooltip = '';
                 _this._imageView.Src = '';
                 _this._imageView.FitPolicy = Views.Property.FitPolicy.Contain;
                 _this.Add(_this._imageView);
@@ -3097,6 +3100,48 @@ var Fw;
                 enumerable: true,
                 configurable: true
             });
+            Object.defineProperty(ButtonView.prototype, "Tooltip", {
+                get: function () {
+                    return this._tooltip;
+                },
+                set: function (value) {
+                    this._tooltip = value;
+                    if (this._tippy)
+                        this._tippy.destroy();
+                    if ((this._tooltip) && this._tooltip !== '') {
+                        this._tippy = tippy(this.Dom);
+                    }
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            ButtonView.prototype.InnerRefresh = function () {
+                try {
+                    _super.prototype.InnerRefresh.call(this);
+                    if (!this._tooltip || this._tooltip === '') {
+                        // ツールティップがセットされていない。
+                        if (this.Elem.hasClass('tooltip')) {
+                            this.Elem.removeClass('tooltip');
+                        }
+                        this.Elem.attr('title', '');
+                    }
+                    else {
+                        // ツールティップがセットされている。
+                        if (!this.Elem.hasClass('tooltip')) {
+                            this.Elem.addClass('tooltip');
+                        }
+                        this.Elem.attr('title', this._tooltip);
+                    }
+                    this.SetStyle('borderColor', "" + this.Color);
+                }
+                catch (e) {
+                    Dump.ErrorLog(e, this.ClassName);
+                }
+                finally {
+                    this.ResumeLayout();
+                }
+            };
             ButtonView.prototype.CalcLayout = function () {
                 try {
                     this.SuppressLayout();
@@ -10036,6 +10081,15 @@ var App;
                     this.Name = this._control.Name;
                     this.SetImage(this._control.IconUrl);
                     this.SetColor(this._control.Color);
+                    if (this._control.Name
+                        && this._control.Name !== ''
+                        && this._control.IconUrl
+                        && this._control.IconUrl !== '') {
+                        this.Tooltip = this._control.Name;
+                    }
+                    else {
+                        this.Tooltip = null;
+                    }
                     this.Refresh();
                 };
                 ControlButtonView.prototype.SetImage = function (value) {

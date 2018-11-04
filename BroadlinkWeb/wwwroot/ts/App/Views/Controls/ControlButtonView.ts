@@ -122,8 +122,21 @@ namespace App.Views.Controls {
                 return;
 
             this.Name = this._control.Name;
+            
             this.SetImage(this._control.IconUrl);
             this.SetColor(this._control.Color);
+
+            if (
+                this._control.Name
+                && this._control.Name !== ''
+                && this._control.IconUrl
+                && this._control.IconUrl !== ''
+            ) {
+                this.Tooltip = this._control.Name;
+            } else {
+                this.Tooltip = null;
+            }
+
             this.Refresh();
         }
 
