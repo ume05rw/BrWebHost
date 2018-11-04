@@ -16,8 +16,9 @@ namespace App.Views.Controls {
         constructor() {
             super()
 
-            this.HasBorder = false;
-            this.BackgroundColor = Color.MainBackground;
+            this.HasBorder = true;
+            this.BorderRadius = 0;
+            this.BackgroundColor = Color.Transparent;
             this.HoverColor = Color.MainHover;
             this.Color = Color.Main;
         }

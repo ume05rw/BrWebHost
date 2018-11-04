@@ -85,7 +85,7 @@ namespace Fw {
             this._refresher = new Fw.Util.DelayedOnceExecuter(
                 this,
                 this.InnerRefresh.bind(this),
-                10,
+                100,
                 300
                 , true
             );
@@ -158,6 +158,10 @@ namespace Fw {
         }
 
         public Refresh(): void {
+            // this.Sizeのセッターが無いので、フィールドに直接書き込む。
+            this._size.Width = this.Elem.width();
+            this._size.Height = this.Elem.height();
+
             this._refresher.Exec();
         }
 

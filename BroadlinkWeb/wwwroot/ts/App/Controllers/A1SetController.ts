@@ -10,6 +10,7 @@
 /// <reference path="../Views/Controls/ButtonView.ts" />
 /// <reference path="ControlSetController.ts" />
 /// <reference path="../../Fw/Events/EntityEvents.ts" />
+/// <reference path="../Views/Controls/ButtonView.ts" />
 
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
@@ -25,7 +26,7 @@ namespace App.Controllers {
     export class A1SetController extends ControlSetController {
 
         
-        private _btnChartChange: Fw.Views.ButtonView;
+        private _btnChartChange: Controls.ButtonView;
         private _canvasDiv: Fw.Views.HtmlView;
         private _chart: Chart;
         private _chartType: ChartType;
@@ -36,7 +37,7 @@ namespace App.Controllers {
             this.SetClassName('A1SetController');
 
             this._canvasDiv = new Fw.Views.HtmlView('div');
-            this._btnChartChange = new Fw.Views.ButtonView();
+            this._btnChartChange = new Controls.ButtonView();
             this._chart = null;
             this._chartType = ChartType.Hourly;
 
@@ -49,7 +50,7 @@ namespace App.Controllers {
             this._page.ButtonPanel.Add(this._canvasDiv);
 
             this._btnChartChange.SetAnchor(550, 5, 5, null);
-            this._btnChartChange.Size.Height = 20;
+            this._btnChartChange.Size.Height = 30;
             this._btnChartChange.Text = 'Change Daily';
             this._page.ButtonPanel.Add(this._btnChartChange);
 
