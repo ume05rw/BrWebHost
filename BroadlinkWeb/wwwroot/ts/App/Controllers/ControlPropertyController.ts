@@ -62,9 +62,10 @@ namespace App.Controllers {
 
                 const url = (icon)
                     ? 'images/icons/' + icon
-                    : '';
+                    : null;
 
                 this._page.BtnIcon.ImageSrc = url;
+                this._page.BtnIcon.Refresh();
 
                 this.ApplyToEntity();
             });

@@ -3068,6 +3068,12 @@ var Fw;
                 },
                 set: function (value) {
                     this._imageView.Src = value;
+                    if (!value || value === '') {
+                        this._imageView.Hide(0);
+                    }
+                    else {
+                        this._imageView.Show(0);
+                    }
                 },
                 enumerable: true,
                 configurable: true
@@ -5987,8 +5993,9 @@ var App;
                                 icon = _a.sent();
                                 url = (icon)
                                     ? 'images/icons/' + icon
-                                    : '';
+                                    : null;
                                 this._page.BtnIcon.ImageSrc = url;
+                                this._page.BtnIcon.Refresh();
                                 this.ApplyToEntity();
                                 return [2 /*return*/];
                         }
@@ -6845,6 +6852,15 @@ var App;
                 _this.SetClassName('IconSelectController');
                 _this._page = _this.View;
                 _this._page.Label.Text = 'Select Icon';
+                var btn = new ItemSelectButtonView();
+                btn.Value = null;
+                btn.ImageSrc = null;
+                btn.Text = 'none';
+                btn.AddEventListener(ButtonEvents.SingleClick, function (e) {
+                    var button = e.Sender;
+                    _this.Commit(button.Value);
+                });
+                _this._page.SelectorPanel.Add(btn);
                 _.each(App.Items.Icon.Names, function (name, idx) {
                     var btn = new ItemSelectButtonView();
                     btn.Value = name;

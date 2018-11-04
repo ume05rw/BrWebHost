@@ -17,6 +17,11 @@ namespace Fw.Views {
         }
         public set ImageSrc(value: string) {
             this._imageView.Src = value;
+            if (!value || value === '') {
+                this._imageView.Hide(0);
+            } else {
+                this._imageView.Show(0);
+            }
         }
 
         public get ImageFitPolicy(): Property.FitPolicy {
