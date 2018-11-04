@@ -3020,6 +3020,9 @@ var Fw;
             ControlView.prototype.SetAnimatedJello = function () {
                 this.SetAnimatedClass('jello');
             };
+            ControlView.prototype.SetAnimatedPulse = function () {
+                this.SetAnimatedClass('pulse');
+            };
             ControlView.prototype.Dispose = function () {
                 _super.prototype.Dispose.call(this);
                 this._label = null;
@@ -3060,10 +3063,10 @@ var Fw;
                     _this.Dom.style.backgroundColor = _this.BackgroundColor;
                 });
                 _this.AddEventListener(Events.SingleClick, function () {
-                    _this.SetAnimatedJello();
+                    _this.SetAnimatedPulse();
                 });
                 _this.AddEventListener(Events.LongClick, function () {
-                    _this.SetAnimatedJello();
+                    _this.SetAnimatedPulse();
                 });
                 return _this;
             }
@@ -5243,8 +5246,8 @@ var App;
                 _this._canvasDiv.BorderRadius = 5;
                 _this._canvasDiv.InnerHtml = '<canvas id="a1chart" witdh="250" height="260"></canvas>';
                 _this._page.ButtonPanel.Add(_this._canvasDiv);
-                _this._btnChartChange.SetAnchor(550, 5, 5, null);
-                _this._btnChartChange.Size.Height = 30;
+                _this._btnChartChange.SetAnchor(550, 5, null, null);
+                _this._btnChartChange.SetSize(250, 30);
                 _this._btnChartChange.Text = 'to Daily';
                 _this._page.ButtonPanel.Add(_this._btnChartChange);
                 _this._btnChartChange.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, function () {

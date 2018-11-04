@@ -60,10 +60,10 @@ namespace Fw.Views {
             });
 
             this.AddEventListener(Events.SingleClick, () => {
-                this.SetAnimatedJello();
+                this.SetAnimatedPulse();
             });
             this.AddEventListener(Events.LongClick, () => {
-                this.SetAnimatedJello();
+                this.SetAnimatedPulse();
             });
 
         }

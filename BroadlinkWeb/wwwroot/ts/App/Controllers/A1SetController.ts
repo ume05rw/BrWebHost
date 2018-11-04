@@ -49,8 +49,8 @@ namespace App.Controllers {
             this._canvasDiv.InnerHtml = '<canvas id="a1chart" witdh="250" height="260"></canvas>';
             this._page.ButtonPanel.Add(this._canvasDiv);
 
-            this._btnChartChange.SetAnchor(550, 5, 5, null);
-            this._btnChartChange.Size.Height = 30;
+            this._btnChartChange.SetAnchor(550, 5, null, null);
+            this._btnChartChange.SetSize(250, 30);
             this._btnChartChange.Text = 'to Daily';
             this._page.ButtonPanel.Add(this._btnChartChange);
 

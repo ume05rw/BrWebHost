@@ -77,6 +77,9 @@ namespace Fw.Views {
         public SetAnimatedJello(): void {
             this.SetAnimatedClass('jello');
         }
+        public SetAnimatedPulse(): void {
+            this.SetAnimatedClass('pulse');
+        }
 
         public Dispose(): void {
             super.Dispose();
