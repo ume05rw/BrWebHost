@@ -85,8 +85,11 @@ namespace Fw.Controllers {
                 if (c === controller || !c.View.IsVisible)
                     return;
 
-                if (!c.View.IsModal)
+                if (!c.View.IsModal) {
                     c.View.Mask();
+                } else {
+                    c.View.HideModal();
+                }
             });
 
             controller.View.ShowModal();
@@ -98,22 +101,24 @@ namespace Fw.Controllers {
                 throw new Error("id not found: " + id);
 
             // 指定ID以外で、モーダルのPageが在るか否か
-            let existsModal = false;
+            let modalController: Fw.Controllers.IController = null;
             _.each(this._controllers, function (c) {
                 if (c === controller || !c.View.IsVisible)
                     return;
 
                 if (c.View.IsModal) {
-                    existsModal = true;
+                    modalController = c;
                 } else {
                     c.View.UnMask();
                 }
             });
-            // モーダルViewが残っている場合、マスクしなおす。
-            if (existsModal)
-                Fw.Root.Instance.Mask();
 
             controller.View.HideModal();
+
+            // モーダルViewが残っている場合、マスク付き表示をやりなおす。
+            if (modalController) {
+                modalController.ShowModal();
+            }
         }
 
         public SetUnmodal(id: string): void {

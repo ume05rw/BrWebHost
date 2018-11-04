@@ -515,8 +515,12 @@ var Fw;
                 _.each(this._controllers, function (c) {
                     if (c === controller || !c.View.IsVisible)
                         return;
-                    if (!c.View.IsModal)
+                    if (!c.View.IsModal) {
                         c.View.Mask();
+                    }
+                    else {
+                        c.View.HideModal();
+                    }
                 });
                 controller.View.ShowModal();
             };
@@ -525,21 +529,22 @@ var Fw;
                 if (!controller)
                     throw new Error("id not found: " + id);
                 // 指定ID以外で、モーダルのPageが在るか否か
-                var existsModal = false;
+                var modalController = null;
                 _.each(this._controllers, function (c) {
                     if (c === controller || !c.View.IsVisible)
                         return;
                     if (c.View.IsModal) {
-                        existsModal = true;
+                        modalController = c;
                     }
                     else {
                         c.View.UnMask();
                     }
                 });
-                // モーダルViewが残っている場合、マスクしなおす。
-                if (existsModal)
-                    Fw.Root.Instance.Mask();
                 controller.View.HideModal();
+                // モーダルViewが残っている場合、マスク付き表示をやりなおす。
+                if (modalController) {
+                    modalController.ShowModal();
+                }
             };
             Manager.prototype.SetUnmodal = function (id) {
                 var controller = this._controllers[id];
@@ -3371,11 +3376,13 @@ var Fw;
                 if (duration === void 0) { duration = 200; }
                 this.Log('PageView.Show');
                 if (this.IsVisible && !this.IsModal) {
+                    this.ZIndex = 0;
                     this.SetStyle('zIndex', '0');
                     this.Dom.style.zIndex = '0';
                     this.Refresh();
                     return;
                 }
+                this.ZIndex = 0;
                 this.SetStyle('zIndex', '0');
                 this.Dom.style.zIndex = '0';
                 if (duration <= 0) {
@@ -3404,11 +3411,13 @@ var Fw;
                 if (duration === void 0) { duration = 200; }
                 this.Log('PageView.Hide');
                 if (!this.IsVisible && !this.IsModal) {
+                    this.ZIndex = 0;
                     this.SetStyle('zIndex', '0');
                     this.Dom.style.zIndex = '0';
                     this.Refresh();
                     return;
                 }
+                this.ZIndex = 0;
                 this.SetStyle('zIndex', '0');
                 this.Dom.style.zIndex = '0';
                 if (duration <= 0) {
@@ -3436,11 +3445,13 @@ var Fw;
                 if (width === void 0) { width = 300; }
                 this.Log('PageView.ShowModal');
                 if (this.IsVisible && this._isModal) {
+                    this.ZIndex = 1;
                     this.SetStyle('zIndex', '1');
                     this.Dom.style.zIndex = '1';
                     this.Refresh();
                     return;
                 }
+                this.ZIndex = 1;
                 this.SetStyle('zIndex', '1');
                 this.Dom.style.zIndex = '1';
                 if (duration <= 0) {
@@ -3471,6 +3482,7 @@ var Fw;
                 if (duration === void 0) { duration = 200; }
                 this.Log('PageView.HideModal');
                 if (!this.IsVisible) {
+                    this.ZIndex = 0;
                     this.SetStyle('zIndex', '0');
                     this.Dom.style.zIndex = '0';
                     this.Refresh();
@@ -3488,6 +3500,7 @@ var Fw;
                     animator.ToParams.X = this.Size.Width - this.Position.X;
                     animator.ToParams.Opacity = 0.5;
                     animator.OnComplete = function () {
+                        _this.ZIndex = 0;
                         _this.SetStyle('zIndex', '0');
                         _this.Dom.style.zIndex = '0';
                         _this.IsVisible = false;
@@ -3506,6 +3519,7 @@ var Fw;
                 if (duration === void 0) { duration = 200; }
                 //this.Log(`PageView.SetUnmodal: ${this.Elem.data('controller')}`);
                 if (this.IsVisible && !this._isModal) {
+                    this.ZIndex = 0;
                     this.SetStyle('zIndex', '0');
                     this.Dom.style.zIndex = '0';
                     this.Refresh();
@@ -3523,6 +3537,7 @@ var Fw;
                     animator.ToParams.X = -this.Position.X;
                     animator.ToParams.Opacity = 1.0;
                     animator.OnComplete = function () {
+                        _this.ZIndex = 0;
                         _this.SetStyle('zIndex', '0');
                         _this.Dom.style.zIndex = '0';
                         _this.IsVisible = true;
@@ -4124,6 +4139,7 @@ var App;
                 var _this = _super.call(this, controllerId) || this;
                 _this.SetPageView(new Pages.ItemSelectPageView());
                 _this.SetClassName('ItemSelectController');
+                _this._isParentModal = false;
                 return _this;
             }
             ItemSelectControllerBase.prototype.Select = function (parentController) {
@@ -4134,9 +4150,9 @@ var App;
                         return [2 /*return*/, new Promise(function (resolve) {
                                 _this.Log('ShowSelector.Promise');
                                 _this._parentController = parentController;
+                                _this._isParentModal = _this._parentController.View.IsModal;
                                 _this._resolve = resolve;
-                                _this.View.ShowModal();
-                                _this._parentController.View.Mask();
+                                _this.ShowModal();
                             })];
                     });
                 });
@@ -4182,13 +4198,8 @@ var App;
                 this.Log('Reset');
                 this._resolve = null;
                 this.HideModal();
-                if (this._parentController.View.IsModal) {
-                    this._parentController.View.ShowModal();
-                }
-                else {
-                    if (this._parentController.View.IsMasked)
-                        this._parentController.View.UnMask();
-                }
+                if (this._isParentModal)
+                    this._parentController.ShowModal();
                 this._parentController = null;
             };
             return ItemSelectControllerBase;

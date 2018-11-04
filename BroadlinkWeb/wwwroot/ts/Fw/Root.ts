@@ -121,7 +121,6 @@ namespace Fw {
         public UnMask(): void {
             //this.Log(`${this.ClassName}.UnMask`);
             this._masked = false;
-            
             this.Refresh();
         }
 

@@ -69,12 +69,14 @@ namespace Fw.Views {
         public Show(duration: number = 200): void {
             this.Log('PageView.Show');
             if (this.IsVisible && !this.IsModal) {
+                this.ZIndex = 0;
                 this.SetStyle('zIndex', '0');
                 this.Dom.style.zIndex = '0';
                 this.Refresh();
                 return;
             }
 
+            this.ZIndex = 0;
             this.SetStyle('zIndex', '0');
             this.Dom.style.zIndex = '0';
 
@@ -102,12 +104,14 @@ namespace Fw.Views {
         public Hide(duration: number = 200): void {
             this.Log('PageView.Hide');
             if (!this.IsVisible && !this.IsModal) {
+                this.ZIndex = 0;
                 this.SetStyle('zIndex', '0');
                 this.Dom.style.zIndex = '0';
                 this.Refresh();
                 return;
             }
 
+            this.ZIndex = 0;
             this.SetStyle('zIndex', '0');
             this.Dom.style.zIndex = '0';
 
@@ -134,12 +138,14 @@ namespace Fw.Views {
         public ShowModal(duration: number = 200, width: number = 300): void {
             this.Log('PageView.ShowModal');
             if (this.IsVisible && this._isModal) {
+                this.ZIndex = 1;
                 this.SetStyle('zIndex', '1');
                 this.Dom.style.zIndex = '1';
                 this.Refresh();
                 return;
             }
 
+            this.ZIndex = 1;
             this.SetStyle('zIndex', '1');
             this.Dom.style.zIndex = '1';
 
@@ -170,6 +176,7 @@ namespace Fw.Views {
         public HideModal(duration: number = 200): void {
             this.Log('PageView.HideModal');
             if (!this.IsVisible) {
+                this.ZIndex = 0;
                 this.SetStyle('zIndex', '0');
                 this.Dom.style.zIndex = '0';
                 this.Refresh();
@@ -187,6 +194,7 @@ namespace Fw.Views {
                 animator.ToParams.X = this.Size.Width - this.Position.X;
                 animator.ToParams.Opacity = 0.5;
                 animator.OnComplete = () => {
+                    this.ZIndex = 0;
                     this.SetStyle('zIndex', '0');
                     this.Dom.style.zIndex = '0';
 
@@ -206,6 +214,7 @@ namespace Fw.Views {
         public SetUnmodal(duration: number = 200): void {
             //this.Log(`PageView.SetUnmodal: ${this.Elem.data('controller')}`);
             if (this.IsVisible && !this._isModal) {
+                this.ZIndex = 0;
                 this.SetStyle('zIndex', '0');
                 this.Dom.style.zIndex = '0';
                 this.Refresh();
@@ -223,6 +232,7 @@ namespace Fw.Views {
                 animator.ToParams.X = - this.Position.X;
                 animator.ToParams.Opacity = 1.0;
                 animator.OnComplete = () => {
+                    this.ZIndex = 0;
                     this.SetStyle('zIndex', '0');
                     this.Dom.style.zIndex = '0';
 
