@@ -82,11 +82,14 @@ namespace Fw.Controllers {
                 throw new Error("id not found: " + id);
 
             _.each(this._controllers, function (c) {
-                if (c !== controller && c.View.IsVisible && !c.View.IsModal)
-                    (c.View as Views.PageView).Mask();
+                if (c === controller || !c.View.IsVisible)
+                    return;
+
+                if (!c.View.IsModal)
+                    c.View.Mask();
             });
 
-            (controller.View as Views.PageView).ShowModal();
+            controller.View.ShowModal();
         }
 
         public HideModal(id: string): void {
@@ -97,14 +100,20 @@ namespace Fw.Controllers {
             // 指定ID以外で、モーダルのPageが在るか否か
             let existsModal = false;
             _.each(this._controllers, function (c) {
-                if (c !== controller && c.View.IsVisible && c.View.IsModal)
-                    existsModal = true;
-            });
-            // 全員モーダルでない場合、マスクを消す。
-            if (!existsModal)
-                Fw.Root.Instance.UnMask();
+                if (c === controller || !c.View.IsVisible)
+                    return;
 
-            (controller.View as Views.PageView).HideModal();
+                if (c.View.IsModal) {
+                    existsModal = true;
+                } else {
+                    c.View.UnMask();
+                }
+            });
+            // モーダルViewが残っている場合、マスクしなおす。
+            if (existsModal)
+                Fw.Root.Instance.Mask();
+
+            controller.View.HideModal();
         }
 
         public SetUnmodal(id: string): void {
@@ -113,7 +122,7 @@ namespace Fw.Controllers {
                 throw new Error("id not found: " + id);
 
             this.Reset(controller);
-            (controller.View as Views.PageView).SetUnmodal();
+            controller.View.SetUnmodal();
         }
     }
 }

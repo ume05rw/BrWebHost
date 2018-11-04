@@ -2,6 +2,7 @@ using BroadlinkWeb.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using SharpBroadlink;
 using SharpBroadlink.Devices;
 using System;
@@ -152,7 +153,19 @@ namespace BroadlinkWeb.Models.Stores
                                 try
                                 {
                                     var rhStore = serviceScope.ServiceProvider.GetService<RemoteHostStore>();
-                                    var res = await rhStore.Exec(null);
+                                    Script script;
+                                    try
+                                    {
+                                        script = JsonConvert.DeserializeObject<Script>(detail.Control.Code);
+                                    }
+                                    catch (Exception)
+                                    {
+                                        error = "Remote Script Not Recognize";
+                                        break;
+                                    }
+                                    
+
+                                    var res = await rhStore.Exec(script);
                                     if (!res.IsSucceeded)
                                     {
                                         error = res.Result;

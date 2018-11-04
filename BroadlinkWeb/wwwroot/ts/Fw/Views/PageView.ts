@@ -245,6 +245,7 @@ namespace Fw.Views {
             //this.Log(`${this.ClassName}.Mask`);
             this._isMasked = true;
             Fw.Root.Instance.Mask();
+            this.ZIndex = -1;
             this.Dom.style.zIndex = '-1';
             this.SetStyle('zIndex', '-1');
             this.Refresh();
@@ -254,6 +255,7 @@ namespace Fw.Views {
             //this.Log(`${this.ClassName}.UnMask`);
             this._isMasked = false;
             Fw.Root.Instance.UnMask();
+            this.ZIndex = 0;
             this.Dom.style.zIndex = '0';
             this.SetStyle('zIndex', '0');
             this.Refresh();

@@ -513,7 +513,9 @@ var Fw;
                 if (!controller)
                     throw new Error("id not found: " + id);
                 _.each(this._controllers, function (c) {
-                    if (c !== controller && c.View.IsVisible && !c.View.IsModal)
+                    if (c === controller || !c.View.IsVisible)
+                        return;
+                    if (!c.View.IsModal)
                         c.View.Mask();
                 });
                 controller.View.ShowModal();
@@ -525,12 +527,18 @@ var Fw;
                 // 指定ID以外で、モーダルのPageが在るか否か
                 var existsModal = false;
                 _.each(this._controllers, function (c) {
-                    if (c !== controller && c.View.IsVisible && c.View.IsModal)
+                    if (c === controller || !c.View.IsVisible)
+                        return;
+                    if (c.View.IsModal) {
                         existsModal = true;
+                    }
+                    else {
+                        c.View.UnMask();
+                    }
                 });
-                // 全員モーダルでない場合、マスクを消す。
-                if (!existsModal)
-                    Fw.Root.Instance.UnMask();
+                // モーダルViewが残っている場合、マスクしなおす。
+                if (existsModal)
+                    Fw.Root.Instance.Mask();
                 controller.View.HideModal();
             };
             Manager.prototype.SetUnmodal = function (id) {
@@ -978,6 +986,8 @@ var Fw;
                 Dump.Log('Root.ReleasePageInitialize - Released');
             }, 300, -1, true);
             _this._renderInitializer.Name = 'RenderInitializer';
+            _this._refresher = new Fw.Util.DelayedOnceExecuter(_this, _this.InnerRefresh.bind(_this), 10, 300, true);
+            _this._refresher.Name = 'Refresher';
             // Root.Init()の終了後にViewBaseからFw.Root.Instanceを呼び出す。
             _.defer(function () {
                 _this._mask = new Fw.Views.BoxView();
@@ -1069,6 +1079,9 @@ var Fw;
             this._renderInitializer.Exec();
         };
         Root.prototype.Refresh = function () {
+            this._refresher.Exec();
+        };
+        Root.prototype.InnerRefresh = function () {
             // this.Sizeのセッターが無いので、フィールドに直接書き込む。
             this._size.Width = this.Elem.width();
             this._size.Height = this.Elem.height();
@@ -3314,6 +3327,7 @@ var Fw;
                 //this.Log(`${this.ClassName}.Mask`);
                 this._isMasked = true;
                 Fw.Root.Instance.Mask();
+                this.ZIndex = -1;
                 this.Dom.style.zIndex = '-1';
                 this.SetStyle('zIndex', '-1');
                 this.Refresh();
@@ -3322,6 +3336,7 @@ var Fw;
                 //this.Log(`${this.ClassName}.UnMask`);
                 this._isMasked = false;
                 Fw.Root.Instance.UnMask();
+                this.ZIndex = 0;
                 this.Dom.style.zIndex = '0';
                 this.SetStyle('zIndex', '0');
                 this.Refresh();
