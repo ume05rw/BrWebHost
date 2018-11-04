@@ -52,5 +52,58 @@ namespace BroadlinkWeb.Areas.Api.Controllers
                 return XhrResult.CreateError(ex.Message);
             }
         }
+
+        // Post: api/A1s/GetHourly/5
+        [HttpPost("GetHourly/{id?}")] // <- nullableのとき、ここにも?が必要。
+        public async Task<XhrResult> GetHourly(
+            [FromRoute] int? id,
+            [FromBody] DateTimeRange range
+        ) {
+            Xb.Util.Out("A1Controller.GetHourly");
+
+            if (!ModelState.IsValid)
+                return XhrResult.CreateError(ModelState);
+
+            if (id == null)
+                return XhrResult.CreateError("Entity Not Found");
+
+            try
+            {
+                var result = await this._a1Store.GetHourly((int)id, range);
+
+                return XhrResult.CreateSucceeded(result);
+            }
+            catch (System.Exception ex)
+            {
+                return XhrResult.CreateError(ex.Message);
+            }
+        }
+
+        // Post: api/A1s/GetDaily/5
+        [HttpPost("GetDaily/{id?}")] // <- nullableのとき、ここにも?が必要。
+        public async Task<XhrResult> GetDaily(
+            [FromRoute] int? id,
+            [FromBody] DateTimeRange range
+        )
+        {
+            Xb.Util.Out("A1Controller.GetDaily");
+
+            if (!ModelState.IsValid)
+                return XhrResult.CreateError(ModelState);
+
+            if (id == null)
+                return XhrResult.CreateError("Entity Not Found");
+
+            try
+            {
+                var result = await this._a1Store.GetDaily((int)id, range);
+
+                return XhrResult.CreateSucceeded(result);
+            }
+            catch (System.Exception ex)
+            {
+                return XhrResult.CreateError(ex.Message);
+            }
+        }
     }
 }

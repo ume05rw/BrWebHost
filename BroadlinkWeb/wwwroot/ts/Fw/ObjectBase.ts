@@ -5,6 +5,7 @@
 
 /// <reference path="Events/EventReference.ts" />
 /// <reference path="Util/Dump.ts" />
+/// <reference path="Util/App.ts" />
 
 namespace Fw {
     import Dump = Fw.Util.Dump;

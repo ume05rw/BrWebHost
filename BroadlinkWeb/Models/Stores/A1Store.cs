@@ -19,9 +19,6 @@ namespace BroadlinkWeb.Models.Stores
         private static Task LoopRunner = null;
         private static Job _loopRunnerJob = null;
 
-        private BrDeviceStore _brDeviceStore;
-
-
         public static void SetLoopRunner(IServiceProvider provider)
         {
             A1Store.Provider = provider;
@@ -180,9 +177,15 @@ namespace BroadlinkWeb.Models.Stores
         }
 
 
+        private Dbc _dbc;
+        private BrDeviceStore _brDeviceStore;
 
-        public A1Store([FromServices] BrDeviceStore brDeviceStore)
+        public A1Store(
+            [FromServices] Dbc dbc,
+            [FromServices] BrDeviceStore brDeviceStore
+        )
         {
+            this._dbc = dbc;
             this._brDeviceStore = brDeviceStore;
         }
 
@@ -220,6 +223,82 @@ namespace BroadlinkWeb.Models.Stores
                 Created = now,
                 Updated = now
             };
+
+            return result;
+        }
+
+        public async Task<A1Values[]> GetHourly(int id, DateTimeRange range)
+        {
+            var entity = await this._brDeviceStore.Get(id);
+
+            if (entity == null)
+                throw new Exception("Entity Not Found");
+
+            // 先に単純リストで値を取ってきて、C#上でグルーピングする。
+            // EFCoreのGrouping時、SumやAverage, Countが正しくSQLにパースされない不具合があるとのこと。
+            // https://github.com/aspnet/EntityFrameworkCore/issues/9722
+            var values = this._dbc.A1Values
+                .Where(e => e.BrDeviceId == id)
+                .Where(e => range.StartDateTime <= e.Recorded && e.Recorded <= range.EndDateTime)
+                .ToArray();
+
+            var result = values
+                .GroupBy(e => e.Recorded.Hour, (key, g) => new A1Values()
+                {
+                    BrDeviceId = id,
+                    Temperature = (g.Average(d => d.Temperature)),
+                    Humidity = g.Average(e => e.Humidity),
+                    Voc = g.Average(e => e.Voc),
+                    Light = g.Average(e => e.Light),
+                    Noise = g.Average(e => e.Noise),
+                    Recorded = new DateTime(
+                        g.First().Recorded.Year,
+                        g.First().Recorded.Month,
+                        g.First().Recorded.Day,
+                        g.First().Recorded.Hour,
+                        0,
+                        0
+                    )
+                })
+                .OrderBy(v => v.Recorded)
+                .ToArray();
+
+
+            return result;
+        }
+
+        public async Task<A1Values[]> GetDaily(int id, DateTimeRange range)
+        {
+            var entity = await this._brDeviceStore.Get(id);
+
+            if (entity == null)
+                throw new Exception("Entity Not Found");
+
+            var values = this._dbc.A1Values
+                .Where(e => e.BrDeviceId == id)
+                .Where(e => range.StartDateTime <= e.Recorded && e.Recorded <= range.EndDateTime)
+                                .ToArray();
+
+            var result = values
+                .GroupBy(e => e.Recorded.Day, (key, g) => new A1Values()
+                {
+                    BrDeviceId = id,
+                    Temperature = g.Average(e => e.Temperature),
+                    Humidity = g.Average(e => e.Humidity),
+                    Voc = g.Average(e => e.Voc),
+                    Light = g.Average(e => e.Light),
+                    Noise = g.Average(e => e.Noise),
+                    Recorded = new DateTime(
+                        g.First().Recorded.Year,
+                        g.First().Recorded.Month,
+                        g.First().Recorded.Day,
+                        0,
+                        0,
+                        0
+                    )
+                })
+                .OrderBy(v => v.Recorded)
+                .ToArray();
 
             return result;
         }

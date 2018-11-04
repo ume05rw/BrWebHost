@@ -1,8 +1,12 @@
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../lib/chartjs/index.d.ts" />
 /// <reference path="../../Fw/Util/Dump.ts" />
 /// <reference path="../Models/Entities/ControlSet.ts" />
+/// <reference path="../Models/Stores/A1Store.ts" />
+/// <reference path="../Items/Color.ts" />
 /// <reference path="../Items/OperationType.ts" />
+/// <reference path="../Items/ChartType.ts" />
 /// <reference path="../Views/Controls/ButtonView.ts" />
 /// <reference path="ControlSetController.ts" />
 /// <reference path="../../Fw/Events/EntityEvents.ts" />
@@ -11,26 +15,59 @@ namespace App.Controllers {
     import Dump = Fw.Util.Dump;
     import Controls = App.Views.Controls;
     import Entities = App.Models.Entities;
+    import Stores = App.Models.Stores;
     import Util = Fw.Util;
     import OperationType = App.Items.OperationType;
     import EntityEvents = Fw.Events.EntityEvents;
+    import Color = App.Items.Color;
+    import ChartType = App.Items.ChartType;
 
     export class A1SetController extends ControlSetController {
 
-        private _canvas: Fw.Views.HtmlView;
+        
+        private _btnChartChange: Fw.Views.ButtonView;
+        private _canvasDiv: Fw.Views.HtmlView;
+        private _chart: Chart;
+        private _chartType: ChartType;
 
         constructor() {
             super('A1Set');
 
             this.SetClassName('A1SetController');
 
-            this._canvas = new Fw.Views.HtmlView('canvas');
-            this._canvas.SetAnchor(280, 5, 25, null);
-            this._canvas.Size.Height = 260;
-            this._canvas.HasBorder = true;
-            this._canvas.Color = App.Items.Color.ButtonColors[0];
-            this._canvas.BorderRadius = 5;
-            this._page.ButtonPanel.Add(this._canvas);
+            this._canvasDiv = new Fw.Views.HtmlView('div');
+            this._btnChartChange = new Fw.Views.ButtonView();
+            this._chart = null;
+            this._chartType = ChartType.Hourly;
+
+            this._canvasDiv.SetAnchor(280, 5, null, null);
+            this._canvasDiv.SetSize(250, 260);
+            this._canvasDiv.HasBorder = true;
+            this._canvasDiv.Color = Color.ButtonColors[0];
+            this._canvasDiv.BorderRadius = 5;
+            this._canvasDiv.InnerHtml = '<canvas id="a1chart" witdh="250" height="260"></canvas>';
+            this._page.ButtonPanel.Add(this._canvasDiv);
+
+            this._btnChartChange.SetAnchor(550, 5, 5, null);
+            this._btnChartChange.Size.Height = 20;
+            this._btnChartChange.Text = 'Change Daily';
+            this._page.ButtonPanel.Add(this._btnChartChange);
+
+            this._btnChartChange.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, () => {
+                if (this._chartType === ChartType.Hourly) {
+                    this._chartType = ChartType.Daily;
+                    this._btnChartChange.Text = 'Change Hourly';
+                    this.SetChart();
+                } else if (this._chartType === ChartType.Daily) {
+                    this._chartType = ChartType.Hourly;
+                    this._btnChartChange.Text = 'Change Daily';
+                    this.SetChart();
+                } else {
+                    // グラフタイプが追加された？
+                    alert('Not Implements!');
+                    throw new Error('Not Implements!');
+                }
+            });
         }
 
         public SetEntity(entity: Entities.ControlSet): void {
@@ -68,7 +105,127 @@ namespace App.Controllers {
                 this._page.ButtonPanel.Add(btn);
             });
 
+            this.SetChart();
+
             this.ApplyFromEntity();
+        }
+
+        private async SetChart(): Promise<boolean> {
+            if (this._chart)
+                this._chart.destroy();
+
+            let values: Array<Entities.A1Values>;
+            switch (this._chartType) {
+                case ChartType.Hourly:
+                    values = await Stores.A1s.GetHourly(this._controlSet);
+                    break;
+                case ChartType.Daily:
+                    values = await Stores.A1s.GetDaily(this._controlSet);
+                    break;
+                default:
+                    // グラフタイプが追加された？
+                    alert('Not Implements!');
+                    throw new Error('Not Implements!');
+            }
+
+            const labels = new Array<string>();
+            const temperatures = new Array<number>();
+            const humidities = new Array<number>();
+            const vocs = new Array<number>();
+            const lights = new Array<number>();
+            const noises = new Array<number>();
+
+            _.each(values, (val: Entities.A1Values) => {
+                switch (this._chartType) {
+                    case ChartType.Hourly:
+                        const hour = (val.RecordedDate)
+                            ? val.RecordedDate.getHours()
+                            : 0;
+                        labels.push(((hour % 4) === 0) ? hour.toString() : '');
+                        break;
+                    case ChartType.Daily:
+                        const day = (val.RecordedDate)
+                            ? val.RecordedDate.getDate()
+                            : 0;
+                        labels.push(((day % 4) === 0) ? day.toString() : '');
+                        break;
+                    default:
+                        // グラフタイプが追加された？
+                        alert('Not Implements!');
+                        throw new Error('Not Implements!');
+                }
+
+                temperatures.push(val.Temperature);
+                humidities.push(val.Humidity);
+                vocs.push(3 - val.Voc);
+                lights.push(val.Light);
+                noises.push(val.Noise);
+            });
+
+
+            const canvas = this._canvasDiv.Elem.find('#a1chart')[0] as HTMLCanvasElement;
+            this._chart = new Chart(canvas, {
+                type: 'line',
+
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Temp.',
+                            data: temperatures,
+                            fill: true,
+                            backgroundColor: Color.GetRgba(Color.ButtonHoverColors[5], 0.7),
+                            borderColor: Color.GetRgba(Color.ButtonColors[5], 0.7),
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Hudimity',
+                            data: humidities,
+                            fill: true,
+                            backgroundColor: Color.GetRgba(Color.ButtonHoverColors[1], 0.7),
+                            borderColor: Color.GetRgba(Color.ButtonColors[1], 0.7),
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Voc',
+                            data: vocs,
+                            fill: true,
+                            backgroundColor: Color.GetRgba(Color.ButtonHoverColors[2], 0.7),
+                            borderColor: Color.GetRgba(Color.ButtonColors[2], 0.7),
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Light',
+                            data: lights,
+                            fill: true,
+                            backgroundColor: Color.GetRgba(Color.ButtonHoverColors[4], 0.7),
+                            borderColor: Color.GetRgba(Color.ButtonColors[4], 0.7),
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Noise',
+                            data: noises,
+                            fill: true,
+                            backgroundColor: Color.GetRgba(Color.ButtonHoverColors[7], 0.7),
+                            borderColor: Color.GetRgba(Color.ButtonColors[7], 0.7),
+                            borderWidth: 2
+                        },
+                    ]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            });
+
+            this._canvasDiv.Refresh();
+
+            return true;
         }
 
         protected async OnButtonClicked(e: Fw.Events.EventObject) {
@@ -123,8 +280,6 @@ namespace App.Controllers {
                                 break;
                         }
                     }
-                } else {
-
                 }
             });
         }

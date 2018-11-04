@@ -6,6 +6,7 @@
 /// <reference path="../Entities/ControlSet.ts" />
 /// <reference path="../Entities/Control.ts" />
 /// <reference path="../Entities/A1Values.ts" />
+/// <reference path="../Entities/DateTimeRange.ts" />
 
 namespace App.Models.Stores {
     import Dump = Fw.Util.Dump;
@@ -13,6 +14,7 @@ namespace App.Models.Stores {
     import Control = App.Models.Entities.Control;
     import A1Values = App.Models.Entities.A1Values;
     import Xhr = Fw.Util.Xhr;
+    import DateTimeRange = App.Models.Entities.DateTimeRange;
 
     export class A1Store extends Fw.Models.StoreBase<A1Values> {
 
@@ -60,6 +62,83 @@ namespace App.Models.Stores {
                 return null;
             }
         }
+
+        public async GetHourly(controlSet: ControlSet): Promise<A1Values[]> {
+            this.Log('GetHourly');
+
+            const range = new DateTimeRange();
+            const start = new Date();
+            start.setHours(start.getHours() - 24);
+            range.SetStart(start);
+            range.SetEnd(new Date());
+
+            const params = new Xhr.Params(
+                `A1s/GetHourly/${controlSet.BrDeviceId}`,
+                Xhr.MethodType.Post,
+                range
+            );
+
+            const res = await Xhr.Query.Invoke(params);
+
+            if (res.Succeeded) {
+                var result = new Array<A1Values>();
+                _.each(res.Values as A1Values[], (v) => {
+                    const val = new A1Values();
+                    val.Temperature = v.Temperature;
+                    val.Humidity = v.Humidity;
+                    val.Voc = v.Voc;
+                    val.Light = v.Light;
+                    val.Noise = v.Noise;
+                    val.Recorded = v.Recorded;
+                    result.push(val);
+                });
+
+                return result;
+            } else {
+                this.Log('Query Fail');
+                this.Log(res.Errors);
+                return null;
+            }
+        }
+
+        public async GetDaily(controlSet: ControlSet): Promise<A1Values[]> {
+            this.Log('GetDaily');
+
+            const range = new DateTimeRange();
+            const start = new Date();
+            start.setMonth(start.getMonth() - 1);
+            range.SetStart(start);
+            range.SetEnd(new Date());
+
+            const params = new Xhr.Params(
+                `A1s/GetDaily/${controlSet.BrDeviceId}`,
+                Xhr.MethodType.Post,
+                range
+            );
+
+            const res = await Xhr.Query.Invoke(params);
+
+            if (res.Succeeded) {
+                var result = new Array<A1Values>();
+                _.each(res.Values as A1Values[], (v) => {
+                    const val = new A1Values();
+                    val.Temperature = v.Temperature;
+                    val.Humidity = v.Humidity;
+                    val.Voc = v.Voc;
+                    val.Light = v.Light;
+                    val.Noise = v.Noise;
+                    val.Recorded = v.Recorded;
+                    result.push(val);
+                });
+
+                return result;
+            } else {
+                this.Log('Query Fail');
+                this.Log(res.Errors);
+                return null;
+            }
+        }
+
 
         public GetVodString(voc: number): string {
             switch (voc) {

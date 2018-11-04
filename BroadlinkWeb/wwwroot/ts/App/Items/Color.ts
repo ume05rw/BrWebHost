@@ -5,6 +5,12 @@
 namespace App.Items {
     import Dump = Fw.Util.Dump;
 
+    export class RgbInts {
+        public Red: number;
+        public Green: number;
+        public Blue: number;
+    }
+
     export class Color {
         // ライトブラウン - 女っぽいからターゲット外
         //public static Main: string = '#FFFFFF';
@@ -117,6 +123,39 @@ namespace App.Items {
             return (idx === -1)
                 ? Color.MainHover
                 : Color.ButtonHoverColors[idx];
+        }
+
+        public static GetRgbInts(color: string): RgbInts {
+            const widhSharp = (color.substr(0, 1) === '#');
+            const rHex = (widhSharp)
+                ? color.substr(1, 2)
+                : color.substr(0, 2);
+            const gHex = (widhSharp)
+                ? color.substr(3, 2)
+                : color.substr(2, 2);
+            const bHex = (widhSharp)
+                ? color.substr(5, 2)
+                : color.substr(4, 2);
+
+            const result = new RgbInts()
+            result.Red = parseInt(rHex, 16);
+            result.Green = parseInt(gHex, 16);
+            result.Blue = parseInt(bHex, 16);
+            
+            return result;
+        }
+
+        public static GetRgba(color: string, alpha: number): string {
+            const rgbInts = Color.GetRgbInts(color);
+            return `rgba(${rgbInts.Red}, ${rgbInts.Green}, ${rgbInts.Blue}, ${alpha})`;
+        }
+
+        public static GetForeColor(color: string): string {
+            const rgbInts = Color.GetRgbInts(color);
+            var colorValue = (rgbInts.Red * 0.3) + (rgbInts.Green * 0.6) + (rgbInts.Blue * 0.1);
+            return (colorValue > 127)
+                ? "#000000"     //黒
+                : "#FFFFFF";    //白
         }
     }
 }

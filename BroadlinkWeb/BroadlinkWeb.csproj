@@ -26,6 +26,7 @@
     <Content Remove="wwwroot\ts\App\Controllers\Sub3Controller.ts" />
     <Content Remove="wwwroot\ts\App\Events\Controls\ControlButtonViewEvents.ts" />
     <Content Remove="wwwroot\ts\App\Icon.ts" />
+    <Content Remove="wwwroot\ts\App\Items\ChartType.ts" />
     <Content Remove="wwwroot\ts\App\Items\ControlSetTemplate.ts" />
     <Content Remove="wwwroot\ts\App\Items\DeviceType.ts" />
     <Content Remove="wwwroot\ts\App\Items\ModalOperationType.ts" />
@@ -36,6 +37,7 @@
     <Content Remove="wwwroot\ts\App\Models\Entities\BrDevice.ts" />
     <Content Remove="wwwroot\ts\App\Models\Entities\Control.ts" />
     <Content Remove="wwwroot\ts\App\Models\Entities\ControlSet.ts" />
+    <Content Remove="wwwroot\ts\App\Models\Entities\DateTimeRange.ts" />
     <Content Remove="wwwroot\ts\App\Models\Entities\Header.ts" />
     <Content Remove="wwwroot\ts\App\Models\Entities\Job.ts" />
     <Content Remove="wwwroot\ts\App\Models\Entities\RmCommand.ts" />
@@ -110,6 +112,7 @@
     <Content Remove="wwwroot\ts\Fw\Startup.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\App.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\Date.ts" />
+    <Content Remove="wwwroot\ts\Fw\Util\DelayedOnceExecuter.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\Dump.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\Num.ts" />
     <Content Remove="wwwroot\ts\Fw\Util\Obj.ts" />
@@ -183,6 +186,7 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\IconSelectController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ControlSetSelectController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\SceneController.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Items\ChartType.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Items\ModalOperationType.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Items\DeviceType.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Items\Color.ts" />
@@ -206,6 +210,7 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\A1Values.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\BrDevice.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\Control.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\DateTimeRange.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\Header.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\ControlSet.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\Job.ts" />
@@ -288,6 +293,7 @@
     <TypeScriptCompile Include="wwwroot\ts\Fw\Startup.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\App.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Date.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\Fw\Util\DelayedOnceExecuter.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Dump.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Num.ts" />
     <TypeScriptCompile Include="wwwroot\ts\Fw\Util\Obj.ts" />
