@@ -134,7 +134,7 @@ namespace App.Views.Controls {
             this.DeleteButton.BackgroundColor = '#FFFFFF';
             this.DeleteButton.HoverColor = '#F4F4F4';
             this.DeleteButton.ImageFitPolicy = Property.FitPolicy.Auto;
-            this.DeleteButton.ImageSrc = 'images/icons/scene/cross.png';
+            this.DeleteButton.ImageSrc = 'images/icons/operation/cross.png';
             this.DeleteButton.SetParent(this);
             this.DeleteButton.Hide(0);
             //this.Add(this.DeleteButton);

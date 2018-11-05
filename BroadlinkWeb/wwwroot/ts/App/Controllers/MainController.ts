@@ -17,6 +17,8 @@
 /// <reference path="../Items/OperationTemplate.ts" />
 /// <reference path="../Items/ControlSetTemplate.ts" />
 /// <reference path="../Items/OperationType.ts" />
+/// <reference path="../Items/Color.ts" />
+/// <reference path="../Items/Icon.ts" />
 
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
@@ -34,6 +36,8 @@ namespace App.Controllers {
     import ControlSetButtonView = App.Views.Controls.ControlSetButtonView;
     import OperationType = App.Items.OperationType;
     import SceneButtonView = App.Views.Controls.SceneButtonView;
+    import Color = App.Items.Color;
+    import Icon = App.Items.Icon;
 
     export class MainController extends Fw.Controllers.ControllerBase {
 
@@ -102,15 +106,15 @@ namespace App.Controllers {
                         ctrSet = await Stores.ControlSets.GetTemplateClone(ControlSetTemplate.NoControl);
                         ctrSet.OperationType = OperationType.RemoteControl;
                         ctrSet.Name = 'Free Edit';
-                        ctrSet.Color = App.Items.Color.ButtonColors[7];
-                        ctrSet.IconUrl = 'images/icons/controlset/free.png';
+                        ctrSet.Color = Color.ButtonColors[7];
+                        ctrSet.IconUrl = Icon.GetByOperationTemplate(OperationTemplate.Free, true);
                         break;
                     case OperationTemplate.WoL:
                         ctrSet = await Stores.ControlSets.GetTemplateClone(ControlSetTemplate.SingleControl);
                         ctrSet.OperationType = OperationType.WakeOnLan;
                         ctrSet.Name = 'WoL';
-                        ctrSet.Color = App.Items.Color.ButtonColors[2];
-                        ctrSet.IconUrl = 'images/icons/controlset/wol.png';
+                        ctrSet.Color = Color.ButtonColors[2];
+                        ctrSet.IconUrl = Icon.GetByOperationTemplate(OperationTemplate.WoL, true);
                         ctrSet.Controls[0].IsAssignToggleOn = true;
                         ctrSet.Controls[0].IsAssignToggleOff = true;
                         break;
@@ -118,8 +122,8 @@ namespace App.Controllers {
                         ctrSet = await Stores.ControlSets.GetTemplateClone(ControlSetTemplate.SingleControl);
                         ctrSet.OperationType = OperationType.Script;
                         ctrSet.Name = 'Script';
-                        ctrSet.Color = App.Items.Color.ButtonColors[2];
-                        ctrSet.IconUrl = 'images/icons/controlset/script.png';
+                        ctrSet.Color = Color.ButtonColors[2];
+                        ctrSet.IconUrl = Icon.GetByOperationTemplate(OperationTemplate.Script, true);
                         ctrSet.Controls[0].IsAssignToggleOn = true;
                         ctrSet.Controls[0].IsAssignToggleOff = true;
                         break;
@@ -127,8 +131,8 @@ namespace App.Controllers {
                         ctrSet = await Stores.ControlSets.GetTemplateClone(ControlSetTemplate.SingleControl);
                         ctrSet.OperationType = OperationType.RemoteHostScript;
                         ctrSet.Name = 'Remote Script';
-                        ctrSet.Color = App.Items.Color.ButtonColors[2];
-                        ctrSet.IconUrl = 'images/icons/controlset/remote.png';
+                        ctrSet.Color = Color.ButtonColors[2];
+                        ctrSet.IconUrl = Icon.GetByOperationTemplate(OperationTemplate.RemoteHostScript, true);
                         ctrSet.Controls[0].IsAssignToggleOn = true;
                         ctrSet.Controls[0].IsAssignToggleOff = true;
                         break;

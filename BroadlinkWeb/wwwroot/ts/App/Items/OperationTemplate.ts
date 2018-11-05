@@ -41,6 +41,15 @@ namespace App.Items {
          */
         Script = 8,
 
+        /**
+         * リモートホストスクリプト
+         */
+        RemoteHostScript = 9,
+
+        /**
+         * スケジュール
+         */
+        Schedule = 10,
 
 
         //
@@ -51,10 +60,5 @@ namespace App.Items {
          * エアコンリモコン
          */
         AirComplessor = 5, 
-
-        /**
-         * リモートホストスクリプト
-         */
-        RemoteHostScript = 9,
     } 
 }
