@@ -19,6 +19,8 @@ namespace Fw.Views {
 
     export class PageView extends ViewBase {
 
+        private static ModalWidth: number = 300;
+
         private _isMasked: boolean = false;
         public get IsMasked(): boolean {
             return this._isMasked;
@@ -135,7 +137,8 @@ namespace Fw.Views {
             }
         }
 
-        public ShowModal(duration: number = 200, width: number = 300): void {
+        public ShowModal(duration: number = 200): void {
+
             this.Log('PageView.ShowModal');
             if (this.IsVisible && this._isModal) {
                 this.ZIndex = 1;
@@ -158,7 +161,7 @@ namespace Fw.Views {
                 animator.FromParams.Opacity = 0.5;
                 animator.ToParams = Anim.Params.GetCurrent(this);
                 animator.ToParams.Opacity = 1.0;
-                animator.ToParams.X = animator.ToParams.Width - width;
+                animator.ToParams.X = animator.ToParams.Width - PageView.ModalWidth;
 
                 animator.OnComplete = () => {
                     this.IsVisible = true;
@@ -302,6 +305,12 @@ namespace Fw.Views {
                 //const myHalfHeight = Root.Instance.Size.Height / 2;
                 //let elemLeft = pHalfWidth - myHalfWidth + this.Position.X;
                 //let elemTop = pHalfHeight - myHalfHeight + this.Position.Y;
+
+                if (this.IsVisible && this.IsModal) {
+                    const left = Root.Instance.Size.Width - PageView.ModalWidth;
+                    if (this.Position.X !== left)
+                        this.Position.X = left;
+                }
 
                 this.SetStyles({
                     left: `${this.Position.X}px`,

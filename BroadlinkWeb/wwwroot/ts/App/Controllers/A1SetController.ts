@@ -25,7 +25,6 @@ namespace App.Controllers {
 
     export class A1SetController extends ControlSetController {
 
-        
         private _btnChartChange: Controls.PropertyButtonView;
         private _canvasDiv: Fw.Views.HtmlView;
         private _chart: Chart;
@@ -42,14 +41,14 @@ namespace App.Controllers {
             this._chartType = ChartType.Hourly;
 
             this._canvasDiv.SetAnchor(280, 5, null, null);
-            this._canvasDiv.SetSize(250, 260);
+            this._canvasDiv.SetSize(250, 230);
             this._canvasDiv.HasBorder = true;
             this._canvasDiv.Color = Color.ButtonColors[0];
             this._canvasDiv.BorderRadius = 5;
             this._canvasDiv.InnerHtml = '<canvas id="a1chart" witdh="250" height="260"></canvas>';
             this._page.ButtonPanel.Add(this._canvasDiv);
 
-            this._btnChartChange.SetAnchor(550, 5, null, null);
+            this._btnChartChange.SetAnchor(520, 5, null, null);
             this._btnChartChange.SetSize(250, 30);
             this._btnChartChange.Text = 'to Daily';
             this._page.ButtonPanel.Add(this._btnChartChange);

@@ -3442,10 +3442,9 @@ var Fw;
                     animator.Invoke(duration);
                 }
             };
-            PageView.prototype.ShowModal = function (duration, width) {
+            PageView.prototype.ShowModal = function (duration) {
                 var _this = this;
                 if (duration === void 0) { duration = 200; }
-                if (width === void 0) { width = 300; }
                 this.Log('PageView.ShowModal');
                 if (this.IsVisible && this._isModal) {
                     this.ZIndex = 1;
@@ -3467,7 +3466,7 @@ var Fw;
                     animator_1.FromParams.Opacity = 0.5;
                     animator_1.ToParams = Anim.Params.GetCurrent(this);
                     animator_1.ToParams.Opacity = 1.0;
-                    animator_1.ToParams.X = animator_1.ToParams.Width - width;
+                    animator_1.ToParams.X = animator_1.ToParams.Width - PageView.ModalWidth;
                     animator_1.OnComplete = function () {
                         _this.IsVisible = true;
                         _this._isModal = true;
@@ -3599,6 +3598,11 @@ var Fw;
                     //const myHalfHeight = Root.Instance.Size.Height / 2;
                     //let elemLeft = pHalfWidth - myHalfWidth + this.Position.X;
                     //let elemTop = pHalfHeight - myHalfHeight + this.Position.Y;
+                    if (this.IsVisible && this.IsModal) {
+                        var left = Fw.Root.Instance.Size.Width - PageView.ModalWidth;
+                        if (this.Position.X !== left)
+                            this.Position.X = left;
+                    }
                     this.SetStyles({
                         left: this.Position.X + "px",
                         top: this.Position.Y + "px",
@@ -3623,6 +3627,7 @@ var Fw;
             PageView.prototype.Dispose = function () {
                 _super.prototype.Dispose.call(this);
             };
+            PageView.ModalWidth = 300;
             return PageView;
         }(Views.ViewBase));
         Views.PageView = PageView;
@@ -5240,13 +5245,13 @@ var App;
                 _this._chart = null;
                 _this._chartType = 1 /* Hourly */;
                 _this._canvasDiv.SetAnchor(280, 5, null, null);
-                _this._canvasDiv.SetSize(250, 260);
+                _this._canvasDiv.SetSize(250, 230);
                 _this._canvasDiv.HasBorder = true;
                 _this._canvasDiv.Color = Color.ButtonColors[0];
                 _this._canvasDiv.BorderRadius = 5;
                 _this._canvasDiv.InnerHtml = '<canvas id="a1chart" witdh="250" height="260"></canvas>';
                 _this._page.ButtonPanel.Add(_this._canvasDiv);
-                _this._btnChartChange.SetAnchor(550, 5, null, null);
+                _this._btnChartChange.SetAnchor(520, 5, null, null);
                 _this._btnChartChange.SetSize(250, 30);
                 _this._btnChartChange.Text = 'to Daily';
                 _this._page.ButtonPanel.Add(_this._btnChartChange);
