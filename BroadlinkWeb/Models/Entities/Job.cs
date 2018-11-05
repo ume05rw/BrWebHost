@@ -13,8 +13,8 @@ using Newtonsoft.Json;
 namespace BroadlinkWeb.Models.Entities
 {
     [Table("jobs")] // テーブル名を小文字指定しないとLinuxで動作しない。
-    [MySqlCharset("utf8")]
-    [MySqlCollation("utf8_general_ci ")]
+    //[MySqlCharset("utf8")]
+    //[MySqlCollation("utf8_general_ci ")]
     public class Job
     {
         private static IServiceProvider Provider;
@@ -50,47 +50,47 @@ namespace BroadlinkWeb.Models.Entities
         }
 
         [Key]
-        [Column(Order = 0, TypeName = "int(11)")] // Orderプロパティは、EFCore未サポート
+        //[Column(Order = 0, TypeName = "int(11)")] // Orderプロパティは、EFCore未サポート
         [Description("Job ID")] // Description属性は、EFCore未サポート
         public int Id { get; set; }
 
         [Required]
-        [Column(Order = 1, TypeName = "varchar(50)")]
+        //[Column(Order = 1, TypeName = "varchar(50)")]
         [Description("Job Name")]
         public string Name { get; set; }
 
         [Required]
-        [Column(Order = 1, TypeName = "tinyint(1)")]
+        //[Column(Order = 1, TypeName = "tinyint(1)")]
         [Description("Job complete flag")]
         public bool IsCompleted { get; set; }
 
         [Required]
-        [Column(Order = 1, TypeName = "tinyint(1)")]
+        //[Column(Order = 1, TypeName = "tinyint(1)")]
         [Description("Error flag")]
         public bool IsError { get; set; }
 
-        [Column(Order = 1, TypeName = "decimal(3, 2)")]
+        //[Column(Order = 1, TypeName = "decimal(3, 2)")]
         [Description("Progress Percentage 0.0 - 1.0")]
         [Range(0, 1.0)]
         public decimal Progress { get; set; }
 
-        [Column(Order = 1, TypeName = "text")]
+        //[Column(Order = 1, TypeName = "text")]
         [Description("Message")]
         [StringLength(1000)]
         public string Message { get; set; }
 
-        [Column(Order = 1, TypeName = "text")]
+        //[Column(Order = 1, TypeName = "text")]
         [Description("Any Values JSON")]
         [StringLength(1000)]
         public string Json { get; set; }
 
         [Required]
-        [Column(Order = 1, TypeName = "datetime")]
+        //[Column(Order = 1, TypeName = "datetime")]
         [Description("Created Time")]
         [DataType(DataType.DateTime)]
         public DateTime Created { get; set; }
 
-        [Column(Order = 1, TypeName = "datetime")]
+        //[Column(Order = 1, TypeName = "datetime")]
         [Description("Updated Time")]
         [DataType(DataType.DateTime)]
         public DateTime? Updated { get; set; }

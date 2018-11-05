@@ -42,13 +42,17 @@ namespace BroadlinkWeb
                     var loggreFactory = (ILoggerFactory)logService.ImplementationInstance;
                     options.UseLoggerFactory(loggreFactory);
                 }
-#if DEBUG
-                //options.UseMySQL(this.Configuration.GetConnectionString("DbConnectionMySql"));
-                options.UseMySQL(this.Configuration.GetConnectionString("DbConnectionMySql3"));
-#else
-                options.UseMySQL(this.Configuration.GetConnectionString("DbConnectionMySql2"));
-#endif
 
+                var dbPath = System.IO.Path.Combine(Program.CurrentPath, "brwebhost.db");
+
+                // マイグレーション時は例外にしないように。
+                //if (!System.IO.File.Exists(dbPath))
+                //    throw new Exception("DB-File Not Found!!: " + dbPath);
+
+                options.UseSqlite($"Data Source=\"{dbPath}\"");
+
+                // MySQL接続のとき
+                //options.UseMySQL(this.Configuration.GetConnectionString("DbConnectionMySql"));
             });
 
             services

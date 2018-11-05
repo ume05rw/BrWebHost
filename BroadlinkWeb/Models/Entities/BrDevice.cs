@@ -11,32 +11,32 @@ using System.Threading.Tasks;
 namespace BroadlinkWeb.Models.Entities
 {
     [Table("brdevices")] // テーブル名を小文字指定しないとLinuxで動作しない。
-    [MySqlCharset("utf8")]
-    [MySqlCollation("utf8_general_ci ")]
+    //[MySqlCharset("utf8")]
+    //[MySqlCollation("utf8_general_ci ")]
     public class BrDevice
     {
         [Key]
-        [Column(Order = 0, TypeName = "int(11)")] // Orderプロパティは、EFCore未サポート
+        //[Column(Order = 0, TypeName = "int(11)")] // Orderプロパティは、EFCore未サポート
         [Description("Registed Broadlink-device ID")] // Description属性は、EFCore未サポート
         public int Id { get; set; }
 
         [Required]
-        [Column(Order = 1, TypeName = "varchar(20)")]
+        //[Column(Order = 1, TypeName = "varchar(20)")]
         [Description("MAC Address, Reversed")]
         public string MacAddressString { get; set; }
 
         [Required]
-        [Column(Order = 2, TypeName = "varchar(20)")]
+        //[Column(Order = 2, TypeName = "varchar(20)")]
         [Description("IPv4 Address")]
         public string IpAddressString { get; set; }
 
         [Required]
-        [Column(Order = 3, TypeName = "int(5)")]
+        //[Column(Order = 3, TypeName = "int(5)")]
         [Description("UDP Port")]
         public int Port { get; set; }
 
         [Required]
-        [Column(Order = 4, TypeName = "int(6)")]
+        //[Column(Order = 4, TypeName = "int(6)")]
         [Description("Device-Type Detail")]
         public int DeviceTypeDetailNumber { get; set; }
 
