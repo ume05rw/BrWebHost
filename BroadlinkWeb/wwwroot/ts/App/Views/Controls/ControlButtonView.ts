@@ -1,5 +1,7 @@
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../../lib/popperjs/index.d.ts" />
+/// <reference path="../../../../lib/tippyjs/index.d.ts" />
 /// <reference path="../../../Fw/Views/RelocatableButtonView.ts" />
 /// <reference path="../../../Fw/Views/Property/Anchor.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
@@ -26,6 +28,16 @@ namespace App.Views.Controls {
 
             if (this.ImageSrc === '')
                 this.Text = value;
+        }
+
+        private _tooltip: string;
+        private _tippy: Tippy.Instance;
+        public get Tooltip(): string {
+            return this._tooltip;
+        }
+        public set Tooltip(value: string) {
+            this._tooltip = value;
+            this.Refresh();
         }
 
         private _hoverEnable: boolean = true;
@@ -172,6 +184,33 @@ namespace App.Views.Controls {
                 }
             }
             this.Refresh();
+        }
+
+        protected InnerRefresh(): void {
+            try {
+                super.InnerRefresh();
+
+                if (this._tippy) {
+                    this._tippy.destroy();
+                    this._tippy = null;
+                }
+
+                if (this._tooltip && this._tooltip !== '') {
+                    this._tippy = tippy.one(this.Dom as Element, {
+                        content: this._tooltip,
+                        delay: 100,
+                        arrow: true,
+                        arrowType: 'round',
+                        size: 'large',
+                        duration: 500,
+                        animation: 'scale'
+                    });
+                }
+            } catch (e) {
+                Dump.ErrorLog(e, this.ClassName);
+            } finally {
+                this.ResumeLayout();
+            }
         }
 
         public Dispose(): void {

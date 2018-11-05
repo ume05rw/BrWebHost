@@ -1,7 +1,5 @@
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../lib/popperjs/index.d.ts" />
-/// <reference path="../../../lib/tippyjs/index.d.ts" />
 /// <reference path="../Events/ControlViewEvents.ts" />
 /// <reference path="../Util/Dump.ts" />
 /// <reference path="ControlView.ts" />
@@ -34,23 +32,6 @@ namespace Fw.Views {
             this.Refresh();
         }
 
-        private _tooltip: string;
-        private _tippy: Tippy.Instance;
-        public get Tooltip(): string {
-            return this._tooltip;
-        }
-        public set Tooltip(value: string) {
-            this._tooltip = value;
-
-            if (this._tippy)
-                this._tippy.destroy();
-
-            if ((this._tooltip) && this._tooltip !== '') {
-                this._tippy = tippy(this.Dom as Element);
-            }
-            this.Refresh();
-        }
-
         /**
          * @see publicプロパティの初期化タイミングに注意。コンストラクタ実行後に値がセットされる。
          */
@@ -66,7 +47,6 @@ namespace Fw.Views {
 
             this.BackgroundColor = '#add8e6';
             this.HoverColor = '#6495ed';
-            this._tooltip = '';
 
             this._imageView.Src = '';
             this._imageView.FitPolicy = Property.FitPolicy.Contain;
@@ -85,33 +65,6 @@ namespace Fw.Views {
             this.AddEventListener(Events.LongClick, () => {
                 this.SetAnimatedPulse();
             });
-        }
-
-        protected InnerRefresh(): void {
-            try {
-                super.InnerRefresh();
-
-                if (!this._tooltip || this._tooltip === '') {
-                    // ツールティップがセットされていない。
-                    if (this.Elem.hasClass('tooltip')) {
-                        this.Elem.removeClass('tooltip');
-                    }
-                    this.Elem.attr('title', '');
-
-                } else {
-                    // ツールティップがセットされている。
-                    if (!this.Elem.hasClass('tooltip')) {
-                        this.Elem.addClass('tooltip');
-                    }
-                    this.Elem.attr('title', this._tooltip);
-                }
-
-                this.SetStyle('borderColor', `${this.Color}`);
-            } catch (e) {
-                Dump.ErrorLog(e, this.ClassName);
-            } finally {
-                this.ResumeLayout();
-            }
         }
 
         public CalcLayout(): void {

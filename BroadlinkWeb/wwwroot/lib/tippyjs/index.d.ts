@@ -1,7 +1,10 @@
 /// <reference path="../popperjs/index.d.ts" />
 
+/**
+ * 下記を元に、概ねコピペ。
+ * https://github.com/atomiks/tippyjs/issues/186
+ */
 declare namespace Tippy {
-    //import Popper from "../popperjs/popper.js";
 
     type BasicPlacement = "top" | "bottom" | "left" | "right";
 
@@ -12,7 +15,7 @@ declare namespace Tippy {
 
     type Content = string | Element;
 
-    type Selector = string | Element | NodeList; // | Popper.ReferenceObject;
+    type Selector = string | Element | NodeList | Popper.ReferenceObject;
 
     interface Options {
         a11y?: boolean;
@@ -44,7 +47,7 @@ declare namespace Tippy {
         onShow?(instance: Instance): void;
         onShown?(instance: Instance): void;
         performance?: boolean;
-        //placement?: ExtendedPlacement;
+        placement?: "top" | "bottom" | "left" | "right";
         popperOptions?: Popper.PopperOptions;
         shouldPopperHideOnBlur?: (event: FocusEvent) => boolean;
         showOnInit?: boolean;
@@ -74,7 +77,7 @@ declare namespace Tippy {
             content: Element | null;
             tooltip: Element | null;
         };
-        //popperInstance: Popper.Popper | null;
+        popperInstance: Popper | null;
         props: Options;
         reference: Element;
         set(options: Options): void;
@@ -86,17 +89,6 @@ declare namespace Tippy {
             isDestroyed: boolean;
         };
     }
-
-    //interface Object {
-    //    /** The target references to be given tooltips. */
-    //    selector: Selector | Selector[];
-    //    /** Array of all Tippy instances that were created. */
-    //    tooltips: Instance[];
-    //    /** Default + instance options merged. */
-    //    options: Options;
-    //    /** Method to destroy all tooltips that were created (all Tippy instances inside `tooltips`) */
-    //    destroyAll: () => void;
-    //}
 
     interface Collection {
         destroyAll(): void;
@@ -115,9 +107,14 @@ declare namespace Tippy {
         setDefaults(options: Options): void;
         useCapture(): void;
     }
-
-    const tippy: Tippy;
-    //export default tippy;
 }
+/**
+ * globalに 'tippy'という名前の Tippy.Tippyオブジェクトが存在する、という宣言。
+ */
+declare const tippy: Tippy.Tippy;
 
-declare function tippy(selector: Tippy.Selector, options?: Partial<Tippy.Options>): Tippy.Instance;
+/**
+ * こちらの定義では、globalにtippy(...)というメソッドが存在する、という定義になってしまう。
+ */
+//declare function tippy(selector: Tippy.Selector, options?: Partial<Tippy.Options>): Tippy.Object;
+
