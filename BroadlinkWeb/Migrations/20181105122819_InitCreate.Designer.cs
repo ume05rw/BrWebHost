@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BroadlinkWeb.Migrations
 {
     [DbContext(typeof(Dbc))]
-    [Migration("20181105033717_InitCreate")]
+    [Migration("20181105122819_InitCreate")]
     partial class InitCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -246,7 +246,7 @@ namespace BroadlinkWeb.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("remotehost");
+                    b.ToTable("remotehosts");
                 });
 
             modelBuilder.Entity("BroadlinkWeb.Models.Entities.RemoteScript", b =>
@@ -313,6 +313,43 @@ namespace BroadlinkWeb.Migrations
                     b.ToTable("scenedetails");
                 });
 
+            modelBuilder.Entity("BroadlinkWeb.Models.Entities.Schedule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int?>("ControlId");
+
+                    b.Property<int?>("ControlSetId");
+
+                    b.Property<int?>("CurrentJobId");
+
+                    b.Property<bool>("Enabled");
+
+                    b.Property<string>("Name");
+
+                    b.Property<DateTime>("NextDateTime");
+
+                    b.Property<int?>("SceneId");
+
+                    b.Property<DateTime>("StartTime");
+
+                    b.Property<string>("WeekdayFlags")
+                        .HasMaxLength(7);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ControlId");
+
+                    b.HasIndex("ControlSetId");
+
+                    b.HasIndex("CurrentJobId");
+
+                    b.HasIndex("SceneId");
+
+                    b.ToTable("schedules");
+                });
+
             modelBuilder.Entity("BroadlinkWeb.Models.Entities.Control", b =>
                 {
                     b.HasOne("BroadlinkWeb.Models.Entities.ControlSet", "ControlSet")
@@ -352,6 +389,25 @@ namespace BroadlinkWeb.Migrations
                         .WithMany("Details")
                         .HasForeignKey("SceneId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("BroadlinkWeb.Models.Entities.Schedule", b =>
+                {
+                    b.HasOne("BroadlinkWeb.Models.Entities.Control", "Control")
+                        .WithMany()
+                        .HasForeignKey("ControlId");
+
+                    b.HasOne("BroadlinkWeb.Models.Entities.ControlSet", "ControlSet")
+                        .WithMany()
+                        .HasForeignKey("ControlSetId");
+
+                    b.HasOne("BroadlinkWeb.Models.Entities.Job", "CurrentJob")
+                        .WithMany()
+                        .HasForeignKey("CurrentJobId");
+
+                    b.HasOne("BroadlinkWeb.Models.Entities.Scene", "Scene")
+                        .WithMany()
+                        .HasForeignKey("SceneId");
                 });
 #pragma warning restore 612, 618
         }

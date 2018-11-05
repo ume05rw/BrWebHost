@@ -74,11 +74,12 @@ namespace BroadlinkWeb.Models.Stores
                     }
 
                     var controlSetStore = serviceScope.ServiceProvider.GetService<ControlSetStore>();
-                    var error = await controlSetStore.Exec(detail.Control);
+                    var errors = await controlSetStore.Exec(detail.Control);
 
-                    if (!string.IsNullOrEmpty(error))
+                    if (errors.Length > 0)
                     {
-                        status.Error = $"Operation Failure by Step: {status.Step}, {error}";
+                        var errString = string.Join(", ", errors.Select(e => $"{e.Name}: {e.Message}").ToArray());
+                        status.Error = $"Operation Failure by Step: {status.Step}, {errString}";
                         await job.SetFinish(true, status, status.Error);
                         return false;
                     }

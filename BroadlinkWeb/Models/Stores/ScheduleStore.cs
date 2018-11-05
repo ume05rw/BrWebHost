@@ -117,11 +117,19 @@ namespace BroadlinkWeb.Models.Stores
                     // 次回起動時間を過ぎたとき
 
                     // 1.実行する。
-                    var error = await this.ExecSchedule(schedule);
+                    var errors = await this.ExecSchedule(schedule);
 
                     // 2.カレントジョブに結果を記録する。
                     var job = schedule.CurrentJob;
-                    await job.SetFinish((!string.IsNullOrEmpty(error)), null, error);
+                    if (errors.Length > 0)
+                    {
+                        // エラー終了時
+                        await job.SetFinish(true, errors, "ScheduleStore.Tick Error");
+                    } else
+                    {
+                        // 正常終了時
+                        await job.SetFinish(false, null);
+                    }
 
                     // 3.カレントジョブを新規取得する。
                     var newJob = await this.GetNewJob(schedule);
@@ -134,20 +142,26 @@ namespace BroadlinkWeb.Models.Stores
                     this._dbc.Entry(schedule).State = EntityState.Modified;
                     await this._dbc.SaveChangesAsync();
                 }
+                else
+                {
+                    await schedule.CurrentJob.SetProgress((decimal)0.5, "ScheduleStore.Tick Waiting...");
+                }
             }
 
             return schedules;
         }
 
-        private async Task<string> ExecSchedule(Schedule schedule)
+        private async Task<Error[]> ExecSchedule(Schedule schedule)
         {
+            var errors = new List<Error>();
+
             using (var serviceScope = ScheduleStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 if (schedule.Scene != null)
                 {
                     var sceneStore = serviceScope.ServiceProvider.GetService<SceneStore>();
                     await sceneStore.Exec(schedule.Scene);
-                    return string.Empty;
+                    return errors.ToArray();
                 }
                 else if (schedule.Control != null && schedule.ControlSet != null)
                 {

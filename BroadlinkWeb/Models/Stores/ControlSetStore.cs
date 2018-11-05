@@ -261,54 +261,103 @@ namespace BroadlinkWeb.Models.Stores
         }
 
 
-        public async Task<string> Exec(Control control)
+        public async Task<Error[]> Exec(Control control)
         {
+            var errors = new List<Error>();
+
             if (control == null)
-                return "Control Not Found";
+            {
+                errors.Add(new Error()
+                {
+                    Name = "ControlId",
+                    Message = "ControlSetStore.Exec: Control Not Found."
+                });
+                return errors.ToArray();
+            }
 
             var controlSet = await this._dbc.ControlSets
                 .SingleOrDefaultAsync(e => e.Id == control.ControlSetId);
 
             if (controlSet == null)
-                return "ControlSet Not Found";
-
-            var error = "";
+            {
+                errors.Add(new Error()
+                {
+                    Name = "ControlSetId",
+                    Message = $"ControlSetStore.Exec: ControlSet Not Found[{control.ControlSetId}]"
+                });
+                return errors.ToArray();
+            }
 
             using (var serviceScope = ControlSetStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 switch (controlSet.OperationType)
                 {
                     case OperationType.RemoteControl:
-                        var brd1 = await this.GetBrDevice(controlSet.BrDeviceId);
-                        if (brd1 == null)
+                        try
                         {
-                            error = "Not Found Broadlink Device.";
+                            var device = await this.GetBrDevice(controlSet.BrDeviceId);
+                            if (device == null)
+                            {
+                                errors.Add(new Error()
+                                {
+                                    Name = "BrDeviceId",
+                                    Message = $"ControlSetStore.Exec[RemoteControl]: Broadlink Device Not Found[{controlSet.BrDeviceId}]"
+                                });
+                                break;
+                            }
+
+                            var rm = (Rm)device.SbDevice;
+                            var pBytes = Signals.String2ProntoBytes(control.Code);
+                            var result = await rm.SendPronto(pBytes);
+
+                            if (result == false)
+                            {
+                                errors.Add(new Error()
+                                {
+                                    Name = "Code",
+                                    Message = "ControlSetStore.Exec[RemoteControl]: Code Exec Failure."
+                                });
+                                break;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            errors.Add(new Error()
+                            {
+                                Name = "Code",
+                                Message = $"ControlSetStore.Exec[RemoteControl]: {ex.Message} / {ex.StackTrace}"
+                            });
                             break;
                         }
-
-                        var rm = (Rm)brd1.SbDevice;
-                        var pBytes = Signals.String2ProntoBytes(control.Code);
-                        var result = await rm.SendPronto(pBytes);
-
-                        if (result == false)
-                        {
-                            error = "Command Exec Failure.";
-                            break;
-                        }
-
                         break;
                     case OperationType.BroadlinkDevice:
-                        var brd2 = await this.GetBrDevice(controlSet.BrDeviceId);
-                        if (brd2 == null)
+                        try
                         {
-                            error = "Not Found Broadlink Device.";
-                            break;
-                        }
+                            var device = await this.GetBrDevice(controlSet.BrDeviceId);
+                            if (device == null)
+                            {
+                                errors.Add(new Error()
+                                {
+                                    Name = "BrDeviceId",
+                                    Message = $"ControlSetStore.Exec[BroadlinkDevice]: Broadlink Device Not Found[{controlSet.BrDeviceId}]"
+                                });
+                                break;
+                            }
 
-                        var brError = await this.ExecBrDevice(control, brd2);
-                        if (!string.IsNullOrEmpty(error))
+                            var brErrors = await this.ExecBrDevice(control, device);
+                            if (brErrors.Length > 0)
+                            {
+                                errors.AddRange(brErrors);
+                                break;
+                            }
+                        }
+                        catch (Exception ex)
                         {
-                            error = brError;
+                            errors.Add(new Error()
+                            {
+                                Name = "Unexpected",
+                                Message = $"ControlSetStore.Exec[BroadlinkDevice]: {ex.Message} / {ex.StackTrace}"
+                            });
                             break;
                         }
 
@@ -320,13 +369,21 @@ namespace BroadlinkWeb.Models.Stores
                             var res = await wolStore.Exec(control.Code);
                             if (res == false)
                             {
-                                error = "Wake on LAN Failure.";
+                                errors.Add(new Error()
+                                {
+                                    Name = "Code",
+                                    Message = "Broadlink Device Not Found."
+                                });
                                 break;
                             }
                         }
                         catch (Exception ex)
                         {
-                            error = ex.Message;
+                            errors.Add(new Error()
+                            {
+                                Name = "Unexpected",
+                                Message = $"ControlSetStore.Exec[WakeOnLan]: {ex.Message} / {ex.StackTrace}"
+                            });
                             break;
                         }
 
@@ -338,13 +395,21 @@ namespace BroadlinkWeb.Models.Stores
                             var res = await scriptStore.Exec(control.Code);
                             if (!res.IsSucceeded)
                             {
-                                error = res.Result;
+                                errors.Add(new Error()
+                                {
+                                    Name = "Code",
+                                    Message = $"ControlSetStore.Exec[WakeOnLan]: {res.Result}"
+                                });
                                 break;
                             }
                         }
                         catch (Exception ex)
                         {
-                            error = ex.Message;
+                            errors.Add(new Error()
+                            {
+                                Name = "Unexpected",
+                                Message = $"ControlSetStore.Exec[Script]: {ex.Message} / {ex.StackTrace}"
+                            });
                             break;
                         }
 
@@ -360,20 +425,32 @@ namespace BroadlinkWeb.Models.Stores
                             }
                             catch (Exception)
                             {
-                                error = "Remote Script Not Recognize";
+                                errors.Add(new Error()
+                                {
+                                    Name = "Code",
+                                    Message = "ControlSetStore.Exec[RemoteHost]: Remote Script Not Recognize."
+                                });
                                 break;
                             }
 
                             var res = await rhStore.Exec(script);
                             if (!res.IsSucceeded)
                             {
-                                error = res.Result;
+                                errors.Add(new Error()
+                                {
+                                    Name = "Code",
+                                    Message = $"ControlSetStore.Exec[RemoteHost]: {res.Result}"
+                                });
                                 break;
                             }
                         }
                         catch (Exception ex)
                         {
-                            error = ex.Message;
+                            errors.Add(new Error()
+                            {
+                                Name = "Unexpected",
+                                Message = $"ControlSetStore.Exec[RemoteHost]: {ex.Message} / {ex.StackTrace}"
+                            });
                             break;
                         }
                         break;
@@ -385,7 +462,7 @@ namespace BroadlinkWeb.Models.Stores
 
 
                 if (
-                    string.IsNullOrEmpty(error)
+                    errors.Count <= 0
                     && (control.IsAssignToggleOn
                         || control.IsAssignToggleOff)
                 )
@@ -426,12 +503,12 @@ namespace BroadlinkWeb.Models.Stores
                 }
             }
 
-            return error;
+            return errors.ToArray();
         }
 
-        private async Task<string> ExecBrDevice(Control control, BrDevice device)
+        private async Task<Error[]> ExecBrDevice(Control control, BrDevice device)
         {
-            var error = "";
+            var errors = new List<Error>();
             using (var serviceScope = ControlSetStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 switch (device.DeviceType)
@@ -461,7 +538,11 @@ namespace BroadlinkWeb.Models.Stores
                         var res = await sp2Store.SetStatus(device.Id, sp2Status);
                         if (res == false)
                         {
-                            error = "Sp2 Switch Set Failure.";
+                            errors.Add(new Error()
+                            {
+                                Name = "Code",
+                                Message = "ControlSetStore.ExecBrDevice[Sp2]: Sp2 Switch Set Failure."
+                            });
                             break;
                         }
 
@@ -469,8 +550,20 @@ namespace BroadlinkWeb.Models.Stores
                     case DeviceType.A1:
                         var a1Store = serviceScope.ServiceProvider.GetService<A1Store>();
 
-                        // 値を取得して何をするでもない。
-                        var a1Values = await a1Store.GetValues(device.Id);
+                        try
+                        {
+                            // 値を取得して何をするでもない。
+                            await a1Store.GetValues(device.Id);
+                        }
+                        catch (Exception ex)
+                        {
+                            errors.Add(new Error()
+                            {
+                                Name = "Code",
+                                Message = "ControlSetStore.ExecBrDevice[A1]: A1 Sensor Get Value Failure: " + ex.Message
+                            });
+                            break;
+                        }
 
                         break;
                     case DeviceType.S1c:
@@ -486,7 +579,7 @@ namespace BroadlinkWeb.Models.Stores
                 }
             }
 
-            return error;
+            return errors.ToArray();
         }
 
         private async Task<BrDevice> GetBrDevice(int? id)

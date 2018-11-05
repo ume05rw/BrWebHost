@@ -66,7 +66,7 @@ namespace BroadlinkWeb.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "remotehost",
+                name: "remotehosts",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -76,7 +76,7 @@ namespace BroadlinkWeb.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_remotehost", x => x.Id);
+                    table.PrimaryKey("PK_remotehosts", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -137,9 +137,9 @@ namespace BroadlinkWeb.Migrations
                 {
                     table.PrimaryKey("PK_remotescripts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_remotescripts_remotehost_RemoteHostId",
+                        name: "FK_remotescripts_remotehosts_RemoteHostId",
                         column: x => x.RemoteHostId,
-                        principalTable: "remotehost",
+                        principalTable: "remotehosts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -204,6 +204,51 @@ namespace BroadlinkWeb.Migrations
                         principalTable: "scenes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "schedules",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(nullable: true),
+                    SceneId = table.Column<int>(nullable: true),
+                    ControlSetId = table.Column<int>(nullable: true),
+                    ControlId = table.Column<int>(nullable: true),
+                    CurrentJobId = table.Column<int>(nullable: true),
+                    Enabled = table.Column<bool>(nullable: false),
+                    StartTime = table.Column<DateTime>(nullable: false),
+                    WeekdayFlags = table.Column<string>(maxLength: 7, nullable: true),
+                    NextDateTime = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_schedules", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_schedules_controls_ControlId",
+                        column: x => x.ControlId,
+                        principalTable: "controls",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_schedules_controlsets_ControlSetId",
+                        column: x => x.ControlSetId,
+                        principalTable: "controlsets",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_schedules_jobs_CurrentJobId",
+                        column: x => x.CurrentJobId,
+                        principalTable: "jobs",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_schedules_scenes_SceneId",
+                        column: x => x.SceneId,
+                        principalTable: "scenes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.InsertData(
@@ -530,6 +575,26 @@ namespace BroadlinkWeb.Migrations
                 name: "IX_scenedetails_SceneId",
                 table: "scenedetails",
                 column: "SceneId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_schedules_ControlId",
+                table: "schedules",
+                column: "ControlId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_schedules_ControlSetId",
+                table: "schedules",
+                column: "ControlSetId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_schedules_CurrentJobId",
+                table: "schedules",
+                column: "CurrentJobId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_schedules_SceneId",
+                table: "schedules",
+                column: "SceneId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -538,19 +603,22 @@ namespace BroadlinkWeb.Migrations
                 name: "a1sensors");
 
             migrationBuilder.DropTable(
-                name: "jobs");
-
-            migrationBuilder.DropTable(
                 name: "remotescripts");
 
             migrationBuilder.DropTable(
                 name: "scenedetails");
 
             migrationBuilder.DropTable(
-                name: "remotehost");
+                name: "schedules");
+
+            migrationBuilder.DropTable(
+                name: "remotehosts");
 
             migrationBuilder.DropTable(
                 name: "controls");
+
+            migrationBuilder.DropTable(
+                name: "jobs");
 
             migrationBuilder.DropTable(
                 name: "scenes");
