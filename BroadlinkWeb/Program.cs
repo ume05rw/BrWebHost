@@ -29,6 +29,8 @@ namespace BroadlinkWeb
         {
             // サービスとして起動するかどうかのフラグ
             // デバッグ実行時にサービスとして実行しないようにする
+            // 引数'--console'のときは「サービスでない」。
+            // Linux実行時は '--console'を付与する。
             bool isService = !(Debugger.IsAttached || args.Contains("--console"));
 
             // VSから起動したとき、ポートを変更。
