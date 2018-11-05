@@ -167,7 +167,7 @@ namespace BroadlinkWeb.Models.Stores
 
                 A1Store.DisposeScanner();
 
-                Xb.Util.Out("BrDeviceStore.LoopScan Closed");
+                Xb.Util.Out("A1Store.LoopScan Closed");
             });
         }
 

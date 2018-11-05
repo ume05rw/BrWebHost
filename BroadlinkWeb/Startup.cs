@@ -82,7 +82,8 @@ namespace BroadlinkWeb
                 .AddDbStore<WolStore>()
                 .AddDbStore<ScriptStore>()
                 .AddDbStore<Sp2Store>()
-                .AddDbStore<A1Store>();
+                .AddDbStore<A1Store>()
+                .AddDbStore<ScheduleStore>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -93,6 +94,7 @@ namespace BroadlinkWeb
                 // スコープされていないサービスプロバイダをセットしておく。
                 Job.InitServiceProvider(app.ApplicationServices);
                 SceneStore.InitServiceProvider(app.ApplicationServices);
+                ControlSetStore.InitServiceProvider(app.ApplicationServices);
 
                 // TODO: マイグレーション時にも以下が実行されてしまい、落ちる。
                 // マイグレーションと通常起動の区別がつかないか？

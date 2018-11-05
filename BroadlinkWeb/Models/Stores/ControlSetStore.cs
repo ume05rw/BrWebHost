@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using BroadlinkWeb.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using SharpBroadlink;
 using SharpBroadlink.Devices;
 
@@ -13,6 +15,12 @@ namespace BroadlinkWeb.Models.Stores
 {
     public class ControlSetStore
     {
+        private static IServiceProvider Provider;
+        public static void InitServiceProvider(IServiceProvider provider)
+        {
+            ControlSetStore.Provider = provider;
+        }
+
         private Dbc _dbc;
 
         public ControlSetStore(
@@ -250,6 +258,244 @@ namespace BroadlinkWeb.Models.Stores
             }
 
             return cset;
+        }
+
+
+        public async Task<string> Exec(Control control)
+        {
+            if (control == null)
+                return "Control Not Found";
+
+            var controlSet = await this._dbc.ControlSets
+                .SingleOrDefaultAsync(e => e.Id == control.ControlSetId);
+
+            if (controlSet == null)
+                return "ControlSet Not Found";
+
+            var error = "";
+
+            using (var serviceScope = ControlSetStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                switch (controlSet.OperationType)
+                {
+                    case OperationType.RemoteControl:
+                        var brd1 = await this.GetBrDevice(controlSet.BrDeviceId);
+                        if (brd1 == null)
+                        {
+                            error = "Not Found Broadlink Device.";
+                            break;
+                        }
+
+                        var rm = (Rm)brd1.SbDevice;
+                        var pBytes = Signals.String2ProntoBytes(control.Code);
+                        var result = await rm.SendPronto(pBytes);
+
+                        if (result == false)
+                        {
+                            error = "Command Exec Failure.";
+                            break;
+                        }
+
+                        break;
+                    case OperationType.BroadlinkDevice:
+                        var brd2 = await this.GetBrDevice(controlSet.BrDeviceId);
+                        if (brd2 == null)
+                        {
+                            error = "Not Found Broadlink Device.";
+                            break;
+                        }
+
+                        var brError = await this.ExecBrDevice(control, brd2);
+                        if (!string.IsNullOrEmpty(error))
+                        {
+                            error = brError;
+                            break;
+                        }
+
+                        break;
+                    case OperationType.WakeOnLan:
+                        try
+                        {
+                            var wolStore = serviceScope.ServiceProvider.GetService<WolStore>();
+                            var res = await wolStore.Exec(control.Code);
+                            if (res == false)
+                            {
+                                error = "Wake on LAN Failure.";
+                                break;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            error = ex.Message;
+                            break;
+                        }
+
+                        break;
+                    case OperationType.Script:
+                        try
+                        {
+                            var scriptStore = serviceScope.ServiceProvider.GetService<ScriptStore>();
+                            var res = await scriptStore.Exec(control.Code);
+                            if (!res.IsSucceeded)
+                            {
+                                error = res.Result;
+                                break;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            error = ex.Message;
+                            break;
+                        }
+
+                        break;
+                    case OperationType.RemoteHost:
+                        try
+                        {
+                            var rhStore = serviceScope.ServiceProvider.GetService<RemoteHostStore>();
+                            Script script;
+                            try
+                            {
+                                script = JsonConvert.DeserializeObject<Script>(control.Code);
+                            }
+                            catch (Exception)
+                            {
+                                error = "Remote Script Not Recognize";
+                                break;
+                            }
+
+                            var res = await rhStore.Exec(script);
+                            if (!res.IsSucceeded)
+                            {
+                                error = res.Result;
+                                break;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            error = ex.Message;
+                            break;
+                        }
+                        break;
+                    case OperationType.Scene:
+                    default:
+                        // ここにはこないはず。
+                        throw new Exception("なんでやー");
+                }
+
+
+                if (
+                    string.IsNullOrEmpty(error)
+                    && (control.IsAssignToggleOn
+                        || control.IsAssignToggleOff)
+                )
+                {
+                    var isChanged = false;
+
+                    if (control.IsAssignToggleOn
+                        && control.IsAssignToggleOff
+                    )
+                    {
+                        // トグルOn/Off両方アサインされているとき
+                        // 何もしない。
+                    }
+                    else if (control.IsAssignToggleOn)
+                    {
+                        // トグルOnのみアサインされているとき
+                        isChanged = true;
+                        controlSet.ToggleState = true;
+                    }
+                    else if (control.IsAssignToggleOff)
+                    {
+                        // トグルOffのみアサインされているとき
+                        isChanged = true;
+                        controlSet.ToggleState = false;
+                    }
+                    else
+                    {
+                        // ここには来ないはず。
+                        throw new Exception("なんでやー");
+                    }
+
+                    if (isChanged)
+                    {
+                        var dbc = serviceScope.ServiceProvider.GetService<Dbc>();
+                        dbc.Entry(controlSet).State = EntityState.Modified;
+                        await dbc.SaveChangesAsync();
+                    }
+                }
+            }
+
+            return error;
+        }
+
+        private async Task<string> ExecBrDevice(Control control, BrDevice device)
+        {
+            var error = "";
+            using (var serviceScope = ControlSetStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                switch (device.DeviceType)
+                {
+                    case DeviceType.Sp2:
+                        var sp2Store = serviceScope.ServiceProvider.GetService<Sp2Store>();
+                        var sp2Status = await sp2Store.GetStatus(device.Id);
+
+                        switch (control.Code)
+                        {
+                            case "PowerOn":
+                                sp2Status.Power = true;
+                                break;
+                            case "PowerOff":
+                                sp2Status.Power = false;
+                                break;
+                            case "LightOn":
+                                sp2Status.NightLight = true;
+                                break;
+                            case "LightOff":
+                                sp2Status.NightLight = false;
+                                break;
+                            default:
+                                throw new Exception("ここにはこないはず");
+                        }
+
+                        var res = await sp2Store.SetStatus(device.Id, sp2Status);
+                        if (res == false)
+                        {
+                            error = "Sp2 Switch Set Failure.";
+                            break;
+                        }
+
+                        break;
+                    case DeviceType.A1:
+                        var a1Store = serviceScope.ServiceProvider.GetService<A1Store>();
+
+                        // 値を取得して何をするでもない。
+                        var a1Values = await a1Store.GetValues(device.Id);
+
+                        break;
+                    case DeviceType.S1c:
+                    case DeviceType.Sp1:
+                    case DeviceType.Rm:
+                    case DeviceType.Rm2Pro:
+                    case DeviceType.Dooya:
+                    case DeviceType.Hysen:
+                    case DeviceType.Mp1:
+                    case DeviceType.Unknown:
+                    default:
+                        break;
+                }
+            }
+
+            return error;
+        }
+
+        private async Task<BrDevice> GetBrDevice(int? id)
+        {
+            using (var serviceScope = ControlSetStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                var brStore = serviceScope.ServiceProvider.GetService<BrDeviceStore>();
+                return await brStore.Get((int)id);
+            }
         }
     }
 }

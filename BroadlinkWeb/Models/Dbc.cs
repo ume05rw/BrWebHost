@@ -26,9 +26,12 @@ namespace BroadlinkWeb.Models
 
         public DbSet<RemoteScript> RemoteScripts { get; set; }
 
+        public DbSet<A1Values> A1Values { get; set; }
+
+        public DbSet<Schedule> Schedules { get; set; }
+
         public DbSet<Job> Jobs { get; set; }
 
-        public DbSet<A1Values> A1Values { get; set; }
 
         /// <summary>
         /// Constructor
