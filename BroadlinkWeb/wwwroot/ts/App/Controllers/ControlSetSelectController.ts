@@ -12,6 +12,7 @@
 /// <reference path="../Items/OperationTemplate.ts" />
 /// <reference path="../Items/OperationType.ts" />
 /// <reference path="../Items/Color.ts" />
+/// <reference path="../Items/Icon.ts" />
 /// <reference path="../Items/DeviceType.ts" />
 /// <reference path="../Models/Stores/ControlSetStore.ts" />
 /// <reference path="../Models/Entities/ControlSet.ts" />
@@ -25,6 +26,7 @@ namespace App.Controllers {
     import ButtonEvents = Fw.Events.ButtonViewEvents;
     import OperationTemplate = App.Items.OperationTemplate;
     import Color = App.Items.Color;
+    import Icon = App.Items.Icon;
     import OperationType = App.Items.OperationType;
     import Stores = App.Models.Stores;
     import ControlSet = App.Models.Entities.ControlSet;
@@ -89,7 +91,7 @@ namespace App.Controllers {
                 // シーン
                 const btn = this.GetNewButton();
                 btn.Label.Text = cset.Name;
-                btn.Button.ImageSrc = cset.IconUrl;
+                btn.Button.ImageSrc = Icon.GetPairdOperationIcon(cset.IconUrl);
                 btn.Button.Color = cset.Color;
                 btn.Button.BackgroundColor = cset.Color;
                 btn.Button.HoverColor = Color.GetButtonHoverColor(cset.Color);
@@ -115,10 +117,10 @@ namespace App.Controllers {
             button.Button.Position.Policy = Property.PositionPolicy.LeftTop;
             button.Button.HasBorder = true;
             button.Button.BorderRadius = 10;
-            button.Button.BackgroundColor = App.Items.Color.MainBackground;
-            button.Button.HoverColor = App.Items.Color.ButtonHoverColors[0];
-            button.Button.Color = App.Items.Color.ButtonColors[0];
-            button.Button.ImageFitPolicy = Property.FitPolicy.Cover;
+            button.Button.BackgroundColor = Color.MainBackground;
+            button.Button.HoverColor = Color.ButtonHoverColors[0];
+            button.Button.Color = Color.ButtonColors[0];
+            button.Button.ImageFitPolicy = Property.FitPolicy.Auto;
             return button;
         }
     }

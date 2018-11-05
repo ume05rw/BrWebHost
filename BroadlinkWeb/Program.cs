@@ -34,8 +34,8 @@ namespace BroadlinkWeb
             bool isService = !(Debugger.IsAttached || args.Contains("--console"));
 
             // VSから起動したとき、ポートを変更。
-            if (Debugger.IsAttached)
-                Program.Port = 5005;
+            //if (Debugger.IsAttached)
+            //    Program.Port = 5005;
 
             // 1.サービスとして起動する場合
             //   1) WebRoot = 実行ファイルパス

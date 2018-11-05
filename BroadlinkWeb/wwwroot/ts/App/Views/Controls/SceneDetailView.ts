@@ -7,6 +7,7 @@
 /// <reference path="../../../Fw/Events/BoxViewEvents.ts" />
 /// <reference path="../../../Fw/Events/TextBoxInputViewEvents.ts" />
 /// <reference path="../../Items/Color.ts" />
+/// <reference path="../../Items/Icon.ts" />
 /// <reference path="../../Events/Controls/ControlButtonViewEvents.ts" />
 /// <reference path="../../Models/Stores/SceneDetailStore.ts" />
 
@@ -15,6 +16,7 @@ namespace App.Views.Controls {
     import Views = Fw.Views;
     import Property = Fw.Views.Property;
     import Color = App.Items.Color;
+    import Icon = App.Items.Icon;
     import BoxEvents = Fw.Events.BoxViewEvents;
     import TextBoxEvents = Fw.Events.TextBoxInputViewEvents;
     import EntityEvents = Fw.Events.EntityEvents;
@@ -70,7 +72,7 @@ namespace App.Views.Controls {
             this.Color = Color.MainHover;
 
             this.ControlSetButton.SetLeftTop(16, 10);
-            this.ControlSetButton.ImageFitPolicy = Property.FitPolicy.Contain;
+            this.ControlSetButton.ImageFitPolicy = Property.FitPolicy.Auto;
             this.Add(this.ControlSetButton);
 
             this.ControlSetLabel.SetLeftTop(5, 90);
@@ -83,7 +85,7 @@ namespace App.Views.Controls {
 
 
             this.ControlButton.SetLeftTop(119, 10);
-            this.ControlButton.ImageFitPolicy = Property.FitPolicy.Contain;
+            this.ControlButton.ImageFitPolicy = Property.FitPolicy.Auto;
             this.Add(this.ControlButton);
 
             this.ControlLabel.SetLeftTop(100, 90);
@@ -166,7 +168,7 @@ namespace App.Views.Controls {
                 const control = Stores.Controls.List[this._detail.ControlId];
 
                 if (cset) {
-                    this.ControlSetButton.ImageSrc = cset.IconUrl;
+                    this.ControlSetButton.ImageSrc = Icon.GetPairdOperationIcon(cset.IconUrl);
                     this.ControlSetButton.Text = (!cset.IconUrl || cset.IconUrl === '')
                         ? cset.Name
                         : '';

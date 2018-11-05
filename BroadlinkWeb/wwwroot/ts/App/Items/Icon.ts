@@ -21,6 +21,14 @@ namespace App.Items {
                 : 'images/icons/operation/small/' + name;
         }
 
+        public static GetPairdOperationIcon(path: string): string {
+            const name = path.substr(path.lastIndexOf('/') + 1);
+            const isLarge = (path.indexOf('large') !== -1);
+            return (!isLarge)
+                ? 'images/icons/operation/large/' + name
+                : 'images/icons/operation/small/' + name;
+        }
+
         public static Operations: Array<string> = [
             /**
              * 空
