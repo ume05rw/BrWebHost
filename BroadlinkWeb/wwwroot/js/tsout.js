@@ -4845,7 +4845,7 @@ var App;
                 _this._operationType = 1 /* Exec */;
                 _this._page.HeaderBar.LeftButton.Hide(0);
                 _this._page.HeaderBar.LeftButton.AddEventListener(ButtonEvents.SingleClick, function () { return __awaiter(_this, void 0, void 0, function () {
-                    var controlSet, ctr, buttons, isSave, res;
+                    var controlSet, ctr, views, isSave, res;
                     var _this = this;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
@@ -4854,10 +4854,12 @@ var App;
                                 ctr = this.Manager.Get('Main');
                                 ctr.Show();
                                 this._controlSet = null;
-                                buttons = Util.Obj.Mirror(this._page.ButtonPanel.Children);
-                                _.each(buttons, function (btn) {
-                                    _this._page.ButtonPanel.Remove(btn);
-                                    btn.Dispose();
+                                views = Util.Obj.Mirror(this._page.ButtonPanel.Children);
+                                _.each(views, function (view) {
+                                    if (view instanceof Controls.ControlButtonView) {
+                                        _this._page.ButtonPanel.Remove(view);
+                                        view.Dispose();
+                                    }
                                 });
                                 isSave = true;
                                 if (!(controlSet.Controls.length <= 0)) return [3 /*break*/, 2];
@@ -4980,10 +4982,12 @@ var App;
             ControlSetController.prototype.SetEntity = function (entity) {
                 var _this = this;
                 // View側削除処理、ButtonPanel.Childrenを削除操作するため、要素退避しておく。
-                var buttons = Util.Obj.Mirror(this._page.ButtonPanel.Children);
-                _.each(buttons, function (btn) {
-                    _this._page.ButtonPanel.Remove(btn);
-                    btn.Dispose();
+                var views = Util.Obj.Mirror(this._page.ButtonPanel.Children);
+                _.each(views, function (view) {
+                    if (view instanceof Controls.ControlButtonView) {
+                        _this._page.ButtonPanel.Remove(view);
+                        view.Dispose();
+                    }
                 });
                 this._page.ButtonPanel.InnerLength = this._page.ButtonPanel.Size.Height;
                 if (this._controlSet) {
@@ -5356,11 +5360,12 @@ var App;
                 if (this._operationType !== 2 /* Edit */)
                     return;
                 // View側削除処理
-                var buttons = Util.Obj.Mirror(this._page.ButtonPanel.Children);
-                _.each(buttons, function (btn) {
-                    if (btn.Control === control) {
-                        _this._page.ButtonPanel.Remove(btn);
-                        btn.Dispose();
+                var views = Util.Obj.Mirror(this._page.ButtonPanel.Children);
+                _.each(views, function (view) {
+                    if (view instanceof Controls.ControlButtonView
+                        && view.Control === control) {
+                        _this._page.ButtonPanel.Remove(view);
+                        view.Dispose();
                     }
                 });
                 // Model側削除処理
@@ -5376,17 +5381,19 @@ var App;
              */
             ControlSetController.prototype.RemoveControlSet = function () {
                 return __awaiter(this, void 0, void 0, function () {
-                    var buttons, controlSet, ctr;
+                    var views, controlSet, ctr;
                     var _this = this;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
                                 if (this._operationType !== 2 /* Edit */)
                                     return [2 /*return*/];
-                                buttons = Util.Obj.Mirror(this._page.ButtonPanel.Children);
-                                _.each(buttons, function (btn) {
-                                    _this._page.ButtonPanel.Remove(btn);
-                                    btn.Dispose();
+                                views = Util.Obj.Mirror(this._page.ButtonPanel.Children);
+                                _.each(views, function (view) {
+                                    if (view instanceof Controls.ControlButtonView) {
+                                        _this._page.ButtonPanel.Remove(view);
+                                        view.Dispose();
+                                    }
                                 });
                                 controlSet = this._controlSet;
                                 ctr = this.Manager.Get('Main');
@@ -5498,7 +5505,12 @@ var App;
                     _this._page.ButtonPanel.Add(btn);
                 });
                 this.SetChart();
+                // ひとまず現在保持中のcontrol値を表示
                 this.ApplyFromEntity();
+                // 現在の値を取得して表示更新
+                Stores.A1s.Get(this._controlSet).then(function () {
+                    _this.ApplyFromEntity();
+                });
             };
             A1SetController.prototype.SetChart = function () {
                 return __awaiter(this, void 0, void 0, function () {

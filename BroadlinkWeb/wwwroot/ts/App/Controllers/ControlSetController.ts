@@ -65,10 +65,12 @@ namespace App.Controllers {
                 this._controlSet = null;
 
                 // View側削除処理、ButtonPanel.Childrenを削除操作するため、要素退避しておく。
-                const buttons = Util.Obj.Mirror(this._page.ButtonPanel.Children);
-                _.each(buttons, (btn: Fw.Views.IView) => {
-                    this._page.ButtonPanel.Remove(btn);
-                    btn.Dispose();
+                const views = Util.Obj.Mirror(this._page.ButtonPanel.Children);
+                _.each(views, (view: Fw.Views.IView) => {
+                    if (view instanceof Controls.ControlButtonView) {
+                        this._page.ButtonPanel.Remove(view);
+                        view.Dispose();
+                    }
                 });
 
                 // 登録処理、結果を確認せず画面を閉じる。
@@ -193,10 +195,12 @@ namespace App.Controllers {
         public SetEntity(entity: Entities.ControlSet): void {
 
             // View側削除処理、ButtonPanel.Childrenを削除操作するため、要素退避しておく。
-            const buttons = Util.Obj.Mirror(this._page.ButtonPanel.Children);
-            _.each(buttons, (btn: Fw.Views.IView) => {
-                this._page.ButtonPanel.Remove(btn);
-                btn.Dispose();
+            const views = Util.Obj.Mirror(this._page.ButtonPanel.Children);
+            _.each(views, (view: Fw.Views.IView) => {
+                if (view instanceof Controls.ControlButtonView) {
+                    this._page.ButtonPanel.Remove(view);
+                    view.Dispose();
+                }
             });
             this._page.ButtonPanel.InnerLength = this._page.ButtonPanel.Size.Height;
 
@@ -603,11 +607,14 @@ namespace App.Controllers {
                 return;
 
             // View側削除処理
-            const buttons = Util.Obj.Mirror(this._page.ButtonPanel.Children);
-            _.each(buttons, (btn: Controls.ControlButtonView) => {
-                if (btn.Control === control) {
-                    this._page.ButtonPanel.Remove(btn);
-                    btn.Dispose();
+            const views = Util.Obj.Mirror(this._page.ButtonPanel.Children);
+            _.each(views, (view: Fw.Views.IView) => {
+                if (
+                    view instanceof Controls.ControlButtonView
+                    && view.Control === control
+                ) {
+                    this._page.ButtonPanel.Remove(view);
+                    view.Dispose();
                 }
             });
 
@@ -630,10 +637,12 @@ namespace App.Controllers {
             //if (!this.IsOnEditMode)
             //    return;
 
-            const buttons = Util.Obj.Mirror(this._page.ButtonPanel.Children);
-            _.each(buttons, (btn: Fw.Views.IView) => {
-                this._page.ButtonPanel.Remove(btn);
-                btn.Dispose();
+            const views = Util.Obj.Mirror(this._page.ButtonPanel.Children);
+            _.each(views, (view: Fw.Views.IView) => {
+                if (view instanceof Controls.ControlButtonView) {
+                    this._page.ButtonPanel.Remove(view);
+                    view.Dispose();
+                }
             });
 
             const controlSet = this._controlSet;

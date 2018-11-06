@@ -85,6 +85,8 @@ namespace BroadlinkWeb.Models.Stores
                     }
 
                     await job.SetProgress(status.Step / status.TotalStep, status);
+
+                    // Stepはループ中に常に加算しておく。想定外挙動を検知し易いように。
                     status.Step++;
 
                     if (detail.WaitSecond > 0)
@@ -95,6 +97,8 @@ namespace BroadlinkWeb.Models.Stores
                 }
             }
 
+            // 正常終了時、Step値を辻褄合わせする。
+            status.Step = status.TotalStep;
             await job.SetFinish(false, status);
 
             return true;

@@ -107,7 +107,13 @@ namespace App.Controllers {
 
             this.SetChart();
 
+            // ひとまず現在保持中のcontrol値を表示
             this.ApplyFromEntity();
+
+            // 現在の値を取得して表示更新
+            Stores.A1s.Get(this._controlSet).then(() => {
+                this.ApplyFromEntity();
+            });
         }
 
         private async SetChart(): Promise<boolean> {
