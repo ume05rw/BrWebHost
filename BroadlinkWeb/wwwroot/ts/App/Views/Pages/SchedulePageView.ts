@@ -90,6 +90,7 @@ namespace App.Views.Pages {
             this.InputPanel.Size.Width = 280;
             this.InputPanel.SetAnchor(70, null, null, 10);
             this.InputPanel.Color = Color.MainBackground;
+            this.InputPanel.IsChildRelocatable = false;
             this.Add(this.InputPanel);
 
             const lbl1 = new Views.LabelView();
@@ -136,7 +137,7 @@ namespace App.Views.Pages {
             lbl3.Size.Height = 21;
             this.InputPanel.Add(lbl3);
 
-            this.ChkEnabled.SetAnchor(null, 5, 15, null);
+            this.ChkEnabled.SetAnchor(null, 15, 15, null);
             this.ChkEnabled.Size.Height = 30;
             this.ChkEnabled.Name = 'Enabled';
             this.ChkEnabled.Text = 'Enable';
@@ -151,18 +152,24 @@ namespace App.Views.Pages {
             this.InputPanel.Add(lbl5);
             this.InputPanel.AddSpacer();
 
-            this.SboHour.SetAnchor(null, 15, null, null);
+            //this.SboHour.SetAnchor(null, 5, null, null);
             this.SboHour.SetSize(80, 30);
+            for (let i = 0; i < 24; i++)
+                this.SboHour.AddItem(`00${i}`.slice(-2), i.toString());
+
             this.InputPanel.Add(this.SboHour);
 
             const lblSep = new Views.LabelView();
             lblSep.Text = ':';
             lblSep.TextAlign = Property.TextAlign.Center;
-            lblSep.SetSize(30, 30);
+            lblSep.SetSize(10, 30);
             lblSep.AutoSize = false;
             this.InputPanel.Add(lblSep);
 
             this.SboMinute.SetSize(80, 30);
+            for (let i = 0; i < 6; i++)
+                this.SboMinute.AddItem(`00${(i * 10)}`.slice(-2), (i * 10).toString());
+
             this.InputPanel.Add(this.SboMinute);
 
             const lbl4 = new Views.LabelView();

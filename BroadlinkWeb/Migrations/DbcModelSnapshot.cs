@@ -316,6 +316,9 @@ namespace BroadlinkWeb.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<string>("Color")
+                        .IsRequired();
+
                     b.Property<int?>("ControlId");
 
                     b.Property<int?>("ControlSetId");

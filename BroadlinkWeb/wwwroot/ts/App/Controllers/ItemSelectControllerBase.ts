@@ -49,7 +49,7 @@ namespace App.Controllers {
 
         protected Commit(selectedItem: any): void {
             this.Log('Commit: ' + selectedItem);
-            console.log(this._resolve);
+            //console.log(this._resolve);
 
             if (!this._parentController || !this._resolve)
                 throw new Error('Exec Select');

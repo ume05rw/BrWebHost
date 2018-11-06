@@ -75,6 +75,7 @@ namespace App.Views.Pages {
             this.InputPanel.Size.Width = 280;
             this.InputPanel.SetAnchor(70, 10, null, 10);
             this.InputPanel.Color = Color.MainBackground;
+            this.InputPanel.IsChildRelocatable = false;
             this.Add(this.InputPanel);
 
             const lbl1 = new Views.LabelView();

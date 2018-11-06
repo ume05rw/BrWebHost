@@ -31,6 +31,7 @@
     <Content Remove="wwwroot\ts\App\Items\ModalOperationType.ts" />
     <Content Remove="wwwroot\ts\App\Items\OperationTemplate.ts" />
     <Content Remove="wwwroot\ts\App\Items\OperationType.ts" />
+    <Content Remove="wwwroot\ts\App\Items\Weekday.ts" />
     <Content Remove="wwwroot\ts\App\Main.ts" />
     <Content Remove="wwwroot\ts\App\Models\Entities\A1Values.ts" />
     <Content Remove="wwwroot\ts\App\Models\Entities\BrDevice.ts" />
@@ -206,6 +207,7 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Items\OperationType.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Items\Icon.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Items\OperationTemplate.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Items\Weekday.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Main.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\MainController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\A1Values.ts" />

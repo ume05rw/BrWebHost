@@ -261,6 +261,7 @@ namespace App.Controllers {
                 case ModalOperationType.Edit:
 
                     const ctr = this.Manager.Get('ControlSetSelect') as ControlSetSelectController;
+                    ctr.IsSceneIncludes = false;
                     const controlSet: ControlSet = await ctr.Select(this);
 
                     if (controlSet) {

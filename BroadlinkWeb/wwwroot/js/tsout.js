@@ -4167,7 +4167,7 @@ var App;
             };
             ItemSelectControllerBase.prototype.Commit = function (selectedItem) {
                 this.Log('Commit: ' + selectedItem);
-                console.log(this._resolve);
+                //console.log(this._resolve);
                 if (!this._parentController || !this._resolve)
                     throw new Error('Exec Select');
                 try {
@@ -6930,6 +6930,38 @@ var App;
         })(Stores = Models.Stores || (Models.Stores = {}));
     })(Models = App.Models || (App.Models = {}));
 })(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/EntityBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../Items/Color.ts" />
+/// <reference path="../../Items/Icon.ts" />
+/// <reference path="../../Items/OperationType.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Entities;
+        (function (Entities) {
+            var Color = App.Items.Color;
+            var Icon = App.Items.Icon;
+            var Scene = /** @class */ (function (_super) {
+                __extends(Scene, _super);
+                function Scene() {
+                    var _this = _super !== null && _super.apply(this, arguments) || this;
+                    _this.Name = 'New Scene';
+                    _this.IconUrl = Icon.GetByOperationTemplate(1 /* Scene */, true);
+                    _this.Color = Color.ButtonColors[8];
+                    _this.Order = 99999;
+                    _this.Details = [];
+                    return _this;
+                }
+                return Scene;
+            }(Fw.Models.EntityBase));
+            Entities.Scene = Scene;
+        })(Entities = Models.Entities || (Models.Entities = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="ItemSelectControllerBase.ts" />
@@ -6946,6 +6978,7 @@ var App;
 /// <reference path="../Items/DeviceType.ts" />
 /// <reference path="../Models/Stores/ControlSetStore.ts" />
 /// <reference path="../Models/Entities/ControlSet.ts" />
+/// <reference path="../Models/Entities/Scene.ts" />
 var App;
 (function (App) {
     var Controllers;
@@ -6961,10 +6994,12 @@ var App;
             function ControlSetSelectController() {
                 var _this = _super.call(this, 'ControlSetSelect') || this;
                 _this._controlSets = [];
+                _this._scenes = [];
                 _this.SetClassName('ControlSetSelectController');
                 _this._page = _this.View;
                 _this._page.Label.Text = 'Select Remote Control';
                 _this._controlSets = null;
+                _this.IsSceneIncludes = false;
                 return _this;
             }
             ControlSetSelectController.prototype.Select = function (parentController) {
@@ -6977,14 +7012,18 @@ var App;
             };
             ControlSetSelectController.prototype.RefreshControlSets = function () {
                 return __awaiter(this, void 0, void 0, function () {
-                    var _a;
-                    return __generator(this, function (_b) {
-                        switch (_b.label) {
+                    var _a, _b;
+                    return __generator(this, function (_c) {
+                        switch (_c.label) {
                             case 0:
                                 _a = this;
                                 return [4 /*yield*/, Stores.ControlSets.GetListForMainPanel()];
                             case 1:
-                                _a._controlSets = _b.sent();
+                                _a._controlSets = _c.sent();
+                                _b = this;
+                                return [4 /*yield*/, Stores.Scenes.GetList()];
+                            case 2:
+                                _b._scenes = _c.sent();
                                 return [2 /*return*/, true];
                         }
                     });
@@ -6992,7 +7031,7 @@ var App;
             };
             ControlSetSelectController.prototype.InitView = function () {
                 return __awaiter(this, void 0, void 0, function () {
-                    var children;
+                    var children, line2;
                     var _this = this;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
@@ -7023,7 +7062,7 @@ var App;
                                             return;
                                         }
                                     }
-                                    // シーン
+                                    // ControlSet
                                     var btn = _this.GetNewButton();
                                     btn.Label.Text = cset.Name;
                                     btn.Button.ImageSrc = Icon.GetPairdOperationIcon(cset.IconUrl);
@@ -7034,11 +7073,34 @@ var App;
                                     btn.Button.AddEventListener(ButtonEvents.SingleClick, function (e) {
                                         var button = e.Sender;
                                         var lbView = button.Parent;
-                                        var controlSet = lbView.Value;
-                                        _this.Commit(controlSet);
+                                        var entity = lbView.Value;
+                                        _this.Commit(entity);
                                     });
                                     _this._page.SelectorPanel.Add(btn);
                                 });
+                                if (this.IsSceneIncludes) {
+                                    line2 = new Fw.Views.LineView(Property.Direction.Horizontal);
+                                    line2.SetAnchor(null, 5, 5, null);
+                                    line2.Color = App.Items.Color.MainBackground;
+                                    this._page.SelectorPanel.Add(line2);
+                                    _.each(this._scenes, function (scene) {
+                                        // Scnene
+                                        var btn = _this.GetNewButton();
+                                        btn.Label.Text = scene.Name;
+                                        btn.Button.ImageSrc = Icon.GetPairdOperationIcon(scene.IconUrl);
+                                        btn.Button.Color = scene.Color;
+                                        btn.Button.BackgroundColor = scene.Color;
+                                        btn.Button.HoverColor = Color.GetButtonHoverColor(scene.Color);
+                                        btn.Value = scene;
+                                        btn.Button.AddEventListener(ButtonEvents.SingleClick, function (e) {
+                                            var button = e.Sender;
+                                            var lbView = button.Parent;
+                                            var entity = lbView.Value;
+                                            _this.Commit(entity);
+                                        });
+                                        _this._page.SelectorPanel.Add(btn);
+                                    });
+                                }
                                 this._page.SelectorPanel.Refresh();
                                 return [2 /*return*/, true];
                         }
@@ -7275,38 +7337,6 @@ var App;
             Controls.ControlSetButtonView = ControlSetButtonView;
         })(Controls = Views_8.Controls || (Views_8.Controls = {}));
     })(Views = App.Views || (App.Views = {}));
-})(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Models/EntityBase.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-/// <reference path="../../Items/Color.ts" />
-/// <reference path="../../Items/Icon.ts" />
-/// <reference path="../../Items/OperationType.ts" />
-var App;
-(function (App) {
-    var Models;
-    (function (Models) {
-        var Entities;
-        (function (Entities) {
-            var Color = App.Items.Color;
-            var Icon = App.Items.Icon;
-            var Scene = /** @class */ (function (_super) {
-                __extends(Scene, _super);
-                function Scene() {
-                    var _this = _super !== null && _super.apply(this, arguments) || this;
-                    _this.Name = 'New Scene';
-                    _this.IconUrl = Icon.GetByOperationTemplate(1 /* Scene */, true);
-                    _this.Color = Color.ButtonColors[8];
-                    _this.Order = 99999;
-                    _this.Details = [];
-                    return _this;
-                }
-                return Scene;
-            }(Fw.Models.EntityBase));
-            Entities.Scene = Scene;
-        })(Entities = Models.Entities || (Models.Entities = {}));
-    })(Models = App.Models || (App.Models = {}));
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
@@ -8642,6 +8672,7 @@ var App;
                             return [3 /*break*/, 5];
                             case 2:
                                 ctr = this.Manager.Get('ControlSetSelect');
+                                ctr.IsSceneIncludes = false;
                                 return [4 /*yield*/, ctr.Select(this)];
                             case 3:
                                 controlSet = _b.sent();
@@ -8972,6 +9003,441 @@ var App;
         }(Fw.Controllers.ControllerBase));
         Controllers.SceneHeaderPropertyController = SceneHeaderPropertyController;
     })(Controllers = App.Controllers || (App.Controllers = {}));
+})(App || (App = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Fw/Controllers/ControllerBase.ts" />
+/// <reference path="../../Fw/Controllers/Manager.ts" />
+/// <reference path="../../Fw/Util/Dump.ts" />
+/// <reference path="../../Fw/Events/ControlViewEvents.ts" />
+/// <reference path="../../Fw/Events/EntityEvents.ts" />
+/// <reference path="../../Fw/Events/ButtonViewEvents.ts" />
+/// <reference path="../../Fw/Events/StuckerBoxViewEvents.ts" />
+/// <reference path="../../Fw/Events/InputViewEvents.ts" />
+/// <reference path="../Views/Pages/MainPageView.ts" />
+/// <reference path="../Views/Popup/AlertPopup.ts" />
+/// <reference path="../Views/Controls/SceneDetailView.ts" />
+/// <reference path="../Views/Controls/ItemSelectButtonView.ts" />
+/// <reference path="../Events/Controls/ControlButtonViewEvents.ts" />
+/// <reference path="../Models/Entities/ControlSet.ts" />
+/// <reference path="../Models/Entities/Control.ts" />
+/// <reference path="../Models/Entities/Scene.ts" />
+/// <reference path="../Models/Stores/RmStore.ts" />
+/// <reference path="../Items/OperationType.ts" />
+/// <reference path="../Items/ModalOperationType.ts" />
+/// <reference path="../Items/Weekday.ts" />
+/// <reference path="../Items/Color.ts" />
+/// <reference path="../Items/Icon.ts" />
+/// <reference path="ControlSetSelectController.ts" />
+var App;
+(function (App) {
+    var Controllers;
+    (function (Controllers) {
+        var Pages = App.Views.Pages;
+        var EntityEvents = Fw.Events.EntityEvents;
+        var ButtonEvents = Fw.Events.ButtonViewEvents;
+        var InputEvents = Fw.Events.InputViewEvents;
+        var Stores = App.Models.Stores;
+        var Popup = App.Views.Popup;
+        var Scene = App.Models.Entities.Scene;
+        var ControlSet = App.Models.Entities.ControlSet;
+        var Color = App.Items.Color;
+        var Icon = App.Items.Icon;
+        var ScheduleController = /** @class */ (function (_super) {
+            __extends(ScheduleController, _super);
+            function ScheduleController() {
+                var _this = _super.call(this, 'Schedule') || this;
+                _this.SetClassName('ScheduleController');
+                _this.SetPageView(new Pages.SchedulePageView());
+                _this._page = _this.View;
+                _this._schedule = null;
+                _this._operationType = 1 /* Exec */;
+                _this._page.HeaderBar.LeftButton.Hide(0);
+                _this._page.HeaderBar.LeftButton.AddEventListener(ButtonEvents.SingleClick, function () { return __awaiter(_this, void 0, void 0, function () {
+                    var schedule, ctr, res;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                schedule = this._schedule;
+                                ctr = this.Manager.Get('Main');
+                                ctr.Show();
+                                this._schedule = null;
+                                return [4 /*yield*/, Stores.Schedules.Write(schedule)];
+                            case 1:
+                                res = _a.sent();
+                                if (!res) {
+                                    // 保存失敗
+                                    this.SetEntity(schedule);
+                                    this.SetEditMode();
+                                    this.Show();
+                                    Popup.Alert.Open({
+                                        Message: 'Ouch! Save Failure.<br/>Server online?'
+                                    });
+                                }
+                                else {
+                                    // 保存成功
+                                    ctr.RefreshScenes();
+                                }
+                                return [2 /*return*/];
+                        }
+                    });
+                }); });
+                _this._page.EditButton.AddEventListener(ButtonEvents.SingleClick, function () {
+                    _this.SetEditMode();
+                    _this.ToUnmodal();
+                });
+                _.each(_this._page.InputPanel.Children, function (view) {
+                    if (view instanceof Fw.Views.InputViewBase
+                        || view instanceof Fw.Views.CheckBoxInputView) {
+                        view.AddEventListener(InputEvents.Changed, _this.ApplyToEntity, _this);
+                    }
+                });
+                _this._page.BtnColor.AddEventListener(ButtonEvents.SingleClick, function (e) { return __awaiter(_this, void 0, void 0, function () {
+                    var ctr, color;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                if (!this._schedule)
+                                    return [2 /*return*/];
+                                ctr = this.Manager.Get('ColorSelect');
+                                return [4 /*yield*/, ctr.Select(this)];
+                            case 1:
+                                color = _a.sent();
+                                this._schedule.Color = color;
+                                this._page.BtnColor.Color = color;
+                                this._page.BtnColor.BackgroundColor = color;
+                                this._page.BtnColor.HoverColor = App.Items.Color.GetButtonHoverColor(color);
+                                this._schedule.DispatchChanged();
+                                return [2 /*return*/];
+                        }
+                    });
+                }); });
+                _this._page.SdvControl.ControlSetButton.AddEventListener(ButtonEvents.SingleClick, _this.OnControlSetClicked, _this);
+                _this._page.SdvControl.ControlButton.AddEventListener(ButtonEvents.SingleClick, _this.OnControlClicked, _this);
+                return _this;
+            }
+            ScheduleController.prototype.SetEditMode = function () {
+                this._operationType = 2 /* Edit */;
+                var left = (this._page.Size.Width / 2) - (this._page.InputPanel.Size.Width / 2);
+                this._page.InputPanel.Position.Left = left;
+                this._page.HeaderBar.Label.Show(0);
+                this._page.HeaderBar.LeftButton.Show(0);
+                this._page.HeaderLeftLabel.Hide(0);
+                this._page.EditButton.Hide(0);
+                this._page.HeaderBar.RightButton.Hide(0);
+                var ctr = this.Manager.Get('ControlSetSelect');
+                ctr.RefreshControlSets();
+            };
+            ScheduleController.prototype.SetExecMode = function () {
+                this._operationType = 1 /* Exec */;
+                var left = 10;
+                this._page.InputPanel.Position.Left = left;
+                this._page.HeaderBar.Label.Hide(0);
+                this._page.HeaderBar.LeftButton.Hide(0);
+                this._page.HeaderBar.RightButton.Hide(0);
+                this._page.HeaderLeftLabel.Show(0);
+                this._page.EditButton.Show(0);
+            };
+            /**
+             * 操作対象シーンEnttiyをセットする。
+             * @param entity
+             */
+            ScheduleController.prototype.SetEntity = function (entity) {
+                if (this._schedule) {
+                    this._schedule.RemoveEventListener(EntityEvents.Changed, this.ApplyFromEntity, this);
+                }
+                this._schedule = entity;
+                if (!this._schedule)
+                    return;
+                this._schedule.AddEventListener(EntityEvents.Changed, this.ApplyFromEntity, this);
+                this.ApplyFromEntity();
+            };
+            ScheduleController.prototype.ApplyFromEntity = function () {
+                if (!this._schedule)
+                    return;
+                var schedule = this._schedule;
+                this._schedule = null;
+                this._page.HeaderBar.Text = schedule.Name;
+                this._page.HeaderLeftLabel.Text = schedule.Name;
+                this._page.TxtName.Value = schedule.Name;
+                this._page.BtnColor.Color = schedule.Color;
+                this._page.BtnColor.BackgroundColor = schedule.Color;
+                this._page.BtnColor.HoverColor = App.Items.Color.GetButtonHoverColor(schedule.Color);
+                this._page.SdvControl.ControlSetButton.ImageSrc = '';
+                this._page.SdvControl.ControlSetButton.Text = 'Select<br/>Remotes';
+                this._page.SdvControl.ControlSetLabel.Text = '';
+                this._page.SdvControl.ControlSetButton.Color = Color.ButtonColors[0];
+                this._page.SdvControl.ControlSetButton.BackgroundColor = Color.MainBackground;
+                this._page.SdvControl.ControlSetButton.HoverColor = Color.ButtonHoverColors[0];
+                if (schedule.SceneId) {
+                    var entity = Stores.Scenes.List[schedule.SceneId];
+                    if (entity) {
+                        this._page.SdvControl.ControlSetButton.ImageSrc = Icon.GetPairdOperationIcon(entity.IconUrl);
+                        this._page.SdvControl.ControlSetButton.Text = (!entity.IconUrl || entity.IconUrl === '')
+                            ? entity.Name
+                            : '';
+                        this._page.SdvControl.ControlSetLabel.Text = entity.Name;
+                        var idx = Color.ButtonColors.indexOf(entity.Color);
+                        if (idx !== -1) {
+                            this._page.SdvControl.ControlSetButton.Color = entity.Color;
+                            this._page.SdvControl.ControlSetButton.BackgroundColor = entity.Color;
+                            this._page.SdvControl.ControlSetButton.HoverColor = Color.ButtonHoverColors[idx];
+                        }
+                    }
+                }
+                if (schedule.ControlSetId) {
+                    var entity = Stores.ControlSets.List[schedule.ControlSetId];
+                    if (entity) {
+                        this._page.SdvControl.ControlSetButton.ImageSrc = Icon.GetPairdOperationIcon(entity.IconUrl);
+                        this._page.SdvControl.ControlSetButton.Text = (!entity.IconUrl || entity.IconUrl === '')
+                            ? entity.Name
+                            : '';
+                        this._page.SdvControl.ControlSetLabel.Text = entity.Name;
+                        var idx = Color.ButtonColors.indexOf(entity.Color);
+                        if (idx !== -1) {
+                            this._page.SdvControl.ControlSetButton.Color = entity.Color;
+                            this._page.SdvControl.ControlSetButton.BackgroundColor = entity.Color;
+                            this._page.SdvControl.ControlSetButton.HoverColor = Color.ButtonHoverColors[idx];
+                        }
+                    }
+                }
+                if (schedule.ControlId) {
+                    var entity = Stores.Controls.List[schedule.ControlId];
+                    if (entity) {
+                        this._page.SdvControl.ControlButton.ImageSrc = entity.IconUrl;
+                        this._page.SdvControl.ControlButton.Text = (!entity.IconUrl || entity.IconUrl === '')
+                            ? entity.Name
+                            : '';
+                        this._page.SdvControl.ControlLabel.Text = entity.Name;
+                        var idx = Color.ButtonColors.indexOf(entity.Color);
+                        if (idx !== -1) {
+                            this._page.SdvControl.ControlButton.Color = entity.Color;
+                            this._page.SdvControl.ControlButton.BackgroundColor = Color.MainBackground;
+                            this._page.SdvControl.ControlButton.HoverColor = Color.ButtonHoverColors[idx];
+                        }
+                    }
+                }
+                this._page.ChkEnabled.BoolValue = schedule.Enabled;
+                this._page.SboHour.Value = schedule.StartTime.getHours().toString();
+                this._page.SboMinute.Value = schedule.StartTime.getMinutes().toString();
+                this._page.ChkWeekdaySunday.BoolValue = schedule.GetWeekdayFlag(0 /* Sunday */);
+                this._page.ChkWeekdayMonday.BoolValue = schedule.GetWeekdayFlag(1 /* Monday */);
+                this._page.ChkWeekdayTuesday.BoolValue = schedule.GetWeekdayFlag(2 /* Tuesday */);
+                this._page.ChkWeekdayWednesday.BoolValue = schedule.GetWeekdayFlag(3 /* Wednesday */);
+                this._page.ChkWeekdayThursday.BoolValue = schedule.GetWeekdayFlag(4 /* Thursday */);
+                this._page.ChkWeekdayFriday.BoolValue = schedule.GetWeekdayFlag(5 /* Friday */);
+                this._page.ChkWeekdaySaturday.BoolValue = schedule.GetWeekdayFlag(6 /* Saturday */);
+                this._schedule = schedule;
+                this._page.Refresh();
+            };
+            ScheduleController.prototype.ApplyToEntity = function () {
+                if (!this._schedule)
+                    return;
+                this._schedule.Name = this._page.TxtName.Value;
+                this._page.HeaderBar.Text = this._page.TxtName.Value;
+                this._page.HeaderLeftLabel.Text = this._page.TxtName.Value;
+                //this._schedule.Color = this._page.BtnColor.Color;
+                this._schedule.Enabled = this._page.ChkEnabled.BoolValue;
+                if (this._page.SboHour.Value !== '' && this._page.SboMinute.Value !== '') {
+                    var hour = parseInt(this._page.SboHour.Value, 10);
+                    var minute = parseInt(this._page.SboMinute.Value, 10);
+                    this._schedule.StartTime = new Date(2000, 1, 1, hour, minute, 0);
+                }
+                else {
+                    this._schedule.StartTime = new Date(2000, 1, 1, 0, 0, 0);
+                }
+                this._schedule.SetWeekdayFlag(0 /* Sunday */, this._page.ChkWeekdaySunday.BoolValue);
+                this._schedule.SetWeekdayFlag(1 /* Monday */, this._page.ChkWeekdayMonday.BoolValue);
+                this._schedule.SetWeekdayFlag(2 /* Tuesday */, this._page.ChkWeekdayTuesday.BoolValue);
+                this._schedule.SetWeekdayFlag(3 /* Wednesday */, this._page.ChkWeekdayWednesday.BoolValue);
+                this._schedule.SetWeekdayFlag(4 /* Thursday */, this._page.ChkWeekdayThursday.BoolValue);
+                this._schedule.SetWeekdayFlag(5 /* Friday */, this._page.ChkWeekdayFriday.BoolValue);
+                this._schedule.SetWeekdayFlag(6 /* Saturday */, this._page.ChkWeekdaySaturday.BoolValue);
+            };
+            ScheduleController.prototype.OnControlSetClicked = function (e) {
+                return __awaiter(this, void 0, void 0, function () {
+                    var _a, ctr, entity;
+                    return __generator(this, function (_b) {
+                        switch (_b.label) {
+                            case 0:
+                                _a = this._operationType;
+                                switch (_a) {
+                                    case 1 /* Exec */: return [3 /*break*/, 1];
+                                    case 2 /* Edit */: return [3 /*break*/, 2];
+                                    case 3 /* Select */: return [3 /*break*/, 4];
+                                }
+                                return [3 /*break*/, 4];
+                            case 1: 
+                            // なにもしない。
+                            return [3 /*break*/, 5];
+                            case 2:
+                                ctr = this.Manager.Get('ControlSetSelect');
+                                ctr.IsSceneIncludes = true;
+                                return [4 /*yield*/, ctr.Select(this)];
+                            case 3:
+                                entity = _b.sent();
+                                if (entity) {
+                                    if (entity instanceof ControlSet) {
+                                        this._schedule.SceneId = null;
+                                        this._schedule.ControlSetId = entity.Id;
+                                        if (entity.Controls.length === 1) {
+                                            this._schedule.ControlId = entity.Controls[0].Id;
+                                        }
+                                        else {
+                                            this.OnControlClicked(e);
+                                        }
+                                    }
+                                    else if (entity instanceof Scene) {
+                                        this._schedule.SceneId = entity.Id;
+                                        this._schedule.ControlSetId = null;
+                                        this._schedule.ControlId = null;
+                                    }
+                                    this.ApplyFromEntity();
+                                }
+                                return [3 /*break*/, 5];
+                            case 4:
+                                alert('ここにはこないはず。');
+                                throw new Error('なんでー？');
+                            case 5: return [2 /*return*/];
+                        }
+                    });
+                });
+            };
+            ScheduleController.prototype.OnControlClicked = function (e) {
+                return __awaiter(this, void 0, void 0, function () {
+                    var _a, controlSet, ctr, control;
+                    return __generator(this, function (_b) {
+                        switch (_b.label) {
+                            case 0:
+                                _a = this._operationType;
+                                switch (_a) {
+                                    case 1 /* Exec */: return [3 /*break*/, 1];
+                                    case 2 /* Edit */: return [3 /*break*/, 2];
+                                    case 3 /* Select */: return [3 /*break*/, 5];
+                                }
+                                return [3 /*break*/, 5];
+                            case 1: 
+                            // なにもしない。
+                            return [3 /*break*/, 6];
+                            case 2:
+                                controlSet = Stores.ControlSets.List[this._schedule.ControlSetId];
+                                if (!controlSet) return [3 /*break*/, 4];
+                                ctr = App.Controllers.CSControllerFactory.Get(controlSet);
+                                ctr.SetEntity(controlSet);
+                                ctr.SetSelectMode();
+                                return [4 /*yield*/, ctr.Select(this)];
+                            case 3:
+                                control = _b.sent();
+                                if (control) {
+                                    this._schedule.ControlId = control.Id;
+                                }
+                                this.ApplyFromEntity();
+                                _b.label = 4;
+                            case 4: return [3 /*break*/, 6];
+                            case 5:
+                                alert('ここにはこないはず。');
+                                throw new Error('なんでー？');
+                            case 6: return [2 /*return*/];
+                        }
+                    });
+                });
+            };
+            /**
+             * リモコン全体を削除する。
+             */
+            ScheduleController.prototype.RemoveShedule = function () {
+                return __awaiter(this, void 0, void 0, function () {
+                    var schedule, ctr;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                if (this._operationType !== 2 /* Edit */)
+                                    return [2 /*return*/];
+                                schedule = this._schedule;
+                                ctr = this.Manager.Get('Main');
+                                ctr.Show();
+                                this._schedule = null;
+                                this._page.UnMask();
+                                // 削除メソッド、投げっぱなしの終了確認無しで終わる。
+                                return [4 /*yield*/, Stores.Schedules.Remove(schedule)];
+                            case 1:
+                                // 削除メソッド、投げっぱなしの終了確認無しで終わる。
+                                _a.sent();
+                                ctr.RefreshScenes();
+                                return [2 /*return*/];
+                        }
+                    });
+                });
+            };
+            return ScheduleController;
+        }(Fw.Controllers.ControllerBase));
+        Controllers.ScheduleController = ScheduleController;
+    })(Controllers = App.Controllers || (App.Controllers = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/EntityBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../Items/Color.ts" />
+/// <reference path="../../Items/Weekday.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Entities;
+        (function (Entities) {
+            var Color = App.Items.Color;
+            var Schedule = /** @class */ (function (_super) {
+                __extends(Schedule, _super);
+                function Schedule() {
+                    var _this = _super !== null && _super.apply(this, arguments) || this;
+                    _this.Name = 'New Timer';
+                    _this.SceneId = null;
+                    _this.ControlSetId = null;
+                    _this.ControlId = null;
+                    _this.CurrentJobId = null;
+                    _this.Enabled = true;
+                    _this.StartTime = new Date(2000, 1, 1, 10, 0, 0);
+                    _this.WeekdayFlags = '1111111';
+                    _this.Color = Color.ButtonColors[9];
+                    _this.Order = 99999;
+                    return _this;
+                }
+                Schedule.prototype.GetWeekdayFlag = function (weekday) {
+                    if (this.WeekdayFlags.length !== 7)
+                        throw new Error('WeekdayFlags Fromat Failure');
+                    var index = weekday;
+                    return (this.WeekdayFlags[index] === '1');
+                };
+                Schedule.prototype.SetWeekdayFlag = function (weekday, enable) {
+                    if (this.WeekdayFlags.length !== 7)
+                        throw new Error('WeekdayFlags Fromat Failure');
+                    var index = weekday;
+                    var flagString = (enable) ? '1' : '0';
+                    var flags = this.WeekdayFlags;
+                    if (index === 0) {
+                        flags = flagString + flags.substr(index + 1);
+                    }
+                    else if (0 < index && index < 6) {
+                        flags = flags.substr(0, index)
+                            + flagString
+                            + flags.substr(index + 1);
+                    }
+                    else if (index === 6) {
+                        flags = flags.substr(0, index) + flagString;
+                    }
+                    else {
+                        throw new Error('なぜなんだー');
+                    }
+                    this.WeekdayFlags = flags;
+                };
+                return Schedule;
+            }(Fw.Models.EntityBase));
+            Entities.Schedule = Schedule;
+        })(Entities = Models.Entities || (Models.Entities = {}));
+    })(Models = App.Models || (App.Models = {}));
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
@@ -9721,6 +10187,187 @@ var App;
 /// <reference path="../../../Fw/Models/StoreBase.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../../../Fw/Util/Xhr/Query.ts" />
+/// <reference path="../../Items/ControlSetTemplate.ts" />
+/// <reference path="../Entities/Schedule.ts" />
+/// <reference path="../Entities/Header.ts" />
+/// <reference path="../Entities/Job.ts" />
+/// <reference path="ControlStore.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Stores;
+        (function (Stores) {
+            var Xhr = Fw.Util.Xhr;
+            var Schedule = App.Models.Entities.Schedule;
+            var Header = App.Models.Entities.Header;
+            var ScheduleStore = /** @class */ (function (_super) {
+                __extends(ScheduleStore, _super);
+                function ScheduleStore() {
+                    var _this = _super.call(this) || this;
+                    _this.SetClassName('SceneStore');
+                    _this.EnableLog = true;
+                    return _this;
+                }
+                Object.defineProperty(ScheduleStore, "Instance", {
+                    get: function () {
+                        if (ScheduleStore._instance === null)
+                            ScheduleStore._instance = new ScheduleStore();
+                        return ScheduleStore._instance;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                ScheduleStore.prototype.GetNewEntity = function () {
+                    return new Schedule();
+                };
+                ScheduleStore.prototype.GetList = function () {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var params, res, list;
+                        var _this = this;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    params = new Xhr.Params('Schedules', Xhr.MethodType.Get);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        list = res.Values;
+                                        _.each(list, function (entity) {
+                                            _this.Merge(entity);
+                                        });
+                                        return [2 /*return*/, _.values(this.List)];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, []];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
+                ScheduleStore.prototype.UpdateHeader = function (entity) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var header, params, res;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    header = new Header();
+                                    header.Id = entity.Id;
+                                    header.Order = entity.Order;
+                                    params = new Xhr.Params("Schedules/UpdateHeader/" + header.Id, Xhr.MethodType.Post, header);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        return [2 /*return*/, true];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, false];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
+                ScheduleStore.prototype.UpdateHeaders = function (entities) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var headers, params, res;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    headers = new Array();
+                                    _.each(entities, function (entity) {
+                                        var header = new Header();
+                                        header.Id = entity.Id;
+                                        header.Order = entity.Order;
+                                        headers.push(header);
+                                    });
+                                    params = new Xhr.Params("Schedules/UpdateHeader", Xhr.MethodType.Post, headers);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        return [2 /*return*/, true];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, false];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
+                ScheduleStore.prototype.Write = function (entity) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var params, res, id, result;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    params = new Xhr.Params('Schedules', Xhr.MethodType.Post, entity);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        id = res.Values.Id;
+                                        this.Merge(res.Values);
+                                        result = this.List[id];
+                                        return [2 /*return*/, result];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, null];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
+                ScheduleStore.prototype.Remove = function (entity) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var params, res;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    params = new Xhr.Params("Schedules/" + entity.Id, Xhr.MethodType.Delete, entity);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        delete this.List[entity.Id];
+                                        return [2 /*return*/, true];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, false];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
+                ScheduleStore._instance = null;
+                return ScheduleStore;
+            }(Fw.Models.StoreBase));
+            Stores.ScheduleStore = ScheduleStore;
+            Stores.Schedules = ScheduleStore.Instance;
+        })(Stores = Models.Stores || (Models.Stores = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/StoreBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../../Fw/Util/Xhr/Query.ts" />
 /// <reference path="../Entities/BrDevice.ts" />
 /// <reference path="../Entities/ControlSet.ts" />
 /// <reference path="../Entities/Control.ts" />
@@ -10310,6 +10957,7 @@ var App;
                     _this.InputPanel.Size.Width = 280;
                     _this.InputPanel.SetAnchor(70, 10, null, 10);
                     _this.InputPanel.Color = App.Items.Color.MainBackground;
+                    _this.InputPanel.IsChildRelocatable = false;
                     _this.Add(_this.InputPanel);
                     var lbl1 = new Views.LabelView();
                     lbl1.Text = 'Name';
@@ -10416,6 +11064,7 @@ var App;
                     _this.InputPanel.Size.Width = 280;
                     _this.InputPanel.SetAnchor(70, 10, null, 10);
                     _this.InputPanel.Color = Color.MainBackground;
+                    _this.InputPanel.IsChildRelocatable = false;
                     _this.Add(_this.InputPanel);
                     var lbl1 = new Views.LabelView();
                     lbl1.Text = 'Name';
@@ -10619,6 +11268,7 @@ var App;
                     _this.SelectorPanel.RightMargin = 20;
                     _this.SelectorPanel.SetAnchor(70, 10, null, 10);
                     _this.SelectorPanel.Color = App.Items.Color.MainBackground;
+                    _this.SelectorPanel.IsChildRelocatable = false;
                     _this.Add(_this.SelectorPanel);
                     return _this;
                 }
@@ -10675,6 +11325,7 @@ var App;
                     _this.InputPanel.Size.Width = 280;
                     _this.InputPanel.SetAnchor(70, 10, null, 10);
                     _this.InputPanel.Color = App.Items.Color.MainBackground;
+                    _this.InputPanel.IsChildRelocatable = false;
                     _this.Add(_this.InputPanel);
                     var lbl1 = new Views.LabelView();
                     lbl1.Text = 'Name';
@@ -10792,6 +11443,188 @@ var App;
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Views/PageView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Events/PageViewEvents.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../Controls/HeaderBarView.ts" />
+/// <reference path="../../Items/Color.ts" />
+var App;
+(function (App) {
+    var Views;
+    (function (Views_19) {
+        var Pages;
+        (function (Pages) {
+            var Views = Fw.Views;
+            var Property = Fw.Views.Property;
+            var Controls = App.Views.Controls;
+            var Color = App.Items.Color;
+            var SchedulePageView = /** @class */ (function (_super) {
+                __extends(SchedulePageView, _super);
+                function SchedulePageView() {
+                    var _this = _super.call(this) || this;
+                    _this.HeaderBar = new Controls.HeaderBarView();
+                    _this.HeaderLeftLabel = new Views.LabelView();
+                    _this.EditButton = new Controls.ButtonView();
+                    _this.InputPanel = new Views.StuckerBoxView();
+                    _this.TxtName = new Views.TextBoxInputView();
+                    _this.BtnColor = new Controls.ItemSelectButtonView();
+                    _this.ChkEnabled = new Views.CheckBoxInputView();
+                    _this.ChkWeekdaySunday = new Views.CheckBoxInputView();
+                    _this.ChkWeekdayMonday = new Views.CheckBoxInputView();
+                    _this.ChkWeekdayTuesday = new Views.CheckBoxInputView();
+                    _this.ChkWeekdayWednesday = new Views.CheckBoxInputView();
+                    _this.ChkWeekdayThursday = new Views.CheckBoxInputView();
+                    _this.ChkWeekdayFriday = new Views.CheckBoxInputView();
+                    _this.ChkWeekdaySaturday = new Views.CheckBoxInputView();
+                    _this.SboHour = new Views.SelectBoxInputView();
+                    _this.SboMinute = new Views.SelectBoxInputView();
+                    _this.SdvControl = new Controls.SceneDetailView();
+                    _this.DeleteButton = new Controls.PropertyButtonView();
+                    _this.SetClassName('SchedulePageView');
+                    var background = new Views.ImageView();
+                    background.SetAnchor(0, 0, 0, 0);
+                    background.FitPolicy = Property.FitPolicy.Cover;
+                    background.Src = 'images/Pages/ControlSet/background.jpg';
+                    _this.Add(background);
+                    _this.HeaderBar.Text = 'Scene';
+                    _this.HeaderBar.RightButton.Hide(0);
+                    _this.Add(_this.HeaderBar);
+                    _this.EditButton.SetSize(40, 40);
+                    _this.EditButton.BackgroundColor = Color.HeaderButtonBackground;
+                    _this.EditButton.HoverColor = Color.HeaderButtonHover;
+                    _this.EditButton.Color = Color.Main;
+                    _this.EditButton.Text = '@';
+                    _this.EditButton.SetAnchor(null, 255, null, null);
+                    _this.HeaderBar.Add(_this.EditButton);
+                    _this.HeaderLeftLabel.FontSize = Property.FontSize.Large;
+                    _this.HeaderLeftLabel.Color = Color.Main;
+                    _this.HeaderLeftLabel.SetAnchor(null, 5, null, null);
+                    _this.HeaderBar.Add(_this.HeaderLeftLabel);
+                    _this.InputPanel.ReferencePoint = Property.ReferencePoint.LeftTop;
+                    _this.InputPanel.Position.Policy = Property.PositionPolicy.LeftTop;
+                    _this.InputPanel.Size.Width = 280;
+                    _this.InputPanel.SetAnchor(70, null, null, 10);
+                    _this.InputPanel.Color = Color.MainBackground;
+                    _this.InputPanel.IsChildRelocatable = false;
+                    _this.Add(_this.InputPanel);
+                    var lbl1 = new Views.LabelView();
+                    lbl1.Text = 'Name';
+                    lbl1.TextAlign = Property.TextAlign.Left;
+                    lbl1.AutoSize = true;
+                    lbl1.SetAnchor(null, 5, null, null);
+                    lbl1.Size.Height = 21;
+                    _this.InputPanel.Add(lbl1);
+                    _this.TxtName.SetAnchor(null, 5, 15, null);
+                    _this.TxtName.Size.Height = 30;
+                    _this.TxtName.Name = 'Name';
+                    _this.InputPanel.Add(_this.TxtName);
+                    var lbl2 = new Views.LabelView();
+                    lbl2.Text = 'Color';
+                    lbl2.TextAlign = Property.TextAlign.Left;
+                    lbl2.AutoSize = true;
+                    lbl2.SetAnchor(null, 5, null, null);
+                    lbl2.Size.Height = 21;
+                    _this.InputPanel.Add(lbl2);
+                    _this.InputPanel.AddSpacer();
+                    _this.InputPanel.Add(_this.BtnColor);
+                    _this.InputPanel.AddSpacer();
+                    var lbl6 = new Views.LabelView();
+                    lbl6.Text = 'Operation';
+                    lbl6.TextAlign = Property.TextAlign.Left;
+                    lbl6.AutoSize = true;
+                    lbl6.SetAnchor(null, 5, null, null);
+                    lbl6.Size.Height = 21;
+                    _this.InputPanel.Add(lbl6);
+                    _this.SdvControl.SetWaitable(false);
+                    _this.InputPanel.Add(_this.SdvControl);
+                    var lbl3 = new Views.LabelView();
+                    lbl3.Text = 'Timer Enable';
+                    lbl3.TextAlign = Property.TextAlign.Left;
+                    lbl3.AutoSize = true;
+                    lbl3.SetAnchor(null, 5, null, null);
+                    lbl3.Size.Height = 21;
+                    _this.InputPanel.Add(lbl3);
+                    _this.ChkEnabled.SetAnchor(null, 15, 15, null);
+                    _this.ChkEnabled.Size.Height = 30;
+                    _this.ChkEnabled.Name = 'Enabled';
+                    _this.ChkEnabled.Text = 'Enable';
+                    _this.InputPanel.Add(_this.ChkEnabled);
+                    var lbl5 = new Views.LabelView();
+                    lbl5.Text = 'Start Time';
+                    lbl5.TextAlign = Property.TextAlign.Left;
+                    lbl5.AutoSize = true;
+                    lbl5.SetAnchor(null, 5, null, null);
+                    lbl5.Size.Height = 21;
+                    _this.InputPanel.Add(lbl5);
+                    _this.InputPanel.AddSpacer();
+                    //this.SboHour.SetAnchor(null, 5, null, null);
+                    _this.SboHour.SetSize(80, 30);
+                    for (var i = 0; i < 24; i++)
+                        _this.SboHour.AddItem(("00" + i).slice(-2), i.toString());
+                    _this.InputPanel.Add(_this.SboHour);
+                    var lblSep = new Views.LabelView();
+                    lblSep.Text = ':';
+                    lblSep.TextAlign = Property.TextAlign.Center;
+                    lblSep.SetSize(10, 30);
+                    lblSep.AutoSize = false;
+                    _this.InputPanel.Add(lblSep);
+                    _this.SboMinute.SetSize(80, 30);
+                    for (var i = 0; i < 6; i++)
+                        _this.SboMinute.AddItem(("00" + (i * 10)).slice(-2), (i * 10).toString());
+                    _this.InputPanel.Add(_this.SboMinute);
+                    var lbl4 = new Views.LabelView();
+                    lbl4.Text = 'Weekday Action';
+                    lbl4.TextAlign = Property.TextAlign.Left;
+                    lbl4.AutoSize = true;
+                    lbl4.SetAnchor(null, 5, null, null);
+                    lbl4.Size.Height = 21;
+                    _this.InputPanel.Add(lbl4);
+                    _this.ChkWeekdaySunday.SetAnchor(null, 15, 15, null);
+                    _this.ChkWeekdaySunday.Size.Height = 30;
+                    _this.ChkWeekdaySunday.Name = 'Sunday';
+                    _this.ChkWeekdaySunday.Text = 'Sunday';
+                    _this.InputPanel.Add(_this.ChkWeekdaySunday);
+                    _this.ChkWeekdayMonday.SetAnchor(null, 15, 15, null);
+                    _this.ChkWeekdayMonday.Size.Height = 30;
+                    _this.ChkWeekdayMonday.Name = 'Monday';
+                    _this.ChkWeekdayMonday.Text = 'Monday';
+                    _this.InputPanel.Add(_this.ChkWeekdayMonday);
+                    _this.ChkWeekdayTuesday.SetAnchor(null, 15, 15, null);
+                    _this.ChkWeekdayTuesday.Size.Height = 30;
+                    _this.ChkWeekdayTuesday.Name = 'Tuesday';
+                    _this.ChkWeekdayTuesday.Text = 'Tuesday';
+                    _this.InputPanel.Add(_this.ChkWeekdayTuesday);
+                    _this.ChkWeekdayWednesday.SetAnchor(null, 15, 15, null);
+                    _this.ChkWeekdayWednesday.Size.Height = 30;
+                    _this.ChkWeekdayWednesday.Name = 'Wednesday';
+                    _this.ChkWeekdayWednesday.Text = 'Wednesday';
+                    _this.InputPanel.Add(_this.ChkWeekdayWednesday);
+                    _this.ChkWeekdayThursday.SetAnchor(null, 15, 15, null);
+                    _this.ChkWeekdayThursday.Size.Height = 30;
+                    _this.ChkWeekdayThursday.Name = 'Thursday';
+                    _this.ChkWeekdayThursday.Text = 'Thursday';
+                    _this.InputPanel.Add(_this.ChkWeekdayThursday);
+                    _this.ChkWeekdayFriday.SetAnchor(null, 15, 15, null);
+                    _this.ChkWeekdayFriday.Size.Height = 30;
+                    _this.ChkWeekdayFriday.Name = 'Friday';
+                    _this.ChkWeekdayFriday.Text = 'Friday';
+                    _this.InputPanel.Add(_this.ChkWeekdayFriday);
+                    _this.ChkWeekdaySaturday.SetAnchor(null, 15, 15, null);
+                    _this.ChkWeekdaySaturday.Size.Height = 30;
+                    _this.ChkWeekdaySaturday.Name = 'Saturday';
+                    _this.ChkWeekdaySaturday.Text = 'Saturday';
+                    _this.InputPanel.Add(_this.ChkWeekdaySaturday);
+                    return _this;
+                }
+                return SchedulePageView;
+            }(Fw.Views.PageView));
+            Pages.SchedulePageView = SchedulePageView;
+        })(Pages = Views_19.Pages || (Views_19.Pages = {}));
+    })(Views = App.Views || (App.Views = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../../../lib/MagnificPopup/index.d.ts" />
 /// <reference path="../../../Fw/Views/ButtonView.ts" />
 /// <reference path="../../../Fw/Views/Property/Anchor.ts" />
@@ -10800,7 +11633,7 @@ var App;
 var App;
 (function (App) {
     var Views;
-    (function (Views_19) {
+    (function (Views_20) {
         var Popup;
         (function (Popup) {
             var CancellablePopup = /** @class */ (function (_super) {
@@ -10839,7 +11672,7 @@ var App;
             }(Popup.PopupBase));
             Popup.CancellablePopup = CancellablePopup;
             Popup.Cancellable = CancellablePopup.Instance;
-        })(Popup = Views_19.Popup || (Views_19.Popup = {}));
+        })(Popup = Views_20.Popup || (Views_20.Popup = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
@@ -10852,7 +11685,7 @@ var App;
 var App;
 (function (App) {
     var Views;
-    (function (Views_20) {
+    (function (Views_21) {
         var Popup;
         (function (Popup) {
             var ConfirmPopup = /** @class */ (function (_super) {
@@ -10920,7 +11753,7 @@ var App;
             }(Popup.PopupBase));
             Popup.ConfirmPopup = ConfirmPopup;
             Popup.Confirm = ConfirmPopup.Instance;
-        })(Popup = Views_20.Popup || (Views_20.Popup = {}));
+        })(Popup = Views_21.Popup || (Views_21.Popup = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../lib/jquery/index.d.ts" />
@@ -12844,7 +13677,6 @@ var Fw;
             __extends(StuckerBoxView, _super);
             function StuckerBoxView() {
                 var _this = _super.call(this) || this;
-                _this._isChildRelocation = false;
                 _this.LockedImage = '';
                 _this.UnlockedImage = '';
                 _this._scrollMargin = 0;
@@ -12867,6 +13699,8 @@ var Fw;
                 _this._rightMargin = 40;
                 _this._referencePoint = Property.ReferencePoint.LeftTop;
                 _this._scrollMargin = 0;
+                _this._isChildRelocatable = true;
+                _this._isChildRelocation = false;
                 _this._innerBox.HasBorder = false;
                 _this._innerBox.SetTransAnimation(false);
                 _this._innerBox.SetLeftTop(0, 0);
@@ -12961,6 +13795,17 @@ var Fw;
                 },
                 set: function (value) {
                     this._referencePoint = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(StuckerBoxView.prototype, "IsChildRelocatable", {
+                get: function () {
+                    return this._isChildRelocatable;
+                },
+                set: function (value) {
+                    this._isChildRelocatable = value;
                     this.Refresh();
                 },
                 enumerable: true,
@@ -13112,6 +13957,19 @@ var Fw;
             StuckerBoxView.prototype.OnInnerSingleClick = function () {
                 //this.Log(`${this.ClassName}.OnSingleClick`);
                 var _this = this;
+                // 再配置不能のとき
+                if (!this._isChildRelocatable) {
+                    if (this._lockButton.IsVisible) {
+                        this._lockButton.ClearAnimatedClass();
+                        this._lockButton.Hide();
+                    }
+                    if (this._isChildRelocation) {
+                        // 子View再配置モードのとき
+                        // 配置を確定させる。
+                        this.CommitRelocation();
+                    }
+                    return;
+                }
                 if (this._lockButton.IsVisible) {
                     // ロックボタン表示中のとき
                     if (!this._isChildRelocation) {
@@ -14311,543 +15169,4 @@ var Fw;
         })(Property = Views.Property || (Views.Property = {}));
     })(Views = Fw.Views || (Fw.Views = {}));
 })(Fw || (Fw = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Views/PageView.ts" />
-/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
-/// <reference path="../../../Fw/Events/PageViewEvents.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-/// <reference path="../Controls/HeaderBarView.ts" />
-/// <reference path="../../Items/Color.ts" />
-var App;
-(function (App) {
-    var Views;
-    (function (Views_21) {
-        var Pages;
-        (function (Pages) {
-            var Views = Fw.Views;
-            var Property = Fw.Views.Property;
-            var Controls = App.Views.Controls;
-            var Color = App.Items.Color;
-            var SchedulePageView = /** @class */ (function (_super) {
-                __extends(SchedulePageView, _super);
-                function SchedulePageView() {
-                    var _this = _super.call(this) || this;
-                    _this.HeaderBar = new Controls.HeaderBarView();
-                    _this.HeaderLeftLabel = new Views.LabelView();
-                    _this.EditButton = new Controls.ButtonView();
-                    _this.InputPanel = new Views.StuckerBoxView();
-                    _this.TxtName = new Views.TextBoxInputView();
-                    _this.BtnColor = new Controls.ItemSelectButtonView();
-                    _this.ChkEnabled = new Views.CheckBoxInputView();
-                    _this.ChkWeekdaySunday = new Views.CheckBoxInputView();
-                    _this.ChkWeekdayMonday = new Views.CheckBoxInputView();
-                    _this.ChkWeekdayTuesday = new Views.CheckBoxInputView();
-                    _this.ChkWeekdayWednesday = new Views.CheckBoxInputView();
-                    _this.ChkWeekdayThursday = new Views.CheckBoxInputView();
-                    _this.ChkWeekdayFriday = new Views.CheckBoxInputView();
-                    _this.ChkWeekdaySaturday = new Views.CheckBoxInputView();
-                    _this.SboHour = new Views.SelectBoxInputView();
-                    _this.SboMinute = new Views.SelectBoxInputView();
-                    _this.SdvControl = new Controls.SceneDetailView();
-                    _this.DeleteButton = new Controls.PropertyButtonView();
-                    _this.SetClassName('SchedulePageView');
-                    var background = new Views.ImageView();
-                    background.SetAnchor(0, 0, 0, 0);
-                    background.FitPolicy = Property.FitPolicy.Cover;
-                    background.Src = 'images/Pages/ControlSet/background.jpg';
-                    _this.Add(background);
-                    _this.HeaderBar.Text = 'Scene';
-                    _this.HeaderBar.RightButton.Hide(0);
-                    _this.Add(_this.HeaderBar);
-                    _this.EditButton.SetSize(40, 40);
-                    _this.EditButton.BackgroundColor = Color.HeaderButtonBackground;
-                    _this.EditButton.HoverColor = Color.HeaderButtonHover;
-                    _this.EditButton.Color = Color.Main;
-                    _this.EditButton.Text = '@';
-                    _this.EditButton.SetAnchor(null, 255, null, null);
-                    _this.HeaderBar.Add(_this.EditButton);
-                    _this.HeaderLeftLabel.FontSize = Property.FontSize.Large;
-                    _this.HeaderLeftLabel.Color = Color.Main;
-                    _this.HeaderLeftLabel.SetAnchor(null, 5, null, null);
-                    _this.HeaderBar.Add(_this.HeaderLeftLabel);
-                    _this.InputPanel.ReferencePoint = Property.ReferencePoint.LeftTop;
-                    _this.InputPanel.Position.Policy = Property.PositionPolicy.LeftTop;
-                    _this.InputPanel.Size.Width = 280;
-                    _this.InputPanel.SetAnchor(70, null, null, 10);
-                    _this.InputPanel.Color = Color.MainBackground;
-                    _this.Add(_this.InputPanel);
-                    var lbl1 = new Views.LabelView();
-                    lbl1.Text = 'Name';
-                    lbl1.TextAlign = Property.TextAlign.Left;
-                    lbl1.AutoSize = true;
-                    lbl1.SetAnchor(null, 5, null, null);
-                    lbl1.Size.Height = 21;
-                    _this.InputPanel.Add(lbl1);
-                    _this.TxtName.SetAnchor(null, 5, 15, null);
-                    _this.TxtName.Size.Height = 30;
-                    _this.TxtName.Name = 'Name';
-                    _this.InputPanel.Add(_this.TxtName);
-                    var lbl2 = new Views.LabelView();
-                    lbl2.Text = 'Color';
-                    lbl2.TextAlign = Property.TextAlign.Left;
-                    lbl2.AutoSize = true;
-                    lbl2.SetAnchor(null, 5, null, null);
-                    lbl2.Size.Height = 21;
-                    _this.InputPanel.Add(lbl2);
-                    _this.InputPanel.AddSpacer();
-                    _this.InputPanel.Add(_this.BtnColor);
-                    _this.InputPanel.AddSpacer();
-                    var lbl6 = new Views.LabelView();
-                    lbl6.Text = 'Operation';
-                    lbl6.TextAlign = Property.TextAlign.Left;
-                    lbl6.AutoSize = true;
-                    lbl6.SetAnchor(null, 5, null, null);
-                    lbl6.Size.Height = 21;
-                    _this.InputPanel.Add(lbl6);
-                    _this.SdvControl.SetWaitable(false);
-                    _this.InputPanel.Add(_this.SdvControl);
-                    var lbl3 = new Views.LabelView();
-                    lbl3.Text = 'Timer Enable';
-                    lbl3.TextAlign = Property.TextAlign.Left;
-                    lbl3.AutoSize = true;
-                    lbl3.SetAnchor(null, 5, null, null);
-                    lbl3.Size.Height = 21;
-                    _this.InputPanel.Add(lbl3);
-                    _this.ChkEnabled.SetAnchor(null, 5, 15, null);
-                    _this.ChkEnabled.Size.Height = 30;
-                    _this.ChkEnabled.Name = 'Enabled';
-                    _this.ChkEnabled.Text = 'Enable';
-                    _this.InputPanel.Add(_this.ChkEnabled);
-                    var lbl5 = new Views.LabelView();
-                    lbl5.Text = 'Start Time';
-                    lbl5.TextAlign = Property.TextAlign.Left;
-                    lbl5.AutoSize = true;
-                    lbl5.SetAnchor(null, 5, null, null);
-                    lbl5.Size.Height = 21;
-                    _this.InputPanel.Add(lbl5);
-                    _this.InputPanel.AddSpacer();
-                    _this.SboHour.SetAnchor(null, 15, null, null);
-                    _this.SboHour.SetSize(80, 30);
-                    _this.InputPanel.Add(_this.SboHour);
-                    var lblSep = new Views.LabelView();
-                    lblSep.Text = ':';
-                    lblSep.TextAlign = Property.TextAlign.Center;
-                    lblSep.SetSize(30, 30);
-                    lblSep.AutoSize = false;
-                    _this.InputPanel.Add(lblSep);
-                    _this.SboMinute.SetSize(80, 30);
-                    _this.InputPanel.Add(_this.SboMinute);
-                    var lbl4 = new Views.LabelView();
-                    lbl4.Text = 'Weekday Action';
-                    lbl4.TextAlign = Property.TextAlign.Left;
-                    lbl4.AutoSize = true;
-                    lbl4.SetAnchor(null, 5, null, null);
-                    lbl4.Size.Height = 21;
-                    _this.InputPanel.Add(lbl4);
-                    _this.ChkWeekdaySunday.SetAnchor(null, 15, 15, null);
-                    _this.ChkWeekdaySunday.Size.Height = 30;
-                    _this.ChkWeekdaySunday.Name = 'Sunday';
-                    _this.ChkWeekdaySunday.Text = 'Sunday';
-                    _this.InputPanel.Add(_this.ChkWeekdaySunday);
-                    _this.ChkWeekdayMonday.SetAnchor(null, 15, 15, null);
-                    _this.ChkWeekdayMonday.Size.Height = 30;
-                    _this.ChkWeekdayMonday.Name = 'Monday';
-                    _this.ChkWeekdayMonday.Text = 'Monday';
-                    _this.InputPanel.Add(_this.ChkWeekdayMonday);
-                    _this.ChkWeekdayTuesday.SetAnchor(null, 15, 15, null);
-                    _this.ChkWeekdayTuesday.Size.Height = 30;
-                    _this.ChkWeekdayTuesday.Name = 'Tuesday';
-                    _this.ChkWeekdayTuesday.Text = 'Tuesday';
-                    _this.InputPanel.Add(_this.ChkWeekdayTuesday);
-                    _this.ChkWeekdayWednesday.SetAnchor(null, 15, 15, null);
-                    _this.ChkWeekdayWednesday.Size.Height = 30;
-                    _this.ChkWeekdayWednesday.Name = 'Wednesday';
-                    _this.ChkWeekdayWednesday.Text = 'Wednesday';
-                    _this.InputPanel.Add(_this.ChkWeekdayWednesday);
-                    _this.ChkWeekdayThursday.SetAnchor(null, 15, 15, null);
-                    _this.ChkWeekdayThursday.Size.Height = 30;
-                    _this.ChkWeekdayThursday.Name = 'Thursday';
-                    _this.ChkWeekdayThursday.Text = 'Thursday';
-                    _this.InputPanel.Add(_this.ChkWeekdayThursday);
-                    _this.ChkWeekdayFriday.SetAnchor(null, 15, 15, null);
-                    _this.ChkWeekdayFriday.Size.Height = 30;
-                    _this.ChkWeekdayFriday.Name = 'Friday';
-                    _this.ChkWeekdayFriday.Text = 'Friday';
-                    _this.InputPanel.Add(_this.ChkWeekdayFriday);
-                    _this.ChkWeekdaySaturday.SetAnchor(null, 15, 15, null);
-                    _this.ChkWeekdaySaturday.Size.Height = 30;
-                    _this.ChkWeekdaySaturday.Name = 'Saturday';
-                    _this.ChkWeekdaySaturday.Text = 'Saturday';
-                    _this.InputPanel.Add(_this.ChkWeekdaySaturday);
-                    return _this;
-                }
-                return SchedulePageView;
-            }(Fw.Views.PageView));
-            Pages.SchedulePageView = SchedulePageView;
-        })(Pages = Views_21.Pages || (Views_21.Pages = {}));
-    })(Views = App.Views || (App.Views = {}));
-})(App || (App = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../../Fw/Controllers/ControllerBase.ts" />
-/// <reference path="../../Fw/Controllers/Manager.ts" />
-/// <reference path="../../Fw/Util/Dump.ts" />
-/// <reference path="../../Fw/Events/ControlViewEvents.ts" />
-/// <reference path="../../Fw/Events/EntityEvents.ts" />
-/// <reference path="../../Fw/Events/ButtonViewEvents.ts" />
-/// <reference path="../../Fw/Events/StuckerBoxViewEvents.ts" />
-/// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
-/// <reference path="../../Fw/Views/ButtonView.ts" />
-/// <reference path="../Views/Pages/MainPageView.ts" />
-/// <reference path="../Views/Popup/AlertPopup.ts" />
-/// <reference path="../Views/Controls/SceneDetailView.ts" />
-/// <reference path="../Views/Controls/ItemSelectButtonView.ts" />
-/// <reference path="../Events/Controls/ControlButtonViewEvents.ts" />
-/// <reference path="../Models/Entities/ControlSet.ts" />
-/// <reference path="../Models/Stores/RmStore.ts" />
-/// <reference path="../Models/Entities/Job.ts" />
-/// <reference path="../Models/Entities/SceneStatus.ts" />
-/// <reference path="../Items/OperationType.ts" />
-/// <reference path="../Items/DeviceType.ts" />
-/// <reference path="../Items/ModalOperationType.ts" />
-/// <reference path="ControlSetSelectController.ts" />
-var App;
-(function (App) {
-    var Controllers;
-    (function (Controllers) {
-        var Pages = App.Views.Pages;
-        var EntityEvents = Fw.Events.EntityEvents;
-        var ButtonEvents = Fw.Events.ButtonViewEvents;
-        var Stores = App.Models.Stores;
-        var Popup = App.Views.Popup;
-        var ScheduleController = /** @class */ (function (_super) {
-            __extends(ScheduleController, _super);
-            function ScheduleController() {
-                var _this = _super.call(this, 'Schedule') || this;
-                _this.SetClassName('ScheduleController');
-                _this.SetPageView(new Pages.SchedulePageView());
-                _this._page = _this.View;
-                _this._schedule = null;
-                _this._operationType = 1 /* Exec */;
-                _this._page.HeaderBar.LeftButton.Hide(0);
-                _this._page.HeaderBar.LeftButton.AddEventListener(ButtonEvents.SingleClick, function () { return __awaiter(_this, void 0, void 0, function () {
-                    var schedule, ctr, res;
-                    return __generator(this, function (_a) {
-                        switch (_a.label) {
-                            case 0:
-                                schedule = this._schedule;
-                                ctr = this.Manager.Get('Main');
-                                ctr.Show();
-                                this._schedule = null;
-                                return [4 /*yield*/, Stores.Schedules.Write(schedule)];
-                            case 1:
-                                res = _a.sent();
-                                if (!res) {
-                                    // 保存失敗
-                                    this.SetEntity(schedule);
-                                    this.SetEditMode();
-                                    this.Show();
-                                    Popup.Alert.Open({
-                                        Message: 'Ouch! Save Failure.<br/>Server online?'
-                                    });
-                                }
-                                else {
-                                    // 保存成功
-                                    ctr.RefreshScenes();
-                                }
-                                return [2 /*return*/];
-                        }
-                    });
-                }); });
-                _this._page.EditButton.AddEventListener(ButtonEvents.SingleClick, function () {
-                    _this.SetEditMode();
-                    _this.ToUnmodal();
-                });
-                return _this;
-            }
-            ScheduleController.prototype.SetEditMode = function () {
-                this._operationType = 2 /* Edit */;
-                var left = (this._page.Size.Width / 2) - (this._page.InputPanel.Size.Width / 2);
-                this._page.InputPanel.Position.Left = left;
-                this._page.HeaderBar.Label.Show(0);
-                this._page.HeaderBar.LeftButton.Show(0);
-                this._page.HeaderLeftLabel.Hide(0);
-                this._page.EditButton.Hide(0);
-                this._page.HeaderBar.RightButton.Hide(0);
-                var ctr = this.Manager.Get('ControlSetSelect');
-                ctr.RefreshControlSets();
-            };
-            ScheduleController.prototype.SetExecMode = function () {
-                this._operationType = 1 /* Exec */;
-                var left = 10;
-                this._page.InputPanel.Position.Left = left;
-                this._page.HeaderBar.Label.Hide(0);
-                this._page.HeaderBar.LeftButton.Hide(0);
-                this._page.HeaderBar.RightButton.Hide(0);
-                this._page.HeaderLeftLabel.Show(0);
-                this._page.EditButton.Show(0);
-            };
-            /**
-             * 操作対象シーンEnttiyをセットする。
-             * @param entity
-             */
-            ScheduleController.prototype.SetEntity = function (entity) {
-                if (this._schedule) {
-                    this._schedule.RemoveEventListener(EntityEvents.Changed, this.ApplyFromEntity, this);
-                }
-                this._schedule = entity;
-                if (!this._schedule)
-                    return;
-                this._schedule.AddEventListener(EntityEvents.Changed, this.ApplyFromEntity, this);
-                this.ApplyFromEntity();
-            };
-            ScheduleController.prototype.ApplyFromEntity = function () {
-                if (!this._schedule)
-                    return;
-                this._page.HeaderBar.Text = this._schedule.Name;
-                this._page.HeaderLeftLabel.Text = this._schedule.Name;
-                this._page.Refresh();
-            };
-            /**
-             * リモコン全体を削除する。
-             */
-            ScheduleController.prototype.RemoveShedule = function () {
-                return __awaiter(this, void 0, void 0, function () {
-                    var schedule, ctr;
-                    return __generator(this, function (_a) {
-                        switch (_a.label) {
-                            case 0:
-                                if (this._operationType !== 2 /* Edit */)
-                                    return [2 /*return*/];
-                                schedule = this._schedule;
-                                ctr = this.Manager.Get('Main');
-                                ctr.Show();
-                                this._schedule = null;
-                                this._page.UnMask();
-                                // 削除メソッド、投げっぱなしの終了確認無しで終わる。
-                                return [4 /*yield*/, Stores.Schedules.Remove(schedule)];
-                            case 1:
-                                // 削除メソッド、投げっぱなしの終了確認無しで終わる。
-                                _a.sent();
-                                ctr.RefreshScenes();
-                                return [2 /*return*/];
-                        }
-                    });
-                });
-            };
-            return ScheduleController;
-        }(Fw.Controllers.ControllerBase));
-        Controllers.ScheduleController = ScheduleController;
-    })(Controllers = App.Controllers || (App.Controllers = {}));
-})(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Models/EntityBase.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-/// <reference path="../../Items/Color.ts" />
-/// <reference path="../../Items/Icon.ts" />
-/// <reference path="../../Items/OperationType.ts" />
-var App;
-(function (App) {
-    var Models;
-    (function (Models) {
-        var Entities;
-        (function (Entities) {
-            var Schedule = /** @class */ (function (_super) {
-                __extends(Schedule, _super);
-                function Schedule() {
-                    var _this = _super !== null && _super.apply(this, arguments) || this;
-                    _this.Name = 'New Timer';
-                    _this.WeekdayFlags = '1111111';
-                    _this.Order = 99999;
-                    return _this;
-                }
-                return Schedule;
-            }(Fw.Models.EntityBase));
-            Entities.Schedule = Schedule;
-        })(Entities = Models.Entities || (Models.Entities = {}));
-    })(Models = App.Models || (App.Models = {}));
-})(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Models/StoreBase.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-/// <reference path="../../../Fw/Util/Xhr/Query.ts" />
-/// <reference path="../../Items/ControlSetTemplate.ts" />
-/// <reference path="../Entities/Schedule.ts" />
-/// <reference path="../Entities/Header.ts" />
-/// <reference path="../Entities/Job.ts" />
-/// <reference path="ControlStore.ts" />
-var App;
-(function (App) {
-    var Models;
-    (function (Models) {
-        var Stores;
-        (function (Stores) {
-            var Xhr = Fw.Util.Xhr;
-            var Schedule = App.Models.Entities.Schedule;
-            var Header = App.Models.Entities.Header;
-            var ScheduleStore = /** @class */ (function (_super) {
-                __extends(ScheduleStore, _super);
-                function ScheduleStore() {
-                    var _this = _super.call(this) || this;
-                    _this.SetClassName('SceneStore');
-                    _this.EnableLog = true;
-                    return _this;
-                }
-                Object.defineProperty(ScheduleStore, "Instance", {
-                    get: function () {
-                        if (ScheduleStore._instance === null)
-                            ScheduleStore._instance = new ScheduleStore();
-                        return ScheduleStore._instance;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                ScheduleStore.prototype.GetNewEntity = function () {
-                    return new Schedule();
-                };
-                ScheduleStore.prototype.GetList = function () {
-                    return __awaiter(this, void 0, void 0, function () {
-                        var params, res, list;
-                        var _this = this;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    params = new Xhr.Params('Schedules', Xhr.MethodType.Get);
-                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
-                                case 1:
-                                    res = _a.sent();
-                                    if (res.Succeeded) {
-                                        list = res.Values;
-                                        _.each(list, function (entity) {
-                                            _this.Merge(entity);
-                                        });
-                                        return [2 /*return*/, _.values(this.List)];
-                                    }
-                                    else {
-                                        this.Log('Query Fail');
-                                        this.Log(res.Errors);
-                                        return [2 /*return*/, []];
-                                    }
-                                    return [2 /*return*/];
-                            }
-                        });
-                    });
-                };
-                ScheduleStore.prototype.UpdateHeader = function (entity) {
-                    return __awaiter(this, void 0, void 0, function () {
-                        var header, params, res;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    header = new Header();
-                                    header.Id = entity.Id;
-                                    header.Order = entity.Order;
-                                    params = new Xhr.Params("Schedules/UpdateHeader/" + header.Id, Xhr.MethodType.Post, header);
-                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
-                                case 1:
-                                    res = _a.sent();
-                                    if (res.Succeeded) {
-                                        return [2 /*return*/, true];
-                                    }
-                                    else {
-                                        this.Log('Query Fail');
-                                        this.Log(res.Errors);
-                                        return [2 /*return*/, false];
-                                    }
-                                    return [2 /*return*/];
-                            }
-                        });
-                    });
-                };
-                ScheduleStore.prototype.UpdateHeaders = function (entities) {
-                    return __awaiter(this, void 0, void 0, function () {
-                        var headers, params, res;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    headers = new Array();
-                                    _.each(entities, function (entity) {
-                                        var header = new Header();
-                                        header.Id = entity.Id;
-                                        header.Order = entity.Order;
-                                        headers.push(header);
-                                    });
-                                    params = new Xhr.Params("Schedules/UpdateHeader", Xhr.MethodType.Post, headers);
-                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
-                                case 1:
-                                    res = _a.sent();
-                                    if (res.Succeeded) {
-                                        return [2 /*return*/, true];
-                                    }
-                                    else {
-                                        this.Log('Query Fail');
-                                        this.Log(res.Errors);
-                                        return [2 /*return*/, false];
-                                    }
-                                    return [2 /*return*/];
-                            }
-                        });
-                    });
-                };
-                ScheduleStore.prototype.Write = function (entity) {
-                    return __awaiter(this, void 0, void 0, function () {
-                        var params, res, id, result;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    params = new Xhr.Params('Schedules', Xhr.MethodType.Post, entity);
-                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
-                                case 1:
-                                    res = _a.sent();
-                                    if (res.Succeeded) {
-                                        id = res.Values.Id;
-                                        this.Merge(res.Values);
-                                        result = this.List[id];
-                                        return [2 /*return*/, result];
-                                    }
-                                    else {
-                                        this.Log('Query Fail');
-                                        this.Log(res.Errors);
-                                        return [2 /*return*/, null];
-                                    }
-                                    return [2 /*return*/];
-                            }
-                        });
-                    });
-                };
-                ScheduleStore.prototype.Remove = function (entity) {
-                    return __awaiter(this, void 0, void 0, function () {
-                        var params, res;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    params = new Xhr.Params("Schedules/" + entity.Id, Xhr.MethodType.Delete, entity);
-                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
-                                case 1:
-                                    res = _a.sent();
-                                    if (res.Succeeded) {
-                                        delete this.List[entity.Id];
-                                        return [2 /*return*/, true];
-                                    }
-                                    else {
-                                        this.Log('Query Fail');
-                                        this.Log(res.Errors);
-                                        return [2 /*return*/, false];
-                                    }
-                                    return [2 /*return*/];
-                            }
-                        });
-                    });
-                };
-                ScheduleStore._instance = null;
-                return ScheduleStore;
-            }(Fw.Models.StoreBase));
-            Stores.ScheduleStore = ScheduleStore;
-            Stores.Schedules = ScheduleStore.Instance;
-        })(Stores = Models.Stores || (Models.Stores = {}));
-    })(Models = App.Models || (App.Models = {}));
-})(App || (App = {}));
 //# sourceMappingURL=tsout.js.map

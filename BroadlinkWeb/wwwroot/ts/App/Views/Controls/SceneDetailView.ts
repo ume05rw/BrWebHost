@@ -193,7 +193,6 @@ namespace App.Views.Controls {
                     this.ControlSetButton.HoverColor = Color.ButtonHoverColors[0];
                 }
 
-                
                 if (control) {
                     this.ControlButton.ImageSrc = control.IconUrl;
                     this.ControlButton.Text = (!control.IconUrl || control.IconUrl === '')

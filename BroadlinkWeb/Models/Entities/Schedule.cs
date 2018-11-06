@@ -23,32 +23,32 @@ namespace BroadlinkWeb.Models.Entities
         [Description("Schedule Name")]
         public string Name { get; set; }
 
-        //[Column(Order = 0, TypeName = "int(11)")]
+        //[Column(Order = 2, TypeName = "int(11)")]
         [Description("Scene ID")]
         public int? SceneId { get; set; }
 
-        //[Column(Order = 0, TypeName = "int(11)")]
+        //[Column(Order = 3, TypeName = "int(11)")]
         [Description("ControlSet ID")]
         public int? ControlSetId { get; set; }
 
-        //[Column(Order = 0, TypeName = "int(11)")]
+        //[Column(Order = 4, TypeName = "int(11)")]
         [Description("Control ID")]
         public int? ControlId { get; set; }
 
-        //[Column(Order = 0, TypeName = "int(11)")]
+        //[Column(Order = 5, TypeName = "int(11)")]
         [Description("Job ID")]
         public int? CurrentJobId { get; set; }
 
-        //[Column(Order = 9, TypeName = "datetime")]
+        //[Column(Order = 6, TypeName = "datetime")]
         [Description("Schedule Enable Flag")]
         public bool Enabled { get; set; }
 
-        //[Column(Order = 9, TypeName = "datetime")]
+        //[Column(Order = 7, TypeName = "datetime")]
         [Description("Schedule Start Time")]
         [DataType(DataType.DateTime)]
         public DateTime StartTime { get; set; }
 
-        //[Column(Order = 2, TypeName = "varchar(255)")]
+        //[Column(Order = 8, TypeName = "varchar(255)")]
         [Description("Weekday Enable Flag, Sunday Start, Saturday End")]
         [StringLength(7),MinLength(7), MaxLength(7)]
         public string WeekdayFlags { get; set; } = "1111111";
@@ -58,7 +58,12 @@ namespace BroadlinkWeb.Models.Entities
         [DataType(DataType.DateTime)]
         public DateTime? NextDateTime { get; set; }
 
-        //[Column(Order = 5, TypeName = "int(11)")]
+        [Required]
+        //[Column(Order = 10, TypeName = "varchar(255)")]
+        [Description("Color String")]
+        public string Color { get; set; }
+
+        //[Column(Order = 11, TypeName = "int(11)")]
         [Description("Position Order")]
         public int Order { get; set; }
 
@@ -82,8 +87,7 @@ namespace BroadlinkWeb.Models.Entities
             var flags = this.WeekdayFlags;
             if (index == 0)
             {
-                flags = flagString
-                    + flags.Substring(index + 1);
+                flags = flagString + flags.Substring(index + 1);
             }
             else if (0 < index && index < 6)
             {
@@ -93,8 +97,7 @@ namespace BroadlinkWeb.Models.Entities
             }
             else if (index == 6)
             {
-                flags = flags.Substring(0, index)
-                    + flagString;
+                flags = flags.Substring(0, index) + flagString;
             }
             else
             {

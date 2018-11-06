@@ -16,6 +16,7 @@
 /// <reference path="../Items/DeviceType.ts" />
 /// <reference path="../Models/Stores/ControlSetStore.ts" />
 /// <reference path="../Models/Entities/ControlSet.ts" />
+/// <reference path="../Models/Entities/Scene.ts" />
 
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
@@ -30,12 +31,15 @@ namespace App.Controllers {
     import OperationType = App.Items.OperationType;
     import Stores = App.Models.Stores;
     import ControlSet = App.Models.Entities.ControlSet;
+    import Scene = App.Models.Entities.Scene;
     import DeviceType = App.Items.DeviceType;
 
     export class ControlSetSelectController extends ItemSelectControllerBase {
 
         private _page: Pages.ItemSelectPageView;
         private _controlSets: Array<ControlSet> = [];
+        private _scenes: Array<Scene> = [];
+        public IsSceneIncludes: boolean;
 
         constructor() {
             super('ControlSetSelect');
@@ -43,10 +47,10 @@ namespace App.Controllers {
             this.SetClassName('ControlSetSelectController');
 
             this._page = this.View as Pages.ItemSelectPageView;
-
             this._page.Label.Text = 'Select Remote Control';
 
             this._controlSets = null;
+            this.IsSceneIncludes = false;
         }
 
         public async Select(parentController: Fw.Controllers.IController): Promise<any> {
@@ -56,6 +60,7 @@ namespace App.Controllers {
 
         public async RefreshControlSets(): Promise<boolean> {
             this._controlSets = await Stores.ControlSets.GetListForMainPanel();
+            this._scenes = await Stores.Scenes.GetList();
             return true;
         }
 
@@ -88,7 +93,7 @@ namespace App.Controllers {
                     }
                 }
 
-                // シーン
+                // ControlSet
                 const btn = this.GetNewButton();
                 btn.Label.Text = cset.Name;
                 btn.Button.ImageSrc = Icon.GetPairdOperationIcon(cset.IconUrl);
@@ -100,11 +105,39 @@ namespace App.Controllers {
                 btn.Button.AddEventListener(ButtonEvents.SingleClick, (e) => {
                     const button = e.Sender as Fw.Views.ButtonView;
                     const lbView = button.Parent as LabelAndButtonView;
-                    const controlSet = lbView.Value as ControlSet;
-                    this.Commit(controlSet);
+                    const entity = lbView.Value as ControlSet;
+                    this.Commit(entity);
                 });
                 this._page.SelectorPanel.Add(btn);
             });
+
+            if (this.IsSceneIncludes) {
+                // 区切り線
+                const line2 = new Fw.Views.LineView(Property.Direction.Horizontal);
+                line2.SetAnchor(null, 5, 5, null);
+                line2.Color = App.Items.Color.MainBackground;
+                this._page.SelectorPanel.Add(line2);
+
+                _.each(this._scenes, (scene: Scene) => {
+
+                    // Scnene
+                    const btn = this.GetNewButton();
+                    btn.Label.Text = scene.Name;
+                    btn.Button.ImageSrc = Icon.GetPairdOperationIcon(scene.IconUrl);
+                    btn.Button.Color = scene.Color;
+                    btn.Button.BackgroundColor = scene.Color;
+                    btn.Button.HoverColor = Color.GetButtonHoverColor(scene.Color);
+                    btn.Value = scene;
+
+                    btn.Button.AddEventListener(ButtonEvents.SingleClick, (e) => {
+                        const button = e.Sender as Fw.Views.ButtonView;
+                        const lbView = button.Parent as LabelAndButtonView;
+                        const entity = lbView.Value as Scene;
+                        this.Commit(entity);
+                    });
+                    this._page.SelectorPanel.Add(btn);
+                });
+            }
 
             this._page.SelectorPanel.Refresh();
 

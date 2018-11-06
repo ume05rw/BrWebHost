@@ -50,7 +50,16 @@ namespace Fw.Views {
             this.Refresh();
         }
 
-        private _isChildRelocation: boolean = false;
+        private _isChildRelocatable: boolean;
+        public get IsChildRelocatable(): boolean {
+            return this._isChildRelocatable;
+        }
+        public set IsChildRelocatable(value: boolean) {
+            this._isChildRelocatable = value;
+            this.Refresh();
+        }
+
+        private _isChildRelocation: boolean;
         public get IsChildRelocation(): boolean {
             return this._isChildRelocation;
         }
@@ -96,6 +105,8 @@ namespace Fw.Views {
             this._rightMargin = 40;
             this._referencePoint = Property.ReferencePoint.LeftTop;
             this._scrollMargin = 0;
+            this._isChildRelocatable = true;
+            this._isChildRelocation = false;
 
             this._innerBox.HasBorder = false;
             this._innerBox.SetTransAnimation(false);
@@ -335,6 +346,20 @@ namespace Fw.Views {
          */
         private OnInnerSingleClick(): void {
             //this.Log(`${this.ClassName}.OnSingleClick`);
+
+            // 再配置不能のとき
+            if (!this._isChildRelocatable) {
+                if (this._lockButton.IsVisible) {
+                    this._lockButton.ClearAnimatedClass();
+                    this._lockButton.Hide();
+                }
+                if (this._isChildRelocation) {
+                    // 子View再配置モードのとき
+                    // 配置を確定させる。
+                    this.CommitRelocation();
+                }
+                return;
+            }
 
             if (this._lockButton.IsVisible) {
                 // ロックボタン表示中のとき
