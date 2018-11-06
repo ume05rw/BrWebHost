@@ -31,7 +31,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
 
         // GET: /api/RemoteHosts/GetHostname
         [HttpGet("GetHostname")]
-        public async Task<XhrResult> GetHostname()
+        public XhrResult GetHostname()
         {
             try
             {

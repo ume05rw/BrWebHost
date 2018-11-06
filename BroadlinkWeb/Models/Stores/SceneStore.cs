@@ -15,10 +15,15 @@ namespace BroadlinkWeb.Models.Stores
     public class SceneStore
     {
         private static IServiceProvider Provider;
-        public static void InitServiceProvider(IServiceProvider provider)
+        public static void SetServiceProvider(IServiceProvider provider)
         {
             SceneStore.Provider = provider;
         }
+        public static void ReleaseServiceProvider()
+        {
+            SceneStore.Provider = null;
+        }
+
 
         private Dbc _dbc;
         private JobStore _jobStore;
@@ -47,8 +52,10 @@ namespace BroadlinkWeb.Models.Stores
             status.TotalStep = scene.Details.Count;
             var job = await this._jobStore.CreateJob("Scene Execution", status);
 
+#pragma warning disable 4014
             this.InnerExec(job, scene, status)
                 .ConfigureAwait(false);
+#pragma warning restore 4014
 
             return job;
         }

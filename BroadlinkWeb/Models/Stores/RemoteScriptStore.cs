@@ -60,7 +60,7 @@ namespace BroadlinkWeb.Models.Stores
                 {
                     resMsg = await client.GetAsync(url);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     // リモートから応答が無いとき、スキップする。
                     Xb.Util.Out($"Remote Host No-Response: {remote.Name} - {remote.IpAddressString}");

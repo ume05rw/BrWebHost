@@ -18,9 +18,13 @@ namespace BroadlinkWeb.Models.Entities
     public class Job
     {
         private static IServiceProvider Provider;
-        public static void InitServiceProvider(IServiceProvider provider)
+        public static void SetServiceProvider(IServiceProvider provider)
         {
             Job.Provider = provider;
+        }
+        public static void ReleaseServiceProvider()
+        {
+            Job.Provider = null;
         }
 
 

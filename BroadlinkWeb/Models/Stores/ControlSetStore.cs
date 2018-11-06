@@ -16,9 +16,13 @@ namespace BroadlinkWeb.Models.Stores
     public class ControlSetStore
     {
         private static IServiceProvider Provider;
-        public static void InitServiceProvider(IServiceProvider provider)
+        public static void SetServiceProvider(IServiceProvider provider)
         {
             ControlSetStore.Provider = provider;
+        }
+        public static void ReleaseServiceProvider()
+        {
+            ControlSetStore.Provider = null;
         }
 
         private Dbc _dbc;
@@ -173,8 +177,8 @@ namespace BroadlinkWeb.Models.Stores
             cset.IsMainPanelReady = false;
             cset.IsTogglable = false;
 
-            // 実装するぞ実装するぞ実装するぞ
-            var a = 1;
+            // TODO: 実装するぞ実装するぞ実装するぞ
+            //var a = 1;
             // 実装するぞ実装するぞ実装するぞ...
 
             return cset;

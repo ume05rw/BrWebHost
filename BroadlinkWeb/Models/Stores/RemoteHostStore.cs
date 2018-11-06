@@ -131,13 +131,13 @@ namespace BroadlinkWeb.Models.Stores
                     }
                 }
 
-                RemoteHostStore.DisposeScannerAndReciever();
+                RemoteHostStore.ReleaseServiceProvider();
 
                 Xb.Util.Out("RemoteHostStore.LoopScan Closed");
             });
         }
 
-        public static void DisposeScannerAndReciever()
+        public static void ReleaseServiceProvider()
         {
             RemoteHostStore.Provider = null;
             if (RemoteHostStore.Replyer != null)
@@ -228,7 +228,7 @@ namespace BroadlinkWeb.Models.Stores
                 {
                     hostName = Encoding.UTF8.GetString(rdata.Bytes.Skip(5).Take(int.MaxValue).ToArray());
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                 }
                 if (string.IsNullOrEmpty(hostName))
@@ -274,7 +274,7 @@ namespace BroadlinkWeb.Models.Stores
             {
                 response = await client.PostAsync(url, content);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return (false, "Remote Host No-Response");
             }

@@ -165,13 +165,13 @@ namespace BroadlinkWeb.Models.Stores
                     }
                 }
 
-                A1Store.DisposeScanner();
+                A1Store.ReleaseServiceProvider();
 
                 Xb.Util.Out("A1Store.LoopScan Closed");
             });
         }
 
-        public static void DisposeScanner()
+        public static void ReleaseServiceProvider()
         {
             A1Store.Provider = null;
         }

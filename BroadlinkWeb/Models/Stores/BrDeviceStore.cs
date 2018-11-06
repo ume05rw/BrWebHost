@@ -91,13 +91,13 @@ namespace BroadlinkWeb.Models.Stores
                     }
                 }
 
-                BrDeviceStore.DisposeScanner();
+                BrDeviceStore.ReleaseServiceProvider();
 
                 Xb.Util.Out("BrDeviceStore.LoopScan Closed");
             });
         }
 
-        public static void DisposeScanner()
+        public static void ReleaseServiceProvider()
         {
             BrDeviceStore.Provider = null;
         }
@@ -142,8 +142,10 @@ namespace BroadlinkWeb.Models.Stores
                 entity.SbDevice = sbDev;
             }
 
+#pragma warning disable 4014
             // 投げっぱなし、待機なし。
             this.DelayedAuth(new BrDevice[] { entity });
+#pragma warning restore 4014
 
             return entity;
         }
@@ -175,8 +177,10 @@ namespace BroadlinkWeb.Models.Stores
                 entity.SbDevice = sbDev;
             }
 
+#pragma warning disable 4014
             // 投げっぱなし、待機なし。
             this.DelayedAuth(entities);
+#pragma warning restore 4014
 
             return entities;
         }

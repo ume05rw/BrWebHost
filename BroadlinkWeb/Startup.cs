@@ -92,9 +92,9 @@ namespace BroadlinkWeb
             try
             {
                 // スコープされていないサービスプロバイダをセットしておく。
-                Job.InitServiceProvider(app.ApplicationServices);
-                SceneStore.InitServiceProvider(app.ApplicationServices);
-                ControlSetStore.InitServiceProvider(app.ApplicationServices);
+                Job.SetServiceProvider(app.ApplicationServices);
+                SceneStore.SetServiceProvider(app.ApplicationServices);
+                ControlSetStore.SetServiceProvider(app.ApplicationServices);
 
                 // TODO: マイグレーション時にも以下が実行されてしまい、落ちる。
                 // マイグレーションと通常起動の区別がつかないか？
@@ -146,8 +146,12 @@ namespace BroadlinkWeb
 
         private void OnShutdown()
         {
-            BrDeviceStore.DisposeScanner();
-            RemoteHostStore.DisposeScannerAndReciever();
+            Job.ReleaseServiceProvider();
+            SceneStore.ReleaseServiceProvider();
+            ControlSetStore.ReleaseServiceProvider();
+            RemoteHostStore.ReleaseServiceProvider();
+            BrDeviceStore.ReleaseServiceProvider();
+            A1Store.ReleaseServiceProvider();
         }
     }
 }
