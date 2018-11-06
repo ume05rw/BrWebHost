@@ -82,6 +82,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
                     return XhrResult.CreateError(ModelState);
 
                 schedule.StringToDateTime();
+                schedule.NextDateTime = null; // 次回開始時間は更新都度取り直す。
 
                 if (schedule.Id == default(int))
                 {

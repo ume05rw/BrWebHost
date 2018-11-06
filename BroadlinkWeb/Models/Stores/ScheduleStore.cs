@@ -113,6 +113,11 @@ namespace BroadlinkWeb.Models.Stores
             var schedules = this._dbc.Schedules
                 .Include(e => e.CurrentJob)
                 .Include(e => e.Scene)
+                    .ThenInclude(e2 => e2.Details)
+                        .ThenInclude(detail => detail.ControlSet)
+                .Include(e => e.Scene)
+                    .ThenInclude(e2 => e2.Details)
+                        .ThenInclude(detail => detail.Control)
                 .Include(e => e.ControlSet)
                 .Include(e => e.Control)
                 .Where(e => e.Enabled)
@@ -127,11 +132,19 @@ namespace BroadlinkWeb.Models.Stores
                 {
                     var newJob1 = await this.GetNewJob(schedule);
                     schedule.CurrentJobId = newJob1.Id;
+
+                    this._dbc.Entry(schedule).State = EntityState.Modified;
+                    await this._dbc.SaveChangesAsync();
+
                     schedule.CurrentJob = newJob1;
                 }
 
                 if (schedule.Enabled && schedule.NextDateTime == null)
+                {
                     schedule.NextDateTime = this.GetNextDateTime(schedule, true);
+                    this._dbc.Entry(schedule).State = EntityState.Modified;
+                    await this._dbc.SaveChangesAsync();
+                }
 
                 if (schedule.NextDateTime == null)
                 {
@@ -238,7 +251,9 @@ namespace BroadlinkWeb.Models.Stores
 
             for (var i = startIndex; i <= 7; i++)
             {
-                day = day.AddDays(1);
+                if (i != 0)
+                    day = day.AddDays(1);
+
                 if (schedule.GetWeekdayFlag(day.DayOfWeek))
                 {
                     result = new DateTime(
