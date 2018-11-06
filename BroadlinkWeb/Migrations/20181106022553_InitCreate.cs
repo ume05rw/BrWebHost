@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BroadlinkWeb.Migrations
@@ -220,7 +220,7 @@ namespace BroadlinkWeb.Migrations
                     Enabled = table.Column<bool>(nullable: false),
                     StartTime = table.Column<DateTime>(nullable: false),
                     WeekdayFlags = table.Column<string>(maxLength: 7, nullable: true),
-                    NextDateTime = table.Column<DateTime>(nullable: false)
+                    NextDateTime = table.Column<DateTime>(nullable: true)
                 },
                 constraints: table =>
                 {

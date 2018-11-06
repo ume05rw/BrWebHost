@@ -142,6 +142,22 @@ namespace BroadlinkWeb.Models.Entities
 
             return await this.SetProgress(progress);
         }
+        public async Task<bool> SetProgress(double progress, string json = null)
+        {
+            return await this.SetProgress((decimal)progress, json);
+        }
+        public async Task<bool> SetProgress(double progress, object jsonValues)
+        {
+            return await this.SetProgress((decimal)progress, jsonValues);
+        }
+        public async Task<bool> SetProgress(int progress, string json = null)
+        {
+            return await this.SetProgress((decimal)progress, json);
+        }
+        public async Task<bool> SetProgress(int progress, object jsonValues)
+        {
+            return await this.SetProgress((decimal)progress, jsonValues);
+        }
 
         public async Task<bool> SetFinish(bool isError = false, string json = null, string message = null)
         {

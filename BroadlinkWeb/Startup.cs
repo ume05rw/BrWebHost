@@ -103,6 +103,7 @@ namespace BroadlinkWeb
                 BrDeviceStore.SetLoopRunner(app.ApplicationServices);
                 RemoteHostStore.SetLoopRunnerAndReciever(app.ApplicationServices);
                 A1Store.SetLoopRunner(app.ApplicationServices);
+                ScheduleStore.SetLoopRunner(app.ApplicationServices);
             }
             catch (Exception ex)
             {
@@ -152,6 +153,7 @@ namespace BroadlinkWeb
             RemoteHostStore.ReleaseServiceProvider();
             BrDeviceStore.ReleaseServiceProvider();
             A1Store.ReleaseServiceProvider();
+            ScheduleStore.ReleaseServiceProvider();
         }
     }
 }

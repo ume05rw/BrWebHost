@@ -56,7 +56,7 @@ namespace BroadlinkWeb.Models.Entities
         //[Column(Order = 9, TypeName = "datetime")]
         [Description("Next Kick Date Time")]
         [DataType(DataType.DateTime)]
-        public DateTime NextDateTime { get; set; }
+        public DateTime? NextDateTime { get; set; }
 
         public bool GetWeekdayFlag(DayOfWeek dayOfWeek)
         {

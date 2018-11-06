@@ -326,7 +326,7 @@ namespace BroadlinkWeb.Migrations
 
                     b.Property<string>("Name");
 
-                    b.Property<DateTime>("NextDateTime");
+                    b.Property<DateTime?>("NextDateTime");
 
                     b.Property<int?>("SceneId");
 

@@ -90,8 +90,7 @@ namespace BroadlinkWeb.Models.Stores
                         await job.SetFinish(true, status, status.Error);
                         return false;
                     }
-
-                    await job.SetProgress(status.Step / status.TotalStep, status);
+                    await job.SetProgress((double)status.Step / (double)status.TotalStep , status);
 
                     // Stepはループ中に常に加算しておく。想定外挙動を検知し易いように。
                     status.Step++;

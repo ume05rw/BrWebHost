@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BroadlinkWeb.Migrations
 {
     [DbContext(typeof(Dbc))]
-    [Migration("20181105122819_InitCreate")]
+    [Migration("20181106022553_InitCreate")]
     partial class InitCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -328,7 +328,7 @@ namespace BroadlinkWeb.Migrations
 
                     b.Property<string>("Name");
 
-                    b.Property<DateTime>("NextDateTime");
+                    b.Property<DateTime?>("NextDateTime");
 
                     b.Property<int?>("SceneId");
 

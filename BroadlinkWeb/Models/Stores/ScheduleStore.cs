@@ -23,6 +23,16 @@ namespace BroadlinkWeb.Models.Stores
         {
             ScheduleStore.Provider = provider;
 
+            using (var serviceScope = ScheduleStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                // ジョブを取得する。
+                var jobStore = serviceScope.ServiceProvider.GetService<JobStore>();
+                ScheduleStore._loopRunnerJob = jobStore.CreateJob("Schedule LoopScanner")
+                    .ConfigureAwait(false)
+                    .GetAwaiter()
+                    .GetResult();
+            }
+
             // なんか違和感がある実装。
             // 代替案はあるか？
             ScheduleStore.LoopRunner = Task.Run(async () =>
@@ -47,7 +57,7 @@ namespace BroadlinkWeb.Models.Stores
 
                         using (var serviceScope = ScheduleStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
                         {
-                            Xb.Util.Out("Regularly A1-Sensor Record");
+                            Xb.Util.Out("Regularly Scehule Ticker");
 
                             var store = serviceScope.ServiceProvider.GetService<ScheduleStore>();
                             var schedules = await store.Tick();
@@ -77,13 +87,13 @@ namespace BroadlinkWeb.Models.Stores
                     }
                 }
 
-                ScheduleStore.DisposeScanner();
+                ScheduleStore.ReleaseServiceProvider();
 
                 Xb.Util.Out("ScheduleStore.LoopScan Closed");
             });
         }
 
-        public static void DisposeScanner()
+        public static void ReleaseServiceProvider()
         {
             ScheduleStore.Provider = null;
         }
@@ -112,39 +122,71 @@ namespace BroadlinkWeb.Models.Stores
 
             foreach (var schedule in schedules)
             {
-                if (schedule.NextDateTime <= now)
+                // カレントジョブEnsure
+                if (schedule.CurrentJob == null)
+                {
+                    var newJob1 = await this.GetNewJob(schedule);
+                    schedule.CurrentJobId = newJob1.Id;
+                    schedule.CurrentJob = newJob1;
+                }
+
+                if (schedule.Enabled && schedule.NextDateTime == null)
+                    schedule.NextDateTime = this.GetNextDateTime(schedule, true);
+
+                if (schedule.NextDateTime == null)
+                {
+                    await schedule.CurrentJob.SetProgress((decimal)0.5, "ScheduleStore.Tick: Enable but All-Weekday Disabled.");
+                }
+                else if (schedule.NextDateTime <= now)
                 {
                     // 次回起動時間を過ぎたとき
-
-                    // 1.実行する。
-                    var errors = await this.ExecSchedule(schedule);
-
-                    // 2.カレントジョブに結果を記録する。
-                    var job = schedule.CurrentJob;
-                    if (errors.Length > 0)
+                    try
                     {
-                        // エラー終了時
-                        await job.SetFinish(true, errors, "ScheduleStore.Tick Error");
-                    } else
-                    {
-                        // 正常終了時
-                        await job.SetFinish(false, null);
+                        // 1.実行する。
+                        var errors = await this.ExecSchedule(schedule);
+
+                        // 2.カレントジョブに結果を記録する。
+                        var job = schedule.CurrentJob;
+                        if (errors.Length > 0)
+                        {
+                            // エラー終了時
+                            await job.SetFinish(true, errors, "ScheduleStore.Tick Error");
+                        }
+                        else
+                        {
+                            // 正常終了時
+                            await job.SetFinish(false, null);
+                        }
+
+                        // 3.カレントジョブを新規取得する。
+                        var newJob2 = await this.GetNewJob(schedule);
+                        schedule.CurrentJobId = newJob2.Id;
+                        schedule.CurrentJob = newJob2;
+
+                        // 4.次回起動時間をセットする。
+                        schedule.NextDateTime = this.GetNextDateTime(schedule);
+
+                        // 保存前に参照Entityを削除しておく。
+                        // 差し替えたJobエンティティをInsertしようとしてしまう。
+                        // scheduleから見て新規Entityに見える、ということか？
+                        // DB上の参照制約はCascade(参照先更新)でなくRestrict(参照先存在確認)なので、問題は無い。
+                        schedule.CurrentJob = null;
+                        this._dbc.Entry(schedule).State = EntityState.Modified;
+                        await this._dbc.SaveChangesAsync();
                     }
-
-                    // 3.カレントジョブを新規取得する。
-                    var newJob = await this.GetNewJob(schedule);
-                    schedule.CurrentJobId = newJob.Id;
-                    schedule.CurrentJob = newJob;
-
-                    // 4.次回起動時間をセットする。
-                    schedule.NextDateTime = this.GetNextDateTime(schedule);
-
-                    this._dbc.Entry(schedule).State = EntityState.Modified;
-                    await this._dbc.SaveChangesAsync();
+                    catch (Exception ex)
+                    {
+                        if (schedule.CurrentJob != null)
+                            await schedule.CurrentJob.SetProgress(0.5, $"ScheduleStore.Tick: Unexpected Exception: {ex.Message} / {ex.StackTrace}");
+                    }
+                }
+                else if (now < schedule.NextDateTime)
+                {
+                    await schedule.CurrentJob.SetProgress((decimal)0.5, "ScheduleStore.Tick: Waiting...");
                 }
                 else
                 {
-                    await schedule.CurrentJob.SetProgress((decimal)0.5, "ScheduleStore.Tick Waiting...");
+                    await schedule.CurrentJob.SetProgress((decimal)0.5, "ScheduleStore.Tick: Unexpected Faiure.");
                 }
             }
 
@@ -186,11 +228,15 @@ namespace BroadlinkWeb.Models.Stores
             }
         }
 
-        private DateTime GetNextDateTime(Schedule schedule)
+        private DateTime? GetNextDateTime(Schedule schedule, bool includesToday = false)
         {
             var day = DateTime.Now;
-            var result = schedule.NextDateTime;
-            for (var i = 1; i <= 7; i++)
+            DateTime? result = null;
+            var startIndex = (includesToday)
+                ? 0
+                : 1;
+
+            for (var i = startIndex; i <= 7; i++)
             {
                 day = day.AddDays(1);
                 if (schedule.GetWeekdayFlag(day.DayOfWeek))
@@ -206,9 +252,6 @@ namespace BroadlinkWeb.Models.Stores
                     break;
                 }
             }
-
-            if (result <= schedule.NextDateTime)
-                throw new Exception("Next DateTime Not Found");
 
             return result;
         }
