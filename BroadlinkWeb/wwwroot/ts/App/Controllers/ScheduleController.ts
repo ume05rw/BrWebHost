@@ -90,7 +90,7 @@ namespace App.Controllers {
                     });
                 } else {
                     // 保存成功
-                    ctr.RefreshScenes();
+                    ctr.RefreshScenesAndSchedules();
                 }
             });
 
@@ -126,6 +126,23 @@ namespace App.Controllers {
 
             this._page.SdvControl.ControlSetButton.AddEventListener(ButtonEvents.SingleClick, this.OnControlSetClicked, this);
             this._page.SdvControl.ControlButton.AddEventListener(ButtonEvents.SingleClick, this.OnControlClicked, this);
+
+            this._page.DeleteButton.AddEventListener(Events.ButtonViewEvents.SingleClick, async (e) => {
+                if (!this._schedule)
+                    return;
+
+                const res = await Popup.Confirm.OpenAsync({
+                    Message: 'This Timer will be REMOVED.<br/>Are you ok?'
+                });
+
+                if (res !== true)
+                    return;
+
+                this.RemoveShedule();
+
+                this._schedule = null;
+                this.HideModal();
+            });
         }
 
         public SetEditMode(): void {
@@ -250,8 +267,14 @@ namespace App.Controllers {
 
             this._page.ChkEnabled.BoolValue = schedule.Enabled;
 
-            this._page.SboHour.Value = schedule.StartTime.getHours().toString();
-            this._page.SboMinute.Value = schedule.StartTime.getMinutes().toString();
+            if (!schedule.StartTimeString || schedule.StartTimeString === '') {
+                this._page.SboHour.Value = '10';
+                this._page.SboMinute.Value = '0';
+            } else {
+                const startTime = new Date(schedule.StartTimeString);
+                this._page.SboHour.Value = startTime.getHours().toString();
+                this._page.SboMinute.Value = startTime.getMinutes().toString();
+            }
 
             this._page.ChkWeekdaySunday.BoolValue = schedule.GetWeekdayFlag(Weekday.Sunday);
             this._page.ChkWeekdayMonday.BoolValue = schedule.GetWeekdayFlag(Weekday.Monday);
@@ -277,13 +300,13 @@ namespace App.Controllers {
 
             this._schedule.Enabled = this._page.ChkEnabled.BoolValue;
 
+            let startTime = new Date(2000, 0, 1, 0, 0, 0);
             if (this._page.SboHour.Value !== '' && this._page.SboMinute.Value !== '') {
                 const hour = parseInt(this._page.SboHour.Value, 10);
                 const minute = parseInt(this._page.SboMinute.Value, 10);
-                this._schedule.StartTime = new Date(2000, 1, 1, hour, minute, 0);
-            } else {
-                this._schedule.StartTime = new Date(2000, 1, 1, 0, 0, 0);
+                startTime = new Date(2000, 0, 1, hour, minute, 0);
             }
+            this._schedule.StartTimeString = Fw.Util.DateTime.GetIso8601(startTime);
 
             this._schedule.SetWeekdayFlag(Weekday.Sunday, this._page.ChkWeekdaySunday.BoolValue);
             this._schedule.SetWeekdayFlag(Weekday.Monday, this._page.ChkWeekdayMonday.BoolValue);
@@ -359,7 +382,7 @@ namespace App.Controllers {
         }
 
         /**
-         * リモコン全体を削除する。
+         * スケジュールを削除する。
          */
         public async RemoveShedule(): Promise<boolean> {
             if (this._operationType !== ModalOperationType.Edit)
@@ -377,7 +400,7 @@ namespace App.Controllers {
             // 削除メソッド、投げっぱなしの終了確認無しで終わる。
             await Stores.Schedules.Remove(schedule);
 
-            ctr.RefreshScenes();
+            ctr.RefreshScenesAndSchedules();
         }
     }
 }

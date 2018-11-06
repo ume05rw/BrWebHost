@@ -5,7 +5,7 @@
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../../../Fw/Models/IEntity.ts" />
 /// <reference path="../../Items/Color.ts" />
-/// <reference path="../../Models/Entities/Scene.ts" />
+/// <reference path="../../Models/Entities/Schedule.ts" />
 /// <reference path="LabelAndButtonView.ts" />
 /// <reference path="IMainButtonView.ts" />
 
@@ -14,18 +14,18 @@ namespace App.Views.Controls {
     import Views = Fw.Views;
     import Property = Fw.Views.Property;
     import Color = App.Items.Color;
-    import Scene = App.Models.Entities.Scene;
+    import Schedule = App.Models.Entities.Schedule;
     import IEntity = Fw.Models.IEntity;
     import IMainButtonView = App.Views.Controls.IMainButtonView;
 
-    export class SceneButtonView extends LabelAndButtonView implements IMainButtonView {
+    export class ScheduleButtonView extends LabelAndButtonView implements IMainButtonView {
 
         public readonly Entity: IEntity;
 
         constructor(entity: IEntity) {
             super()
 
-            if (!(entity instanceof Scene))
+            if (!(entity instanceof Schedule))
                 throw new Error('Invalid Entity');
 
             this.Entity = entity;
@@ -42,12 +42,12 @@ namespace App.Views.Controls {
 
         public ApplyByEntity(): void {
             if (this.Entity) {
-                const scene = this.Entity as Scene;
-                this.Button.BackgroundColor = scene.Color;
-                this.Button.Color = scene.Color;
-                this.Button.HoverColor = Color.GetButtonHoverColor(scene.Color);
-                this.Button.ImageSrc = scene.IconUrl;
-                this.Label.Text = scene.Name;
+                const schedule = this.Entity as Schedule;
+                this.Button.BackgroundColor = schedule.Color;
+                this.Button.Color = schedule.Color;
+                this.Button.HoverColor = Color.GetButtonHoverColor(schedule.Color);
+                this.Button.ImageSrc = schedule.IconUrl;
+                this.Label.Text = schedule.Name;
             } else {
                 this.Button.BackgroundColor = Color.ButtonColors[8];
                 this.Button.Color = Color.ButtonColors[8];

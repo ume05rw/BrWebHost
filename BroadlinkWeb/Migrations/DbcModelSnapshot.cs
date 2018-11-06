@@ -327,6 +327,8 @@ namespace BroadlinkWeb.Migrations
 
                     b.Property<bool>("Enabled");
 
+                    b.Property<string>("IconUrl");
+
                     b.Property<string>("Name");
 
                     b.Property<DateTime?>("NextDateTime");

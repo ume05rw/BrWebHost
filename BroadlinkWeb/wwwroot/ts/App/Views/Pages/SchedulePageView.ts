@@ -221,6 +221,11 @@ namespace App.Views.Pages {
             this.ChkWeekdaySaturday.Name = 'Saturday';
             this.ChkWeekdaySaturday.Text = 'Saturday';
             this.InputPanel.Add(this.ChkWeekdaySaturday);
+
+            this.DeleteButton.SetAnchor(null, 5, 15, null);
+            this.DeleteButton.Size.Height = 30;
+            this.DeleteButton.Text = '*Delete*';
+            this.InputPanel.Add(this.DeleteButton);
         }
     }
 }

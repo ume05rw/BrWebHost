@@ -7226,10 +7226,19 @@ var Fw;
 /// <reference path="../../../Fw/Views/ButtonView.ts" />
 /// <reference path="../../../Fw/Views/Property/Anchor.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../../Fw/Models/IEntity.ts" />
+/// <reference path="../../Items/Color.ts" />
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Views/ButtonView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../../Fw/Models/IEntity.ts" />
 /// <reference path="../../Items/Color.ts" />
 /// <reference path="../../Items/OperationType.ts" />
 /// <reference path="../../Items/DeviceType.ts" />
 /// <reference path="LabelAndButtonView.ts" />
+/// <reference path="IMainButtonView.ts" />
 /// <reference path="../../Models/Entities/ControlSet.ts" />
 /// <reference path="../../Models/Stores/BrDeviceStore.ts" />
 var App;
@@ -7241,12 +7250,16 @@ var App;
             var Views = Fw.Views;
             var Property = Fw.Views.Property;
             var Color = App.Items.Color;
+            var ControlSet = App.Models.Entities.ControlSet;
             var Stores = App.Models.Stores;
             var ControlSetButtonView = /** @class */ (function (_super) {
                 __extends(ControlSetButtonView, _super);
+                //public readonly ControlSet: ControlSet;
                 function ControlSetButtonView(entity) {
                     var _this = _super.call(this) || this;
-                    _this.ControlSet = entity;
+                    if (!(entity instanceof ControlSet))
+                        throw new Error('Invalid Entity');
+                    _this.Entity = entity;
                     _this._toggle = new Views.ToggleButtonInputView();
                     _this.SetSize(150, 170);
                     _this.Button.HasBorder = false;
@@ -7269,17 +7282,18 @@ var App;
                     configurable: true
                 });
                 ControlSetButtonView.prototype.ApplyByEntity = function () {
-                    if (this.ControlSet) {
-                        this.Button.BackgroundColor = this.ControlSet.Color;
-                        this.Button.Color = this.ControlSet.Color;
-                        this.Button.HoverColor = this.ControlSet.HoverColor;
-                        this.Button.ImageSrc = this.ControlSet.IconUrl;
-                        this.Label.Text = this.ControlSet.Name;
-                        if (this.ControlSet.IsTogglable)
+                    if (this.Entity) {
+                        var controlSet = this.Entity;
+                        this.Button.BackgroundColor = controlSet.Color;
+                        this.Button.Color = controlSet.Color;
+                        this.Button.HoverColor = controlSet.HoverColor;
+                        this.Button.ImageSrc = controlSet.IconUrl;
+                        this.Label.Text = controlSet.Name;
+                        if (controlSet.IsTogglable)
                             this.Toggle.Show(0);
                         else
                             this.Toggle.Hide(0);
-                        this.Toggle.SetBoolValue(this.ControlSet.ToggleState, false);
+                        this.Toggle.SetBoolValue(controlSet.ToggleState, false);
                     }
                     else {
                         this.Button.BackgroundColor = Color.MainBackground;
@@ -7292,32 +7306,32 @@ var App;
                     }
                 };
                 ControlSetButtonView.prototype.ApplyBrDeviceStatus = function () {
-                    var _this = this;
-                    if (!this.ControlSet
-                        || this.ControlSet.OperationType !== 2 /* BroadlinkDevice */) {
+                    if (!this.Entity)
                         return;
-                    }
+                    var controlSet = this.Entity;
+                    if (controlSet.OperationType !== 2 /* BroadlinkDevice */)
+                        return;
                     // Broadlinkデバイスの、現在の値を取得する。
                     // 対応するデバイスを取得
-                    var pairedDev = Stores.BrDevices.Get(this.ControlSet.BrDeviceId);
+                    var pairedDev = Stores.BrDevices.Get(controlSet.BrDeviceId);
                     var delay = 10;
                     switch (pairedDev.DeviceType) {
                         case 4 /* A1 */:
                             // コマンドは一つだけ - 現在の値を取得
                             _.delay(function () {
-                                Stores.A1s.Get(_this.ControlSet);
+                                Stores.A1s.Get(controlSet);
                             }, delay);
                             break;
                         case 2 /* Sp2 */:
                             // コマンドはControlごとに。
                             _.delay(function () {
-                                Stores.Sp2s.Get(_this.ControlSet);
+                                Stores.Sp2s.Get(controlSet);
                             }, delay);
                             break;
                         case 9 /* Rm2Pro */:
                             // コマンドは一つだけ - 現在の値を取得
                             _.delay(function () {
-                                Stores.Rm2Pros.GetTemperature(_this.ControlSet);
+                                Stores.Rm2Pros.GetTemperature(controlSet);
                             }, delay);
                             break;
                         // 以降、未対応。
@@ -7343,9 +7357,11 @@ var App;
 /// <reference path="../../../Fw/Views/ButtonView.ts" />
 /// <reference path="../../../Fw/Views/Property/Anchor.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../../Fw/Models/IEntity.ts" />
 /// <reference path="../../Items/Color.ts" />
 /// <reference path="../../Models/Entities/Scene.ts" />
 /// <reference path="LabelAndButtonView.ts" />
+/// <reference path="IMainButtonView.ts" />
 var App;
 (function (App) {
     var Views;
@@ -7354,11 +7370,14 @@ var App;
         (function (Controls) {
             var Property = Fw.Views.Property;
             var Color = App.Items.Color;
+            var Scene = App.Models.Entities.Scene;
             var SceneButtonView = /** @class */ (function (_super) {
                 __extends(SceneButtonView, _super);
                 function SceneButtonView(entity) {
                     var _this = _super.call(this) || this;
-                    _this.Scene = entity;
+                    if (!(entity instanceof Scene))
+                        throw new Error('Invalid Entity');
+                    _this.Entity = entity;
                     _this.SetSize(150, 170);
                     _this.Button.HasBorder = false;
                     _this.Button.BorderRadius = 5;
@@ -7368,12 +7387,13 @@ var App;
                     return _this;
                 }
                 SceneButtonView.prototype.ApplyByEntity = function () {
-                    if (this.Scene) {
-                        this.Button.BackgroundColor = this.Scene.Color;
-                        this.Button.Color = this.Scene.Color;
-                        this.Button.HoverColor = Color.GetButtonHoverColor(this.Scene.Color);
-                        this.Button.ImageSrc = this.Scene.IconUrl;
-                        this.Label.Text = this.Scene.Name;
+                    if (this.Entity) {
+                        var scene = this.Entity;
+                        this.Button.BackgroundColor = scene.Color;
+                        this.Button.Color = scene.Color;
+                        this.Button.HoverColor = Color.GetButtonHoverColor(scene.Color);
+                        this.Button.ImageSrc = scene.IconUrl;
+                        this.Label.Text = scene.Name;
                     }
                     else {
                         this.Button.BackgroundColor = Color.ButtonColors[8];
@@ -7391,6 +7411,133 @@ var App;
 })(App || (App = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/EntityBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../Items/Color.ts" />
+/// <reference path="../../Items/Icon.ts" />
+/// <reference path="../../Items/Weekday.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Entities;
+        (function (Entities) {
+            var Color = App.Items.Color;
+            var Icon = App.Items.Icon;
+            var Schedule = /** @class */ (function (_super) {
+                __extends(Schedule, _super);
+                function Schedule() {
+                    var _this = _super !== null && _super.apply(this, arguments) || this;
+                    _this.Name = 'New Timer';
+                    _this.IconUrl = Icon.GetByOperationTemplate(10 /* Schedule */, true);
+                    _this.SceneId = null;
+                    _this.ControlSetId = null;
+                    _this.ControlId = null;
+                    _this.CurrentJobId = null;
+                    _this.Enabled = true;
+                    //public StartTime: Date = new Date(2000, 1, 1, 10, 0, 0);
+                    _this.WeekdayFlags = '1111111';
+                    //public NextDateTime: Date; // 初期化しないでおく。
+                    _this.Color = Color.ButtonColors[9];
+                    _this.Order = 99999;
+                    _this.StartTimeString = '';
+                    return _this;
+                }
+                Schedule.prototype.GetWeekdayFlag = function (weekday) {
+                    if (this.WeekdayFlags.length !== 7)
+                        throw new Error('WeekdayFlags Fromat Failure');
+                    var index = weekday;
+                    return (this.WeekdayFlags[index] === '1');
+                };
+                Schedule.prototype.SetWeekdayFlag = function (weekday, enable) {
+                    if (this.WeekdayFlags.length !== 7)
+                        throw new Error('WeekdayFlags Fromat Failure');
+                    var index = weekday;
+                    var flagString = (enable) ? '1' : '0';
+                    var flags = this.WeekdayFlags;
+                    if (index === 0) {
+                        flags = flagString + flags.substr(index + 1);
+                    }
+                    else if (0 < index && index < 6) {
+                        flags = flags.substr(0, index)
+                            + flagString
+                            + flags.substr(index + 1);
+                    }
+                    else if (index === 6) {
+                        flags = flags.substr(0, index) + flagString;
+                    }
+                    else {
+                        throw new Error('なぜなんだー');
+                    }
+                    this.WeekdayFlags = flags;
+                };
+                return Schedule;
+            }(Fw.Models.EntityBase));
+            Entities.Schedule = Schedule;
+        })(Entities = Models.Entities || (Models.Entities = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Views/ButtonView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../../Fw/Models/IEntity.ts" />
+/// <reference path="../../Items/Color.ts" />
+/// <reference path="../../Models/Entities/Schedule.ts" />
+/// <reference path="LabelAndButtonView.ts" />
+/// <reference path="IMainButtonView.ts" />
+var App;
+(function (App) {
+    var Views;
+    (function (Views_10) {
+        var Controls;
+        (function (Controls) {
+            var Property = Fw.Views.Property;
+            var Color = App.Items.Color;
+            var Schedule = App.Models.Entities.Schedule;
+            var ScheduleButtonView = /** @class */ (function (_super) {
+                __extends(ScheduleButtonView, _super);
+                function ScheduleButtonView(entity) {
+                    var _this = _super.call(this) || this;
+                    if (!(entity instanceof Schedule))
+                        throw new Error('Invalid Entity');
+                    _this.Entity = entity;
+                    _this.SetSize(150, 170);
+                    _this.Button.HasBorder = false;
+                    _this.Button.BorderRadius = 5;
+                    _this.Button.ImageFitPolicy = Property.FitPolicy.Auto;
+                    _this.Label.Color = Color.Main;
+                    _this.ApplyByEntity();
+                    return _this;
+                }
+                ScheduleButtonView.prototype.ApplyByEntity = function () {
+                    if (this.Entity) {
+                        var schedule = this.Entity;
+                        this.Button.BackgroundColor = schedule.Color;
+                        this.Button.Color = schedule.Color;
+                        this.Button.HoverColor = Color.GetButtonHoverColor(schedule.Color);
+                        this.Button.ImageSrc = schedule.IconUrl;
+                        this.Label.Text = schedule.Name;
+                    }
+                    else {
+                        this.Button.BackgroundColor = Color.ButtonColors[8];
+                        this.Button.Color = Color.ButtonColors[8];
+                        this.Button.HoverColor = Color.ButtonHoverColors[8];
+                        this.Button.ImageSrc = '';
+                        this.Label.Text = '';
+                    }
+                };
+                return ScheduleButtonView;
+            }(Controls.LabelAndButtonView));
+            Controls.ScheduleButtonView = ScheduleButtonView;
+        })(Controls = Views_10.Controls || (Views_10.Controls = {}));
+    })(Views = App.Views || (App.Views = {}));
+})(App || (App = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Fw/Controllers/ControllerBase.ts" />
 /// <reference path="../../Fw/Controllers/Manager.ts" />
 /// <reference path="../../Fw/Util/Dump.ts" />
@@ -7402,6 +7549,8 @@ var App;
 /// <reference path="../Views/Pages/MainPageView.ts" />
 /// <reference path="../Views/Controls/ControlSetButtonView.ts" />
 /// <reference path="../Views/Controls/SceneButtonView.ts" />
+/// <reference path="../Views/Controls/ScheduleButtonView.ts" />
+/// <reference path="../Views/Controls/IMainButtonView.ts" />
 /// <reference path="../Models/Stores/BrDeviceStore.ts" />
 /// <reference path="../Models/Entities/ControlSet.ts" />
 /// <reference path="../Models/Entities/Scene.ts" />
@@ -7425,6 +7574,7 @@ var App;
         var ControlSetTemplate = App.Items.ControlSetTemplate;
         var ControlSetButtonView = App.Views.Controls.ControlSetButtonView;
         var SceneButtonView = App.Views.Controls.SceneButtonView;
+        var ScheduleButtonView = App.Views.Controls.ScheduleButtonView;
         var Color = App.Items.Color;
         var Icon = App.Items.Icon;
         var MainController = /** @class */ (function (_super) {
@@ -7554,19 +7704,55 @@ var App;
                         }
                     });
                 }); });
-                _this._page.ControlSetPanel.AddEventListener(StuckerBoxEvents.OrderChanged, function () {
-                    //alert('Fuck!');
-                    var csets = new Array();
-                    var idx = 1;
-                    _.each(_this._page.ControlSetPanel.Children, function (btn) {
-                        if (!btn.ControlSet)
-                            return;
-                        btn.ControlSet.Order = idx;
-                        idx++;
-                        csets.push(btn.ControlSet);
+                _this._page.ControlSetPanel.AddEventListener(StuckerBoxEvents.OrderChanged, function () { return __awaiter(_this, void 0, void 0, function () {
+                    var csets, idx;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                csets = new Array();
+                                idx = 1;
+                                _.each(this._page.ControlSetPanel.Children, function (btn) {
+                                    if (!btn.Entity)
+                                        return;
+                                    btn.Entity.Order = idx;
+                                    idx++;
+                                    csets.push(btn.Entity);
+                                });
+                                return [4 /*yield*/, Stores.ControlSets.UpdateHeaders(csets)];
+                            case 1:
+                                _a.sent();
+                                return [2 /*return*/];
+                        }
                     });
-                    Stores.ControlSets.UpdateHeaders(csets);
-                });
+                }); });
+                _this._page.ScenePanel.AddEventListener(StuckerBoxEvents.OrderChanged, function () { return __awaiter(_this, void 0, void 0, function () {
+                    var scenes, schedules, idx;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                scenes = new Array();
+                                schedules = new Array();
+                                idx = 1;
+                                _.each(this._page.ScenePanel.Children, function (btn) {
+                                    if (!btn.Entity)
+                                        return;
+                                    btn.Entity.Order = idx;
+                                    idx++;
+                                    if (btn.Entity instanceof Entities.Scene)
+                                        scenes.push(btn.Entity);
+                                    else if (btn.Entity instanceof Entities.Schedule)
+                                        schedules.push(btn.Entity);
+                                });
+                                return [4 /*yield*/, Stores.Scenes.UpdateHeaders(scenes)];
+                            case 1:
+                                _a.sent();
+                                return [4 /*yield*/, Stores.Schedules.UpdateHeaders(schedules)];
+                            case 2:
+                                _a.sent();
+                                return [2 /*return*/];
+                        }
+                    });
+                }); });
                 return _this;
             }
             MainController.prototype.InitStores = function () {
@@ -7582,7 +7768,7 @@ var App;
                                 Dump.Log('Store Initialize - BrDevices OK.');
                                 promises = [];
                                 promises.push(this.RefreshControlSets());
-                                promises.push(this.RefreshScenes());
+                                promises.push(this.RefreshScenesAndSchedules());
                                 return [4 /*yield*/, Promise.all(promises)];
                             case 2:
                                 _a.sent();
@@ -7605,7 +7791,7 @@ var App;
                                 children = Fw.Util.Obj.Mirror(this._page.ControlSetPanel.Children);
                                 _.each(children, function (btn) {
                                     var existsSet = _.find(sets, function (cs) {
-                                        return (cs === btn.ControlSet);
+                                        return (cs === btn.Entity);
                                     });
                                     if (!existsSet) {
                                         _this._page.ControlSetPanel.Remove(btn);
@@ -7615,7 +7801,7 @@ var App;
                                 // 追加されたEntity分のボタンをパネルに追加。
                                 _.each(sets, function (cs) {
                                     var existsBtn = _.find(children, function (b) {
-                                        return (b.ControlSet === cs);
+                                        return (b.Entity === cs);
                                     });
                                     if (existsBtn)
                                         return;
@@ -7626,8 +7812,8 @@ var App;
                                             return;
                                         // メインボタンクリック - リモコンをスライドイン表示する。
                                         var button = e.Sender.Parent;
-                                        var ctr = App.Controllers.CSControllerFactory.Get(button.ControlSet);
-                                        ctr.SetEntity(button.ControlSet);
+                                        var ctr = App.Controllers.CSControllerFactory.Get(button.Entity);
+                                        ctr.SetEntity(button.Entity);
                                         ctr.SetExecMode();
                                         ctr.ShowModal();
                                     });
@@ -7637,8 +7823,8 @@ var App;
                                             return;
                                         // メインボタンの長押し - リモコンを編集表示する。
                                         var button = e.Sender.Parent;
-                                        var ctr = App.Controllers.CSControllerFactory.Get(button.ControlSet);
-                                        ctr.SetEntity(button.ControlSet);
+                                        var ctr = App.Controllers.CSControllerFactory.Get(button.Entity);
+                                        ctr.SetEntity(button.Entity);
                                         ctr.SetEditMode();
                                         ctr.Show();
                                     });
@@ -7648,7 +7834,7 @@ var App;
                                             return;
                                         // トグルクリック
                                         var button = e.Sender.Parent;
-                                        var cset = button.ControlSet;
+                                        var cset = button.Entity;
                                         var toggleValue = button.Toggle.BoolValue;
                                         var controlOn = _.find(cset.Controls, function (c) {
                                             var ct = c;
@@ -7668,7 +7854,7 @@ var App;
                                         var cset = e.Sender;
                                         var btn = _.find(_this._page.ControlSetPanel.Children, function (b) {
                                             var csetBtn = b;
-                                            return (csetBtn.ControlSet === cset);
+                                            return (csetBtn.Entity === cset);
                                         });
                                         if (!btn)
                                             return;
@@ -7684,44 +7870,64 @@ var App;
                     });
                 });
             };
-            MainController.prototype.RefreshScenes = function () {
+            MainController.prototype.RefreshScenesAndSchedules = function () {
                 return __awaiter(this, void 0, void 0, function () {
-                    var scenes, children;
+                    var scenes, schedules, entities, children;
                     var _this = this;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0: return [4 /*yield*/, Stores.Scenes.GetList()];
                             case 1:
                                 scenes = _a.sent();
+                                return [4 /*yield*/, Stores.Schedules.GetList()];
+                            case 2:
+                                schedules = _a.sent();
+                                entities = scenes.concat(schedules);
+                                entities = _.sortBy(entities, function (e) {
+                                    return e.Order;
+                                });
                                 children = Fw.Util.Obj.Mirror(this._page.ScenePanel.Children);
-                                _.each(children, function (btn) {
-                                    var existsSet = _.find(scenes, function (s) {
-                                        return (s === btn.Scene);
+                                _.each(children, function (view) {
+                                    var entity = _.find(entities, function (e) {
+                                        return (e === view.Entity);
                                     });
-                                    if (!existsSet) {
-                                        _this._page.ScenePanel.Remove(btn);
-                                        btn.Dispose();
+                                    if (!entity) {
+                                        _this._page.ScenePanel.Remove(view);
+                                        view.Dispose();
                                     }
                                 });
                                 // 追加されたEntity分のボタンをパネルに追加。
-                                _.each(scenes, function (scene) {
+                                children = Fw.Util.Obj.Mirror(this._page.ScenePanel.Children);
+                                _.each(entities, function (entity) {
                                     var existsBtn = _.find(children, function (b) {
-                                        return (b.Scene === scene);
+                                        return (b.Entity === entity);
                                     });
                                     if (existsBtn)
                                         return;
-                                    var btn = new SceneButtonView(scene);
+                                    var btn;
+                                    if (entity instanceof Entities.Scene)
+                                        btn = new SceneButtonView(entity);
+                                    else if (entity instanceof Entities.Schedule)
+                                        btn = new ScheduleButtonView(entity);
                                     btn.Button.AddEventListener(ButtonEvents.SingleClick, function (e) {
                                         // 子View再配置中のとき、何もしない。
                                         if (_this._page.ScenePanel.IsChildRelocation)
                                             return;
                                         // シーンボタンクリック - シーンViewをスライドイン表示し、実行する。
                                         var button = e.Sender.Parent;
-                                        var ctr = _this.Manager.Get('Scene');
-                                        ctr.SetEntity(button.Scene);
-                                        ctr.SetExecMode();
-                                        ctr.ShowModal();
-                                        ctr.Exec();
+                                        if (button.Entity instanceof Entities.Scene) {
+                                            var ctr = _this.Manager.Get('Scene');
+                                            ctr.SetEntity(button.Entity);
+                                            ctr.SetExecMode();
+                                            ctr.ShowModal();
+                                            ctr.Exec();
+                                        }
+                                        else if (button.Entity instanceof Entities.Schedule) {
+                                            var ctr = _this.Manager.Get('Schedule');
+                                            ctr.SetEntity(button.Entity);
+                                            ctr.SetExecMode();
+                                            ctr.ShowModal();
+                                        }
                                     });
                                     btn.Button.AddEventListener(ButtonEvents.LongClick, function (e) {
                                         // 子View再配置中のとき、何もしない。
@@ -7729,17 +7935,25 @@ var App;
                                             return;
                                         // シーンボタン長押し - シーンViewを編集状態で表示する。
                                         var button = e.Sender.Parent;
-                                        var ctr = _this.Manager.Get('Scene');
-                                        ctr.SetEntity(button.Scene);
-                                        ctr.SetEditMode();
-                                        ctr.Show();
+                                        if (button.Entity instanceof Entities.Scene) {
+                                            var ctr = _this.Manager.Get('Scene');
+                                            ctr.SetEntity(button.Entity);
+                                            ctr.SetEditMode();
+                                            ctr.Show();
+                                        }
+                                        else if (button.Entity instanceof Entities.Schedule) {
+                                            var ctr = _this.Manager.Get('Schedule');
+                                            ctr.SetEntity(button.Entity);
+                                            ctr.SetEditMode();
+                                            ctr.Show();
+                                        }
                                     });
-                                    scene.AddEventListener(Events.EntityEvents.Changed, function (e) {
-                                        // ボタンに乗せたControlSetEntityの値変更イベント
-                                        var sc = e.Sender;
+                                    entity.AddEventListener(Events.EntityEvents.Changed, function (e) {
+                                        // ボタンに乗せたSceneEntityの値変更イベント
+                                        var senderEntity = e.Sender;
                                         var btn = _.find(_this._page.ScenePanel.Children, function (b) {
-                                            var sceneBtn = b;
-                                            return (sceneBtn.Scene === sc);
+                                            var mainButton = b;
+                                            return (mainButton.Entity === senderEntity);
                                         });
                                         if (!btn)
                                             return;
@@ -8122,7 +8336,7 @@ var App;
 var App;
 (function (App) {
     var Views;
-    (function (Views_10) {
+    (function (Views_11) {
         var Controls;
         (function (Controls) {
             var Views = Fw.Views;
@@ -8362,7 +8576,7 @@ var App;
                 return SceneDetailView;
             }(Fw.Views.BoxView));
             Controls.SceneDetailView = SceneDetailView;
-        })(Controls = Views_10.Controls || (Views_10.Controls = {}));
+        })(Controls = Views_11.Controls || (Views_11.Controls = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
@@ -8531,7 +8745,7 @@ var App;
                                 }
                                 else {
                                     // 保存成功
-                                    ctr.RefreshScenes();
+                                    ctr.RefreshScenesAndSchedules();
                                 }
                                 return [2 /*return*/];
                         }
@@ -8812,7 +9026,7 @@ var App;
                 ctr.ShowModal();
             };
             /**
-             * リモコン全体を削除する。
+             * シーンとシーン明細を削除する。
              */
             SceneController.prototype.RemoveScene = function () {
                 return __awaiter(this, void 0, void 0, function () {
@@ -8838,7 +9052,7 @@ var App;
                             case 1:
                                 // 削除メソッド、投げっぱなしの終了確認無しで終わる。
                                 _a.sent();
-                                ctr.RefreshScenes();
+                                ctr.RefreshScenesAndSchedules();
                                 return [2 /*return*/];
                         }
                     });
@@ -9006,8 +9220,6 @@ var App;
 })(App || (App = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Fw/Controllers/ControllerBase.ts" />
 /// <reference path="../../Fw/Controllers/Manager.ts" />
 /// <reference path="../../Fw/Util/Dump.ts" />
@@ -9035,6 +9247,7 @@ var App;
 (function (App) {
     var Controllers;
     (function (Controllers) {
+        var Events = Fw.Events;
         var Pages = App.Views.Pages;
         var EntityEvents = Fw.Events.EntityEvents;
         var ButtonEvents = Fw.Events.ButtonViewEvents;
@@ -9078,7 +9291,7 @@ var App;
                                 }
                                 else {
                                     // 保存成功
-                                    ctr.RefreshScenes();
+                                    ctr.RefreshScenesAndSchedules();
                                 }
                                 return [2 /*return*/];
                         }
@@ -9116,6 +9329,27 @@ var App;
                 }); });
                 _this._page.SdvControl.ControlSetButton.AddEventListener(ButtonEvents.SingleClick, _this.OnControlSetClicked, _this);
                 _this._page.SdvControl.ControlButton.AddEventListener(ButtonEvents.SingleClick, _this.OnControlClicked, _this);
+                _this._page.DeleteButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function (e) { return __awaiter(_this, void 0, void 0, function () {
+                    var res;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                if (!this._schedule)
+                                    return [2 /*return*/];
+                                return [4 /*yield*/, Popup.Confirm.OpenAsync({
+                                        Message: 'This Timer will be REMOVED.<br/>Are you ok?'
+                                    })];
+                            case 1:
+                                res = _a.sent();
+                                if (res !== true)
+                                    return [2 /*return*/];
+                                this.RemoveShedule();
+                                this._schedule = null;
+                                this.HideModal();
+                                return [2 /*return*/];
+                        }
+                    });
+                }); });
                 return _this;
             }
             ScheduleController.prototype.SetEditMode = function () {
@@ -9220,8 +9454,15 @@ var App;
                     }
                 }
                 this._page.ChkEnabled.BoolValue = schedule.Enabled;
-                this._page.SboHour.Value = schedule.StartTime.getHours().toString();
-                this._page.SboMinute.Value = schedule.StartTime.getMinutes().toString();
+                if (!schedule.StartTimeString || schedule.StartTimeString === '') {
+                    this._page.SboHour.Value = '10';
+                    this._page.SboMinute.Value = '0';
+                }
+                else {
+                    var startTime = new Date(schedule.StartTimeString);
+                    this._page.SboHour.Value = startTime.getHours().toString();
+                    this._page.SboMinute.Value = startTime.getMinutes().toString();
+                }
                 this._page.ChkWeekdaySunday.BoolValue = schedule.GetWeekdayFlag(0 /* Sunday */);
                 this._page.ChkWeekdayMonday.BoolValue = schedule.GetWeekdayFlag(1 /* Monday */);
                 this._page.ChkWeekdayTuesday.BoolValue = schedule.GetWeekdayFlag(2 /* Tuesday */);
@@ -9240,14 +9481,13 @@ var App;
                 this._page.HeaderLeftLabel.Text = this._page.TxtName.Value;
                 //this._schedule.Color = this._page.BtnColor.Color;
                 this._schedule.Enabled = this._page.ChkEnabled.BoolValue;
+                var startTime = new Date(2000, 0, 1, 0, 0, 0);
                 if (this._page.SboHour.Value !== '' && this._page.SboMinute.Value !== '') {
                     var hour = parseInt(this._page.SboHour.Value, 10);
                     var minute = parseInt(this._page.SboMinute.Value, 10);
-                    this._schedule.StartTime = new Date(2000, 1, 1, hour, minute, 0);
+                    startTime = new Date(2000, 0, 1, hour, minute, 0);
                 }
-                else {
-                    this._schedule.StartTime = new Date(2000, 1, 1, 0, 0, 0);
-                }
+                this._schedule.StartTimeString = Fw.Util.DateTime.GetIso8601(startTime);
                 this._schedule.SetWeekdayFlag(0 /* Sunday */, this._page.ChkWeekdaySunday.BoolValue);
                 this._schedule.SetWeekdayFlag(1 /* Monday */, this._page.ChkWeekdayMonday.BoolValue);
                 this._schedule.SetWeekdayFlag(2 /* Tuesday */, this._page.ChkWeekdayTuesday.BoolValue);
@@ -9345,7 +9585,7 @@ var App;
                 });
             };
             /**
-             * リモコン全体を削除する。
+             * スケジュールを削除する。
              */
             ScheduleController.prototype.RemoveShedule = function () {
                 return __awaiter(this, void 0, void 0, function () {
@@ -9365,7 +9605,7 @@ var App;
                             case 1:
                                 // 削除メソッド、投げっぱなしの終了確認無しで終わる。
                                 _a.sent();
-                                ctr.RefreshScenes();
+                                ctr.RefreshScenesAndSchedules();
                                 return [2 /*return*/];
                         }
                     });
@@ -9375,69 +9615,6 @@ var App;
         }(Fw.Controllers.ControllerBase));
         Controllers.ScheduleController = ScheduleController;
     })(Controllers = App.Controllers || (App.Controllers = {}));
-})(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Models/EntityBase.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-/// <reference path="../../Items/Color.ts" />
-/// <reference path="../../Items/Weekday.ts" />
-var App;
-(function (App) {
-    var Models;
-    (function (Models) {
-        var Entities;
-        (function (Entities) {
-            var Color = App.Items.Color;
-            var Schedule = /** @class */ (function (_super) {
-                __extends(Schedule, _super);
-                function Schedule() {
-                    var _this = _super !== null && _super.apply(this, arguments) || this;
-                    _this.Name = 'New Timer';
-                    _this.SceneId = null;
-                    _this.ControlSetId = null;
-                    _this.ControlId = null;
-                    _this.CurrentJobId = null;
-                    _this.Enabled = true;
-                    _this.StartTime = new Date(2000, 1, 1, 10, 0, 0);
-                    _this.WeekdayFlags = '1111111';
-                    _this.Color = Color.ButtonColors[9];
-                    _this.Order = 99999;
-                    return _this;
-                }
-                Schedule.prototype.GetWeekdayFlag = function (weekday) {
-                    if (this.WeekdayFlags.length !== 7)
-                        throw new Error('WeekdayFlags Fromat Failure');
-                    var index = weekday;
-                    return (this.WeekdayFlags[index] === '1');
-                };
-                Schedule.prototype.SetWeekdayFlag = function (weekday, enable) {
-                    if (this.WeekdayFlags.length !== 7)
-                        throw new Error('WeekdayFlags Fromat Failure');
-                    var index = weekday;
-                    var flagString = (enable) ? '1' : '0';
-                    var flags = this.WeekdayFlags;
-                    if (index === 0) {
-                        flags = flagString + flags.substr(index + 1);
-                    }
-                    else if (0 < index && index < 6) {
-                        flags = flags.substr(0, index)
-                            + flagString
-                            + flags.substr(index + 1);
-                    }
-                    else if (index === 6) {
-                        flags = flags.substr(0, index) + flagString;
-                    }
-                    else {
-                        throw new Error('なぜなんだー');
-                    }
-                    this.WeekdayFlags = flags;
-                };
-                return Schedule;
-            }(Fw.Models.EntityBase));
-            Entities.Schedule = Schedule;
-        })(Entities = Models.Entities || (Models.Entities = {}));
-    })(Models = App.Models || (App.Models = {}));
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
@@ -10668,7 +10845,7 @@ var App;
 var App;
 (function (App) {
     var Views;
-    (function (Views_11) {
+    (function (Views_12) {
         var Controls;
         (function (Controls) {
             var Dump = Fw.Util.Dump;
@@ -10875,7 +11052,7 @@ var App;
                 return ControlButtonView;
             }(Views.RelocatableButtonView));
             Controls.ControlButtonView = ControlButtonView;
-        })(Controls = Views_11.Controls || (Views_11.Controls = {}));
+        })(Controls = Views_12.Controls || (Views_12.Controls = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
@@ -10887,7 +11064,7 @@ var App;
 var App;
 (function (App) {
     var Views;
-    (function (Views_12) {
+    (function (Views_13) {
         var Controls;
         (function (Controls) {
             var Color = App.Items.Color;
@@ -10905,7 +11082,7 @@ var App;
                 return PropertyButtonView;
             }(Fw.Views.ButtonView));
             Controls.PropertyButtonView = PropertyButtonView;
-        })(Controls = Views_12.Controls || (Views_12.Controls = {}));
+        })(Controls = Views_13.Controls || (Views_13.Controls = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
@@ -10918,7 +11095,7 @@ var App;
 var App;
 (function (App) {
     var Views;
-    (function (Views_13) {
+    (function (Views_14) {
         var Pages;
         (function (Pages) {
             var Views = Fw.Views;
@@ -11004,7 +11181,7 @@ var App;
                 return ControlHeaderPropertyPageView;
             }(Fw.Views.PageView));
             Pages.ControlHeaderPropertyPageView = ControlHeaderPropertyPageView;
-        })(Pages = Views_13.Pages || (Views_13.Pages = {}));
+        })(Pages = Views_14.Pages || (Views_14.Pages = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
@@ -11018,7 +11195,7 @@ var App;
 var App;
 (function (App) {
     var Views;
-    (function (Views_14) {
+    (function (Views_15) {
         var Pages;
         (function (Pages) {
             var Views = Fw.Views;
@@ -11140,7 +11317,7 @@ var App;
                 return ControlPropertyPageView;
             }(Fw.Views.PageView));
             Pages.ControlPropertyPageView = ControlPropertyPageView;
-        })(Pages = Views_14.Pages || (Views_14.Pages = {}));
+        })(Pages = Views_15.Pages || (Views_15.Pages = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
@@ -11154,7 +11331,7 @@ var App;
 var App;
 (function (App) {
     var Views;
-    (function (Views_15) {
+    (function (Views_16) {
         var Pages;
         (function (Pages) {
             var Views = Fw.Views;
@@ -11220,7 +11397,7 @@ var App;
                 return ControlSetPageView;
             }(Fw.Views.PageView));
             Pages.ControlSetPageView = ControlSetPageView;
-        })(Pages = Views_15.Pages || (Views_15.Pages = {}));
+        })(Pages = Views_16.Pages || (Views_16.Pages = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
@@ -11233,7 +11410,7 @@ var App;
 var App;
 (function (App) {
     var Views;
-    (function (Views_16) {
+    (function (Views_17) {
         var Pages;
         (function (Pages) {
             var Views = Fw.Views;
@@ -11275,7 +11452,7 @@ var App;
                 return ItemSelectPageView;
             }(Fw.Views.PageView));
             Pages.ItemSelectPageView = ItemSelectPageView;
-        })(Pages = Views_16.Pages || (Views_16.Pages = {}));
+        })(Pages = Views_17.Pages || (Views_17.Pages = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
@@ -11288,7 +11465,7 @@ var App;
 var App;
 (function (App) {
     var Views;
-    (function (Views_17) {
+    (function (Views_18) {
         var Pages;
         (function (Pages) {
             var Views = Fw.Views;
@@ -11357,7 +11534,7 @@ var App;
                 return SceneHeaderPropertyPageView;
             }(Fw.Views.PageView));
             Pages.SceneHeaderPropertyPageView = SceneHeaderPropertyPageView;
-        })(Pages = Views_17.Pages || (Views_17.Pages = {}));
+        })(Pages = Views_18.Pages || (Views_18.Pages = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
@@ -11371,7 +11548,7 @@ var App;
 var App;
 (function (App) {
     var Views;
-    (function (Views_18) {
+    (function (Views_19) {
         var Pages;
         (function (Pages) {
             var Views = Fw.Views;
@@ -11438,7 +11615,7 @@ var App;
                 return ScenePageView;
             }(Fw.Views.PageView));
             Pages.ScenePageView = ScenePageView;
-        })(Pages = Views_18.Pages || (Views_18.Pages = {}));
+        })(Pages = Views_19.Pages || (Views_19.Pages = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
@@ -11452,7 +11629,7 @@ var App;
 var App;
 (function (App) {
     var Views;
-    (function (Views_19) {
+    (function (Views_20) {
         var Pages;
         (function (Pages) {
             var Views = Fw.Views;
@@ -11615,12 +11792,16 @@ var App;
                     _this.ChkWeekdaySaturday.Name = 'Saturday';
                     _this.ChkWeekdaySaturday.Text = 'Saturday';
                     _this.InputPanel.Add(_this.ChkWeekdaySaturday);
+                    _this.DeleteButton.SetAnchor(null, 5, 15, null);
+                    _this.DeleteButton.Size.Height = 30;
+                    _this.DeleteButton.Text = '*Delete*';
+                    _this.InputPanel.Add(_this.DeleteButton);
                     return _this;
                 }
                 return SchedulePageView;
             }(Fw.Views.PageView));
             Pages.SchedulePageView = SchedulePageView;
-        })(Pages = Views_19.Pages || (Views_19.Pages = {}));
+        })(Pages = Views_20.Pages || (Views_20.Pages = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
@@ -11633,7 +11814,7 @@ var App;
 var App;
 (function (App) {
     var Views;
-    (function (Views_20) {
+    (function (Views_21) {
         var Popup;
         (function (Popup) {
             var CancellablePopup = /** @class */ (function (_super) {
@@ -11672,7 +11853,7 @@ var App;
             }(Popup.PopupBase));
             Popup.CancellablePopup = CancellablePopup;
             Popup.Cancellable = CancellablePopup.Instance;
-        })(Popup = Views_20.Popup || (Views_20.Popup = {}));
+        })(Popup = Views_21.Popup || (Views_21.Popup = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
@@ -11685,7 +11866,7 @@ var App;
 var App;
 (function (App) {
     var Views;
-    (function (Views_21) {
+    (function (Views_22) {
         var Popup;
         (function (Popup) {
             var ConfirmPopup = /** @class */ (function (_super) {
@@ -11753,7 +11934,7 @@ var App;
             }(Popup.PopupBase));
             Popup.ConfirmPopup = ConfirmPopup;
             Popup.Confirm = ConfirmPopup.Instance;
-        })(Popup = Views_21.Popup || (Views_21.Popup = {}));
+        })(Popup = Views_22.Popup || (Views_22.Popup = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../lib/jquery/index.d.ts" />
@@ -12150,6 +12331,29 @@ var Fw;
                 catch (e) {
                     return null;
                 }
+            };
+            /**
+             * 時差情報付きISO8601文字列を取得する。
+             * @param date
+             */
+            DateTime.GetIso8601 = function (date) {
+                var offset = date.getTimezoneOffset() * -1; // 時差符号は逆転させる。
+                var offsetHour = Math.ceil(Math.abs(offset) / 60);
+                var offsetMinute = Math.abs(offset) % 60;
+                var offsetString = (offset === 0)
+                    ? 'Z'
+                    : (((offset > 0) ? '+' : '-')
+                        + ('0' + offsetHour).slice(-2)
+                        + ':' + ('0' + offsetMinute).slice(-2));
+                var result = date.getFullYear()
+                    + '-' + ('0' + (date.getMonth() + 1)).slice(-2)
+                    + '-' + ('0' + date.getDate()).slice(-2)
+                    + 'T' + ('0' + date.getHours()).slice(-2)
+                    + ':' + ('0' + date.getMinutes()).slice(-2)
+                    + ':' + ('0' + date.getSeconds()).slice(-2)
+                    + '.' + (date.getMilliseconds() / 1000).toFixed(3).slice(2, 5)
+                    + offsetString;
+                return result;
             };
             return DateTime;
         }());

@@ -106,7 +106,7 @@ namespace App.Controllers {
                     });
                 } else {
                     // 保存成功
-                    ctr.RefreshScenes();
+                    ctr.RefreshScenesAndSchedules();
                 }
             });
 
@@ -402,7 +402,7 @@ namespace App.Controllers {
         }
 
         /**
-         * リモコン全体を削除する。
+         * シーンとシーン明細を削除する。
          */
         public async RemoveScene(): Promise<boolean> {
             if (this._operationType !== ModalOperationType.Edit)
@@ -426,7 +426,7 @@ namespace App.Controllers {
             // 削除メソッド、投げっぱなしの終了確認無しで終わる。
             await Stores.Scenes.Remove(scene);
 
-            ctr.RefreshScenes();
+            ctr.RefreshScenesAndSchedules();
         }
 
         /**

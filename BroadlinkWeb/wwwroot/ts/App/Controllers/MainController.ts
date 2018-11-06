@@ -11,6 +11,8 @@
 /// <reference path="../Views/Pages/MainPageView.ts" />
 /// <reference path="../Views/Controls/ControlSetButtonView.ts" />
 /// <reference path="../Views/Controls/SceneButtonView.ts" />
+/// <reference path="../Views/Controls/ScheduleButtonView.ts" />
+/// <reference path="../Views/Controls/IMainButtonView.ts" />
 /// <reference path="../Models/Stores/BrDeviceStore.ts" />
 /// <reference path="../Models/Entities/ControlSet.ts" />
 /// <reference path="../Models/Entities/Scene.ts" />
@@ -36,6 +38,8 @@ namespace App.Controllers {
     import ControlSetButtonView = App.Views.Controls.ControlSetButtonView;
     import OperationType = App.Items.OperationType;
     import SceneButtonView = App.Views.Controls.SceneButtonView;
+    import ScheduleButtonView = App.Views.Controls.ScheduleButtonView;
+    import IMainButtonView = App.Views.Controls.IMainButtonView;
     import Color = App.Items.Color;
     import Icon = App.Items.Icon;
 
@@ -161,18 +165,38 @@ namespace App.Controllers {
                 ctr2.Show();
             });
 
-            this._page.ControlSetPanel.AddEventListener(StuckerBoxEvents.OrderChanged, () => {
-                //alert('Fuck!');
+            this._page.ControlSetPanel.AddEventListener(StuckerBoxEvents.OrderChanged, async () => {
                 const csets = new Array<Entities.ControlSet>();
                 let idx = 1;
                 _.each(this._page.ControlSetPanel.Children, (btn: ControlSetButtonView) => {
-                    if (!btn.ControlSet)
+                    if (!btn.Entity)
                         return;
-                    btn.ControlSet.Order = idx;
+                    (btn.Entity as Entities.ControlSet).Order = idx;
                     idx++;
-                    csets.push(btn.ControlSet);
+                    csets.push(btn.Entity as Entities.ControlSet);
                 });
-                Stores.ControlSets.UpdateHeaders(csets);
+                await Stores.ControlSets.UpdateHeaders(csets);
+            });
+
+            this._page.ScenePanel.AddEventListener(StuckerBoxEvents.OrderChanged, async () => {
+                const scenes = new Array<Entities.Scene>();
+                const schedules = new Array<Entities.Schedule>();
+                let idx = 1;
+                _.each(this._page.ScenePanel.Children, (btn: IMainButtonView) => {
+                    if (!btn.Entity)
+                        return;
+
+                    (btn.Entity as (Entities.Scene | Entities.Schedule)).Order = idx;
+                    idx++;
+
+                    if (btn.Entity instanceof Entities.Scene)
+                        scenes.push(btn.Entity);
+                    else if (btn.Entity instanceof Entities.Schedule)
+                        schedules.push(btn.Entity);
+
+                });
+                await Stores.Scenes.UpdateHeaders(scenes);
+                await Stores.Schedules.UpdateHeaders(schedules);
             });
         }
 
@@ -189,7 +213,7 @@ namespace App.Controllers {
             //await this.RefreshScenes();
             const promises: Promise<boolean>[] = [];
             promises.push(this.RefreshControlSets());
-            promises.push(this.RefreshScenes());
+            promises.push(this.RefreshScenesAndSchedules());
             await Promise.all(promises);
 
             Dump.Log('Store Initialize - ControlSets/Scenes OK.');
@@ -206,7 +230,7 @@ namespace App.Controllers {
             const children = Fw.Util.Obj.Mirror(this._page.ControlSetPanel.Children);
             _.each(children, (btn: ControlSetButtonView) => {
                 const existsSet = _.find(sets, (cs: Entities.ControlSet) => {
-                    return (cs === btn.ControlSet);
+                    return (cs === btn.Entity);
                 });
                 if (!existsSet) {
                     this._page.ControlSetPanel.Remove(btn);
@@ -217,7 +241,7 @@ namespace App.Controllers {
             // 追加されたEntity分のボタンをパネルに追加。
             _.each(sets, (cs: Entities.ControlSet) => {
                 const existsBtn = _.find(children, (b: ControlSetButtonView) => {
-                    return (b.ControlSet === cs);
+                    return (b.Entity === cs);
                 });
                 if (existsBtn)
                     return;
@@ -232,9 +256,9 @@ namespace App.Controllers {
                     // メインボタンクリック - リモコンをスライドイン表示する。
                     const button = (e.Sender as Fw.Views.IView).Parent as ControlSetButtonView;
 
-                    const ctr = App.Controllers.CSControllerFactory.Get(button.ControlSet);
+                    const ctr = App.Controllers.CSControllerFactory.Get(button.Entity as Entities.ControlSet);
 
-                    ctr.SetEntity(button.ControlSet);
+                    ctr.SetEntity(button.Entity as Entities.ControlSet);
                     ctr.SetExecMode();
                     ctr.ShowModal();
                 });
@@ -246,8 +270,8 @@ namespace App.Controllers {
 
                     // メインボタンの長押し - リモコンを編集表示する。
                     const button = (e.Sender as Fw.Views.IView).Parent as ControlSetButtonView;
-                    const ctr = App.Controllers.CSControllerFactory.Get(button.ControlSet);
-                    ctr.SetEntity(button.ControlSet);
+                    const ctr = App.Controllers.CSControllerFactory.Get(button.Entity as Entities.ControlSet);
+                    ctr.SetEntity(button.Entity as Entities.ControlSet);
                     ctr.SetEditMode();
                     ctr.Show();
                 });
@@ -259,7 +283,7 @@ namespace App.Controllers {
 
                     // トグルクリック
                     const button = (e.Sender as Fw.Views.IView).Parent as ControlSetButtonView;
-                    const cset = button.ControlSet;
+                    const cset = button.Entity as Entities.ControlSet;
                     const toggleValue = button.Toggle.BoolValue;
 
                     const controlOn: Entities.Control = _.find(cset.Controls as any, (c) => {
@@ -282,7 +306,7 @@ namespace App.Controllers {
                     const cset = e.Sender as Entities.ControlSet
                     const btn: ControlSetButtonView = _.find(this._page.ControlSetPanel.Children, (b) => {
                         const csetBtn = b as ControlSetButtonView;
-                        return (csetBtn.ControlSet === cset);
+                        return (csetBtn.Entity === cset);
                     }) as ControlSetButtonView;
 
                     if (!btn)
@@ -301,30 +325,41 @@ namespace App.Controllers {
             return true;
         }
 
-        public async RefreshScenes(): Promise<boolean> {
+        public async RefreshScenesAndSchedules(): Promise<boolean> {
             const scenes = await Stores.Scenes.GetList();
+            const schedules = await Stores.Schedules.GetList();
+            let entities = (scenes as Array<Entities.Scene | Entities.Schedule>).concat(schedules);
+            entities = _.sortBy(entities, (e: Entities.Scene | Entities.Schedule) => {
+                return e.Order;
+            });
 
             // 削除されたEntity分のボタンをパネルから削除。
-            const children = Fw.Util.Obj.Mirror(this._page.ScenePanel.Children);
-            _.each(children, (btn: SceneButtonView) => {
-                const existsSet = _.find(scenes, (s: Entities.Scene) => {
-                    return (s === btn.Scene);
+            let children = Fw.Util.Obj.Mirror(this._page.ScenePanel.Children);
+            _.each(children, (view: IMainButtonView) => {
+                const entity = _.find(entities, (e: Entities.Scene | Entities.Schedule) => {
+                    return (e === view.Entity);
                 });
-                if (!existsSet) {
-                    this._page.ScenePanel.Remove(btn);
-                    btn.Dispose();
+                if (!entity) {
+                    this._page.ScenePanel.Remove(view);
+                    view.Dispose();
                 }
             });
 
             // 追加されたEntity分のボタンをパネルに追加。
-            _.each(scenes, (scene: Entities.Scene) => {
-                const existsBtn = _.find(children, (b: SceneButtonView) => {
-                    return (b.Scene === scene);
+            children = Fw.Util.Obj.Mirror(this._page.ScenePanel.Children);
+            _.each(entities, (entity: Entities.Scene | Entities.Schedule) => {
+
+                const existsBtn = _.find(children, (b: IMainButtonView) => {
+                    return (b.Entity === entity);
                 });
                 if (existsBtn)
                     return;
 
-                const btn = new SceneButtonView(scene);
+                let btn: IMainButtonView;
+                if (entity instanceof Entities.Scene)
+                    btn = new SceneButtonView(entity);
+                else if (entity instanceof Entities.Schedule)
+                    btn = new ScheduleButtonView(entity);
 
                 btn.Button.AddEventListener(ButtonEvents.SingleClick, (e) => {
                     // 子View再配置中のとき、何もしない。
@@ -332,12 +367,20 @@ namespace App.Controllers {
                         return;
 
                     // シーンボタンクリック - シーンViewをスライドイン表示し、実行する。
-                    const button = (e.Sender as Fw.Views.IView).Parent as SceneButtonView;
-                    const ctr = this.Manager.Get('Scene') as SceneController;
-                    ctr.SetEntity(button.Scene);
-                    ctr.SetExecMode();
-                    ctr.ShowModal();
-                    ctr.Exec();
+                    const button = (e.Sender as Fw.Views.IView).Parent as IMainButtonView;
+
+                    if (button.Entity instanceof Entities.Scene) {
+                        const ctr = this.Manager.Get('Scene') as SceneController;
+                        ctr.SetEntity(button.Entity as Entities.Scene);
+                        ctr.SetExecMode();
+                        ctr.ShowModal();
+                        ctr.Exec();
+                    } else if (button.Entity instanceof Entities.Schedule) {
+                        const ctr = this.Manager.Get('Schedule') as ScheduleController;
+                        ctr.SetEntity(button.Entity as Entities.Schedule);
+                        ctr.SetExecMode();
+                        ctr.ShowModal();
+                    }
                 });
 
                 btn.Button.AddEventListener(ButtonEvents.LongClick, (e) => {
@@ -346,20 +389,27 @@ namespace App.Controllers {
                         return;
 
                     // シーンボタン長押し - シーンViewを編集状態で表示する。
-                    const button = (e.Sender as Fw.Views.IView).Parent as SceneButtonView;
-                    const ctr = this.Manager.Get('Scene') as SceneController;
-                    ctr.SetEntity(button.Scene);
-                    ctr.SetEditMode();
-                    ctr.Show();
+                    const button = (e.Sender as Fw.Views.IView).Parent as IMainButtonView;
+                    if (button.Entity instanceof Entities.Scene) {
+                        const ctr = this.Manager.Get('Scene') as SceneController;
+                        ctr.SetEntity(button.Entity as Entities.Scene);
+                        ctr.SetEditMode();
+                        ctr.Show();
+                    } else if (button.Entity instanceof Entities.Schedule) {
+                        const ctr = this.Manager.Get('Schedule') as ScheduleController;
+                        ctr.SetEntity(button.Entity as Entities.Schedule);
+                        ctr.SetEditMode();
+                        ctr.Show();
+                    }
                 });
 
-                scene.AddEventListener(Events.EntityEvents.Changed, (e) => {
-                    // ボタンに乗せたControlSetEntityの値変更イベント
-                    const sc = e.Sender as Entities.Scene
-                    const btn: SceneButtonView = _.find(this._page.ScenePanel.Children, (b) => {
-                        const sceneBtn = b as SceneButtonView;
-                        return (sceneBtn.Scene === sc);
-                    }) as SceneButtonView;
+                entity.AddEventListener(Events.EntityEvents.Changed, (e) => {
+                    // ボタンに乗せたSceneEntityの値変更イベント
+                    const senderEntity = e.Sender as (Entities.Scene | Entities.Schedule);
+                    const btn: IMainButtonView = _.find(this._page.ScenePanel.Children, (b) => {
+                        const mainButton = b as IMainButtonView;
+                        return (mainButton.Entity === senderEntity);
+                    }) as IMainButtonView;
 
                     if (!btn)
                         return;

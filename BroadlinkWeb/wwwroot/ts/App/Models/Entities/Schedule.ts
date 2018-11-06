@@ -3,17 +3,21 @@
 /// <reference path="../../../Fw/Models/EntityBase.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../../Items/Color.ts" />
+/// <reference path="../../Items/Icon.ts" />
 /// <reference path="../../Items/Weekday.ts" />
 
 namespace App.Models.Entities {
     import Dump = Fw.Util.Dump;
     import Color = App.Items.Color;
+    import Icon = App.Items.Icon;
     import Weekday = App.Items.Weekday;
     import OperationTemplate = App.Items.OperationTemplate;
 
     export class Schedule extends Fw.Models.EntityBase {
 
         public Name: string = 'New Timer';
+
+        public IconUrl: string = Icon.GetByOperationTemplate(OperationTemplate.Schedule, true);
 
         public SceneId: number = null;
 
@@ -25,15 +29,21 @@ namespace App.Models.Entities {
 
         public Enabled: boolean = true;
 
-        public StartTime: Date = new Date(2000, 1, 1, 10, 0, 0);
+        //public StartTime: Date = new Date(2000, 1, 1, 10, 0, 0);
 
         public WeekdayFlags: string = '1111111';
 
-        public NextDateTime: Date;
+        //public NextDateTime: Date; // 初期化しないでおく。
 
         public Color: string = Color.ButtonColors[9];
 
         public Order: number = 99999;
+
+
+        public StartTimeString: string = '';
+
+        public NextDateTimeString: string; // 初期化しないでおく。
+
 
         public GetWeekdayFlag(weekday: Weekday): boolean {
             if (this.WeekdayFlags.length !== 7)

@@ -190,7 +190,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
 
         // DELETE: api/Scenes/5
         [HttpDelete("{id}")]
-        public async Task<XhrResult> DeleteControlSet([FromRoute] int id)
+        public async Task<XhrResult> DeleteScene([FromRoute] int id)
         {
             try
             {
