@@ -328,6 +328,8 @@ namespace BroadlinkWeb.Migrations
 
                     b.Property<DateTime?>("NextDateTime");
 
+                    b.Property<int>("Order");
+
                     b.Property<int?>("SceneId");
 
                     b.Property<DateTime>("StartTime");

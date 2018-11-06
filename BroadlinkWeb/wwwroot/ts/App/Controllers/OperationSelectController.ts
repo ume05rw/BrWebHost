@@ -41,24 +41,6 @@ namespace App.Controllers {
         private InitView(): void {
             this._page.Label.Text = 'Select New Operation';
 
-            // シーン
-            const btn1 = this.GetNewButton();
-            btn1.Label.Text = 'Scene';
-            btn1.Button.ImageSrc = Icon.GetByOperationTemplate(OperationTemplate.Scene);
-            btn1.Button.Color = Color.ButtonColors[8];
-            btn1.Button.BackgroundColor = Color.ButtonColors[8]
-            btn1.Button.HoverColor = Color.ButtonHoverColors[8];
-            btn1.Button.AddEventListener(ButtonEvents.SingleClick, () => {
-                this.Commit(OperationTemplate.Scene);
-            });
-            this._page.SelectorPanel.Add(btn1);
-
-            // 区切り線
-            const line1 = new Fw.Views.LineView(Property.Direction.Horizontal);
-            line1.SetAnchor(null, 5, 5, null);
-            line1.Color = App.Items.Color.MainBackground;
-            this._page.SelectorPanel.Add(line1);
-
             // TV
             const btn2 = this.GetNewButton();
             btn2.Label.Text = 'TV';
@@ -148,6 +130,36 @@ namespace App.Controllers {
                 this.Commit(OperationTemplate.RemoteHostScript);
             });
             this._page.SelectorPanel.Add(btn8);
+
+            // 区切り線
+            const line1 = new Fw.Views.LineView(Property.Direction.Horizontal);
+            line1.SetAnchor(null, 5, 5, null);
+            line1.Color = App.Items.Color.MainBackground;
+            this._page.SelectorPanel.Add(line1);
+
+            // シーン
+            const btn1 = this.GetNewButton();
+            btn1.Label.Text = 'Scene';
+            btn1.Button.ImageSrc = Icon.GetByOperationTemplate(OperationTemplate.Scene);
+            btn1.Button.Color = Color.ButtonColors[8];
+            btn1.Button.BackgroundColor = Color.ButtonColors[8]
+            btn1.Button.HoverColor = Color.ButtonHoverColors[8];
+            btn1.Button.AddEventListener(ButtonEvents.SingleClick, () => {
+                this.Commit(OperationTemplate.Scene);
+            });
+            this._page.SelectorPanel.Add(btn1);
+
+            // スケジュール
+            const btn9 = this.GetNewButton();
+            btn9.Label.Text = 'Timer';
+            btn9.Button.ImageSrc = Icon.GetByOperationTemplate(OperationTemplate.Schedule);
+            btn9.Button.Color = Color.ButtonColors[9];
+            btn9.Button.BackgroundColor = Color.ButtonColors[9]
+            btn9.Button.HoverColor = Color.ButtonHoverColors[9];
+            btn9.Button.AddEventListener(ButtonEvents.SingleClick, () => {
+                this.Commit(OperationTemplate.Schedule);
+            });
+            this._page.SelectorPanel.Add(btn9);
         }
 
         private GetNewButton(): LabelAndButtonView {

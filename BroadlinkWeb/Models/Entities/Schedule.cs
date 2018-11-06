@@ -58,6 +58,10 @@ namespace BroadlinkWeb.Models.Entities
         [DataType(DataType.DateTime)]
         public DateTime? NextDateTime { get; set; }
 
+        //[Column(Order = 5, TypeName = "int(11)")]
+        [Description("Position Order")]
+        public int Order { get; set; }
+
         public bool GetWeekdayFlag(DayOfWeek dayOfWeek)
         {
             if (this.WeekdayFlags.Length != 7)

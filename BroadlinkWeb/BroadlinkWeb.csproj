@@ -22,6 +22,7 @@
     <Content Remove="wwwroot\ts\App\Controllers\OperationSelectController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\SceneController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\SceneHeaderPropertyController.ts" />
+    <Content Remove="wwwroot\ts\App\Controllers\ScheduleController.ts" />
     <Content Remove="wwwroot\ts\App\Events\Controls\ControlButtonViewEvents.ts" />
     <Content Remove="wwwroot\ts\App\Icon.ts" />
     <Content Remove="wwwroot\ts\App\Items\ChartType.ts" />
@@ -42,6 +43,7 @@
     <Content Remove="wwwroot\ts\App\Models\Entities\Scene.ts" />
     <Content Remove="wwwroot\ts\App\Models\Entities\SceneDetail.ts" />
     <Content Remove="wwwroot\ts\App\Models\Entities\SceneStatus.ts" />
+    <Content Remove="wwwroot\ts\App\Models\Entities\Schedule.ts" />
     <Content Remove="wwwroot\ts\App\Models\Entities\Script.ts" />
     <Content Remove="wwwroot\ts\App\Models\Entities\Sp2Status.ts" />
     <Content Remove="wwwroot\ts\App\Models\Stores\A1Store.ts" />
@@ -55,6 +57,7 @@
     <Content Remove="wwwroot\ts\App\Models\Stores\RmStore.ts" />
     <Content Remove="wwwroot\ts\App\Models\Stores\SceneDetailStore.ts" />
     <Content Remove="wwwroot\ts\App\Models\Stores\SceneStore.ts" />
+    <Content Remove="wwwroot\ts\App\Models\Stores\ScheduleStore.ts" />
     <Content Remove="wwwroot\ts\App\Models\Stores\ScriptStore.ts" />
     <Content Remove="wwwroot\ts\App\Models\Stores\Sp2Store.ts" />
     <Content Remove="wwwroot\ts\App\Models\Stores\WolStore.ts" />
@@ -74,6 +77,7 @@
     <Content Remove="wwwroot\ts\App\Views\Pages\MainPageView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Pages\SceneHeaderPropertyPageView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Pages\ScenePageView.ts" />
+    <Content Remove="wwwroot\ts\App\Views\Pages\SchedulePageView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Popup\AlertPopup.ts" />
     <Content Remove="wwwroot\ts\App\Views\Popup\Cancellable.ts" />
     <Content Remove="wwwroot\ts\App\Views\Popup\ConfirmPopup.ts" />
@@ -186,6 +190,7 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\IconSelectController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ControlSetSelectController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\SceneController.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ScheduleController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Items\ChartType.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Items\ModalOperationType.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Items\DeviceType.ts" />
@@ -214,6 +219,7 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\Scene.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\SceneDetail.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\SceneStatus.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\Schedule.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\Script.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\Sp2Status.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\A1Store.ts" />
@@ -227,6 +233,7 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\RmStore.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\SceneDetailStore.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\SceneStore.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\ScheduleStore.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\ScriptStore.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\Sp2Store.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\WolStore.ts" />
@@ -246,6 +253,7 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\ItemSelectPageView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\ScenePageView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\MainPageView.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Views\Pages\SchedulePageView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Popup\AlertPopup.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Popup\Cancellable.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Popup\ConfirmPopup.ts" />

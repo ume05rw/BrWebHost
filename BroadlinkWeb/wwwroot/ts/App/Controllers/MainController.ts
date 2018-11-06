@@ -56,17 +56,22 @@ namespace App.Controllers {
                 .then(() => {
                     Dump.Log('SubController Load Start');
                     const controlSetCtr = new ControlSetController();
-                    const a1SetCtr = new A1SetController();
-                    const functionSelectCtr = new OperationSelectController();
-
                     const controlHeaderPropertyCtr = new ControlHeaderPropertyController();
                     const controlPropertyCtr = new ControlPropertyController();
-                    const iconSelectCtr = new IconSelectController();
-                    const colorSelectCtr = new ColorSelectController();
+
+                    const a1SetCtr = new A1SetController();
+                    const operationSelectCtr = new OperationSelectController();
 
                     const sceneCtr = new SceneController();
                     const controlSetSelectStr = new ControlSetSelectController();
                     const sceneHeaderPropertyCtr = new SceneHeaderPropertyController();
+
+                    const scheduleCtr = new ScheduleController();
+
+                    const iconSelectCtr = new IconSelectController();
+                    const colorSelectCtr = new ColorSelectController();
+
+
 
                     Dump.Log('SubController Load End');
                 });
@@ -78,21 +83,6 @@ namespace App.Controllers {
 
                 let ctrSet: App.Models.Entities.ControlSet;
                 switch (item) {
-                    case OperationTemplate.Scene:
-                        
-                        //alert('Not Implemented!!');
-                        const ctr = this.Manager.Get('Scene') as SceneController;
-                        const scene = new Entities.Scene();
-                        const detail = new Entities.SceneDetail();
-                        detail.Order = 1;
-                        scene.Details.push(detail);
-                        ctr.SetEntity(scene);
-                        ctr.SetEditMode();
-                        ctr.Show();
-
-                        // ※シーンのみ、対象Entity/起動画面が違う。このセクションでreturnする。
-                        return;
-
                     case OperationTemplate.Tv:
                         ctrSet = await Stores.ControlSets.GetTemplateClone(ControlSetTemplate.Tv);
                         break;
@@ -136,6 +126,29 @@ namespace App.Controllers {
                         ctrSet.Controls[0].IsAssignToggleOn = true;
                         ctrSet.Controls[0].IsAssignToggleOff = true;
                         break;
+
+                    case OperationTemplate.Scene:
+                        const ctr1 = this.Manager.Get('Scene') as SceneController;
+                        const scene = new Entities.Scene();
+                        const detail = new Entities.SceneDetail();
+                        detail.Order = 1;
+                        scene.Details.push(detail);
+                        ctr1.SetEntity(scene);
+                        ctr1.SetEditMode();
+                        ctr1.Show();
+
+                        // ※シーンとスケジュールのみ、対象Entity/起動画面が違う。このセクションでreturnする。
+                        return;
+
+                    case OperationTemplate.Schedule:
+                        const ctr2 = this.Manager.Get('Schedule') as ScheduleController;
+                        const schedule = new Entities.Schedule();
+                        ctr2.SetEntity(schedule);
+                        ctr2.SetEditMode();
+                        ctr2.Show();
+
+                        // ※シーンとスケジュールのみ、対象Entity/起動画面が違う。このセクションでreturnする。
+                        return;
 
                     default:
                         alert('ここにはこないはず');

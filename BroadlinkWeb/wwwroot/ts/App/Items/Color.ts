@@ -79,10 +79,10 @@ namespace App.Items {
             // 7.brown (Free)
             '#B5743B',
 
-            // 8. deep blue
+            // 8. deep blue (Scene)
             '#2068F9',
 
-            // 9. deep orange
+            // 9. deep orange (Schedule)
             '#F93220'
         ];
 

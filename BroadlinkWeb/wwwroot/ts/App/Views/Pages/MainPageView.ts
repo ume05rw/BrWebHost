@@ -44,7 +44,7 @@ namespace App.Views.Pages {
             this.ScenePanel.BorderRadius = 0;
             this.ScenePanel.BackgroundColor = '#f2f2f2';
             this.ScenePanel.Color = Color.MainBackground;
-            this.ScenePanel.SetAnchor(70, 10, 10, null);
+            this.ScenePanel.SetAnchor(null, 10, 10, 16);
             this.ScenePanel.Size.Height = 200;
             this.ScenePanel.ReferencePoint = Property.ReferencePoint.LeftTop;
             this.Add(this.ScenePanel);
@@ -54,7 +54,7 @@ namespace App.Views.Pages {
             this.ControlSetPanel.BorderRadius = 0;
             this.ControlSetPanel.BackgroundColor = Color.Transparent;
             this.ControlSetPanel.Color = Color.MainBackground;
-            this.ControlSetPanel.SetAnchor(280, 10, 10, 16);
+            this.ControlSetPanel.SetAnchor(70, 10, 10, 226);
             this.ControlSetPanel.ReferencePoint = Property.ReferencePoint.LeftTop;
             this.Add(this.ControlSetPanel);
 
