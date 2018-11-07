@@ -52,7 +52,8 @@ namespace App.Models.Stores {
 
             switch (controlSet.OperationType) {
                 case OperationType.RemoteControl:
-                    result = await Stores.Rms.Exec(controlSet, control);
+                    //result = await Stores.Rms.Exec(controlSet, control);
+                    result = await Stores.ControlSets.Exec(controlSet, control);
                     break;
                 case OperationType.BroadlinkDevice:
                     result = await Stores.BrDevices.Exec(controlSet, control);

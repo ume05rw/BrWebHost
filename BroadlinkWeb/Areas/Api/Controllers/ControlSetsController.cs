@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BroadlinkWeb.Models;
 using BroadlinkWeb.Models.Entities;
+using BroadlinkWeb.Models.Stores;
+using SharpBroadlink.Devices;
 
 namespace BroadlinkWeb.Areas.Api.Controllers
 {
@@ -226,6 +228,62 @@ namespace BroadlinkWeb.Areas.Api.Controllers
                 return XhrResult.CreateError(ex);
             }
         }
+
+
+        // POST: api/ControlSets/Exec/5
+        [HttpPost("Exec/{id}")]
+        public async Task<XhrResult> Exec(
+            [FromRoute] int id,
+            [FromBody] ControlCommand command,
+            [FromServices] BrDeviceStore devStore
+        )
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                    return XhrResult.CreateError(ModelState);
+
+                var controlSet = await this._dbc.ControlSets
+                    .SingleOrDefaultAsync(e => e.Id == id);
+
+                if (controlSet == null)
+                    return XhrResult.CreateError("ControlSet Entity Not Found");
+                else if (controlSet.BrDeviceId == null)
+                    return XhrResult.CreateError("Bradlink-Device Not Setted");
+
+
+                var control = await this._dbc.Controls
+                    .SingleOrDefaultAsync(e => e.Id == command.ControlId);
+
+                if (control == null)
+                    return XhrResult.CreateError("Control Entity Not Found");
+                else if (string.IsNullOrEmpty(control.Code))
+                    return XhrResult.CreateError("Code Not Found");
+
+                var brDevice = await devStore.Get((int)controlSet.BrDeviceId);
+
+                if (brDevice == null)
+                    return XhrResult.CreateError("Device Not Found");
+                else if (!brDevice.IsActive)
+                    return XhrResult.CreateError("Device is not Active");
+                else if (brDevice.SbDevice.DeviceType != DeviceType.Rm
+                         && brDevice.SbDevice.DeviceType != DeviceType.Rm2Pro)
+                    return XhrResult.CreateError("Device is not Rm");
+
+                var rm = (Rm)brDevice.SbDevice;
+                var pBytes = SharpBroadlink.Signals.String2ProntoBytes(control.Code);
+                var result = await rm.SendPronto(pBytes);
+
+                return (result)
+                    ? XhrResult.CreateSucceeded(true)
+                    : XhrResult.CreateError("Failed to Exec Command");
+            }
+            catch (Exception ex)
+            {
+                return XhrResult.CreateError(ex);
+            }
+        }
+
 
         private bool ControlSetExists(int id)
         {

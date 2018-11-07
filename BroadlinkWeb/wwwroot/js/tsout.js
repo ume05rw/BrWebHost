@@ -7591,8 +7591,11 @@ var App;
 /// <reference path="../../../Fw/Util/Xhr/Query.ts" />
 /// <reference path="../../Items/ControlSetTemplate.ts" />
 /// <reference path="../Entities/ControlSet.ts" />
+/// <reference path="../Entities/Control.ts" />
 /// <reference path="../Entities/Header.ts" />
+/// <reference path="../Entities/RmCommand.ts" />
 /// <reference path="ControlStore.ts" />
+/// <reference path="../../Items/OperationType.ts" />
 var App;
 (function (App) {
     var Models;
@@ -7855,6 +7858,42 @@ var App;
                                         this.Log('Query Fail');
                                         this.Log(res.Errors);
                                         return [2 /*return*/, false];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
+                ControlSetStore.prototype.Exec = function (controlSet, control) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var params, res, result;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    this.Log('Exec');
+                                    // 渡し値がヘン
+                                    if (!controlSet
+                                        || !controlSet.BrDeviceId
+                                        || !control
+                                        || !control.Code
+                                        || control.Code === ''
+                                        || controlSet.OperationType !== 1 /* RemoteControl */) {
+                                        return [2 /*return*/, false];
+                                    }
+                                    params = new Xhr.Params("ControlSets/Exec/" + controlSet.Id, Xhr.MethodType.Post, {
+                                        ControlId: control.Id
+                                    });
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        result = res.Values;
+                                        return [2 /*return*/, result];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, null];
                                     }
                                     return [2 /*return*/];
                             }
@@ -9794,8 +9833,9 @@ var App;
                                         case 99 /* Scene */: return [3 /*break*/, 11];
                                     }
                                     return [3 /*break*/, 12];
-                                case 1: return [4 /*yield*/, Stores.Rms.Exec(controlSet, control)];
+                                case 1: return [4 /*yield*/, Stores.ControlSets.Exec(controlSet, control)];
                                 case 2:
+                                    //result = await Stores.Rms.Exec(controlSet, control);
                                     result = _b.sent();
                                     return [3 /*break*/, 13];
                                 case 3: return [4 /*yield*/, Stores.BrDevices.Exec(controlSet, control)];

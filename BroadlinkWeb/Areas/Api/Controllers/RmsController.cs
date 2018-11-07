@@ -100,11 +100,22 @@ namespace BroadlinkWeb.Areas.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="rmCommand"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// 注)
+        /// テスト実行時以外は使用しないこと。
+        /// 通常はControlSetController.Exec() にControlSetIDを渡して実行する。
+        /// </remarks>
         // Post: api/Rms/Exec/5
         [HttpPost("Exec/{id?}")]
         public async Task<XhrResult> Exec([FromRoute] int? id, [FromBody] RmCommand rmCommand)
         {
-            Xb.Util.Out("RmController.GetLearnedCode");
+            Xb.Util.Out("RmController.Exec");
             try
             {
                 var pair = await this.GetRmDevice(id);
@@ -128,7 +139,7 @@ namespace BroadlinkWeb.Areas.Api.Controllers
 
         private async Task<(BrDevice entity, XhrResult result)> GetRmDevice(int? id)
         {
-            Xb.Util.Out("RmController.GetLearnedCode");
+            Xb.Util.Out("RmController.GetRmDevice");
 
             if (!ModelState.IsValid)
                 return (null, XhrResult.CreateError(ModelState));
