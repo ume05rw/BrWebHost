@@ -22,7 +22,7 @@
 /// <reference path="../Items/Weekday.ts" />
 /// <reference path="../Items/Color.ts" />
 /// <reference path="../Items/Icon.ts" />
-/// <reference path="ControlSetSelectController.ts" />
+/// <reference path="OperationSelectController.ts" />
 
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
@@ -42,7 +42,7 @@ namespace App.Controllers {
     import SceneDetailView = App.Views.Controls.SceneDetailView;
     import ItemSelectButtonView = App.Views.Controls.ItemSelectButtonView;
     import ModalOperationType = App.Items.ModalOperationType;
-    import ControlSetSelectController = App.Controllers.ControlSetSelectController;
+    import OperationSelectController = App.Controllers.OperationSelectController;
     import Scene = App.Models.Entities.Scene;
     import ControlSet = App.Models.Entities.ControlSet;
     import Control = App.Models.Entities.Control;
@@ -172,7 +172,7 @@ namespace App.Controllers {
                 }
             });
 
-            const ctr = this.Manager.Get('ControlSetSelect') as ControlSetSelectController;
+            const ctr = this.Manager.Get('OperationSelect') as OperationSelectController;
             ctr.RefreshControlSets();
 
         }
@@ -359,7 +359,7 @@ namespace App.Controllers {
                     break;
                 case ModalOperationType.Edit:
 
-                    const ctr = this.Manager.Get('ControlSetSelect') as ControlSetSelectController;
+                    const ctr = this.Manager.Get('OperationSelect') as OperationSelectController;
                     ctr.IsSceneIncludes = true;
                     const entity: ControlSet | Scene = await ctr.Select(this);
 

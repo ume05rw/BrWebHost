@@ -10,8 +10,13 @@
 /// <reference path="../Views/Controls/LabelAndButtonView.ts" />
 /// <reference path="../../Fw/Events/ButtonViewEvents.ts" />
 /// <reference path="../Items/OperationTemplate.ts" />
+/// <reference path="../Items/OperationType.ts" />
 /// <reference path="../Items/Color.ts" />
 /// <reference path="../Items/Icon.ts" />
+/// <reference path="../Items/DeviceType.ts" />
+/// <reference path="../Models/Stores/ControlSetStore.ts" />
+/// <reference path="../Models/Entities/ControlSet.ts" />
+/// <reference path="../Models/Entities/Scene.ts" />
 
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
@@ -23,10 +28,18 @@ namespace App.Controllers {
     import OperationTemplate = App.Items.OperationTemplate;
     import Color = App.Items.Color;
     import Icon = App.Items.Icon;
+    import OperationType = App.Items.OperationType;
+    import Stores = App.Models.Stores;
+    import ControlSet = App.Models.Entities.ControlSet;
+    import Scene = App.Models.Entities.Scene;
+    import DeviceType = App.Items.DeviceType;
 
     export class OperationSelectController extends ItemSelectControllerBase {
 
         private _page: Pages.ItemSelectPageView;
+        private _controlSets: Array<ControlSet> = [];
+        private _scenes: Array<Scene> = [];
+        public IsSceneIncludes: boolean;
 
         constructor() {
             super('OperationSelect');
@@ -34,132 +47,101 @@ namespace App.Controllers {
             this.SetClassName('OperationSelectController');
 
             this._page = this.View as Pages.ItemSelectPageView;
+            this._page.Label.Text = 'Select Remote Control';
 
-            this.InitView();
+            this._controlSets = null;
+            this.IsSceneIncludes = false;
         }
 
-        private InitView(): void {
-            this._page.Label.Text = 'Select New Operation';
+        public async Select(parentController: Fw.Controllers.IController): Promise<any> {
+            this.InitView();
+            return super.Select(parentController);
+        }
 
-            // TV
-            const btn2 = this.GetNewButton();
-            btn2.Label.Text = 'TV';
-            btn2.Button.ImageSrc = Icon.GetByOperationTemplate(OperationTemplate.Tv);
-            btn2.Button.BackgroundColor = Color.ButtonColors[4];
-            btn2.Button.HoverColor = Color.ButtonHoverColors[4];
-            btn2.Button.Color = Color.ButtonColors[4];
-            btn2.Button.AddEventListener(ButtonEvents.SingleClick, () => {
-                this.Commit(OperationTemplate.Tv);
+        public async RefreshControlSets(): Promise<boolean> {
+            this._controlSets = await Stores.ControlSets.GetListForMainPanel();
+            this._scenes = await Stores.Scenes.GetList();
+            return true;
+        }
+
+        private async InitView(): Promise<boolean> {
+
+            if (!this._controlSets)
+                await this.RefreshControlSets();
+
+            const children = Fw.Util.Obj.Mirror(this._page.SelectorPanel.Children);
+            _.each(children, (v: Fw.Views.IView) => {
+                this._page.SelectorPanel.Remove(v);
+                v.Dispose();
             });
-            this._page.SelectorPanel.Add(btn2);
 
-            // AV
-            const btn3 = this.GetNewButton();
-            btn3.Label.Text = 'AV';
-            btn3.Button.ImageSrc = Icon.GetByOperationTemplate(OperationTemplate.Av);
-            btn3.Button.BackgroundColor = Color.ButtonColors[5];
-            btn3.Button.HoverColor = Color.ButtonHoverColors[5];
-            btn3.Button.Color = Color.ButtonColors[5];
-            btn3.Button.AddEventListener(ButtonEvents.SingleClick, () => {
-                this.Commit(OperationTemplate.Av);
+            _.each(this._controlSets, (cset: ControlSet) => {
+
+                // 操作未対応のBroadlinkデバイスのとき、選択させない。
+                if (cset.OperationType === OperationType.BroadlinkDevice) {
+                    const pairedDev = Stores.BrDevices.Get(cset.BrDeviceId);
+                    if (pairedDev.DeviceType === DeviceType.A1
+                        || pairedDev.DeviceType === DeviceType.Rm
+                        || pairedDev.DeviceType === DeviceType.Rm2Pro
+                        || pairedDev.DeviceType === DeviceType.Dooya
+                        || pairedDev.DeviceType === DeviceType.Hysen
+                        || pairedDev.DeviceType === DeviceType.Mp1
+                        || pairedDev.DeviceType === DeviceType.S1c
+                        || pairedDev.DeviceType === DeviceType.Sp1
+                    ) {
+                        return;
+                    }
+                }
+
+                // ControlSet
+                const btn = this.GetNewButton();
+                btn.Label.Text = cset.Name;
+                btn.Button.ImageSrc = Icon.GetPairdOperationIcon(cset.IconUrl);
+                btn.Button.Color = cset.Color;
+                btn.Button.BackgroundColor = cset.Color;
+                btn.Button.HoverColor = Color.GetButtonHoverColor(cset.Color);
+                btn.Value = cset;
+
+                btn.Button.AddEventListener(ButtonEvents.SingleClick, (e) => {
+                    const button = e.Sender as Fw.Views.ButtonView;
+                    const lbView = button.Parent as LabelAndButtonView;
+                    const entity = lbView.Value as ControlSet;
+                    this.Commit(entity);
+                });
+                this._page.SelectorPanel.Add(btn);
             });
-            this._page.SelectorPanel.Add(btn3);
 
-            // 照明
-            const btn4 = this.GetNewButton();
-            btn4.Label.Text = 'Light';
-            btn4.Button.ImageSrc = Icon.GetByOperationTemplate(OperationTemplate.Light);
-            btn4.Button.BackgroundColor = Color.ButtonColors[3];
-            btn4.Button.HoverColor = Color.ButtonHoverColors[3];
-            btn4.Button.Color = Color.ButtonColors[3];
-            btn4.Button.AddEventListener(ButtonEvents.SingleClick, () => {
-                this.Commit(OperationTemplate.Light);
-            });
-            this._page.SelectorPanel.Add(btn4);
+            if (this.IsSceneIncludes) {
+                // 区切り線
+                const line2 = new Fw.Views.LineView(Property.Direction.Horizontal);
+                line2.SetAnchor(null, 5, 5, null);
+                line2.Color = App.Items.Color.MainBackground;
+                this._page.SelectorPanel.Add(line2);
 
-            // フリー編集
-            const btn5 = this.GetNewButton();
-            btn5.Label.Text = 'Free';
-            btn5.Button.ImageSrc = Icon.GetByOperationTemplate(OperationTemplate.Free);
-            btn5.Button.BackgroundColor = Color.ButtonColors[7];
-            btn5.Button.HoverColor = Color.ButtonHoverColors[7];
-            btn5.Button.Color = Color.ButtonColors[7];
-            btn5.Button.AddEventListener(ButtonEvents.SingleClick, () => {
-                this.Commit(OperationTemplate.Free);
-            });
-            this._page.SelectorPanel.Add(btn5);
+                _.each(this._scenes, (scene: Scene) => {
 
-            // 区切り線
-            const line2 = new Fw.Views.LineView(Property.Direction.Horizontal);
-            line2.SetAnchor(null, 5, 5, null);
-            line2.Color = App.Items.Color.MainBackground;
-            this._page.SelectorPanel.Add(line2);
+                    // Scnene
+                    const btn = this.GetNewButton();
+                    btn.Label.Text = scene.Name;
+                    btn.Button.ImageSrc = Icon.GetPairdOperationIcon(scene.IconUrl);
+                    btn.Button.Color = scene.Color;
+                    btn.Button.BackgroundColor = scene.Color;
+                    btn.Button.HoverColor = Color.GetButtonHoverColor(scene.Color);
+                    btn.Value = scene;
 
-            // WoL
-            const btn6 = this.GetNewButton();
-            btn6.Label.Text = 'WoL';
-            btn6.Button.ImageSrc = Icon.GetByOperationTemplate(OperationTemplate.WoL);
-            btn6.Button.BackgroundColor = Color.ButtonColors[2];
-            btn6.Button.HoverColor = Color.ButtonHoverColors[2];
-            btn6.Button.Color = Color.ButtonColors[2];
-            btn6.Button.AddEventListener(ButtonEvents.SingleClick, () => {
-                this.Commit(OperationTemplate.WoL);
-            });
-            this._page.SelectorPanel.Add(btn6);
+                    btn.Button.AddEventListener(ButtonEvents.SingleClick, (e) => {
+                        const button = e.Sender as Fw.Views.ButtonView;
+                        const lbView = button.Parent as LabelAndButtonView;
+                        const entity = lbView.Value as Scene;
+                        this.Commit(entity);
+                    });
+                    this._page.SelectorPanel.Add(btn);
+                });
+            }
 
-            // ローカル実行
-            const btn7 = this.GetNewButton();
-            btn7.Label.Text = 'Script';
-            btn7.Button.ImageSrc = Icon.GetByOperationTemplate(OperationTemplate.Script);
-            btn7.Button.BackgroundColor = Color.ButtonColors[2];
-            btn7.Button.HoverColor = Color.ButtonHoverColors[2];
-            btn7.Button.Color = Color.ButtonColors[2];
-            btn7.Button.AddEventListener(ButtonEvents.SingleClick, () => {
-                this.Commit(OperationTemplate.Script);
-            });
-            this._page.SelectorPanel.Add(btn7);
+            this._page.SelectorPanel.Refresh();
 
-            // リモート実行
-            const btn8 = this.GetNewButton();
-            btn8.Label.Text = 'Remote';
-            btn8.Button.ImageSrc = Icon.GetByOperationTemplate(OperationTemplate.RemoteHostScript);
-            btn8.Button.BackgroundColor = Color.ButtonColors[2];
-            btn8.Button.HoverColor = Color.ButtonHoverColors[2];
-            btn8.Button.Color = Color.ButtonColors[2];
-            btn8.Button.AddEventListener(ButtonEvents.SingleClick, () => {
-                this.Commit(OperationTemplate.RemoteHostScript);
-            });
-            this._page.SelectorPanel.Add(btn8);
-
-            // 区切り線
-            const line1 = new Fw.Views.LineView(Property.Direction.Horizontal);
-            line1.SetAnchor(null, 5, 5, null);
-            line1.Color = App.Items.Color.MainBackground;
-            this._page.SelectorPanel.Add(line1);
-
-            // シーン
-            const btn1 = this.GetNewButton();
-            btn1.Label.Text = 'Scene';
-            btn1.Button.ImageSrc = Icon.GetByOperationTemplate(OperationTemplate.Scene);
-            btn1.Button.Color = Color.ButtonColors[8];
-            btn1.Button.BackgroundColor = Color.ButtonColors[8]
-            btn1.Button.HoverColor = Color.ButtonHoverColors[8];
-            btn1.Button.AddEventListener(ButtonEvents.SingleClick, () => {
-                this.Commit(OperationTemplate.Scene);
-            });
-            this._page.SelectorPanel.Add(btn1);
-
-            // スケジュール
-            const btn9 = this.GetNewButton();
-            btn9.Label.Text = 'Timer';
-            btn9.Button.ImageSrc = Icon.GetByOperationTemplate(OperationTemplate.Schedule);
-            btn9.Button.Color = Color.ButtonColors[9];
-            btn9.Button.BackgroundColor = Color.ButtonColors[9]
-            btn9.Button.HoverColor = Color.ButtonHoverColors[9];
-            btn9.Button.AddEventListener(ButtonEvents.SingleClick, () => {
-                this.Commit(OperationTemplate.Schedule);
-            });
-            this._page.SelectorPanel.Add(btn9);
+            return true;
         }
 
         private GetNewButton(): LabelAndButtonView {
@@ -168,9 +150,9 @@ namespace App.Controllers {
             button.Button.Position.Policy = Property.PositionPolicy.LeftTop;
             button.Button.HasBorder = true;
             button.Button.BorderRadius = 10;
-            button.Button.BackgroundColor = App.Items.Color.MainBackground;
-            button.Button.HoverColor = App.Items.Color.ButtonHoverColors[0];
-            button.Button.Color = App.Items.Color.ButtonColors[0];
+            button.Button.BackgroundColor = Color.MainBackground;
+            button.Button.HoverColor = Color.ButtonHoverColors[0];
+            button.Button.Color = Color.ButtonColors[0];
             button.Button.ImageFitPolicy = Property.FitPolicy.Auto;
             return button;
         }

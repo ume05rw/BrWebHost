@@ -21,7 +21,7 @@
 /// <reference path="../Items/OperationType.ts" />
 /// <reference path="../Items/DeviceType.ts" />
 /// <reference path="../Items/ModalOperationType.ts" />
-/// <reference path="ControlSetSelectController.ts" />
+/// <reference path="OperationSelectController.ts" />
 
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
@@ -43,7 +43,7 @@ namespace App.Controllers {
     import ButtonView = Fw.Views.ButtonView;
     import ItemSelectButtonView = App.Views.Controls.ItemSelectButtonView;
     import ModalOperationType = App.Items.ModalOperationType;
-    import ControlSetSelectController = App.Controllers.ControlSetSelectController;
+    import OperationSelectController = App.Controllers.OperationSelectController;
     import ControlSet = App.Models.Entities.ControlSet;
     import Control = App.Models.Entities.Control;
     import Job = App.Models.Entities.Job;
@@ -175,7 +175,7 @@ namespace App.Controllers {
             // マウスイベントをStuckerに取られ、待機時間入力が出来ないので。
             //this._page.DetailPanel.StartRelocation();
 
-            const ctr = this.Manager.Get('ControlSetSelect') as ControlSetSelectController;
+            const ctr = this.Manager.Get('OperationSelect') as OperationSelectController;
             ctr.RefreshControlSets();
 
             _.each(this._page.DetailPanel.Children, (v: SceneDetailView) => {
@@ -260,7 +260,7 @@ namespace App.Controllers {
                     break;
                 case ModalOperationType.Edit:
 
-                    const ctr = this.Manager.Get('ControlSetSelect') as ControlSetSelectController;
+                    const ctr = this.Manager.Get('OperationSelect') as OperationSelectController;
                     ctr.IsSceneIncludes = false;
                     const controlSet: ControlSet = await ctr.Select(this);
 

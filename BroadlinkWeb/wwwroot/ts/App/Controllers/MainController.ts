@@ -64,10 +64,10 @@ namespace App.Controllers {
                     const controlPropertyCtr = new ControlPropertyController();
 
                     const a1SetCtr = new A1SetController();
-                    const operationSelectCtr = new OperationSelectController();
+                    const templateSelectCtr = new TemplateSelectController();
 
                     const sceneCtr = new SceneController();
-                    const controlSetSelectStr = new ControlSetSelectController();
+                    const operationSelectStr = new OperationSelectController();
                     const sceneHeaderPropertyCtr = new SceneHeaderPropertyController();
 
                     const scheduleCtr = new ScheduleController();
@@ -75,14 +75,12 @@ namespace App.Controllers {
                     const iconSelectCtr = new IconSelectController();
                     const colorSelectCtr = new ColorSelectController();
 
-
-
                     Dump.Log('SubController Load End');
                 });
 
             this._page.HeaderBar.RightButton.AddEventListener(ButtonEvents.SingleClick, async () => {
                 // ヘッダの追加ボタンクリック - 新規リモコンのテンプレート選択後に編集画面へ。
-                const ctr = this.Manager.Get('OperationSelect') as OperationSelectController;
+                const ctr = this.Manager.Get('TemplateSelect') as TemplateSelectController;
                 const item: OperationTemplate = await ctr.Select(this);
 
                 let ctrSet: App.Models.Entities.ControlSet;

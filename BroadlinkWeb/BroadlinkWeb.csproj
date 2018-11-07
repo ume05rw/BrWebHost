@@ -13,7 +13,6 @@
     <Content Remove="wwwroot\ts\App\Controllers\ControlHeaderPropertyController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\ControlPropertyController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\ControlSetController.ts" />
-    <Content Remove="wwwroot\ts\App\Controllers\ControlSetSelectController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\CSControllerFactory.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\IconSelectController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\IControlSetController.ts" />
@@ -23,6 +22,7 @@
     <Content Remove="wwwroot\ts\App\Controllers\SceneController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\SceneHeaderPropertyController.ts" />
     <Content Remove="wwwroot\ts\App\Controllers\ScheduleController.ts" />
+    <Content Remove="wwwroot\ts\App\Controllers\TemplateSelectController.ts" />
     <Content Remove="wwwroot\ts\App\Events\Controls\ControlButtonViewEvents.ts" />
     <Content Remove="wwwroot\ts\App\Icon.ts" />
     <Content Remove="wwwroot\ts\App\Items\ChartType.ts" />
@@ -191,7 +191,7 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\IControlSetController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\SceneHeaderPropertyController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\IconSelectController.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ControlSetSelectController.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Controllers\OperationSelectController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\SceneController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ScheduleController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Items\ChartType.ts" />
@@ -201,7 +201,7 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ControlHeaderPropertyController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ControlPropertyController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ControlSetController.ts" />
-    <TypeScriptCompile Include="wwwroot\ts\App\Controllers\OperationSelectController.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Controllers\TemplateSelectController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ItemSelectControllerBase.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\MouseEventsController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Events\Controls\ControlButtonViewEvents.ts" />
