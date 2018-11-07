@@ -324,12 +324,14 @@ namespace App.Controllers {
         }
 
         public async RefreshScenesAndSchedules(): Promise<boolean> {
-            const scenes = await Stores.Scenes.GetList();
-            const schedules = await Stores.Schedules.GetList();
-            let entities = (scenes as Array<Entities.Scene | Entities.Schedule>).concat(schedules);
-            entities = _.sortBy(entities, (e: Entities.Scene | Entities.Schedule) => {
-                return e.Order;
-            });
+            const promises: Promise<Array<Entities.Scene|Entities.Schedule>>[] = [];
+            promises.push(Stores.Scenes.GetList());
+            promises.push(Stores.Schedules.GetList());
+            await Promise.all(promises);
+
+            const entities: Array<Entities.Scene | Entities.Schedule> = [];
+            _.each(Stores.Scenes.List, (e: Entities.Scene) => { entities.push(e); });
+            _.each(Stores.Schedules.List, (e: Entities.Schedule) => { entities.push(e); });
 
             // 削除されたEntity分のボタンをパネルから削除。
             let children = Fw.Util.Obj.Mirror(this._page.ScenePanel.Children);
