@@ -7225,21 +7225,27 @@ var App;
             MainController.prototype.InitStores = function () {
                 return __awaiter(this, void 0, void 0, function () {
                     var promises;
+                    var _this = this;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
                                 Dump.Log('Store Initialize Start');
-                                return [4 /*yield*/, Stores.BrDevices.GetList()];
-                            case 1:
-                                _a.sent();
-                                Dump.Log('Store Initialize - BrDevices OK.');
                                 promises = [];
+                                promises.push((function () { return __awaiter(_this, void 0, void 0, function () {
+                                    return __generator(this, function (_a) {
+                                        switch (_a.label) {
+                                            case 0: return [4 /*yield*/, Stores.BrDevices.GetList()];
+                                            case 1:
+                                                _a.sent();
+                                                return [2 /*return*/, true];
+                                        }
+                                    });
+                                }); })());
                                 promises.push(this.RefreshControlSets());
                                 promises.push(this.RefreshScenesAndSchedules());
                                 return [4 /*yield*/, Promise.all(promises)];
-                            case 2:
+                            case 1:
                                 _a.sent();
-                                Dump.Log('Store Initialize - ControlSets/Scenes OK.');
                                 Dump.Log('Store Initialize End');
                                 return [2 /*return*/, true];
                         }

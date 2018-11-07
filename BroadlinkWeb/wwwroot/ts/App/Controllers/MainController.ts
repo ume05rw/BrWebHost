@@ -202,19 +202,15 @@ namespace App.Controllers {
 
             Dump.Log('Store Initialize Start');
 
-            await Stores.BrDevices.GetList();
-
-            Dump.Log('Store Initialize - BrDevices OK.');
-
-            // ControlSetとSceneは並列に実行する。
-            //await this.RefreshControlSets();
-            //await this.RefreshScenes();
+            // 各Storeにキャッシュしつつ描画。並列で行う。
             const promises: Promise<boolean>[] = [];
+            promises.push((async () => {
+                await Stores.BrDevices.GetList()
+                return true;
+            })());
             promises.push(this.RefreshControlSets());
             promises.push(this.RefreshScenesAndSchedules());
             await Promise.all(promises);
-
-            Dump.Log('Store Initialize - ControlSets/Scenes OK.');
 
             Dump.Log('Store Initialize End');
 
