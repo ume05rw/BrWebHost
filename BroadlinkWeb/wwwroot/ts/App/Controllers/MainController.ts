@@ -193,8 +193,8 @@ namespace App.Controllers {
                         schedules.push(btn.Entity);
 
                 });
-                await Stores.Scenes.UpdateHeaders(scenes);
-                await Stores.Schedules.UpdateHeaders(schedules);
+                Stores.Scenes.UpdateHeaders(scenes);
+                Stores.Schedules.UpdateHeaders(schedules);
             });
         }
 
@@ -204,10 +204,6 @@ namespace App.Controllers {
 
             // 各Storeにキャッシュしつつ描画。並列で行う。
             const promises: Promise<boolean>[] = [];
-            promises.push((async () => {
-                await Stores.BrDevices.GetList()
-                return true;
-            })());
             promises.push(this.RefreshControlSets());
             promises.push(this.RefreshScenesAndSchedules());
             await Promise.all(promises);
@@ -218,7 +214,17 @@ namespace App.Controllers {
         }
 
         public async RefreshControlSets(): Promise<boolean> {
-            const sets = await Stores.ControlSets.GetListForMainPanel();
+            let sets: Array<Entities.ControlSet> = [];
+            const promises: Promise<boolean>[] = [];
+            promises.push((async () => {
+                await Stores.BrDevices.GetList();
+                return true;
+            })());
+            promises.push((async () => {
+                sets = await Stores.ControlSets.GetListForMainPanel();
+                return true;
+            })());
+            await Promise.all(promises);
 
             // 削除されたEntity分のボタンをパネルから削除。
             const children = Fw.Util.Obj.Mirror(this._page.ControlSetPanel.Children);
