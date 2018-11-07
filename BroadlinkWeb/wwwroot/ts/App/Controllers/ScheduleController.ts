@@ -100,9 +100,7 @@ namespace App.Controllers {
             });
 
             _.each(this._page.InputPanel.Children, (view: Fw.Views.IView) => {
-                if (view instanceof Fw.Views.InputViewBase
-                    || view instanceof Fw.Views.CheckBoxInputView
-                ) {
+                if (view instanceof Fw.Views.InputViewBase) {
                     view.AddEventListener(InputEvents.Changed, this.ApplyToEntity, this);
                 }
             });
@@ -155,6 +153,25 @@ namespace App.Controllers {
             this._page.EditButton.Hide(0);
             this._page.HeaderBar.RightButton.Hide(0);
 
+            this._page.LblName.Show(0);
+            this._page.TxtName.Show(0);
+            this._page.LblColor.Show(0);
+            this._page.BtnColor.Show(0);
+
+            this._page.SboHour.Show(0);
+            this._page.SboMinute.Show(0);
+            this._page.LblTimeSeparator.Show(0);
+            this._page.LblStartTime.Hide(0);
+
+            this._page.DeleteButton.Show(0);
+
+
+            _.each(this._page.InputPanel.Children, (view: Fw.Views.IView) => {
+                if (view instanceof Fw.Views.InputViewBase) {
+                    view.IsReadOnly = false;
+                }
+            });
+
             const ctr = this.Manager.Get('ControlSetSelect') as ControlSetSelectController;
             ctr.RefreshControlSets();
 
@@ -169,6 +186,24 @@ namespace App.Controllers {
             this._page.HeaderBar.RightButton.Hide(0);
             this._page.HeaderLeftLabel.Show(0);
             this._page.EditButton.Show(0);
+
+            this._page.LblName.Hide(0);
+            this._page.TxtName.Hide(0);
+            this._page.LblColor.Hide(0);
+            this._page.BtnColor.Hide(0);
+
+            this._page.SboHour.Hide(0);
+            this._page.SboMinute.Hide(0);
+            this._page.LblTimeSeparator.Hide(0);
+            this._page.LblStartTime.Show(0);
+
+            this._page.DeleteButton.Hide(0);
+
+            _.each(this._page.InputPanel.Children, (view: Fw.Views.IView) => {
+                if (view instanceof Fw.Views.InputViewBase) {
+                    view.IsReadOnly = true;
+                }
+            });
         }
 
         /**

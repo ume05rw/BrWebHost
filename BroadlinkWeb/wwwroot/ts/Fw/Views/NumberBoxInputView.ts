@@ -88,7 +88,7 @@ namespace Fw.Views {
         constructor() {
             super($('<input type="text"></input>'));
 
-            this.SetClassName('TextBoxInputView');
+            this.SetClassName('NumberBoxInputView');
             this.Elem.addClass(this.ClassName);
 
             this._numberValue = 0;

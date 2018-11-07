@@ -3,6 +3,7 @@
 /// <reference path="../../../Fw/Views/PageView.ts" />
 /// <reference path="../../../Fw/Views/Property/Anchor.ts" />
 /// <reference path="../../../Fw/Events/PageViewEvents.ts" />
+/// <reference path="../../../Fw/Events/SelectBoxInputViewEvents.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../Controls/HeaderBarView.ts" />
 /// <reference path="../../Items/Color.ts" />
@@ -14,6 +15,7 @@ namespace App.Views.Pages {
     import Property = Fw.Views.Property;
     import Controls = App.Views.Controls;
     import Color = App.Items.Color;
+    import SelectBoxEvents = Fw.Events.SelectBoxInputViewEvents;
 
     export class SchedulePageView extends Fw.Views.PageView {
 
@@ -21,9 +23,16 @@ namespace App.Views.Pages {
         public EditButton: Controls.ButtonView;
         public HeaderLeftLabel: Views.LabelView;
         public InputPanel: Views.StuckerBoxView;
+        public LblName: Views.LabelView;
         public TxtName: Views.TextBoxInputView;
+        public LblColor: Views.LabelView;
         public BtnColor: Controls.ItemSelectButtonView;
+        public SdvControl: Controls.SceneDetailView;
         public ChkEnabled: Views.CheckBoxInputView;
+        public SboHour: Views.SelectBoxInputView;
+        public SboMinute: Views.SelectBoxInputView;
+        public LblTimeSeparator: Views.LabelView;
+        public LblStartTime: Views.LabelView;
         public ChkWeekdaySunday: Views.CheckBoxInputView;
         public ChkWeekdayMonday: Views.CheckBoxInputView;
         public ChkWeekdayTuesday: Views.CheckBoxInputView;
@@ -31,9 +40,6 @@ namespace App.Views.Pages {
         public ChkWeekdayThursday: Views.CheckBoxInputView;
         public ChkWeekdayFriday: Views.CheckBoxInputView;
         public ChkWeekdaySaturday: Views.CheckBoxInputView;
-        public SboHour: Views.SelectBoxInputView;
-        public SboMinute: Views.SelectBoxInputView;
-        public SdvControl: Controls.SceneDetailView;
         public DeleteButton: Controls.PropertyButtonView;
 
         constructor() {
@@ -44,9 +50,17 @@ namespace App.Views.Pages {
             this.EditButton = new Controls.ButtonView();
 
             this.InputPanel = new Views.StuckerBoxView();
+            this.LblName = new Views.LabelView();
             this.TxtName = new Views.TextBoxInputView();
+            this.LblColor = new Views.LabelView();
             this.BtnColor = new Controls.ItemSelectButtonView();
+
+            this.SdvControl = new Controls.SceneDetailView();
             this.ChkEnabled = new Views.CheckBoxInputView();
+            this.SboHour = new Views.SelectBoxInputView();
+            this.SboMinute = new Views.SelectBoxInputView();
+            this.LblTimeSeparator = new Views.LabelView();
+            this.LblStartTime = new Views.LabelView();
             this.ChkWeekdaySunday = new Views.CheckBoxInputView();
             this.ChkWeekdayMonday = new Views.CheckBoxInputView();
             this.ChkWeekdayTuesday = new Views.CheckBoxInputView();
@@ -54,10 +68,6 @@ namespace App.Views.Pages {
             this.ChkWeekdayThursday = new Views.CheckBoxInputView();
             this.ChkWeekdayFriday = new Views.CheckBoxInputView();
             this.ChkWeekdaySaturday = new Views.CheckBoxInputView();
-            this.SboHour = new Views.SelectBoxInputView();
-            this.SboMinute = new Views.SelectBoxInputView();
-            this.SdvControl = new Controls.SceneDetailView();
-
             this.DeleteButton = new Controls.PropertyButtonView();
 
             this.SetClassName('SchedulePageView');
@@ -93,26 +103,24 @@ namespace App.Views.Pages {
             this.InputPanel.IsChildRelocatable = false;
             this.Add(this.InputPanel);
 
-            const lbl1 = new Views.LabelView();
-            lbl1.Text = 'Name';
-            lbl1.TextAlign = Property.TextAlign.Left;
-            lbl1.AutoSize = true;
-            lbl1.SetAnchor(null, 5, null, null);
-            lbl1.Size.Height = 21;
-            this.InputPanel.Add(lbl1);
+            this.LblName.Text = 'Name';
+            this.LblName.TextAlign = Property.TextAlign.Left;
+            this.LblName.AutoSize = true;
+            this.LblName.SetAnchor(null, 5, null, null);
+            this.LblName.Size.Height = 21;
+            this.InputPanel.Add(this.LblName);
 
             this.TxtName.SetAnchor(null, 5, 15, null);
             this.TxtName.Size.Height = 30;
             this.TxtName.Name = 'Name';
             this.InputPanel.Add(this.TxtName);
 
-            const lbl2 = new Views.LabelView();
-            lbl2.Text = 'Color';
-            lbl2.TextAlign = Property.TextAlign.Left;
-            lbl2.AutoSize = true;
-            lbl2.SetAnchor(null, 5, null, null);
-            lbl2.Size.Height = 21;
-            this.InputPanel.Add(lbl2);
+            this.LblColor.Text = 'Color';
+            this.LblColor.TextAlign = Property.TextAlign.Left;
+            this.LblColor.AutoSize = true;
+            this.LblColor.SetAnchor(null, 5, null, null);
+            this.LblColor.Size.Height = 21;
+            this.InputPanel.Add(this.LblColor);
             this.InputPanel.AddSpacer();
 
             this.InputPanel.Add(this.BtnColor);
@@ -154,23 +162,34 @@ namespace App.Views.Pages {
 
             //this.SboHour.SetAnchor(null, 5, null, null);
             this.SboHour.SetSize(80, 30);
-            for (let i = 0; i < 24; i++)
+            for (let i = 0; i < 24; i++) {
                 this.SboHour.AddItem(`00${i}`.slice(-2), i.toString());
-
+            }
+            this.SboHour.AddEventListener(SelectBoxEvents.Changed, this.OnStartTimeChanged, this);
             this.InputPanel.Add(this.SboHour);
 
-            const lblSep = new Views.LabelView();
-            lblSep.Text = ':';
-            lblSep.TextAlign = Property.TextAlign.Center;
-            lblSep.SetSize(10, 30);
-            lblSep.AutoSize = false;
-            this.InputPanel.Add(lblSep);
+            this.LblTimeSeparator.Text = ':';
+            this.LblTimeSeparator.TextAlign = Property.TextAlign.Center;
+            this.LblTimeSeparator.SetSize(10, 30);
+            this.LblTimeSeparator.AutoSize = false;
+            this.InputPanel.Add(this.LblTimeSeparator);
 
             this.SboMinute.SetSize(80, 30);
-            for (let i = 0; i < 6; i++)
+            for (let i = 0; i < 6; i++) {
                 this.SboMinute.AddItem(`00${(i * 10)}`.slice(-2), (i * 10).toString());
-
+            }
+            this.SboMinute.AddEventListener(SelectBoxEvents.Changed, this.OnStartTimeChanged, this);
             this.InputPanel.Add(this.SboMinute);
+
+            this.LblStartTime = new Views.LabelView();
+            this.LblStartTime.Text = '00:00';
+            this.LblStartTime.TextAlign = Property.TextAlign.Left;
+            this.LblStartTime.AutoSize = true;
+            this.LblStartTime.SetAnchor(null, 20, null, null);
+            this.LblStartTime.Size.Height = 21;
+            this.InputPanel.Add(this.LblStartTime);
+            this.InputPanel.AddSpacer();
+
 
             const lbl4 = new Views.LabelView();
             lbl4.Text = 'Weekday Action';
@@ -226,6 +245,21 @@ namespace App.Views.Pages {
             this.DeleteButton.Size.Height = 30;
             this.DeleteButton.Text = '*Delete*';
             this.InputPanel.Add(this.DeleteButton);
+        }
+
+        private OnStartTimeChanged(): void {
+            if (!this.SboHour.Value
+                || this.SboHour.Value === ''
+                || !this.SboMinute.Value
+                || this.SboMinute.Value === ''
+            ) {
+                this.LblStartTime.Text = '--:--';
+            } else {
+                this.LblStartTime.Text
+                    = ('00' + this.SboHour.Value).slice(-2)
+                        + ':'
+                        + ('00' + this.SboMinute.Value).slice(-2);
+            }
         }
     }
 }

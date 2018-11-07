@@ -3,6 +3,7 @@
 /// <reference path="../Events/CheckBoxInputViewEvents.ts" />
 /// <reference path="../Util/Dump.ts" />
 /// <reference path="ViewBase.ts" />
+/// <reference path="InputViewBase.ts" />
 /// <reference path="IInputView.ts" />
 /// <reference path="Property/FitPolicy.ts" />
 
@@ -10,7 +11,7 @@ namespace Fw.Views {
     import Dump = Fw.Util.Dump;
     import Events = Fw.Events.CheckBoxInputViewEvents;
 
-    export class CheckBoxInputView extends ViewBase implements IInputView {
+    export class CheckBoxInputView extends InputViewBase implements IInputView {
 
         private _text: string;
         public get Text(): string {
@@ -21,7 +22,6 @@ namespace Fw.Views {
             this._label.text(this._text);
         }
 
-        private _name: string;
         public get Name(): string {
             return this._name;
         }
@@ -49,6 +49,18 @@ namespace Fw.Views {
         }
         public set Value(value: string) {
             this.SetValue(value);
+        }
+
+        public get IsReadOnly(): boolean {
+            return this._isReadOnly;
+        }
+        public set IsReadOnly(value: boolean) {
+            const changed = (this._isReadOnly !== value);
+
+            if (changed) {
+                this._isReadOnly = value;
+                this._input.attr('disabled', this._isReadOnly);
+            }
         }
 
         public SetValue(value: string, eventDispatch: boolean = true): void {

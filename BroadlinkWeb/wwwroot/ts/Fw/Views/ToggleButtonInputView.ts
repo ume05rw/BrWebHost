@@ -38,6 +38,19 @@ namespace Fw.Views {
             this.SetValue(value);
         }
 
+        private _isReadOnly: boolean;
+        public get IsReadOnly(): boolean {
+            return this._isReadOnly;
+        }
+        public set IsReadOnly(value: boolean) {
+            const changed = (this._isReadOnly !== value);
+
+            if (changed) {
+                this._isReadOnly = value;
+                this.Elem.attr('readonly', this._isReadOnly);
+            }
+        }
+
         public SetValue(value: string, eventDispatch: boolean = true): void {
             this.SetBoolValue((value === 'true'), eventDispatch);
         }
@@ -111,6 +124,9 @@ namespace Fw.Views {
 
             this.AddEventListener(Events.SingleClick, (e) => {
                 //this.Log(`${this.ClassName}.SingleClick`);
+                if (this.IsReadOnly)
+                    return;
+
                 this.BoolValue = !this.BoolValue;
                 this.Refresh();
             });

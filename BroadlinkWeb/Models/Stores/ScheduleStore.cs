@@ -256,7 +256,7 @@ namespace BroadlinkWeb.Models.Stores
 
                 if (schedule.GetWeekdayFlag(day.DayOfWeek))
                 {
-                    result = new DateTime(
+                    var next = new DateTime(
                         day.Year,
                         day.Month,
                         day.Day,
@@ -264,7 +264,11 @@ namespace BroadlinkWeb.Models.Stores
                         schedule.StartTime.Minute,
                         schedule.StartTime.Second
                     );
-                    break;
+                    if (DateTime.Now < next)
+                    {
+                        result = next;
+                        break;
+                    }
                 }
             }
 
