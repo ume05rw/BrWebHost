@@ -11,6 +11,10 @@ using System.IO;
 using System.Threading.Tasks;
 using Xb.App;
 using System.Threading;
+using System.Net;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
+using NetFwTypeLib;
 
 namespace Monitor
 {
@@ -40,6 +44,7 @@ namespace Monitor
         private ToolStripMenuItem _menuItemStart;
         private ToolStripMenuItem _menuItemStop;
 
+        private Target _target;
         private string _currentPath;
         private readonly string _fileName;
         private Process _brProcess;
@@ -49,6 +54,7 @@ namespace Monitor
 
         public TaskTrayForm(Target target)
         {
+            this._target = target;
             this.ShowInTaskbar = false;
 
             Job.IsMonitorEnabled = false;
@@ -58,7 +64,7 @@ namespace Monitor
             var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
             this._currentPath = Path.GetDirectoryName(pathToExe);
 
-            switch (target)
+            switch (this._target)
             {
                 case Target.BroadlinkWeb:
                     this._fileName = Path.Combine(this._currentPath, TaskTrayForm.FileNameMain);
@@ -73,6 +79,7 @@ namespace Monitor
                     throw new ArgumentException($"Unexpected target: {target}");
             }
 
+            this.SetFirewall();
             this.InitTasktray();
         }
 
@@ -92,12 +99,12 @@ namespace Monitor
             this._icon.ContextMenuStrip = menu;
 
             this._menuItemStart = new ToolStripMenuItem();
-            this._menuItemStart.Text = "&Start Br-Web Host";
+            
             this._menuItemStart.Click += this.OnStart;
             menu.Items.Add(this._menuItemStart);
 
             this._menuItemStop = new ToolStripMenuItem();
-            this._menuItemStop.Text = "&Stop Br-Web Host";
+            
             this._menuItemStop.Click += this.OnStop;
             menu.Items.Add(this._menuItemStop);
 
@@ -108,8 +115,110 @@ namespace Monitor
             };
             menu.Items.Add(menuItem);
 
+            switch (this._target)
+            {
+                case Target.BroadlinkWeb:
+                    this._menuItemStart.Text = "&Start BrWebHost";
+                    this._menuItemStop.Text = "&Stop BrWebHost";
+                    break;
+                case Target.ScriptAgent:
+                    this._menuItemStart.Text = "&Start BrScriptAgent";
+                    this._menuItemStop.Text = "&Stop BrScriptAgent";
+                    break;
+                case Target.Test:
+                    
+                    break;
+                default:
+                    throw new ArgumentException($"Unexpected target: {this._target}");
+            }
+
             this.OnStart(this, new EventArgs());
             this.StartMonitor();
+        }
+
+        private void OnStart(object sender, EventArgs e)
+        {
+            try
+            {
+                if (this._brProcess != null)
+                    throw new InvalidOperationException("Now On Working");
+
+                this._brProcess = new Process();
+
+                this._brProcess.StartInfo.UseShellExecute = false;
+                this._brProcess.StartInfo.RedirectStandardOutput = true;
+                this._brProcess.StartInfo.RedirectStandardError = true;
+                this._brProcess.StartInfo.RedirectStandardInput = false;
+                //this._brProcess.StartInfo.StandardOutputEncoding = this.Encoding;
+
+                this._brProcess.StartInfo.CreateNoWindow = true;
+                this._brProcess.StartInfo.WorkingDirectory = this._currentPath;
+                this._brProcess.StartInfo.FileName = this._fileName;
+                //this._brProcess.StartInfo.Arguments = "--console";
+
+                var result = this._brProcess.Start();
+                if (!result)
+                {
+                    this._brProcess.Dispose();
+                    this._brProcess = null;
+                    MessageBox.Show("BrWebHost Start Failure.", "BrWebHost", MessageBoxButtons.OK);
+                    return;
+                }
+                this._brProcess.Exited += this.OnStop;
+
+                // 一旦、開始／停止どちらも無効化
+                Job.RunUI(() => {
+                    this._menuItemStart.Enabled = false;
+                    this._menuItemStop.Enabled = false;
+                });
+
+                this.StartBrowser();
+            }
+            catch (Exception ex)
+            {
+                Xb.Util.Out(ex);
+            }
+        }
+
+        private void OnStop(object sender, EventArgs e)
+        {
+            try
+            {
+                if (this._brProcess != null)
+                {
+                    if (!this._brProcess.HasExited)
+                    {
+                        try
+                        {
+                            this._brProcess.Kill();
+                        }
+                        catch (Exception)
+                        {
+                        }
+                    }
+
+                    try
+                    {
+                        this._brProcess.Exited -= this.OnStop;
+                        this._brProcess.Dispose();
+                    }
+                    catch (Exception)
+                    {
+                    }
+
+                    this._brProcess = null;
+                }
+
+                // 一旦、開始／停止どちらも無効化
+                Job.RunUI(() => {
+                    this._menuItemStart.Enabled = false;
+                    this._menuItemStop.Enabled = false;
+                });
+            }
+            catch (Exception ex)
+            {
+                Xb.Util.Out(ex);
+            }
         }
 
         private void StartMonitor()
@@ -175,84 +284,96 @@ namespace Monitor
             this._monitor.ConfigureAwait(false);
         }
 
-        
-
-        private void OnStart(object sender, EventArgs e)
+        private async Task<bool> StartBrowser()
         {
-            try
-            {
-                if (this._brProcess != null)
-                    throw new InvalidOperationException("Now On Working");
+            await Task.Delay(5000);
 
-                this._brProcess = new Process();
+            var addr = this.GetLocalPrimaryAddress();
+            var browser = new Process();
 
-                this._brProcess.StartInfo.UseShellExecute = false;
-                this._brProcess.StartInfo.RedirectStandardOutput = true;
-                this._brProcess.StartInfo.RedirectStandardError = true;
-                this._brProcess.StartInfo.RedirectStandardInput = false;
-                //this._brProcess.StartInfo.StandardOutputEncoding = this.Encoding;
+            browser.StartInfo.UseShellExecute = false;
+            browser.StartInfo.RedirectStandardOutput = true;
+            browser.StartInfo.RedirectStandardError = true;
+            browser.StartInfo.RedirectStandardInput = false;
 
-                this._brProcess.StartInfo.CreateNoWindow = true;
-                this._brProcess.StartInfo.WorkingDirectory = this._currentPath;
-                this._brProcess.StartInfo.FileName = this._fileName;
-                //this._brProcess.StartInfo.Arguments = "--console";
+            browser.StartInfo.CreateNoWindow = true;
+            browser.StartInfo.WorkingDirectory = this._currentPath;
+            browser.StartInfo.FileName = "cmd.exe";
+            browser.StartInfo.Arguments = $"/c start http://{addr.ToString()}:5004";
 
-                var result = this._brProcess.Start();
-                if (!result)
-                {
-                    this._brProcess.Dispose();
-                    this._brProcess = null;
-                    MessageBox.Show("Br-Web Host Start Failure.", "Br-Web Host", MessageBoxButtons.OK);
-                    return;
-                }
-                this._brProcess.Exited += this.OnStop;
+            browser.Start();
 
-                // 一旦、開始／停止どちらも無効化
-                Job.RunUI(() => {
-                    this._menuItemStart.Enabled = false;
-                    this._menuItemStop.Enabled = false;
-                });
-            }
-            catch (Exception ex)
-            {
-                Xb.Util.Out(ex);
-            }
+            return true;
         }
 
-        private void OnStop(object sender, EventArgs e)
+        /// <summary>
+        /// Get the local IPv4 address of the same segment as the default gateway.
+        /// </summary>
+        /// <returns></returns>
+        private IPAddress GetLocalPrimaryAddress()
+        {
+            var prop = NetworkInterface
+                .GetAllNetworkInterfaces()
+                .Select(i => i.GetIPProperties())
+                .FirstOrDefault(p => p.GatewayAddresses.Count > 0);
+
+            if (prop == null)
+                return null;
+
+            var v4Addr = prop.UnicastAddresses
+                .Select(ua => ua.Address)
+                .Where(addr => addr.AddressFamily == AddressFamily.InterNetwork
+                                && !IPAddress.IsLoopback(addr))
+                .FirstOrDefault();
+
+            return (v4Addr != null)
+                ? v4Addr
+                : null;
+        }
+
+        private void SetFirewall()
         {
             try
             {
-                if (this._brProcess != null)
-                {
-                    if (!this._brProcess.HasExited)
-                    {
-                        try
-                        {
-                            this._brProcess.Kill();
-                        }
-                        catch (Exception)
-                        {
-                        }
-                    }
+                // Create the FwPolicy2 object.
+                var netFwPolicy2Type = Type.GetTypeFromProgID("HNetCfg.FwPolicy2", false);
+                var fwPolicy2 = (INetFwPolicy2)Activator.CreateInstance(netFwPolicy2Type);
 
-                    try
-                    {
-                        this._brProcess.Exited -= this.OnStop;
-                        this._brProcess.Dispose();
-                    }
-                    catch (Exception)
-                    {
-                    }
+                var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
 
-                    this._brProcess = null;
-                }
+                // Get the Rules object
+                INetFwRules rulesObject = fwPolicy2.Rules;
 
-                // 一旦、開始／停止どちらも無効化
-                Job.RunUI(() => {
-                    this._menuItemStart.Enabled = false;
-                    this._menuItemStop.Enabled = false;
-                });
+                int CurrentProfiles = fwPolicy2.CurrentProfileTypes;
+
+                // Create a Rule Object.
+                var netFwRuleType = Type.GetTypeFromProgID("HNetCfg.FWRule", false);
+
+                var rule1 = (INetFwRule)Activator.CreateInstance(netFwRuleType);
+                rule1.Name = "BrWebHost_TCP5004";
+                rule1.Description = "Allow BrWebHost TCP port 5004";
+                rule1.ApplicationName = pathToExe;
+                rule1.Protocol = (int)NET_FW_IP_PROTOCOL_.NET_FW_IP_PROTOCOL_TCP;
+                rule1.LocalPorts = "5004";
+                rule1.Direction = NET_FW_RULE_DIRECTION_.NET_FW_RULE_DIR_OUT;
+                rule1.Enabled = true;
+                rule1.Grouping = "@firewallapi.dll,-23255";
+                rule1.Profiles = CurrentProfiles;
+                rule1.Action = NET_FW_ACTION_.NET_FW_ACTION_ALLOW;
+                rulesObject.Add(rule1);
+
+                var rule2 = (INetFwRule)Activator.CreateInstance(netFwRuleType);
+                rule2.Name = "BrWebHost_UDP5004";
+                rule2.Description = "Allow BrWebHost UDP port 5004";
+                rule2.ApplicationName = pathToExe;
+                rule2.Protocol = (int)NET_FW_IP_PROTOCOL_.NET_FW_IP_PROTOCOL_TCP;
+                rule2.LocalPorts = "5004";
+                rule2.Direction = NET_FW_RULE_DIRECTION_.NET_FW_RULE_DIR_OUT;
+                rule2.Enabled = true;
+                rule2.Grouping = "@firewallapi.dll,-23255";
+                rule2.Profiles = CurrentProfiles;
+                rule2.Action = NET_FW_ACTION_.NET_FW_ACTION_ALLOW;
+                rulesObject.Add(rule2);
             }
             catch (Exception ex)
             {

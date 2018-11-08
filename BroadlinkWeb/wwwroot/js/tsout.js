@@ -3946,7 +3946,7 @@ var App;
                     background.FitPolicy = Property.FitPolicy.Cover;
                     background.Src = 'images/Pages/Main/background.jpg';
                     _this.Add(background);
-                    _this.HeaderBar.Text = 'Br-Web Host';
+                    _this.HeaderBar.Text = 'BrWebHost';
                     _this.HeaderBar.LeftButton.Hide(0);
                     //this.HeaderBar.RightButton.Hide(0);
                     _this.Add(_this.HeaderBar);

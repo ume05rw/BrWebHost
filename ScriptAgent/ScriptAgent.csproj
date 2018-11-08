@@ -381,27 +381,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="lib\UdpReplyer\UdpReplyer.deps.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Update="lib\UdpReplyer\UdpReplyer.runtimeconfig.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="lib\UdpReplyer\UdpReplyer.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="lib\UdpReplyer\Xb.App.Process.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="lib\UdpReplyer\Xb.Core.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="lib\UdpReplyer\Xb.Net.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="scriptagent.db">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

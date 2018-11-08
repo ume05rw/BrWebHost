@@ -34,7 +34,7 @@ namespace App.Views.Pages {
             background.Src = 'images/Pages/Main/background.jpg';
             this.Add(background);
 
-            this.HeaderBar.Text = 'Br-Web Host';
+            this.HeaderBar.Text = 'BrWebHost';
             this.HeaderBar.LeftButton.Hide(0);
             //this.HeaderBar.RightButton.Hide(0);
             this.Add(this.HeaderBar);
