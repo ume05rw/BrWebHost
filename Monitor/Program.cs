@@ -13,12 +13,21 @@ namespace Monitor
         /// アプリケーションのメイン エントリ ポイントです。
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            Program._form = new TaskTrayForm();
+            var target = TaskTrayForm.Target.BroadlinkWeb;
+
+            if (args.Contains("--main"))
+                target = TaskTrayForm.Target.BroadlinkWeb;
+            else if (args.Contains("--agent"))
+                target = TaskTrayForm.Target.ScriptAgent;
+            else if (args.Contains("--test"))
+                target = TaskTrayForm.Target.Test;
+
+            Program._form = new TaskTrayForm(target);
             Application.Run();
         }
     }

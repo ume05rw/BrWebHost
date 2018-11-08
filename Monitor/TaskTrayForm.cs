@@ -20,41 +20,71 @@ namespace Monitor
     /// <remarks>
     /// http://pineplanter.moo.jp/non-it-salaryman/2017/06/01/c-sharp-tasktray/
     /// </remarks>
-    public partial class TaskTrayForm : Form
+    public class TaskTrayForm : Form
     {
+        private const string FileNameMain = "BroadlinkWeb.exe";
+        private const string FileNameAgent = "ScriptAgent.exe";
+
+        public enum Target
+        {
+            BroadlinkWeb = 1,
+            ScriptAgent = 2,
+            Test = 3
+        }
+
+
         private IContainer _components;
         private NotifyIcon _icon;
+        private Icon _warnIcon;
+        private Icon _okIcon;
         private ToolStripMenuItem _menuItemStart;
         private ToolStripMenuItem _menuItemStop;
 
         private string _currentPath;
-        private readonly string _fileName = "BroadlinkWeb.exe";
+        private readonly string _fileName;
         private Process _brProcess;
 
         private Task _monitor;
         private CancellationTokenSource _monitorCanceller;
 
-        public TaskTrayForm()
-        {
-            this.Init();
-            this.InitTasktray();
-        }
-
-        private void Init()
+        public TaskTrayForm(Target target)
         {
             this.ShowInTaskbar = false;
 
+            Job.IsMonitorEnabled = false;
+            Job.IsDumpStatus = false;
             Job.Init();
 
             var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
             this._currentPath = Path.GetDirectoryName(pathToExe);
+
+            switch (target)
+            {
+                case Target.BroadlinkWeb:
+                    this._fileName = Path.Combine(this._currentPath, TaskTrayForm.FileNameMain);
+                    break;
+                case Target.ScriptAgent:
+                    this._fileName = Path.Combine(this._currentPath, TaskTrayForm.FileNameAgent);
+                    break;
+                case Target.Test:
+                    this._fileName = "notepad.exe";
+                    break;
+                default:
+                    throw new ArgumentException($"Unexpected target: {target}");
+            }
+
+            this.InitTasktray();
         }
 
         private void InitTasktray()
         {
             this._components = new Container();
             this._icon = new NotifyIcon(this._components);
-            this._icon.Icon = new Icon("TaskTrayForm.ico");
+
+            this._warnIcon = new Icon("warn.ico");
+            this._okIcon = new Icon("ok.ico");
+
+            this._icon.Icon = this._warnIcon;
             this._icon.Visible = true;
             this._icon.Text = "Br-Web Host";
 
@@ -105,6 +135,7 @@ namespace Monitor
 
                                 this._menuItemStart.Enabled = true;
                                 this._menuItemStop.Enabled = false;
+                                this._icon.Icon = this._warnIcon;
                             });
                         }
                         else if (this._brProcess.HasExited)
@@ -116,6 +147,7 @@ namespace Monitor
 
                                 this._menuItemStart.Enabled = false;
                                 this._menuItemStop.Enabled = false;
+                                this._icon.Icon = this._warnIcon;
                             });
                         }
                         else
@@ -127,6 +159,7 @@ namespace Monitor
 
                                 this._menuItemStart.Enabled = false;
                                 this._menuItemStop.Enabled = true;
+                                this._icon.Icon = this._okIcon;
                             });
                         }
 
@@ -161,8 +194,7 @@ namespace Monitor
 
                 this._brProcess.StartInfo.CreateNoWindow = true;
                 this._brProcess.StartInfo.WorkingDirectory = this._currentPath;
-                this._brProcess.StartInfo.FileName = Path.Combine(this._currentPath, this._fileName);
-                //this._brProcess.StartInfo.FileName = "notepad.exe";
+                this._brProcess.StartInfo.FileName = this._fileName;
                 //this._brProcess.StartInfo.Arguments = "--console";
 
                 var result = this._brProcess.Start();
