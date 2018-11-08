@@ -7,7 +7,6 @@
 /// <reference path="../Entities/ControlSet.ts" />
 /// <reference path="../Entities/Control.ts" />
 /// <reference path="../Entities/Header.ts" />
-/// <reference path="../Entities/RmCommand.ts" />
 /// <reference path="ControlStore.ts" />
 /// <reference path="../../Items/OperationType.ts" />
 
@@ -15,7 +14,6 @@ namespace App.Models.Stores {
     import Dump = Fw.Util.Dump;
     import ControlSet = App.Models.Entities.ControlSet;
     import Control = App.Models.Entities.Control;
-    import RmCommand = App.Models.Entities.RmCommand;
     import Controls = App.Models.Stores.Controls;
     import Xhr = Fw.Util.Xhr;
     import ControlSetTemplate = App.Items.ControlSetTemplate;

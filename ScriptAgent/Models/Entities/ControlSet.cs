@@ -10,8 +10,8 @@ using System.Threading.Tasks;
 namespace BroadlinkWeb.Models.Entities
 {
     [Table("controlsets")] // テーブル名を小文字指定しないとLinuxで動作しない。
-    [MySqlCharset("utf8")]
-    [MySqlCollation("utf8_general_ci ")]
+    //[MySqlCharset("utf8")]
+    //[MySqlCollation("utf8_general_ci ")]
     public class ControlSet
     {
         [Key]

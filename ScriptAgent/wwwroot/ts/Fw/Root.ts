@@ -43,6 +43,7 @@ namespace Fw {
 
         private _mask: Fw.Views.BoxView;
 
+        private _refresher: Fw.Util.DelayedOnceExecuter;
         private _renderInitializer: Fw.Util.DelayedOnceExecuter;
 
         private constructor(jqueryElem: JQuery) {
@@ -81,6 +82,15 @@ namespace Fw {
             );
             this._renderInitializer.Name = 'RenderInitializer';
 
+            this._refresher = new Fw.Util.DelayedOnceExecuter(
+                this,
+                this.InnerRefresh.bind(this),
+                100,
+                300
+                , true
+            );
+            this._refresher.Name = 'Refresher';
+
 
             // Root.Init()の終了後にViewBaseからFw.Root.Instanceを呼び出す。
             _.defer(() => {
@@ -111,7 +121,6 @@ namespace Fw {
         public UnMask(): void {
             //this.Log(`${this.ClassName}.UnMask`);
             this._masked = false;
-            
             this.Refresh();
         }
 
@@ -147,8 +156,15 @@ namespace Fw {
             this._renderInitializer.Exec();
         }
 
-
         public Refresh(): void {
+            // this.Sizeのセッターが無いので、フィールドに直接書き込む。
+            this._size.Width = this.Elem.width();
+            this._size.Height = this.Elem.height();
+
+            this._refresher.Exec();
+        }
+
+        private InnerRefresh(): void {
             // this.Sizeのセッターが無いので、フィールドに直接書き込む。
             this._size.Width = this.Elem.width();
             this._size.Height = this.Elem.height();

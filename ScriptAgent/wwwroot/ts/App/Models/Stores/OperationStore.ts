@@ -127,9 +127,7 @@ namespace App.Models.Stores {
             throw new Error('Not Supported');
         }
         public Write(entity: null): void {
-            //throw new Error('Not Supported');
-            alert('Not Supported');
-            Dump.Log('Not Supported');
+            throw new Error('Not Supported');
         }
     }
 

@@ -8,6 +8,7 @@ namespace Fw.Views {
     export interface IInputView extends IView {
         Value: string;
         Name: string;
+        IsReadOnly: boolean;
 
         SetValue(value: string, eventDispatch?: boolean): void;
     }

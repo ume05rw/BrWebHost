@@ -21,8 +21,6 @@ ObjectBase
             |
             +- ImageView
             |
-            +- CheckBoxInputView
-            |
             +- BoxView
             |    |
             |    +- SlidableBoxView
@@ -44,5 +42,9 @@ ObjectBase
                  +- TextBoxInputView
                  |
                  +- TextAreaInputView
+                 |
+                 +- CheckBoxInputView
+                 |
+                 +- NumberBoxInputView
 
 

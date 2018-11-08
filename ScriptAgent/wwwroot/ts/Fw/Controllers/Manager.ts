@@ -82,11 +82,17 @@ namespace Fw.Controllers {
                 throw new Error("id not found: " + id);
 
             _.each(this._controllers, function (c) {
-                if (c !== controller && c.View.IsVisible && !c.View.IsModal)
-                    (c.View as Views.PageView).Mask();
+                if (c === controller || !c.View.IsVisible)
+                    return;
+
+                if (!c.View.IsModal) {
+                    c.View.Mask();
+                } else {
+                    c.View.HideModal();
+                }
             });
 
-            (controller.View as Views.PageView).ShowModal();
+            controller.View.ShowModal();
         }
 
         public HideModal(id: string): void {
@@ -95,16 +101,24 @@ namespace Fw.Controllers {
                 throw new Error("id not found: " + id);
 
             // 指定ID以外で、モーダルのPageが在るか否か
-            let existsModal = false;
+            let modalController: Fw.Controllers.IController = null;
             _.each(this._controllers, function (c) {
-                if (c !== controller && c.View.IsVisible && c.View.IsModal)
-                    existsModal = true;
-            });
-            // 全員モーダルでない場合、マスクを消す。
-            if (!existsModal)
-                Fw.Root.Instance.UnMask();
+                if (c === controller || !c.View.IsVisible)
+                    return;
 
-            (controller.View as Views.PageView).HideModal();
+                if (c.View.IsModal) {
+                    modalController = c;
+                } else {
+                    c.View.UnMask();
+                }
+            });
+
+            controller.View.HideModal();
+
+            // モーダルViewが残っている場合、マスク付き表示をやりなおす。
+            if (modalController) {
+                modalController.ShowModal();
+            }
         }
 
         public SetUnmodal(id: string): void {
@@ -113,7 +127,7 @@ namespace Fw.Controllers {
                 throw new Error("id not found: " + id);
 
             this.Reset(controller);
-            (controller.View as Views.PageView).SetUnmodal();
+            controller.View.SetUnmodal();
         }
     }
 }

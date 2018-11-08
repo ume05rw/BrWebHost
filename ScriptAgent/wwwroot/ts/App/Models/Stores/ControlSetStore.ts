@@ -5,17 +5,20 @@
 /// <reference path="../../../Fw/Util/Xhr/Query.ts" />
 /// <reference path="../../Items/ControlSetTemplate.ts" />
 /// <reference path="../Entities/ControlSet.ts" />
+/// <reference path="../Entities/Control.ts" />
 /// <reference path="../Entities/Header.ts" />
 /// <reference path="ControlStore.ts" />
-
+/// <reference path="../../Items/OperationType.ts" />
 
 namespace App.Models.Stores {
     import Dump = Fw.Util.Dump;
     import ControlSet = App.Models.Entities.ControlSet;
+    import Control = App.Models.Entities.Control;
     import Controls = App.Models.Stores.Controls;
     import Xhr = Fw.Util.Xhr;
     import ControlSetTemplate = App.Items.ControlSetTemplate;
     import Header = App.Models.Entities.Header;
+    import OperationType = App.Items.OperationType;
 
     export class ControlSetStore extends Fw.Models.StoreBase<ControlSet> {
 
@@ -251,6 +254,43 @@ namespace App.Models.Stores {
                 return false;
             }
         }
+
+        public async Exec(controlSet: ControlSet, control: Control): Promise<boolean> {
+            this.Log('Exec');
+
+            // 渡し値がヘン
+            if (
+                !controlSet
+                || !controlSet.BrDeviceId
+                || !control
+                || !control.Code
+                || control.Code === ''
+                || controlSet.OperationType !== OperationType.RemoteControl
+            ) {
+                return false;
+            }
+
+            const params = new Xhr.Params(
+                `ControlSets/Exec/${controlSet.Id}`,
+                Xhr.MethodType.Post,
+                {
+                    ControlId: control.Id
+                }
+            );
+
+            const res = await Xhr.Query.Invoke(params);
+
+            if (res.Succeeded) {
+                var result = res.Values as boolean;
+
+                return result;
+            } else {
+                this.Log('Query Fail');
+                this.Log(res.Errors);
+                return null;
+            }
+        }
+
     }
 
     export const ControlSets: ControlSetStore = ControlSetStore.Instance;

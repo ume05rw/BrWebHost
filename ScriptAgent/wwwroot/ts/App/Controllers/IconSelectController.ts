@@ -32,6 +32,16 @@ namespace App.Controllers {
 
             this._page.Label.Text = 'Select Icon';
 
+            const btn = new ItemSelectButtonView();
+            btn.Value = null;
+            btn.ImageSrc = null;
+            btn.Text = 'none';
+            btn.AddEventListener(ButtonEvents.SingleClick, (e) => {
+                const button = e.Sender as ItemSelectButtonView;
+                this.Commit(button.Value);
+            });
+            this._page.SelectorPanel.Add(btn);
+
             _.each(App.Items.Icon.Names, (name, idx) => {
                 const btn = new ItemSelectButtonView();
                 btn.Value = name;

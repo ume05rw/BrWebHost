@@ -3,7 +3,6 @@
 /// <reference path="../../../Fw/Models/StoreBase.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../../../Fw/Util/Xhr/Query.ts" />
-/// <reference path="../Entities/BrDevice.ts" />
 /// <reference path="../Entities/ControlSet.ts" />
 /// <reference path="../Entities/Control.ts" />
 /// <reference path="../../Items/OperationType.ts" />
@@ -11,7 +10,6 @@
 
 namespace App.Models.Stores {
     import Dump = Fw.Util.Dump;
-    import BrDevice = App.Models.Entities.BrDevice;
     import ControlSet = App.Models.Entities.ControlSet;
     import Control = App.Models.Entities.Control;
     import Xhr = Fw.Util.Xhr;

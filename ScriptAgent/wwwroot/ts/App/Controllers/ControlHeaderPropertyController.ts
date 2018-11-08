@@ -86,7 +86,7 @@ namespace App.Controllers {
                 if (res !== true)
                     return;
 
-                const ctr = this.Manager.Get('ControlSet') as ControlSetController;
+                const ctr = App.Controllers.CSControllerFactory.Get(this._controlSet);
                 ctr.RemoveControlSet();
 
                 this._controlSet = null;

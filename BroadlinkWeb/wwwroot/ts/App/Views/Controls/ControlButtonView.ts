@@ -77,8 +77,8 @@ namespace App.Views.Controls {
                 // 有効化
                 this.BackgroundColor = Color.GetButtonHoverColor(this.Color);
                 this.Dom.style.backgroundColor = this.BackgroundColor;
-                
-                
+
+
             } else {
                 // 無効化
                 this.BackgroundColor = Color.MainBackground;
@@ -134,7 +134,7 @@ namespace App.Views.Controls {
                 return;
 
             this.Name = this._control.Name;
-            
+
             this.SetImage(this._control.IconUrl);
             this.SetColor(this._control.Color);
 

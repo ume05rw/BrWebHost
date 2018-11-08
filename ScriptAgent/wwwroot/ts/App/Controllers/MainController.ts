@@ -15,6 +15,8 @@
 /// <reference path="../Items/OperationTemplate.ts" />
 /// <reference path="../Items/ControlSetTemplate.ts" />
 /// <reference path="../Items/OperationType.ts" />
+/// <reference path="../Items/Color.ts" />
+/// <reference path="../Items/Icon.ts" />
 
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
@@ -31,6 +33,8 @@ namespace App.Controllers {
     import ControlSetTemplate = App.Items.ControlSetTemplate;
     import ControlSetButtonView = App.Views.Controls.ControlSetButtonView;
     import OperationType = App.Items.OperationType;
+    import Color = App.Items.Color;
+    import Icon = App.Items.Icon;
 
     export class MainController extends Fw.Controllers.ControllerBase {
 
@@ -64,30 +68,30 @@ namespace App.Controllers {
                 ctrSet = await Stores.ControlSets.GetTemplateClone(ControlSetTemplate.SingleControl);
                 ctrSet.OperationType = OperationType.Script;
                 ctrSet.Name = 'Script';
-                ctrSet.Color = App.Items.Color.ButtonColors[2];
-                ctrSet.IconUrl = 'images/icons/controlset/script.png';
+                ctrSet.Color = Color.ButtonColors[2];
+                ctrSet.IconUrl = Icon.GetByOperationTemplate(OperationTemplate.Script, true);
                 ctrSet.Controls[0].Name = 'Script1';
                 ctrSet.Controls[0].Code = '';
                 ctrSet.Controls[0].IsAssignToggleOn = true;
                 ctrSet.Controls[0].IsAssignToggleOff = true;
 
-                const ctr2 = this.Manager.Get('ControlSet') as ControlSetController;
+                const ctr2 = App.Controllers.CSControllerFactory.Get(ctrSet);
                 ctr2.SetEntity(ctrSet);
                 ctr2.SetEditMode();
                 ctr2.Show();
             });
 
-            this._page.ControlSetPanel.AddEventListener(StuckerBoxEvents.OrderChanged, () => {
+            this._page.ControlSetPanel.AddEventListener(StuckerBoxEvents.OrderChanged, async () => {
                 const csets = new Array<Entities.ControlSet>();
                 let idx = 1;
                 _.each(this._page.ControlSetPanel.Children, (btn: ControlSetButtonView) => {
-                    if (!btn.ControlSet)
+                    if (!btn.Entity)
                         return;
-                    btn.ControlSet.Order = idx;
+                    (btn.Entity as Entities.ControlSet).Order = idx;
                     idx++;
-                    csets.push(btn.ControlSet);
+                    csets.push(btn.Entity as Entities.ControlSet);
                 });
-                Stores.ControlSets.UpdateHeaders(csets);
+                await Stores.ControlSets.UpdateHeaders(csets);
             });
         }
 
@@ -111,7 +115,7 @@ namespace App.Controllers {
             const children = Fw.Util.Obj.Mirror(this._page.ControlSetPanel.Children);
             _.each(children, (btn: ControlSetButtonView) => {
                 const existsSet = _.find(sets, (cs: Entities.ControlSet) => {
-                    return (cs === btn.ControlSet);
+                    return (cs === btn.Entity);
                 });
                 if (!existsSet) {
                     this._page.ControlSetPanel.Remove(btn);
@@ -122,7 +126,7 @@ namespace App.Controllers {
             // 追加されたEntity分のボタンをパネルに追加。
             _.each(sets, (cs: Entities.ControlSet) => {
                 const existsBtn = _.find(children, (b: ControlSetButtonView) => {
-                    return (b.ControlSet === cs);
+                    return (b.Entity === cs);
                 });
                 if (existsBtn)
                     return;
@@ -136,8 +140,10 @@ namespace App.Controllers {
 
                     // メインボタンクリック - リモコンをスライドイン表示する。
                     const button = (e.Sender as Fw.Views.IView).Parent as ControlSetButtonView;
-                    const ctr = this.Manager.Get('ControlSet') as ControlSetController;
-                    ctr.SetEntity(button.ControlSet);
+
+                    const ctr = App.Controllers.CSControllerFactory.Get(button.Entity as Entities.ControlSet);
+
+                    ctr.SetEntity(button.Entity as Entities.ControlSet);
                     ctr.SetExecMode();
                     ctr.ShowModal();
                 });
@@ -149,8 +155,8 @@ namespace App.Controllers {
 
                     // メインボタンの長押し - リモコンを編集表示する。
                     const button = (e.Sender as Fw.Views.IView).Parent as ControlSetButtonView;
-                    const ctr = this.Manager.Get('ControlSet') as ControlSetController;
-                    ctr.SetEntity(button.ControlSet);
+                    const ctr = App.Controllers.CSControllerFactory.Get(button.Entity as Entities.ControlSet);
+                    ctr.SetEntity(button.Entity as Entities.ControlSet);
                     ctr.SetEditMode();
                     ctr.Show();
                 });
@@ -162,7 +168,7 @@ namespace App.Controllers {
 
                     // トグルクリック
                     const button = (e.Sender as Fw.Views.IView).Parent as ControlSetButtonView;
-                    const cset = button.ControlSet;
+                    const cset = button.Entity as Entities.ControlSet;
                     const toggleValue = button.Toggle.BoolValue;
 
                     const controlOn: Entities.Control = _.find(cset.Controls as any, (c) => {
@@ -185,7 +191,7 @@ namespace App.Controllers {
                     const cset = e.Sender as Entities.ControlSet
                     const btn: ControlSetButtonView = _.find(this._page.ControlSetPanel.Children, (b) => {
                         const csetBtn = b as ControlSetButtonView;
-                        return (csetBtn.ControlSet === cset);
+                        return (csetBtn.Entity === cset);
                     }) as ControlSetButtonView;
 
                     if (!btn)

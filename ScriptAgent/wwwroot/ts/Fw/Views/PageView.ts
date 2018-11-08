@@ -19,6 +19,8 @@ namespace Fw.Views {
 
     export class PageView extends ViewBase {
 
+        private static ModalWidth: number = 300;
+
         private _isMasked: boolean = false;
         public get IsMasked(): boolean {
             return this._isMasked;
@@ -69,12 +71,14 @@ namespace Fw.Views {
         public Show(duration: number = 200): void {
             this.Log('PageView.Show');
             if (this.IsVisible && !this.IsModal) {
+                this.ZIndex = 0;
                 this.SetStyle('zIndex', '0');
                 this.Dom.style.zIndex = '0';
                 this.Refresh();
                 return;
             }
 
+            this.ZIndex = 0;
             this.SetStyle('zIndex', '0');
             this.Dom.style.zIndex = '0';
 
@@ -102,12 +106,14 @@ namespace Fw.Views {
         public Hide(duration: number = 200): void {
             this.Log('PageView.Hide');
             if (!this.IsVisible && !this.IsModal) {
+                this.ZIndex = 0;
                 this.SetStyle('zIndex', '0');
                 this.Dom.style.zIndex = '0';
                 this.Refresh();
                 return;
             }
 
+            this.ZIndex = 0;
             this.SetStyle('zIndex', '0');
             this.Dom.style.zIndex = '0';
 
@@ -131,15 +137,18 @@ namespace Fw.Views {
             }
         }
 
-        public ShowModal(duration: number = 200, width: number = 300): void {
+        public ShowModal(duration: number = 200): void {
+
             this.Log('PageView.ShowModal');
             if (this.IsVisible && this._isModal) {
+                this.ZIndex = 1;
                 this.SetStyle('zIndex', '1');
                 this.Dom.style.zIndex = '1';
                 this.Refresh();
                 return;
             }
 
+            this.ZIndex = 1;
             this.SetStyle('zIndex', '1');
             this.Dom.style.zIndex = '1';
 
@@ -152,7 +161,7 @@ namespace Fw.Views {
                 animator.FromParams.Opacity = 0.5;
                 animator.ToParams = Anim.Params.GetCurrent(this);
                 animator.ToParams.Opacity = 1.0;
-                animator.ToParams.X = animator.ToParams.Width - width;
+                animator.ToParams.X = animator.ToParams.Width - PageView.ModalWidth;
 
                 animator.OnComplete = () => {
                     this.IsVisible = true;
@@ -170,6 +179,7 @@ namespace Fw.Views {
         public HideModal(duration: number = 200): void {
             this.Log('PageView.HideModal');
             if (!this.IsVisible) {
+                this.ZIndex = 0;
                 this.SetStyle('zIndex', '0');
                 this.Dom.style.zIndex = '0';
                 this.Refresh();
@@ -187,6 +197,7 @@ namespace Fw.Views {
                 animator.ToParams.X = this.Size.Width - this.Position.X;
                 animator.ToParams.Opacity = 0.5;
                 animator.OnComplete = () => {
+                    this.ZIndex = 0;
                     this.SetStyle('zIndex', '0');
                     this.Dom.style.zIndex = '0';
 
@@ -206,6 +217,7 @@ namespace Fw.Views {
         public SetUnmodal(duration: number = 200): void {
             //this.Log(`PageView.SetUnmodal: ${this.Elem.data('controller')}`);
             if (this.IsVisible && !this._isModal) {
+                this.ZIndex = 0;
                 this.SetStyle('zIndex', '0');
                 this.Dom.style.zIndex = '0';
                 this.Refresh();
@@ -223,6 +235,7 @@ namespace Fw.Views {
                 animator.ToParams.X = - this.Position.X;
                 animator.ToParams.Opacity = 1.0;
                 animator.OnComplete = () => {
+                    this.ZIndex = 0;
                     this.SetStyle('zIndex', '0');
                     this.Dom.style.zIndex = '0';
 
@@ -245,6 +258,7 @@ namespace Fw.Views {
             //this.Log(`${this.ClassName}.Mask`);
             this._isMasked = true;
             Fw.Root.Instance.Mask();
+            this.ZIndex = -1;
             this.Dom.style.zIndex = '-1';
             this.SetStyle('zIndex', '-1');
             this.Refresh();
@@ -254,6 +268,7 @@ namespace Fw.Views {
             //this.Log(`${this.ClassName}.UnMask`);
             this._isMasked = false;
             Fw.Root.Instance.UnMask();
+            this.ZIndex = 0;
             this.Dom.style.zIndex = '0';
             this.SetStyle('zIndex', '0');
             this.Refresh();
@@ -290,6 +305,12 @@ namespace Fw.Views {
                 //const myHalfHeight = Root.Instance.Size.Height / 2;
                 //let elemLeft = pHalfWidth - myHalfWidth + this.Position.X;
                 //let elemTop = pHalfHeight - myHalfHeight + this.Position.Y;
+
+                if (this.IsVisible && this.IsModal) {
+                    const left = Root.Instance.Size.Width - PageView.ModalWidth;
+                    if (this.Position.X !== left)
+                        this.Position.X = left;
+                }
 
                 this.SetStyles({
                     left: `${this.Position.X}px`,

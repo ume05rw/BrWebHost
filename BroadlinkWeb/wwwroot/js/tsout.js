@@ -3946,7 +3946,7 @@ var App;
                     background.FitPolicy = Property.FitPolicy.Cover;
                     background.Src = 'images/Pages/Main/background.jpg';
                     _this.Add(background);
-                    _this.HeaderBar.Text = 'Broadlink Web Host(仮題)';
+                    _this.HeaderBar.Text = 'Br-Web Host';
                     _this.HeaderBar.LeftButton.Hide(0);
                     //this.HeaderBar.RightButton.Hide(0);
                     _this.Add(_this.HeaderBar);
@@ -7800,7 +7800,6 @@ var App;
 /// <reference path="../Entities/ControlSet.ts" />
 /// <reference path="../Entities/Control.ts" />
 /// <reference path="../Entities/Header.ts" />
-/// <reference path="../Entities/RmCommand.ts" />
 /// <reference path="ControlStore.ts" />
 /// <reference path="../../Items/OperationType.ts" />
 var App;
@@ -12844,7 +12843,6 @@ var App;
 /// <reference path="../../../Fw/Models/StoreBase.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../../../Fw/Util/Xhr/Query.ts" />
-/// <reference path="../Entities/BrDevice.ts" />
 /// <reference path="../Entities/ControlSet.ts" />
 /// <reference path="../Entities/Control.ts" />
 /// <reference path="../../Items/OperationType.ts" />
@@ -12991,7 +12989,6 @@ var App;
 /// <reference path="../../../Fw/Models/StoreBase.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../../../Fw/Util/Xhr/Query.ts" />
-/// <reference path="../Entities/BrDevice.ts" />
 /// <reference path="../Entities/ControlSet.ts" />
 /// <reference path="../Entities/Control.ts" />
 /// <reference path="../Entities/Script.ts" />
@@ -13676,7 +13673,6 @@ var App;
 /// <reference path="../../../Fw/Models/StoreBase.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../../../Fw/Util/Xhr/Query.ts" />
-/// <reference path="../Entities/BrDevice.ts" />
 /// <reference path="../Entities/ControlSet.ts" />
 /// <reference path="../Entities/Control.ts" />
 /// <reference path="../../Items/OperationType.ts" />

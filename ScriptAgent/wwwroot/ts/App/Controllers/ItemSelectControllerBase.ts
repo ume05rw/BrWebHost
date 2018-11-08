@@ -25,6 +25,7 @@ namespace App.Controllers {
 
         
         private _parentController: Fw.Controllers.IController;
+        private _isParentModal: boolean;
         private _resolve: (value: any) => void;
 
         constructor(controllerId) {
@@ -32,6 +33,7 @@ namespace App.Controllers {
 
             this.SetPageView(new Pages.ItemSelectPageView());
             this.SetClassName('ItemSelectController');
+            this._isParentModal = false;
         }
 
         public async Select(parentController: Fw.Controllers.IController): Promise<any> {
@@ -39,15 +41,15 @@ namespace App.Controllers {
             return new Promise<any>((resolve: (value: any) => void) => {
                 this.Log('ShowSelector.Promise');
                 this._parentController = parentController;
+                this._isParentModal = this._parentController.View.IsModal;
                 this._resolve = resolve;
-                this.View.ShowModal();
-                this._parentController.View.Mask();
+                this.ShowModal();
             });
         }
 
         protected Commit(selectedItem: any): void {
             this.Log('Commit: ' + selectedItem);
-            console.log(this._resolve);
+            //console.log(this._resolve);
 
             if (!this._parentController || !this._resolve)
                 throw new Error('Exec Select');
@@ -94,12 +96,8 @@ namespace App.Controllers {
             this._resolve = null;
 
             this.HideModal();
-            if (this._parentController.View.IsModal) {
-                this._parentController.View.ShowModal();
-            } else {
-                if (this._parentController.View.IsMasked)
-                    this._parentController.View.UnMask();
-            }
+            if (this._isParentModal)
+                this._parentController.ShowModal();
 
             this._parentController = null;
         }

@@ -1,29 +1,90 @@
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Fw/Util/Dump.ts" />
-/// <reference path="../../Fw/Controllers/Manager.ts" />
+/// <reference path="OperationTemplate.ts" />
 
 namespace App.Items {
     import Dump = Fw.Util.Dump;
-    import Manager = Fw.Controllers.Manager;
+    import OperationTemplate = App.Items.OperationTemplate;
 
     export class Icon {
-        public static Scene: string = 'images/icons/operation/scene.png';
-        public static Tv: string = 'images/icons/operation/tv.png';
-        public static Av: string = 'images/icons/operation/av.png';
-        public static Light: string = 'images/icons/operation/light.png';
 
-        public static Free: string = 'images/icons/operation/free.png';
-        public static WoL: string = 'images/icons/operation/wol.png';
-        public static Script: string = 'images/icons/operation/script.png';
-        public static Remote: string = 'images/icons/operation/remote.png';
+        public static GetByOperationTemplate(template: OperationTemplate, isLarge: boolean = false): string {
+            const idx = template as number;
+            const name = Icon.Operations[idx];
 
-        // TODO: 以下、ソレっぽいアイコンを用意する。
-        public static Air: string = 'images/icons/operation/layout.png'; 
-        public static BrA1: string = 'images/icons/operation/rocket.png';
-        public static BrSp2: string = 'images/icons/operation/rocket.png';
-        public static BrSc1: string = 'images/icons/operation/rocket.png';
-        public static BrS1c: string = 'images/icons/operation/rocket.png';
+            if (!name)
+                return null;
+
+            return (isLarge)
+                ? 'images/icons/operation/large/' + name
+                : 'images/icons/operation/small/' + name;
+        }
+
+        public static GetPairdOperationIcon(path: string): string {
+            const name = path.substr(path.lastIndexOf('/') + 1);
+            const isLarge = (path.indexOf('large') !== -1);
+            return (!isLarge)
+                ? 'images/icons/operation/large/' + name
+                : 'images/icons/operation/small/' + name;
+        }
+
+        public static Operations: Array<string> = [
+            /**
+             * 空
+             */
+            '',
+
+            /**
+             * 1.シーン
+             */
+            'scene.png',
+
+            /**
+             * 2.TV
+             */
+            'tv.png',
+
+            /**
+             * 3.AV
+             */
+            'av.png',
+
+            /**
+             * 4.Light
+             */
+            'light.png',
+
+            /**
+             * 5.Light
+             */
+            'av.png',
+
+            /**
+             * 6.Free
+             */
+            'free.png',
+
+            /**
+             * 7.WoL
+             */
+            'wol.png',
+
+            /**
+             * 8.Script
+             */
+            'script.png',
+
+            /**
+             * 9.RemoteHostScript
+             */
+            'remote.png',
+
+            /**
+             * 10.Schedule
+             */
+            'schedule.png'
+        ];
 
 
         public static Names: Array<string> = [
@@ -158,15 +219,5 @@ namespace App.Items {
             'zoomin.png',
             'zoomout.png',
         ];
-
-        //public static Mains: Array<string> = [
-        //    'main_free.png',            // 0 自由割当
-        //    'main_tv.png',              // 1 TV
-        //    'main_av.png',              // 2 AV
-        //    'main_light.png',           // 3 Light
-        //    'main_aircompressor.png',   // 4 Air Compressor
-        //    'main_a1.png',              // 5 A1 Sensor
-        //    'main_sp2.png',             // 6 Sp2 Switch
-        //];
     }
 }

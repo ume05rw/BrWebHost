@@ -1,5 +1,7 @@
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../../lib/popperjs/index.d.ts" />
+/// <reference path="../../../../lib/tippyjs/index.d.ts" />
 /// <reference path="../../../Fw/Views/RelocatableButtonView.ts" />
 /// <reference path="../../../Fw/Views/Property/Anchor.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
@@ -26,6 +28,16 @@ namespace App.Views.Controls {
 
             if (this.ImageSrc === '')
                 this.Text = value;
+        }
+
+        private _tooltip: string;
+        private _tippy: Tippy.Instance;
+        public get Tooltip(): string {
+            return this._tooltip;
+        }
+        public set Tooltip(value: string) {
+            this._tooltip = value;
+            this.Refresh();
         }
 
         private _hoverEnable: boolean = true;
@@ -65,8 +77,8 @@ namespace App.Views.Controls {
                 // 有効化
                 this.BackgroundColor = Color.GetButtonHoverColor(this.Color);
                 this.Dom.style.backgroundColor = this.BackgroundColor;
-                
-                
+
+
             } else {
                 // 無効化
                 this.BackgroundColor = Color.MainBackground;
@@ -122,8 +134,21 @@ namespace App.Views.Controls {
                 return;
 
             this.Name = this._control.Name;
+
             this.SetImage(this._control.IconUrl);
             this.SetColor(this._control.Color);
+
+            if (
+                this._control.Name
+                && this._control.Name !== ''
+                && this._control.IconUrl
+                && this._control.IconUrl !== ''
+            ) {
+                this.Tooltip = this._control.Name;
+            } else {
+                this.Tooltip = null;
+            }
+
             this.Refresh();
         }
 
@@ -159,6 +184,33 @@ namespace App.Views.Controls {
                 }
             }
             this.Refresh();
+        }
+
+        protected InnerRefresh(): void {
+            try {
+                super.InnerRefresh();
+
+                if (this._tippy) {
+                    this._tippy.destroy();
+                    this._tippy = null;
+                }
+
+                if (this._tooltip && this._tooltip !== '') {
+                    this._tippy = tippy.one(this.Dom as Element, {
+                        content: this._tooltip,
+                        delay: 100,
+                        arrow: true,
+                        arrowType: 'round',
+                        size: 'large',
+                        duration: 500,
+                        animation: 'scale'
+                    });
+                }
+            } catch (e) {
+                Dump.ErrorLog(e, this.ClassName);
+            } finally {
+                this.ResumeLayout();
+            }
         }
 
         public Dispose(): void {

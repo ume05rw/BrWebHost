@@ -34,7 +34,7 @@ namespace App.Views.Pages {
             background.Src = 'images/Pages/Main/background.jpg';
             this.Add(background);
 
-            this.HeaderBar.Text = 'Script Agent';
+            this.HeaderBar.Text = 'Br-Web Host Script Agent';
             this.HeaderBar.LeftButton.Hide(0);
             //this.HeaderBar.RightButton.Hide(0);
             this.Add(this.HeaderBar);

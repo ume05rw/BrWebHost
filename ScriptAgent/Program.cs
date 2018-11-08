@@ -44,8 +44,8 @@ namespace BroadlinkWeb
         public static void Main(string[] args)
         {
             // サービスとして起動するかどうかのフラグ
-            // デバッグ実行時にサービスとして実行しないようにする
-            bool isService = !(Debugger.IsAttached || args.Contains("--console"));
+            // 引数に"--winservice"を付与して起動すると、Windowsサービスとして起動する。
+            bool isService = args.Contains("--winservice");
 
             // VSから起動したとき、ポートを変更。
             if (Debugger.IsAttached)

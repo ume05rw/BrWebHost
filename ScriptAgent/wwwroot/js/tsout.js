@@ -1,16 +1,3 @@
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    }
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -46,6 +33,19 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 var Fw;
@@ -513,8 +513,14 @@ var Fw;
                 if (!controller)
                     throw new Error("id not found: " + id);
                 _.each(this._controllers, function (c) {
-                    if (c !== controller && c.View.IsVisible && !c.View.IsModal)
+                    if (c === controller || !c.View.IsVisible)
+                        return;
+                    if (!c.View.IsModal) {
                         c.View.Mask();
+                    }
+                    else {
+                        c.View.HideModal();
+                    }
                 });
                 controller.View.ShowModal();
             };
@@ -523,15 +529,22 @@ var Fw;
                 if (!controller)
                     throw new Error("id not found: " + id);
                 // 指定ID以外で、モーダルのPageが在るか否か
-                var existsModal = false;
+                var modalController = null;
                 _.each(this._controllers, function (c) {
-                    if (c !== controller && c.View.IsVisible && c.View.IsModal)
-                        existsModal = true;
+                    if (c === controller || !c.View.IsVisible)
+                        return;
+                    if (c.View.IsModal) {
+                        modalController = c;
+                    }
+                    else {
+                        c.View.UnMask();
+                    }
                 });
-                // 全員モーダルでない場合、マスクを消す。
-                if (!existsModal)
-                    Fw.Root.Instance.UnMask();
                 controller.View.HideModal();
+                // モーダルViewが残っている場合、マスク付き表示をやりなおす。
+                if (modalController) {
+                    modalController.ShowModal();
+                }
             };
             Manager.prototype.SetUnmodal = function (id) {
                 var controller = this._controllers[id];
@@ -601,11 +614,51 @@ var Fw;
         Events.EventReference = EventReference;
     })(Events = Fw.Events || (Fw.Events = {}));
 })(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="./Dump.ts" />
+/// <reference path="../ObjectBase.ts" />
+var Fw;
+(function (Fw) {
+    var Util;
+    (function (Util) {
+        var App = /** @class */ (function () {
+            function App() {
+            }
+            App.CreateId = function () {
+                var id;
+                for (;;) {
+                    id = new Date().getTime().toString(16)
+                        + Math.floor(Math.random() * 1000).toString(16);
+                    if (App._ids.indexOf(id) === -1)
+                        break;
+                }
+                App._ids.push(id);
+                return id;
+            };
+            App.Wait = function (msec) {
+                return __awaiter(this, void 0, void 0, function () {
+                    return __generator(this, function (_a) {
+                        return [2 /*return*/, new Promise(function (resolve) {
+                                setTimeout(function () {
+                                    resolve(true);
+                                }, msec);
+                            })];
+                    });
+                });
+            };
+            App._ids = new Array();
+            return App;
+        }());
+        Util.App = App;
+    })(Util = Fw.Util || (Fw.Util = {}));
+})(Fw || (Fw = {}));
 /// <reference path="../../lib/jquery/index.d.ts" />
 /// <reference path="../../lib/underscore/index.d.ts" />
 /// <reference path="IObject.ts" />
 /// <reference path="Events/EventReference.ts" />
 /// <reference path="Util/Dump.ts" />
+/// <reference path="Util/App.ts" />
 var Fw;
 (function (Fw) {
     var Dump = Fw.Util.Dump;
@@ -975,6 +1028,8 @@ var Fw;
                 Dump.Log('Root.ReleasePageInitialize - Released');
             }, 300, -1, true);
             _this._renderInitializer.Name = 'RenderInitializer';
+            _this._refresher = new Fw.Util.DelayedOnceExecuter(_this, _this.InnerRefresh.bind(_this), 100, 300, true);
+            _this._refresher.Name = 'Refresher';
             // Root.Init()の終了後にViewBaseからFw.Root.Instanceを呼び出す。
             _.defer(function () {
                 _this._mask = new Fw.Views.BoxView();
@@ -1066,6 +1121,12 @@ var Fw;
             this._renderInitializer.Exec();
         };
         Root.prototype.Refresh = function () {
+            // this.Sizeのセッターが無いので、フィールドに直接書き込む。
+            this._size.Width = this.Elem.width();
+            this._size.Height = this.Elem.height();
+            this._refresher.Exec();
+        };
+        Root.prototype.InnerRefresh = function () {
             // this.Sizeのセッターが無いので、フィールドに直接書き込む。
             this._size.Width = this.Elem.width();
             this._size.Height = this.Elem.height();
@@ -1517,170 +1578,6 @@ var Fw;
             })(FitPolicy = Property.FitPolicy || (Property.FitPolicy = {}));
         })(Property = Views.Property || (Views.Property = {}));
     })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="./Dump.ts" />
-var Fw;
-(function (Fw) {
-    var Util;
-    (function (Util) {
-        var Dump = Fw.Util.Dump;
-        var App = /** @class */ (function () {
-            function App() {
-            }
-            App.CreateId = function () {
-                var id;
-                for (;;) {
-                    id = new Date().getTime().toString(16)
-                        + Math.floor(Math.random() * 1000).toString(16);
-                    if (App._ids.indexOf(id) === -1)
-                        break;
-                }
-                App._ids.push(id);
-                return id;
-            };
-            App.Wait = function (msec) {
-                return __awaiter(this, void 0, void 0, function () {
-                    return __generator(this, function (_a) {
-                        return [2 /*return*/, new Promise(function (resolve) {
-                                setTimeout(function () {
-                                    resolve(true);
-                                }, msec);
-                            })];
-                    });
-                });
-            };
-            App._ids = new Array();
-            return App;
-        }());
-        Util.App = App;
-        var DelayedOnceExecuter = /** @class */ (function (_super) {
-            __extends(DelayedOnceExecuter, _super);
-            function DelayedOnceExecuter(iobject, callback, delay, timeout, isMonitor) {
-                if (delay === void 0) { delay = 100; }
-                if (timeout === void 0) { timeout = -1; }
-                if (isMonitor === void 0) { isMonitor = false; }
-                var _this = _super.call(this) || this;
-                _this.Name = '';
-                _this.SetClassName('DelayedOnceExecuter');
-                _this._object = iobject;
-                _this._callback = callback;
-                _this._delay = delay;
-                _this._timeout = timeout;
-                _this._startTime = null;
-                _this._timer = null;
-                _this._isActive = false;
-                _this._suppressCount = 0;
-                _this._timeoutExecStartTime = null;
-                //this.EnableLog = true;
-                if (isMonitor) {
-                    //this.EnableLog = true;
-                    setInterval(function () {
-                        if (!_this._isActive)
-                            return;
-                        if (_this._startTime || _this._timeoutExecStartTime) {
-                            var now = new Date();
-                            var elapsed = (_this._timeoutExecStartTime)
-                                ? now.getTime() - _this._timeoutExecStartTime.getTime()
-                                : now.getTime() - _this._startTime.getTime();
-                            if (DelayedOnceExecuter.DelayThreshold < elapsed) {
-                                // Delay閾値より長い時間の間、一度も実行されていない。
-                                // 無限ループの可能性がある。
-                                _this.EnableLog = true;
-                                _this._object.EnableLog = true;
-                                _this.Log('＊＊＊無限ループの可能性があります＊＊＊');
-                                _this.Log(_this.Name + ": \u7D4C\u904E\u6642\u9593(msec) = " + elapsed);
-                                _this.Log("" + _this._object.ObjectIdentifier);
-                            }
-                        }
-                        if (DelayedOnceExecuter.SuppressThreshold < _this._suppressCount) {
-                            // Suppress閾値より多くの回数分、実行が抑制されている。
-                            // 呼び出し回数が多すぎる可能性がある。
-                            _this.EnableLog = true;
-                            _this._object.EnableLog = true;
-                            _this.Log('＊＊＊呼び出し回数が多すぎます＊＊＊');
-                            _this.Log(_this.Name + ": \u6291\u5236\u56DE\u6570 = " + _this._suppressCount);
-                            _this.Log("" + _this._object.ObjectIdentifier);
-                        }
-                    }, DelayedOnceExecuter.MonitorInterval);
-                }
-                return _this;
-            }
-            Object.defineProperty(DelayedOnceExecuter.prototype, "Delay", {
-                get: function () {
-                    return this._delay;
-                },
-                set: function (value) {
-                    this._delay = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(DelayedOnceExecuter.prototype, "Timeout", {
-                get: function () {
-                    return this._timeout;
-                },
-                set: function (value) {
-                    this._timeout;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            DelayedOnceExecuter.prototype.Exec = function (passingValues) {
-                var _this = this;
-                this._isActive = true;
-                if (this._timer === null) {
-                    // これから開始するとき
-                    this._startTime = new Date();
-                    this._suppressCount = 0;
-                }
-                else {
-                    // 既に開始中のとき
-                    clearInterval(this._timer);
-                    this._timer = null;
-                    this._suppressCount++;
-                }
-                var now = new Date();
-                var elapsed = (now.getTime() - this._startTime.getTime());
-                if (0 < this._timeout && elapsed > this._timeout) {
-                    // タイムアウト実行が連続するときの、最初の開始時間を保持しておく。
-                    if (this._timeoutExecStartTime === null)
-                        this._timeoutExecStartTime = this._startTime;
-                    this.Log("Timeout Exec: " + this._object.ObjectIdentifier);
-                    this.InnerExec(passingValues);
-                }
-                else {
-                    this._timer = setTimeout(function () {
-                        _this._timeoutExecStartTime = null;
-                        _this.InnerExec(passingValues);
-                    }, this._delay);
-                }
-            };
-            DelayedOnceExecuter.prototype.InnerExec = function (passingValues) {
-                //this.Log(`InnerExec: ${this._object.ObjectIdentifier}: suppressed[${this._suppressCount}]`);
-                try {
-                    this._callback(passingValues);
-                }
-                catch (e) {
-                    this.Log("Callback FAILED!!: " + this._object.ObjectIdentifier);
-                    Dump.ErrorLog(e);
-                }
-                if (this._timer) {
-                    clearInterval(this._timer);
-                    this._timer = null;
-                }
-                this._startTime = null;
-                this._suppressCount = 0;
-                this._isActive = false;
-            };
-            DelayedOnceExecuter.MonitorInterval = 10000;
-            DelayedOnceExecuter.DelayThreshold = 3000;
-            DelayedOnceExecuter.SuppressThreshold = 100;
-            return DelayedOnceExecuter;
-        }(Fw.ObjectBase));
-        Util.DelayedOnceExecuter = DelayedOnceExecuter;
-    })(Util = Fw.Util || (Fw.Util = {}));
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
@@ -2620,11 +2517,13 @@ var Fw;
                 if (duration === void 0) { duration = 200; }
                 this.Log('PageView.Show');
                 if (this.IsVisible && !this.IsModal) {
+                    this.ZIndex = 0;
                     this.SetStyle('zIndex', '0');
                     this.Dom.style.zIndex = '0';
                     this.Refresh();
                     return;
                 }
+                this.ZIndex = 0;
                 this.SetStyle('zIndex', '0');
                 this.Dom.style.zIndex = '0';
                 if (duration <= 0) {
@@ -2653,11 +2552,13 @@ var Fw;
                 if (duration === void 0) { duration = 200; }
                 this.Log('PageView.Hide');
                 if (!this.IsVisible && !this.IsModal) {
+                    this.ZIndex = 0;
                     this.SetStyle('zIndex', '0');
                     this.Dom.style.zIndex = '0';
                     this.Refresh();
                     return;
                 }
+                this.ZIndex = 0;
                 this.SetStyle('zIndex', '0');
                 this.Dom.style.zIndex = '0';
                 if (duration <= 0) {
@@ -2679,17 +2580,18 @@ var Fw;
                     animator.Invoke(duration);
                 }
             };
-            PageView.prototype.ShowModal = function (duration, width) {
+            PageView.prototype.ShowModal = function (duration) {
                 var _this = this;
                 if (duration === void 0) { duration = 200; }
-                if (width === void 0) { width = 300; }
                 this.Log('PageView.ShowModal');
                 if (this.IsVisible && this._isModal) {
+                    this.ZIndex = 1;
                     this.SetStyle('zIndex', '1');
                     this.Dom.style.zIndex = '1';
                     this.Refresh();
                     return;
                 }
+                this.ZIndex = 1;
                 this.SetStyle('zIndex', '1');
                 this.Dom.style.zIndex = '1';
                 if (duration <= 0) {
@@ -2702,7 +2604,7 @@ var Fw;
                     animator_1.FromParams.Opacity = 0.5;
                     animator_1.ToParams = Anim.Params.GetCurrent(this);
                     animator_1.ToParams.Opacity = 1.0;
-                    animator_1.ToParams.X = animator_1.ToParams.Width - width;
+                    animator_1.ToParams.X = animator_1.ToParams.Width - PageView.ModalWidth;
                     animator_1.OnComplete = function () {
                         _this.IsVisible = true;
                         _this._isModal = true;
@@ -2720,6 +2622,7 @@ var Fw;
                 if (duration === void 0) { duration = 200; }
                 this.Log('PageView.HideModal');
                 if (!this.IsVisible) {
+                    this.ZIndex = 0;
                     this.SetStyle('zIndex', '0');
                     this.Dom.style.zIndex = '0';
                     this.Refresh();
@@ -2737,6 +2640,7 @@ var Fw;
                     animator.ToParams.X = this.Size.Width - this.Position.X;
                     animator.ToParams.Opacity = 0.5;
                     animator.OnComplete = function () {
+                        _this.ZIndex = 0;
                         _this.SetStyle('zIndex', '0');
                         _this.Dom.style.zIndex = '0';
                         _this.IsVisible = false;
@@ -2755,6 +2659,7 @@ var Fw;
                 if (duration === void 0) { duration = 200; }
                 //this.Log(`PageView.SetUnmodal: ${this.Elem.data('controller')}`);
                 if (this.IsVisible && !this._isModal) {
+                    this.ZIndex = 0;
                     this.SetStyle('zIndex', '0');
                     this.Dom.style.zIndex = '0';
                     this.Refresh();
@@ -2772,6 +2677,7 @@ var Fw;
                     animator.ToParams.X = -this.Position.X;
                     animator.ToParams.Opacity = 1.0;
                     animator.OnComplete = function () {
+                        _this.ZIndex = 0;
                         _this.SetStyle('zIndex', '0');
                         _this.Dom.style.zIndex = '0';
                         _this.IsVisible = true;
@@ -2790,6 +2696,7 @@ var Fw;
                 //this.Log(`${this.ClassName}.Mask`);
                 this._isMasked = true;
                 Fw.Root.Instance.Mask();
+                this.ZIndex = -1;
                 this.Dom.style.zIndex = '-1';
                 this.SetStyle('zIndex', '-1');
                 this.Refresh();
@@ -2798,6 +2705,7 @@ var Fw;
                 //this.Log(`${this.ClassName}.UnMask`);
                 this._isMasked = false;
                 Fw.Root.Instance.UnMask();
+                this.ZIndex = 0;
                 this.Dom.style.zIndex = '0';
                 this.SetStyle('zIndex', '0');
                 this.Refresh();
@@ -2828,6 +2736,11 @@ var Fw;
                     //const myHalfHeight = Root.Instance.Size.Height / 2;
                     //let elemLeft = pHalfWidth - myHalfWidth + this.Position.X;
                     //let elemTop = pHalfHeight - myHalfHeight + this.Position.Y;
+                    if (this.IsVisible && this.IsModal) {
+                        var left = Fw.Root.Instance.Size.Width - PageView.ModalWidth;
+                        if (this.Position.X !== left)
+                            this.Position.X = left;
+                    }
                     this.SetStyles({
                         left: this.Position.X + "px",
                         top: this.Position.Y + "px",
@@ -2852,6 +2765,7 @@ var Fw;
             PageView.prototype.Dispose = function () {
                 _super.prototype.Dispose.call(this);
             };
+            PageView.ModalWidth = 300;
             return PageView;
         }(Views.ViewBase));
         Views.PageView = PageView;
@@ -2942,6 +2856,12 @@ var App;
 (function (App) {
     var Items;
     (function (Items) {
+        var RgbInts = /** @class */ (function () {
+            function RgbInts() {
+            }
+            return RgbInts;
+        }());
+        Items.RgbInts = RgbInts;
         var Color = /** @class */ (function () {
             function Color() {
             }
@@ -2950,6 +2870,34 @@ var App;
                 return (idx === -1)
                     ? Color.MainHover
                     : Color.ButtonHoverColors[idx];
+            };
+            Color.GetRgbInts = function (color) {
+                var widhSharp = (color.substr(0, 1) === '#');
+                var rHex = (widhSharp)
+                    ? color.substr(1, 2)
+                    : color.substr(0, 2);
+                var gHex = (widhSharp)
+                    ? color.substr(3, 2)
+                    : color.substr(2, 2);
+                var bHex = (widhSharp)
+                    ? color.substr(5, 2)
+                    : color.substr(4, 2);
+                var result = new RgbInts();
+                result.Red = parseInt(rHex, 16);
+                result.Green = parseInt(gHex, 16);
+                result.Blue = parseInt(bHex, 16);
+                return result;
+            };
+            Color.GetRgba = function (color, alpha) {
+                var rgbInts = Color.GetRgbInts(color);
+                return "rgba(" + rgbInts.Red + ", " + rgbInts.Green + ", " + rgbInts.Blue + ", " + alpha + ")";
+            };
+            Color.GetForeColor = function (color) {
+                var rgbInts = Color.GetRgbInts(color);
+                var colorValue = (rgbInts.Red * 0.3) + (rgbInts.Green * 0.6) + (rgbInts.Blue * 0.1);
+                return (colorValue > 127)
+                    ? "#000000" //黒
+                    : "#FFFFFF"; //白
             };
             // ライトブラウン - 女っぽいからターゲット外
             //public static Main: string = '#FFFFFF';
@@ -3002,9 +2950,9 @@ var App;
                 '#6545C6',
                 // 7.brown (Free)
                 '#B5743B',
-                // 8. deep blue
+                // 8. deep blue (Scene)
                 '#2068F9',
-                // 9. deep orange
+                // 9. deep orange (Schedule)
                 '#F93220'
             ];
             /**
@@ -3159,7 +3107,7 @@ var App;
                     background.FitPolicy = Property.FitPolicy.Cover;
                     background.Src = 'images/Pages/Main/background.jpg';
                     _this.Add(background);
-                    _this.HeaderBar.Text = 'Script Agent';
+                    _this.HeaderBar.Text = 'Br-Web Host Script Agent';
                     _this.HeaderBar.LeftButton.Hide(0);
                     //this.HeaderBar.RightButton.Hide(0);
                     _this.Add(_this.HeaderBar);
@@ -3235,6 +3183,7 @@ var App;
                 var _this = _super.call(this, controllerId) || this;
                 _this.SetPageView(new Pages.ItemSelectPageView());
                 _this.SetClassName('ItemSelectController');
+                _this._isParentModal = false;
                 return _this;
             }
             ItemSelectControllerBase.prototype.Select = function (parentController) {
@@ -3245,16 +3194,16 @@ var App;
                         return [2 /*return*/, new Promise(function (resolve) {
                                 _this.Log('ShowSelector.Promise');
                                 _this._parentController = parentController;
+                                _this._isParentModal = _this._parentController.View.IsModal;
                                 _this._resolve = resolve;
-                                _this.View.ShowModal();
-                                _this._parentController.View.Mask();
+                                _this.ShowModal();
                             })];
                     });
                 });
             };
             ItemSelectControllerBase.prototype.Commit = function (selectedItem) {
                 this.Log('Commit: ' + selectedItem);
-                console.log(this._resolve);
+                //console.log(this._resolve);
                 if (!this._parentController || !this._resolve)
                     throw new Error('Exec Select');
                 try {
@@ -3293,13 +3242,8 @@ var App;
                 this.Log('Reset');
                 this._resolve = null;
                 this.HideModal();
-                if (this._parentController.View.IsModal) {
-                    this._parentController.View.ShowModal();
-                }
-                else {
-                    if (this._parentController.View.IsMasked)
-                        this._parentController.View.UnMask();
-                }
+                if (this._isParentModal)
+                    this._parentController.ShowModal();
                 this._parentController = null;
             };
             return ItemSelectControllerBase;
@@ -3378,6 +3322,9 @@ var Fw;
             ControlView.prototype.SetAnimatedJello = function () {
                 this.SetAnimatedClass('jello');
             };
+            ControlView.prototype.SetAnimatedPulse = function () {
+                this.SetAnimatedClass('pulse faster');
+            };
             ControlView.prototype.Dispose = function () {
                 _super.prototype.Dispose.call(this);
                 this._label = null;
@@ -3418,10 +3365,10 @@ var Fw;
                     _this.Dom.style.backgroundColor = _this.BackgroundColor;
                 });
                 _this.AddEventListener(Events.SingleClick, function () {
-                    _this.SetAnimatedJello();
+                    _this.SetAnimatedPulse();
                 });
                 _this.AddEventListener(Events.LongClick, function () {
-                    _this.SetAnimatedJello();
+                    _this.SetAnimatedPulse();
                 });
                 return _this;
             }
@@ -3431,6 +3378,12 @@ var Fw;
                 },
                 set: function (value) {
                     this._imageView.Src = value;
+                    if (!value || value === '') {
+                        this._imageView.Hide(0);
+                    }
+                    else {
+                        this._imageView.Show(0);
+                    }
                 },
                 enumerable: true,
                 configurable: true
@@ -4112,7 +4065,7 @@ var App;
                                 res = _a.sent();
                                 if (res !== true)
                                     return [2 /*return*/];
-                                ctr = this.Manager.Get('ControlSet');
+                                ctr = App.Controllers.CSControllerFactory.Get(this._controlSet);
                                 ctr.RemoveControlSet();
                                 this._controlSet = null;
                                 this.HideModal();
@@ -4396,8 +4349,9 @@ var App;
                                 icon = _a.sent();
                                 url = (icon)
                                     ? 'images/icons/' + icon
-                                    : '';
+                                    : null;
                                 this._page.BtnIcon.ImageSrc = url;
+                                this._page.BtnIcon.Refresh();
                                 this.ApplyToEntity();
                                 return [2 /*return*/];
                         }
@@ -4436,7 +4390,7 @@ var App;
                     return __generator(this, function (_a) {
                         if (!this._control)
                             return [2 /*return*/];
-                        ctr = this.Manager.Get('ControlSet');
+                        ctr = App.Controllers.CSControllerFactory.Get(this._controlSet);
                         ctr.ExecCode(this._control);
                         return [2 /*return*/];
                     });
@@ -4461,7 +4415,7 @@ var App;
                                 res = _a.sent();
                                 if (res !== true)
                                     return [2 /*return*/];
-                                ctr = this.Manager.Get('ControlSet');
+                                ctr = App.Controllers.CSControllerFactory.Get(this._controlSet);
                                 ctr.RemoveControl(this._control);
                                 this._control = null;
                                 this._controlSet = null;
@@ -4562,13 +4516,13 @@ var App;
                 }
                 if (this._control.IsAssignToggleOn !== this._page.ChkToggleOn.BoolValue) {
                     this._control.IsAssignToggleOn = this._page.ChkToggleOn.BoolValue;
-                    var ctr = this.Manager.Get('ControlSet');
+                    var ctr = App.Controllers.CSControllerFactory.Get(this._controlSet);
                     ctr.ResetToggleAssign(this._control, true);
                     changed = true;
                 }
                 if (this._control.IsAssignToggleOff !== this._page.ChkToggleOff.BoolValue) {
                     this._control.IsAssignToggleOff = this._page.ChkToggleOff.BoolValue;
-                    var ctr = this.Manager.Get('ControlSet');
+                    var ctr = App.Controllers.CSControllerFactory.Get(this._controlSet);
                     ctr.ResetToggleAssign(this._control, false);
                     changed = true;
                 }
@@ -4906,8 +4860,10 @@ var App;
 /// <reference path="../../../Fw/Util/Xhr/Query.ts" />
 /// <reference path="../../Items/ControlSetTemplate.ts" />
 /// <reference path="../Entities/ControlSet.ts" />
+/// <reference path="../Entities/Control.ts" />
 /// <reference path="../Entities/Header.ts" />
 /// <reference path="ControlStore.ts" />
+/// <reference path="../../Items/OperationType.ts" />
 var App;
 (function (App) {
     var Models;
@@ -5176,6 +5132,42 @@ var App;
                         });
                     });
                 };
+                ControlSetStore.prototype.Exec = function (controlSet, control) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var params, res, result;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    this.Log('Exec');
+                                    // 渡し値がヘン
+                                    if (!controlSet
+                                        || !controlSet.BrDeviceId
+                                        || !control
+                                        || !control.Code
+                                        || control.Code === ''
+                                        || controlSet.OperationType !== 1 /* RemoteControl */) {
+                                        return [2 /*return*/, false];
+                                    }
+                                    params = new Xhr.Params("ControlSets/Exec/" + controlSet.Id, Xhr.MethodType.Post, {
+                                        ControlId: control.Id
+                                    });
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        result = res.Values;
+                                        return [2 /*return*/, result];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, null];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
                 ControlSetStore._instance = null;
                 return ControlSetStore;
             }(Fw.Models.StoreBase));
@@ -5220,8 +5212,9 @@ var App;
         var ItemSelectControllerBase = App.Controllers.ItemSelectControllerBase;
         var ControlSetController = /** @class */ (function (_super) {
             __extends(ControlSetController, _super);
-            function ControlSetController() {
-                var _this = _super.call(this, 'ControlSet') || this;
+            function ControlSetController(controllerId) {
+                if (controllerId === void 0) { controllerId = null; }
+                var _this = _super.call(this, controllerId || 'ControlSet') || this;
                 _this.SetClassName('ControlSetController');
                 _this.SetPageView(new Pages.ControlSetPageView());
                 _this._page = _this.View;
@@ -5229,7 +5222,7 @@ var App;
                 _this._operationType = 1 /* Exec */;
                 _this._page.HeaderBar.LeftButton.Hide(0);
                 _this._page.HeaderBar.LeftButton.AddEventListener(ButtonEvents.SingleClick, function () { return __awaiter(_this, void 0, void 0, function () {
-                    var controlSet, ctr, buttons, isSave, res;
+                    var controlSet, ctr, views, isSave, res;
                     var _this = this;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
@@ -5238,10 +5231,12 @@ var App;
                                 ctr = this.Manager.Get('Main');
                                 ctr.Show();
                                 this._controlSet = null;
-                                buttons = Util.Obj.Mirror(this._page.ButtonPanel.Children);
-                                _.each(buttons, function (btn) {
-                                    _this._page.ButtonPanel.Remove(btn);
-                                    btn.Dispose();
+                                views = Util.Obj.Mirror(this._page.ButtonPanel.Children);
+                                _.each(views, function (view) {
+                                    if (view instanceof Controls.ControlButtonView) {
+                                        _this._page.ButtonPanel.Remove(view);
+                                        view.Dispose();
+                                    }
                                 });
                                 isSave = true;
                                 if (!(controlSet.Controls.length <= 0)) return [3 /*break*/, 2];
@@ -5362,10 +5357,12 @@ var App;
             ControlSetController.prototype.SetEntity = function (entity) {
                 var _this = this;
                 // View側削除処理、ButtonPanel.Childrenを削除操作するため、要素退避しておく。
-                var buttons = Util.Obj.Mirror(this._page.ButtonPanel.Children);
-                _.each(buttons, function (btn) {
-                    _this._page.ButtonPanel.Remove(btn);
-                    btn.Dispose();
+                var views = Util.Obj.Mirror(this._page.ButtonPanel.Children);
+                _.each(views, function (view) {
+                    if (view instanceof Controls.ControlButtonView) {
+                        _this._page.ButtonPanel.Remove(view);
+                        view.Dispose();
+                    }
                 });
                 this._page.ButtonPanel.InnerLength = this._page.ButtonPanel.Size.Height;
                 if (this._controlSet) {
@@ -5471,6 +5468,16 @@ var App;
                 ctr.ShowModal();
             };
             /**
+             * 学習指示／コード取得
+             */
+            ControlSetController.prototype.GetLearnedCode = function () {
+                return __awaiter(this, void 0, void 0, function () {
+                    return __generator(this, function (_a) {
+                        throw new Error("Method not implemented.");
+                    });
+                });
+            };
+            /**
              * コード実行
              * @param code
              */
@@ -5491,7 +5498,7 @@ var App;
                                     Popup.Alert.Open({
                                         Message: 'Select your Rm-Device,<br/>' + guide,
                                     });
-                                    return [2 /*return*/, null];
+                                    return [2 /*return*/, false];
                                 }
                                 if (!control.Code || control.Code === '') {
                                     message = '';
@@ -5524,8 +5531,9 @@ var App;
                                     Popup.Alert.Open({
                                         Message: message,
                                     });
-                                    return [2 /*return*/, null];
+                                    return [2 /*return*/, false];
                                 }
+                                if (!(this._operationType === 2 /* Edit */)) return [3 /*break*/, 2];
                                 return [4 /*yield*/, Stores.ControlSets.Write(this._controlSet)];
                             case 1:
                                 newCs = _a.sent();
@@ -5558,8 +5566,9 @@ var App;
                                     });
                                     return [2 /*return*/, false];
                                 }
-                                return [4 /*yield*/, Stores.Operations.Exec(this._controlSet, control)];
-                            case 2:
+                                _a.label = 2;
+                            case 2: return [4 /*yield*/, Stores.Operations.Exec(this._controlSet, control)];
+                            case 3:
                                 result = _a.sent();
                                 if (result) {
                                     if (control.IsAssignToggleOn === true
@@ -5614,11 +5623,12 @@ var App;
                 if (this._operationType !== 2 /* Edit */)
                     return;
                 // View側削除処理
-                var buttons = Util.Obj.Mirror(this._page.ButtonPanel.Children);
-                _.each(buttons, function (btn) {
-                    if (btn.Control === control) {
-                        _this._page.ButtonPanel.Remove(btn);
-                        btn.Dispose();
+                var views = Util.Obj.Mirror(this._page.ButtonPanel.Children);
+                _.each(views, function (view) {
+                    if (view instanceof Controls.ControlButtonView
+                        && view.Control === control) {
+                        _this._page.ButtonPanel.Remove(view);
+                        view.Dispose();
                     }
                 });
                 // Model側削除処理
@@ -5634,17 +5644,19 @@ var App;
              */
             ControlSetController.prototype.RemoveControlSet = function () {
                 return __awaiter(this, void 0, void 0, function () {
-                    var buttons, controlSet, ctr;
+                    var views, controlSet, ctr;
                     var _this = this;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
                                 if (this._operationType !== 2 /* Edit */)
                                     return [2 /*return*/];
-                                buttons = Util.Obj.Mirror(this._page.ButtonPanel.Children);
-                                _.each(buttons, function (btn) {
-                                    _this._page.ButtonPanel.Remove(btn);
-                                    btn.Dispose();
+                                views = Util.Obj.Mirror(this._page.ButtonPanel.Children);
+                                _.each(views, function (view) {
+                                    if (view instanceof Controls.ControlButtonView) {
+                                        _this._page.ButtonPanel.Remove(view);
+                                        view.Dispose();
+                                    }
                                 });
                                 controlSet = this._controlSet;
                                 ctr = this.Manager.Get('Main');
@@ -5669,6 +5681,79 @@ var App;
 })(App || (App = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Fw/Util/Dump.ts" />
+/// <reference path="../../Fw/ObjectBase.ts" />
+/// <reference path="../Models/Entities/ControlSet.ts" />
+/// <reference path="../Items/OperationType.ts" />
+/// <reference path="../Items/DeviceType.ts" />
+var App;
+(function (App) {
+    var Controllers;
+    (function (Controllers) {
+        var ControlSetControllerFactory = /** @class */ (function () {
+            function ControlSetControllerFactory() {
+                this._manager = Fw.Controllers.Manager.Instance;
+            }
+            Object.defineProperty(ControlSetControllerFactory, "Instance", {
+                get: function () {
+                    if (ControlSetControllerFactory._instance === null)
+                        ControlSetControllerFactory._instance = new ControlSetControllerFactory();
+                    return ControlSetControllerFactory._instance;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            ControlSetControllerFactory.prototype.Get = function (controlSet) {
+                if (!controlSet)
+                    throw new Error("ControlSet Cot Found");
+                switch (controlSet.OperationType) {
+                    case 1 /* RemoteControl */:
+                        return this._manager.Get('ControlSet');
+                        break;
+                    case 2 /* BroadlinkDevice */:
+                        //const brDev = Stores.BrDevices.Get(controlSet.BrDeviceId);
+                        //switch (brDev.DeviceType) {
+                        //    case DeviceType.A1:
+                        //        return this._manager.Get('A1Set') as A1SetController;
+                        //    case DeviceType.Sp2:
+                        //        //return this._manager.Get('Sp2Set') as Sp2SetController;
+                        //        return this._manager.Get('ControlSet') as ControlSetController;
+                        //    case DeviceType.Rm2Pro:
+                        //        //return this._manager.Get('Rm2Pro') as Rm2ProSetController;
+                        //        return this._manager.Get('ControlSet') as ControlSetController;
+                        //    case DeviceType.Sp1:
+                        //    case DeviceType.Rm:
+                        //    case DeviceType.Mp1:
+                        //    case DeviceType.Hysen:
+                        //    case DeviceType.S1c:
+                        //    case DeviceType.Dooya:
+                        //        break;
+                        //}
+                        break;
+                    // 以下、実装検討中。
+                    case 3 /* WakeOnLan */:
+                        //return this._manager.Get('Wol') as WolSetController;
+                        return this._manager.Get('ControlSet');
+                    case 4 /* Script */:
+                        //return this._manager.Get('Script') as ScriptSetController;
+                        return this._manager.Get('ControlSet');
+                    case 5 /* RemoteHostScript */:
+                        //return this._manager.Get('RemoteHostScript') as RemoteHostScriptSetController;
+                        return this._manager.Get('ControlSet');
+                    case 99 /* Scene */:
+                        detault: break;
+                }
+                throw new Error("Controller Cot Found");
+            };
+            ControlSetControllerFactory._instance = null;
+            return ControlSetControllerFactory;
+        }());
+        Controllers.ControlSetControllerFactory = ControlSetControllerFactory;
+        Controllers.CSControllerFactory = ControlSetControllerFactory.Instance;
+    })(Controllers = App.Controllers || (App.Controllers = {}));
+})(App || (App = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="ItemSelectControllerBase.ts" />
 /// <reference path="../../Fw/Util/Dump.ts" />
 /// <reference path="../../Fw/Controllers/Manager.ts" />
@@ -5689,6 +5774,15 @@ var App;
                 _this.SetClassName('IconSelectController');
                 _this._page = _this.View;
                 _this._page.Label.Text = 'Select Icon';
+                var btn = new ItemSelectButtonView();
+                btn.Value = null;
+                btn.ImageSrc = null;
+                btn.Text = 'none';
+                btn.AddEventListener(ButtonEvents.SingleClick, function (e) {
+                    var button = e.Sender;
+                    _this.Commit(button.Value);
+                });
+                _this._page.SelectorPanel.Add(btn);
                 _.each(App.Items.Icon.Names, function (name, idx) {
                     var btn = new ItemSelectButtonView();
                     btn.Value = name;
@@ -5706,6 +5800,7 @@ var App;
         Controllers.IconSelectController = IconSelectController;
     })(Controllers = App.Controllers || (App.Controllers = {}));
 })(App || (App = {}));
+/// <reference path="../Models/Entities/ControlSet.ts" />
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="ControlViewEvents.ts" />
@@ -5841,10 +5936,19 @@ var App;
 /// <reference path="../../../Fw/Views/ButtonView.ts" />
 /// <reference path="../../../Fw/Views/Property/Anchor.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../../Fw/Models/IEntity.ts" />
+/// <reference path="../../Items/Color.ts" />
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Views/ButtonView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../../Fw/Models/IEntity.ts" />
 /// <reference path="../../Items/Color.ts" />
 /// <reference path="../../Items/OperationType.ts" />
 /// <reference path="../../Items/DeviceType.ts" />
 /// <reference path="LabelAndButtonView.ts" />
+/// <reference path="IMainButtonView.ts" />
 /// <reference path="../../Models/Entities/ControlSet.ts" />
 var App;
 (function (App) {
@@ -5855,11 +5959,15 @@ var App;
             var Views = Fw.Views;
             var Property = Fw.Views.Property;
             var Color = App.Items.Color;
+            var ControlSet = App.Models.Entities.ControlSet;
             var ControlSetButtonView = /** @class */ (function (_super) {
                 __extends(ControlSetButtonView, _super);
+                //public readonly ControlSet: ControlSet;
                 function ControlSetButtonView(entity) {
                     var _this = _super.call(this) || this;
-                    _this.ControlSet = entity;
+                    if (!(entity instanceof ControlSet))
+                        throw new Error('Invalid Entity');
+                    _this.Entity = entity;
                     _this._toggle = new Views.ToggleButtonInputView();
                     _this.SetSize(150, 170);
                     _this.Button.HasBorder = false;
@@ -5881,17 +5989,18 @@ var App;
                     configurable: true
                 });
                 ControlSetButtonView.prototype.ApplyByEntity = function () {
-                    if (this.ControlSet) {
-                        this.Button.BackgroundColor = this.ControlSet.Color;
-                        this.Button.Color = this.ControlSet.Color;
-                        this.Button.HoverColor = this.ControlSet.HoverColor;
-                        this.Button.ImageSrc = this.ControlSet.IconUrl;
-                        this.Label.Text = this.ControlSet.Name;
-                        if (this.ControlSet.IsTogglable)
+                    if (this.Entity) {
+                        var controlSet = this.Entity;
+                        this.Button.BackgroundColor = controlSet.Color;
+                        this.Button.Color = controlSet.Color;
+                        this.Button.HoverColor = controlSet.HoverColor;
+                        this.Button.ImageSrc = controlSet.IconUrl;
+                        this.Label.Text = controlSet.Name;
+                        if (controlSet.IsTogglable)
                             this.Toggle.Show(0);
                         else
                             this.Toggle.Hide(0);
-                        this.Toggle.SetBoolValue(this.ControlSet.ToggleState, false);
+                        this.Toggle.SetBoolValue(controlSet.ToggleState, false);
                     }
                     else {
                         this.Button.BackgroundColor = Color.MainBackground;
@@ -5913,262 +6022,8 @@ var App;
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../../Fw/Controllers/ControllerBase.ts" />
-/// <reference path="../../Fw/Controllers/Manager.ts" />
 /// <reference path="../../Fw/Util/Dump.ts" />
-/// <reference path="../../Fw/Events/ControlViewEvents.ts" />
-/// <reference path="../../Fw/Events/ButtonViewEvents.ts" />
-/// <reference path="../../Fw/Events/ToggleButtonInputViewEvents.ts" />
-/// <reference path="../../Fw/Events/StuckerBoxViewEvents.ts" />
-/// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
-/// <reference path="../Views/Pages/MainPageView.ts" />
-/// <reference path="../Views/Controls/ControlSetButtonView.ts" />
-/// <reference path="../Models/Entities/ControlSet.ts" />
-/// <reference path="../Models/Stores/ControlSetStore.ts" />
-/// <reference path="../Items/OperationTemplate.ts" />
-/// <reference path="../Items/ControlSetTemplate.ts" />
-/// <reference path="../Items/OperationType.ts" />
-var App;
-(function (App) {
-    var Controllers;
-    (function (Controllers) {
-        var Dump = Fw.Util.Dump;
-        var Events = Fw.Events;
-        var Pages = App.Views.Pages;
-        var ButtonEvents = Fw.Events.ButtonViewEvents;
-        var ToggleEvents = Fw.Events.ToggleButtonInputViewEvents;
-        var StuckerBoxEvents = Fw.Events.StuckerBoxViewEvents;
-        var Stores = App.Models.Stores;
-        var ControlSetTemplate = App.Items.ControlSetTemplate;
-        var ControlSetButtonView = App.Views.Controls.ControlSetButtonView;
-        var MainController = /** @class */ (function (_super) {
-            __extends(MainController, _super);
-            function MainController() {
-                var _this = _super.call(this, 'Main') || this;
-                Dump.Log('Start MainController');
-                _this.SetClassName('MainController');
-                _this.SetPageView(new Pages.MainPageView());
-                _this._page = _this.View;
-                _this.InitStores()
-                    .then(function () {
-                    Dump.Log('SubController Load Start');
-                    var controlSetCtr = new Controllers.ControlSetController();
-                    var controlHeaderPropertyCtr = new Controllers.ControlHeaderPropertyController();
-                    var controlPropertyCtr = new Controllers.ControlPropertyController();
-                    var iconSelectCtr = new Controllers.IconSelectController();
-                    var colorSelectCtr = new Controllers.ColorSelectController();
-                    Dump.Log('SubController Load End');
-                });
-                _this._page.HeaderBar.RightButton.AddEventListener(ButtonEvents.SingleClick, function () { return __awaiter(_this, void 0, void 0, function () {
-                    var ctrSet, ctr2;
-                    return __generator(this, function (_a) {
-                        switch (_a.label) {
-                            case 0: return [4 /*yield*/, Stores.ControlSets.GetTemplateClone(ControlSetTemplate.SingleControl)];
-                            case 1:
-                                ctrSet = _a.sent();
-                                ctrSet.OperationType = 4 /* Script */;
-                                ctrSet.Name = 'Script';
-                                ctrSet.Color = App.Items.Color.ButtonColors[2];
-                                ctrSet.IconUrl = 'images/icons/controlset/script.png';
-                                ctrSet.Controls[0].Name = 'Script1';
-                                ctrSet.Controls[0].Code = '';
-                                ctrSet.Controls[0].IsAssignToggleOn = true;
-                                ctrSet.Controls[0].IsAssignToggleOff = true;
-                                ctr2 = this.Manager.Get('ControlSet');
-                                ctr2.SetEntity(ctrSet);
-                                ctr2.SetEditMode();
-                                ctr2.Show();
-                                return [2 /*return*/];
-                        }
-                    });
-                }); });
-                _this._page.ControlSetPanel.AddEventListener(StuckerBoxEvents.OrderChanged, function () {
-                    var csets = new Array();
-                    var idx = 1;
-                    _.each(_this._page.ControlSetPanel.Children, function (btn) {
-                        if (!btn.ControlSet)
-                            return;
-                        btn.ControlSet.Order = idx;
-                        idx++;
-                        csets.push(btn.ControlSet);
-                    });
-                    Stores.ControlSets.UpdateHeaders(csets);
-                });
-                return _this;
-            }
-            MainController.prototype.InitStores = function () {
-                return __awaiter(this, void 0, void 0, function () {
-                    return __generator(this, function (_a) {
-                        switch (_a.label) {
-                            case 0:
-                                Dump.Log('Store Initialize Start');
-                                return [4 /*yield*/, this.RefreshControlSets()];
-                            case 1:
-                                _a.sent();
-                                Dump.Log('Store Initialize - ControlSets OK.');
-                                Dump.Log('Store Initialize End');
-                                return [2 /*return*/, true];
-                        }
-                    });
-                });
-            };
-            MainController.prototype.RefreshControlSets = function () {
-                return __awaiter(this, void 0, void 0, function () {
-                    var sets, children;
-                    var _this = this;
-                    return __generator(this, function (_a) {
-                        switch (_a.label) {
-                            case 0: return [4 /*yield*/, Stores.ControlSets.GetListForMainPanel()];
-                            case 1:
-                                sets = _a.sent();
-                                children = Fw.Util.Obj.Mirror(this._page.ControlSetPanel.Children);
-                                _.each(children, function (btn) {
-                                    var existsSet = _.find(sets, function (cs) {
-                                        return (cs === btn.ControlSet);
-                                    });
-                                    if (!existsSet) {
-                                        _this._page.ControlSetPanel.Remove(btn);
-                                        btn.Dispose();
-                                    }
-                                });
-                                // 追加されたEntity分のボタンをパネルに追加。
-                                _.each(sets, function (cs) {
-                                    var existsBtn = _.find(children, function (b) {
-                                        return (b.ControlSet === cs);
-                                    });
-                                    if (existsBtn)
-                                        return;
-                                    var btn = new ControlSetButtonView(cs);
-                                    btn.Button.AddEventListener(ButtonEvents.SingleClick, function (e) {
-                                        // 子View再配置中のとき、何もしない。
-                                        if (_this._page.ControlSetPanel.IsChildRelocation)
-                                            return;
-                                        // メインボタンクリック - リモコンをスライドイン表示する。
-                                        var button = e.Sender.Parent;
-                                        var ctr = _this.Manager.Get('ControlSet');
-                                        ctr.SetEntity(button.ControlSet);
-                                        ctr.SetExecMode();
-                                        ctr.ShowModal();
-                                    });
-                                    btn.Button.AddEventListener(ButtonEvents.LongClick, function (e) {
-                                        // 子View再配置中のとき、何もしない。
-                                        if (_this._page.ControlSetPanel.IsChildRelocation)
-                                            return;
-                                        // メインボタンの長押し - リモコンを編集表示する。
-                                        var button = e.Sender.Parent;
-                                        var ctr = _this.Manager.Get('ControlSet');
-                                        ctr.SetEntity(button.ControlSet);
-                                        ctr.SetEditMode();
-                                        ctr.Show();
-                                    });
-                                    btn.Toggle.AddEventListener(ToggleEvents.Changed, function (e) {
-                                        // 子View再配置中のとき、何もしない。
-                                        if (_this._page.ControlSetPanel.IsChildRelocation)
-                                            return;
-                                        // トグルクリック
-                                        var button = e.Sender.Parent;
-                                        var cset = button.ControlSet;
-                                        var toggleValue = button.Toggle.BoolValue;
-                                        var controlOn = _.find(cset.Controls, function (c) {
-                                            var ct = c;
-                                            return ct.IsAssignToggleOn;
-                                        });
-                                        var controlOff = _.find(cset.Controls, function (c) {
-                                            var ct = c;
-                                            return ct.IsAssignToggleOff;
-                                        });
-                                        var targetControl = (toggleValue)
-                                            ? controlOn
-                                            : controlOff;
-                                        Stores.Operations.Exec(cset, targetControl);
-                                    });
-                                    cs.AddEventListener(Events.EntityEvents.Changed, function (e) {
-                                        // ボタンに乗せたControlSetEntityの値変更イベント
-                                        var cset = e.Sender;
-                                        var btn = _.find(_this._page.ControlSetPanel.Children, function (b) {
-                                            var csetBtn = b;
-                                            return (csetBtn.ControlSet === cset);
-                                        });
-                                        if (!btn)
-                                            return;
-                                        btn.ApplyByEntity();
-                                    });
-                                    _this._page.ControlSetPanel.Add(btn);
-                                });
-                                this._page.ControlSetPanel.Refresh();
-                                return [2 /*return*/, true];
-                        }
-                    });
-                });
-            };
-            return MainController;
-        }(Fw.Controllers.ControllerBase));
-        Controllers.MainController = MainController;
-    })(Controllers = App.Controllers || (App.Controllers = {}));
-})(App || (App = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../../Fw/Controllers/ControllerBase.ts" />
-/// <reference path="../../Fw/Controllers/Manager.ts" />
-/// <reference path="../../Fw/Util/Dump.ts" />
-/// <reference path="../../Fw/Events/ControlViewEvents.ts" />
-/// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
-/// <reference path="../Views/Pages/MainPageView.ts" />
-var App;
-(function (App) {
-    var Controllers;
-    (function (Controllers) {
-        var Events = Fw.Events;
-        var Controls = App.Views.Controls;
-        var MouseEventsController = /** @class */ (function (_super) {
-            __extends(MouseEventsController, _super);
-            function MouseEventsController() {
-                var _this = _super.call(this, 'MouseEvents') || this;
-                _this.HeaderBar = new Controls.HeaderBarView();
-                _this.SetClassName('ControlSetController');
-                _this.SetPageView(new Fw.Views.PageView());
-                _this.HeaderBar.Text = 'Remote Control';
-                _this.HeaderBar.RightButton.Hide(0);
-                _this.View.Add(_this.HeaderBar);
-                _this.HeaderBar.LeftButton.Hide(0);
-                _this.HeaderBar.LeftButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
-                    _this.Manager.Get("Main").Show();
-                });
-                _this.View.Elem.on('click', function (e) {
-                    _this.Log('click');
-                });
-                _this.View.Elem.on('mousedown', function (e) {
-                    _this.Log('mousedown');
-                });
-                _this.View.Elem.on('mousemove', function (e) {
-                    _this.Log('mousemove');
-                });
-                _this.View.Elem.on('mouseup', function (e) {
-                    _this.Log('mouseup');
-                });
-                _this.View.Elem.on('mouseout', function (e) {
-                    _this.Log('mouseout');
-                });
-                _this.View.Elem.on('touchstart', function (e) {
-                    _this.Log('touchstart');
-                });
-                _this.View.Elem.on('touchmove', function (e) {
-                    _this.Log('touchmove');
-                });
-                _this.View.Elem.on('touchend', function (e) {
-                    _this.Log('touchend');
-                });
-                return _this;
-            }
-            return MouseEventsController;
-        }(Fw.Controllers.ControllerBase));
-        Controllers.MouseEventsController = MouseEventsController;
-    })(Controllers = App.Controllers || (App.Controllers = {}));
-})(App || (App = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../../Fw/Util/Dump.ts" />
-/// <reference path="../../Fw/Controllers/Manager.ts" />
+/// <reference path="OperationTemplate.ts" />
 var App;
 (function (App) {
     var Items;
@@ -6176,20 +6031,69 @@ var App;
         var Icon = /** @class */ (function () {
             function Icon() {
             }
-            Icon.Scene = 'images/icons/operation/scene.png';
-            Icon.Tv = 'images/icons/operation/tv.png';
-            Icon.Av = 'images/icons/operation/av.png';
-            Icon.Light = 'images/icons/operation/light.png';
-            Icon.Free = 'images/icons/operation/free.png';
-            Icon.WoL = 'images/icons/operation/wol.png';
-            Icon.Script = 'images/icons/operation/script.png';
-            Icon.Remote = 'images/icons/operation/remote.png';
-            // TODO: 以下、ソレっぽいアイコンを用意する。
-            Icon.Air = 'images/icons/operation/layout.png';
-            Icon.BrA1 = 'images/icons/operation/rocket.png';
-            Icon.BrSp2 = 'images/icons/operation/rocket.png';
-            Icon.BrSc1 = 'images/icons/operation/rocket.png';
-            Icon.BrS1c = 'images/icons/operation/rocket.png';
+            Icon.GetByOperationTemplate = function (template, isLarge) {
+                if (isLarge === void 0) { isLarge = false; }
+                var idx = template;
+                var name = Icon.Operations[idx];
+                if (!name)
+                    return null;
+                return (isLarge)
+                    ? 'images/icons/operation/large/' + name
+                    : 'images/icons/operation/small/' + name;
+            };
+            Icon.GetPairdOperationIcon = function (path) {
+                var name = path.substr(path.lastIndexOf('/') + 1);
+                var isLarge = (path.indexOf('large') !== -1);
+                return (!isLarge)
+                    ? 'images/icons/operation/large/' + name
+                    : 'images/icons/operation/small/' + name;
+            };
+            Icon.Operations = [
+                /**
+                 * 空
+                 */
+                '',
+                /**
+                 * 1.シーン
+                 */
+                'scene.png',
+                /**
+                 * 2.TV
+                 */
+                'tv.png',
+                /**
+                 * 3.AV
+                 */
+                'av.png',
+                /**
+                 * 4.Light
+                 */
+                'light.png',
+                /**
+                 * 5.Light
+                 */
+                'av.png',
+                /**
+                 * 6.Free
+                 */
+                'free.png',
+                /**
+                 * 7.WoL
+                 */
+                'wol.png',
+                /**
+                 * 8.Script
+                 */
+                'script.png',
+                /**
+                 * 9.RemoteHostScript
+                 */
+                'remote.png',
+                /**
+                 * 10.Schedule
+                 */
+                'schedule.png'
+            ];
             Icon.Names = [
                 'arrow1_down.png',
                 'arrow1_left.png',
@@ -6316,6 +6220,277 @@ var App;
         Items.Icon = Icon;
     })(Items = App.Items || (App.Items = {}));
 })(App || (App = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Fw/Controllers/ControllerBase.ts" />
+/// <reference path="../../Fw/Controllers/Manager.ts" />
+/// <reference path="../../Fw/Util/Dump.ts" />
+/// <reference path="../../Fw/Events/ControlViewEvents.ts" />
+/// <reference path="../../Fw/Events/ButtonViewEvents.ts" />
+/// <reference path="../../Fw/Events/ToggleButtonInputViewEvents.ts" />
+/// <reference path="../../Fw/Events/StuckerBoxViewEvents.ts" />
+/// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
+/// <reference path="../Views/Pages/MainPageView.ts" />
+/// <reference path="../Views/Controls/ControlSetButtonView.ts" />
+/// <reference path="../Models/Entities/ControlSet.ts" />
+/// <reference path="../Models/Stores/ControlSetStore.ts" />
+/// <reference path="../Items/OperationTemplate.ts" />
+/// <reference path="../Items/ControlSetTemplate.ts" />
+/// <reference path="../Items/OperationType.ts" />
+/// <reference path="../Items/Color.ts" />
+/// <reference path="../Items/Icon.ts" />
+var App;
+(function (App) {
+    var Controllers;
+    (function (Controllers) {
+        var Dump = Fw.Util.Dump;
+        var Events = Fw.Events;
+        var Pages = App.Views.Pages;
+        var ButtonEvents = Fw.Events.ButtonViewEvents;
+        var ToggleEvents = Fw.Events.ToggleButtonInputViewEvents;
+        var StuckerBoxEvents = Fw.Events.StuckerBoxViewEvents;
+        var Stores = App.Models.Stores;
+        var ControlSetTemplate = App.Items.ControlSetTemplate;
+        var ControlSetButtonView = App.Views.Controls.ControlSetButtonView;
+        var Color = App.Items.Color;
+        var Icon = App.Items.Icon;
+        var MainController = /** @class */ (function (_super) {
+            __extends(MainController, _super);
+            function MainController() {
+                var _this = _super.call(this, 'Main') || this;
+                Dump.Log('Start MainController');
+                _this.SetClassName('MainController');
+                _this.SetPageView(new Pages.MainPageView());
+                _this._page = _this.View;
+                _this.InitStores()
+                    .then(function () {
+                    Dump.Log('SubController Load Start');
+                    var controlSetCtr = new Controllers.ControlSetController();
+                    var controlHeaderPropertyCtr = new Controllers.ControlHeaderPropertyController();
+                    var controlPropertyCtr = new Controllers.ControlPropertyController();
+                    var iconSelectCtr = new Controllers.IconSelectController();
+                    var colorSelectCtr = new Controllers.ColorSelectController();
+                    Dump.Log('SubController Load End');
+                });
+                _this._page.HeaderBar.RightButton.AddEventListener(ButtonEvents.SingleClick, function () { return __awaiter(_this, void 0, void 0, function () {
+                    var ctrSet, ctr2;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0: return [4 /*yield*/, Stores.ControlSets.GetTemplateClone(ControlSetTemplate.SingleControl)];
+                            case 1:
+                                ctrSet = _a.sent();
+                                ctrSet.OperationType = 4 /* Script */;
+                                ctrSet.Name = 'Script';
+                                ctrSet.Color = Color.ButtonColors[2];
+                                ctrSet.IconUrl = Icon.GetByOperationTemplate(8 /* Script */, true);
+                                ctrSet.Controls[0].Name = 'Script1';
+                                ctrSet.Controls[0].Code = '';
+                                ctrSet.Controls[0].IsAssignToggleOn = true;
+                                ctrSet.Controls[0].IsAssignToggleOff = true;
+                                ctr2 = App.Controllers.CSControllerFactory.Get(ctrSet);
+                                ctr2.SetEntity(ctrSet);
+                                ctr2.SetEditMode();
+                                ctr2.Show();
+                                return [2 /*return*/];
+                        }
+                    });
+                }); });
+                _this._page.ControlSetPanel.AddEventListener(StuckerBoxEvents.OrderChanged, function () { return __awaiter(_this, void 0, void 0, function () {
+                    var csets, idx;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                csets = new Array();
+                                idx = 1;
+                                _.each(this._page.ControlSetPanel.Children, function (btn) {
+                                    if (!btn.Entity)
+                                        return;
+                                    btn.Entity.Order = idx;
+                                    idx++;
+                                    csets.push(btn.Entity);
+                                });
+                                return [4 /*yield*/, Stores.ControlSets.UpdateHeaders(csets)];
+                            case 1:
+                                _a.sent();
+                                return [2 /*return*/];
+                        }
+                    });
+                }); });
+                return _this;
+            }
+            MainController.prototype.InitStores = function () {
+                return __awaiter(this, void 0, void 0, function () {
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                Dump.Log('Store Initialize Start');
+                                return [4 /*yield*/, this.RefreshControlSets()];
+                            case 1:
+                                _a.sent();
+                                Dump.Log('Store Initialize - ControlSets OK.');
+                                Dump.Log('Store Initialize End');
+                                return [2 /*return*/, true];
+                        }
+                    });
+                });
+            };
+            MainController.prototype.RefreshControlSets = function () {
+                return __awaiter(this, void 0, void 0, function () {
+                    var sets, children;
+                    var _this = this;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0: return [4 /*yield*/, Stores.ControlSets.GetListForMainPanel()];
+                            case 1:
+                                sets = _a.sent();
+                                children = Fw.Util.Obj.Mirror(this._page.ControlSetPanel.Children);
+                                _.each(children, function (btn) {
+                                    var existsSet = _.find(sets, function (cs) {
+                                        return (cs === btn.Entity);
+                                    });
+                                    if (!existsSet) {
+                                        _this._page.ControlSetPanel.Remove(btn);
+                                        btn.Dispose();
+                                    }
+                                });
+                                // 追加されたEntity分のボタンをパネルに追加。
+                                _.each(sets, function (cs) {
+                                    var existsBtn = _.find(children, function (b) {
+                                        return (b.Entity === cs);
+                                    });
+                                    if (existsBtn)
+                                        return;
+                                    var btn = new ControlSetButtonView(cs);
+                                    btn.Button.AddEventListener(ButtonEvents.SingleClick, function (e) {
+                                        // 子View再配置中のとき、何もしない。
+                                        if (_this._page.ControlSetPanel.IsChildRelocation)
+                                            return;
+                                        // メインボタンクリック - リモコンをスライドイン表示する。
+                                        var button = e.Sender.Parent;
+                                        var ctr = App.Controllers.CSControllerFactory.Get(button.Entity);
+                                        ctr.SetEntity(button.Entity);
+                                        ctr.SetExecMode();
+                                        ctr.ShowModal();
+                                    });
+                                    btn.Button.AddEventListener(ButtonEvents.LongClick, function (e) {
+                                        // 子View再配置中のとき、何もしない。
+                                        if (_this._page.ControlSetPanel.IsChildRelocation)
+                                            return;
+                                        // メインボタンの長押し - リモコンを編集表示する。
+                                        var button = e.Sender.Parent;
+                                        var ctr = App.Controllers.CSControllerFactory.Get(button.Entity);
+                                        ctr.SetEntity(button.Entity);
+                                        ctr.SetEditMode();
+                                        ctr.Show();
+                                    });
+                                    btn.Toggle.AddEventListener(ToggleEvents.Changed, function (e) {
+                                        // 子View再配置中のとき、何もしない。
+                                        if (_this._page.ControlSetPanel.IsChildRelocation)
+                                            return;
+                                        // トグルクリック
+                                        var button = e.Sender.Parent;
+                                        var cset = button.Entity;
+                                        var toggleValue = button.Toggle.BoolValue;
+                                        var controlOn = _.find(cset.Controls, function (c) {
+                                            var ct = c;
+                                            return ct.IsAssignToggleOn;
+                                        });
+                                        var controlOff = _.find(cset.Controls, function (c) {
+                                            var ct = c;
+                                            return ct.IsAssignToggleOff;
+                                        });
+                                        var targetControl = (toggleValue)
+                                            ? controlOn
+                                            : controlOff;
+                                        Stores.Operations.Exec(cset, targetControl);
+                                    });
+                                    cs.AddEventListener(Events.EntityEvents.Changed, function (e) {
+                                        // ボタンに乗せたControlSetEntityの値変更イベント
+                                        var cset = e.Sender;
+                                        var btn = _.find(_this._page.ControlSetPanel.Children, function (b) {
+                                            var csetBtn = b;
+                                            return (csetBtn.Entity === cset);
+                                        });
+                                        if (!btn)
+                                            return;
+                                        btn.ApplyByEntity();
+                                    });
+                                    _this._page.ControlSetPanel.Add(btn);
+                                });
+                                this._page.ControlSetPanel.Refresh();
+                                return [2 /*return*/, true];
+                        }
+                    });
+                });
+            };
+            return MainController;
+        }(Fw.Controllers.ControllerBase));
+        Controllers.MainController = MainController;
+    })(Controllers = App.Controllers || (App.Controllers = {}));
+})(App || (App = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../Fw/Controllers/ControllerBase.ts" />
+/// <reference path="../../Fw/Controllers/Manager.ts" />
+/// <reference path="../../Fw/Util/Dump.ts" />
+/// <reference path="../../Fw/Events/ControlViewEvents.ts" />
+/// <reference path="../../Fw/Views/Property/FitPolicy.ts" />
+/// <reference path="../Views/Pages/MainPageView.ts" />
+var App;
+(function (App) {
+    var Controllers;
+    (function (Controllers) {
+        var Events = Fw.Events;
+        var Controls = App.Views.Controls;
+        var MouseEventsController = /** @class */ (function (_super) {
+            __extends(MouseEventsController, _super);
+            function MouseEventsController() {
+                var _this = _super.call(this, 'MouseEvents') || this;
+                _this.HeaderBar = new Controls.HeaderBarView();
+                _this.SetClassName('ControlSetController');
+                _this.SetPageView(new Fw.Views.PageView());
+                _this.HeaderBar.Text = 'Remote Control';
+                _this.HeaderBar.RightButton.Hide(0);
+                _this.View.Add(_this.HeaderBar);
+                _this.HeaderBar.LeftButton.Hide(0);
+                _this.HeaderBar.LeftButton.AddEventListener(Events.ButtonViewEvents.SingleClick, function () {
+                    _this.Manager.Get("Main").Show();
+                });
+                _this.View.Elem.on('click', function (e) {
+                    _this.Log('click');
+                });
+                _this.View.Elem.on('mousedown', function (e) {
+                    _this.Log('mousedown');
+                });
+                _this.View.Elem.on('mousemove', function (e) {
+                    _this.Log('mousemove');
+                });
+                _this.View.Elem.on('mouseup', function (e) {
+                    _this.Log('mouseup');
+                });
+                _this.View.Elem.on('mouseout', function (e) {
+                    _this.Log('mouseout');
+                });
+                _this.View.Elem.on('touchstart', function (e) {
+                    _this.Log('touchstart');
+                });
+                _this.View.Elem.on('touchmove', function (e) {
+                    _this.Log('touchmove');
+                });
+                _this.View.Elem.on('touchend', function (e) {
+                    _this.Log('touchend');
+                });
+                return _this;
+            }
+            return MouseEventsController;
+        }(Fw.Controllers.ControllerBase));
+        Controllers.MouseEventsController = MouseEventsController;
+    })(Controllers = App.Controllers || (App.Controllers = {}));
+})(App || (App = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="ViewEvents.ts" />
@@ -6555,9 +6730,168 @@ var Fw;
                     return null;
                 }
             };
+            /**
+             * 時差情報付きISO8601文字列を取得する。
+             * @param date
+             */
+            DateTime.GetIso8601 = function (date) {
+                var offset = date.getTimezoneOffset() * -1; // 時差符号は逆転させる。
+                var offsetHour = Math.ceil(Math.abs(offset) / 60);
+                var offsetMinute = Math.abs(offset) % 60;
+                var offsetString = (offset === 0)
+                    ? 'Z'
+                    : (((offset > 0) ? '+' : '-')
+                        + ('0' + offsetHour).slice(-2)
+                        + ':' + ('0' + offsetMinute).slice(-2));
+                var result = date.getFullYear()
+                    + '-' + ('0' + (date.getMonth() + 1)).slice(-2)
+                    + '-' + ('0' + date.getDate()).slice(-2)
+                    + 'T' + ('0' + date.getHours()).slice(-2)
+                    + ':' + ('0' + date.getMinutes()).slice(-2)
+                    + ':' + ('0' + date.getSeconds()).slice(-2)
+                    + '.' + (date.getMilliseconds() / 1000).toFixed(3).slice(2, 5)
+                    + offsetString;
+                return result;
+            };
             return DateTime;
         }());
         Util.DateTime = DateTime;
+    })(Util = Fw.Util || (Fw.Util = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="./Dump.ts" />
+/// <reference path="../ObjectBase.ts" />
+var Fw;
+(function (Fw) {
+    var Util;
+    (function (Util) {
+        var Dump = Fw.Util.Dump;
+        var DelayedOnceExecuter = /** @class */ (function (_super) {
+            __extends(DelayedOnceExecuter, _super);
+            function DelayedOnceExecuter(iobject, callback, delay, timeout, isMonitor) {
+                if (delay === void 0) { delay = 100; }
+                if (timeout === void 0) { timeout = -1; }
+                if (isMonitor === void 0) { isMonitor = false; }
+                var _this = _super.call(this) || this;
+                _this.Name = '';
+                _this.SetClassName('DelayedOnceExecuter');
+                _this._object = iobject;
+                _this._callback = callback;
+                _this._delay = delay;
+                _this._timeout = timeout;
+                _this._startTime = null;
+                _this._timer = null;
+                _this._isActive = false;
+                _this._suppressCount = 0;
+                _this._timeoutExecStartTime = null;
+                //this.EnableLog = true;
+                if (isMonitor) {
+                    //this.EnableLog = true;
+                    setInterval(function () {
+                        if (!_this._isActive)
+                            return;
+                        if (_this._startTime || _this._timeoutExecStartTime) {
+                            var now = new Date();
+                            var elapsed = (_this._timeoutExecStartTime)
+                                ? now.getTime() - _this._timeoutExecStartTime.getTime()
+                                : now.getTime() - _this._startTime.getTime();
+                            if (DelayedOnceExecuter.DelayThreshold < elapsed) {
+                                // Delay閾値より長い時間の間、一度も実行されていない。
+                                // 無限ループの可能性がある。
+                                _this.EnableLog = true;
+                                _this._object.EnableLog = true;
+                                _this.Log('＊＊＊無限ループの可能性があります＊＊＊');
+                                _this.Log(_this.Name + ": \u7D4C\u904E\u6642\u9593(msec) = " + elapsed);
+                                _this.Log("" + _this._object.ObjectIdentifier);
+                            }
+                        }
+                        if (DelayedOnceExecuter.SuppressThreshold < _this._suppressCount) {
+                            // Suppress閾値より多くの回数分、実行が抑制されている。
+                            // 呼び出し回数が多すぎる可能性がある。
+                            _this.EnableLog = true;
+                            _this._object.EnableLog = true;
+                            _this.Log('＊＊＊呼び出し回数が多すぎます＊＊＊');
+                            _this.Log(_this.Name + ": \u6291\u5236\u56DE\u6570 = " + _this._suppressCount);
+                            _this.Log("" + _this._object.ObjectIdentifier);
+                        }
+                    }, DelayedOnceExecuter.MonitorInterval);
+                }
+                return _this;
+            }
+            Object.defineProperty(DelayedOnceExecuter.prototype, "Delay", {
+                get: function () {
+                    return this._delay;
+                },
+                set: function (value) {
+                    this._delay = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(DelayedOnceExecuter.prototype, "Timeout", {
+                get: function () {
+                    return this._timeout;
+                },
+                set: function (value) {
+                    this._timeout;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            DelayedOnceExecuter.prototype.Exec = function (passingValues) {
+                var _this = this;
+                this._isActive = true;
+                if (this._timer === null) {
+                    // これから開始するとき
+                    this._startTime = new Date();
+                    this._suppressCount = 0;
+                }
+                else {
+                    // 既に開始中のとき
+                    clearInterval(this._timer);
+                    this._timer = null;
+                    this._suppressCount++;
+                }
+                var now = new Date();
+                var elapsed = (now.getTime() - this._startTime.getTime());
+                if (0 < this._timeout && elapsed > this._timeout) {
+                    // タイムアウト実行が連続するときの、最初の開始時間を保持しておく。
+                    if (this._timeoutExecStartTime === null)
+                        this._timeoutExecStartTime = this._startTime;
+                    this.Log("Timeout Exec: " + this._object.ObjectIdentifier);
+                    this.InnerExec(passingValues);
+                }
+                else {
+                    this._timer = setTimeout(function () {
+                        _this._timeoutExecStartTime = null;
+                        _this.InnerExec(passingValues);
+                    }, this._delay);
+                }
+            };
+            DelayedOnceExecuter.prototype.InnerExec = function (passingValues) {
+                //this.Log(`InnerExec: ${this._object.ObjectIdentifier}: suppressed[${this._suppressCount}]`);
+                try {
+                    this._callback(passingValues);
+                }
+                catch (e) {
+                    this.Log("Callback FAILED!!: " + this._object.ObjectIdentifier);
+                    Dump.ErrorLog(e);
+                }
+                if (this._timer) {
+                    clearInterval(this._timer);
+                    this._timer = null;
+                }
+                this._startTime = null;
+                this._suppressCount = 0;
+                this._isActive = false;
+            };
+            DelayedOnceExecuter.MonitorInterval = 10000;
+            DelayedOnceExecuter.DelayThreshold = 3000;
+            DelayedOnceExecuter.SuppressThreshold = 100;
+            return DelayedOnceExecuter;
+        }(Fw.ObjectBase));
+        Util.DelayedOnceExecuter = DelayedOnceExecuter;
     })(Util = Fw.Util || (Fw.Util = {}));
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
@@ -6566,9 +6900,97 @@ var Fw;
 /// <reference path="Property/Anchor.ts" />
 /// <reference path="../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../lib/underscore/index.d.ts" />
+/// <reference path="../Events/InputViewEvents.ts" />
+/// <reference path="../Util/Dump.ts" />
+/// <reference path="ViewBase.ts" />
+/// <reference path="IInputView.ts" />
+/// <reference path="Property/FitPolicy.ts" />
+var Fw;
+(function (Fw) {
+    var Views;
+    (function (Views) {
+        var Events = Fw.Events.InputViewEvents;
+        var InputViewBase = /** @class */ (function (_super) {
+            __extends(InputViewBase, _super);
+            function InputViewBase(jqueryElem) {
+                var _this = _super.call(this, jqueryElem) || this;
+                _this.SetClassName('InputView');
+                _this.Elem.addClass(_this.ClassName);
+                _this._name = '';
+                _this._value = '';
+                _this._isReadOnly = false;
+                _this.BackgroundColor = '#FFFFFF';
+                _this.Elem.on('propertychange change keyup paste input', function () {
+                    //this.Log('InputViewBase.Changed');
+                    _this.DispatchEvent(Events.Changed, _this.Value);
+                });
+                _this.Elem.on('focus', function () {
+                    //this.Log('InputViewBase.Focused');
+                    _this.DispatchEvent(Events.Focused);
+                });
+                _this.Elem.on('blur', function () {
+                    //this.Log('InputViewBase.Blurred');
+                    _this.DispatchEvent(Events.Blurred);
+                });
+                return _this;
+            }
+            Object.defineProperty(InputViewBase.prototype, "Name", {
+                get: function () {
+                    return this._name;
+                },
+                set: function (value) {
+                    this._name = value;
+                    this.Elem.attr('name', this._name);
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(InputViewBase.prototype, "Value", {
+                get: function () {
+                    this._value = this.Elem.val();
+                    return this._value;
+                },
+                set: function (value) {
+                    this.SetValue(value);
+                },
+                enumerable: true,
+                configurable: true
+            });
+            InputViewBase.prototype.SetValue = function (value, eventDispatch) {
+                if (eventDispatch === void 0) { eventDispatch = true; }
+                var changed = (this._value !== value);
+                this.Elem.val(value);
+                this._value = this.Elem.val();
+                this.Refresh();
+                if (changed && eventDispatch) {
+                    this.DispatchEvent(Events.Changed, this.Value);
+                }
+            };
+            Object.defineProperty(InputViewBase.prototype, "IsReadOnly", {
+                get: function () {
+                    return this._isReadOnly;
+                },
+                set: function (value) {
+                    var changed = (this._isReadOnly !== value);
+                    if (changed) {
+                        this._isReadOnly = value;
+                        this.Elem.attr('readonly', this._isReadOnly);
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return InputViewBase;
+        }(Views.ViewBase));
+        Views.InputViewBase = InputViewBase;
+    })(Views = Fw.Views || (Fw.Views = {}));
+})(Fw || (Fw = {}));
+/// <reference path="../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../lib/underscore/index.d.ts" />
 /// <reference path="../Events/CheckBoxInputViewEvents.ts" />
 /// <reference path="../Util/Dump.ts" />
 /// <reference path="ViewBase.ts" />
+/// <reference path="InputViewBase.ts" />
 /// <reference path="IInputView.ts" />
 /// <reference path="Property/FitPolicy.ts" />
 var Fw;
@@ -6653,6 +7075,20 @@ var Fw;
                 enumerable: true,
                 configurable: true
             });
+            Object.defineProperty(CheckBoxInputView.prototype, "IsReadOnly", {
+                get: function () {
+                    return this._isReadOnly;
+                },
+                set: function (value) {
+                    var changed = (this._isReadOnly !== value);
+                    if (changed) {
+                        this._isReadOnly = value;
+                        this._input.attr('disabled', this._isReadOnly);
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
             CheckBoxInputView.prototype.SetValue = function (value, eventDispatch) {
                 if (eventDispatch === void 0) { eventDispatch = true; }
                 this.SetBoolValue((value === 'true'), eventDispatch);
@@ -6667,7 +7103,7 @@ var Fw;
                 }
             };
             return CheckBoxInputView;
-        }(Views.ViewBase));
+        }(Views.InputViewBase));
         Views.CheckBoxInputView = CheckBoxInputView;
     })(Views = Fw.Views || (Fw.Views = {}));
 })(Fw || (Fw = {}));
@@ -6698,10 +7134,12 @@ var Fw;
 /// <reference path="../Util/Dump.ts" />
 /// <reference path="ViewBase.ts" />
 /// <reference path="Property/FontWeight.ts" />
+/// <reference path="../Util/Num.ts" />
 var Fw;
 (function (Fw) {
     var Views;
     (function (Views) {
+        var Num = Fw.Util.Num;
         var HtmlView = /** @class */ (function (_super) {
             __extends(HtmlView, _super);
             function HtmlView(elementType) {
@@ -6711,12 +7149,43 @@ var Fw;
                 _this._innerHtml = '';
                 _this.BackgroundColor = 'transparent';
                 _this.SetTransAnimation(false);
-                _this.SetStyles({
-                    borderWidth: '0',
-                    borderRadius: '0'
-                });
+                _this.HasBorder = false;
+                _this.BorderRadius = 0;
                 return _this;
             }
+            Object.defineProperty(HtmlView.prototype, "HasBorder", {
+                get: function () {
+                    return this._hasBorder;
+                },
+                set: function (value) {
+                    this._hasBorder = value;
+                    //this.Dom.style.borderWidth = (value) ? '1px' : '0';
+                    this.SetStyle('borderWidth', (value)
+                        ? '1px'
+                        : '0');
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(HtmlView.prototype, "BorderRadius", {
+                get: function () {
+                    return this._borderRadius;
+                },
+                set: function (value) {
+                    if (Num.IsNaN(value) || value === null || value === undefined)
+                        value = 0;
+                    if (value < 0)
+                        value = 0;
+                    if (value > 50)
+                        value = 50;
+                    this._borderRadius = value;
+                    this.SetStyle('borderRadius', this._borderRadius + "%");
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
             Object.defineProperty(HtmlView.prototype, "InnerHtml", {
                 get: function () {
                     return this._innerHtml;
@@ -6819,93 +7288,6 @@ var Fw;
             return ImageView;
         }(Views.ViewBase));
         Views.ImageView = ImageView;
-    })(Views = Fw.Views || (Fw.Views = {}));
-})(Fw || (Fw = {}));
-/// <reference path="../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../lib/underscore/index.d.ts" />
-/// <reference path="../Events/InputViewEvents.ts" />
-/// <reference path="../Util/Dump.ts" />
-/// <reference path="ViewBase.ts" />
-/// <reference path="IInputView.ts" />
-/// <reference path="Property/FitPolicy.ts" />
-var Fw;
-(function (Fw) {
-    var Views;
-    (function (Views) {
-        var Events = Fw.Events.InputViewEvents;
-        var InputViewBase = /** @class */ (function (_super) {
-            __extends(InputViewBase, _super);
-            function InputViewBase(jqueryElem) {
-                var _this = _super.call(this, jqueryElem) || this;
-                _this.SetClassName('InputView');
-                _this.Elem.addClass(_this.ClassName);
-                _this._name = '';
-                _this._value = '';
-                _this._isReadOnly = false;
-                _this.BackgroundColor = '#FFFFFF';
-                _this.Elem.on('propertychange change keyup paste input', function () {
-                    //this.Log('InputViewBase.Changed');
-                    _this.DispatchEvent(Events.Changed, _this.Value);
-                });
-                _this.Elem.on('focus', function () {
-                    //this.Log('InputViewBase.Focused');
-                    _this.DispatchEvent(Events.Focused);
-                });
-                _this.Elem.on('blur', function () {
-                    //this.Log('InputViewBase.Blurred');
-                    _this.DispatchEvent(Events.Blurred);
-                });
-                return _this;
-            }
-            Object.defineProperty(InputViewBase.prototype, "Name", {
-                get: function () {
-                    return this._name;
-                },
-                set: function (value) {
-                    this._name = value;
-                    this.Elem.attr('name', this._name);
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(InputViewBase.prototype, "Value", {
-                get: function () {
-                    this._value = this.Elem.val();
-                    return this._value;
-                },
-                set: function (value) {
-                    this.SetValue(value);
-                },
-                enumerable: true,
-                configurable: true
-            });
-            InputViewBase.prototype.SetValue = function (value, eventDispatch) {
-                if (eventDispatch === void 0) { eventDispatch = true; }
-                var changed = (this._value !== value);
-                this.Elem.val(value);
-                this._value = this.Elem.val();
-                this.Refresh();
-                if (changed && eventDispatch) {
-                    this.DispatchEvent(Events.Changed, this.Value);
-                }
-            };
-            Object.defineProperty(InputViewBase.prototype, "IsReadOnly", {
-                get: function () {
-                    return this._isReadOnly;
-                },
-                set: function (value) {
-                    var changed = (this._isReadOnly !== value);
-                    if (changed) {
-                        this._isReadOnly = value;
-                        this.Elem.attr('readonly', this._isReadOnly);
-                    }
-                },
-                enumerable: true,
-                configurable: true
-            });
-            return InputViewBase;
-        }(Views.ViewBase));
-        Views.InputViewBase = InputViewBase;
     })(Views = Fw.Views || (Fw.Views = {}));
 })(Fw || (Fw = {}));
 /// <reference path="../../../lib/jquery/index.d.ts" />
@@ -7208,7 +7590,7 @@ var Fw;
             __extends(NumberBoxInputView, _super);
             function NumberBoxInputView() {
                 var _this = _super.call(this, $('<input type="text"></input>')) || this;
-                _this.SetClassName('TextBoxInputView');
+                _this.SetClassName('NumberBoxInputView');
                 _this.Elem.addClass(_this.ClassName);
                 _this._numberValue = 0;
                 _this._decimalPoint = 0;
@@ -7372,6 +7754,32 @@ var Fw;
                 _this.AddItem('', '');
                 return _this;
             }
+            Object.defineProperty(SelectBoxInputView.prototype, "IsReadOnly", {
+                get: function () {
+                    return this._isReadOnly;
+                },
+                set: function (value) {
+                    var _this = this;
+                    var changed = (this._isReadOnly !== value);
+                    if (changed) {
+                        this._isReadOnly = value;
+                        this.Elem.children().each(function (idx, elem) {
+                            var $elem = $(elem);
+                            var selected = $elem.prop('selected');
+                            if (selected === true) {
+                                // 常に有効
+                                $elem.prop('disabled', false);
+                            }
+                            else {
+                                // 無効化制御
+                                $elem.prop('disabled', _this._isReadOnly);
+                            }
+                        });
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
             SelectBoxInputView.prototype.AddItem = function (name, value) {
                 //this.Log('name: ' + name);
                 //this.Log(`<option value="${value}">${name}</option>`);
@@ -7826,7 +8234,6 @@ var Fw;
             __extends(StuckerBoxView, _super);
             function StuckerBoxView() {
                 var _this = _super.call(this) || this;
-                _this._isChildRelocation = false;
                 _this.LockedImage = '';
                 _this.UnlockedImage = '';
                 _this._scrollMargin = 0;
@@ -7849,6 +8256,8 @@ var Fw;
                 _this._rightMargin = 40;
                 _this._referencePoint = Property.ReferencePoint.LeftTop;
                 _this._scrollMargin = 0;
+                _this._isChildRelocatable = true;
+                _this._isChildRelocation = false;
                 _this._innerBox.HasBorder = false;
                 _this._innerBox.SetTransAnimation(false);
                 _this._innerBox.SetLeftTop(0, 0);
@@ -7943,6 +8352,17 @@ var Fw;
                 },
                 set: function (value) {
                     this._referencePoint = value;
+                    this.Refresh();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(StuckerBoxView.prototype, "IsChildRelocatable", {
+                get: function () {
+                    return this._isChildRelocatable;
+                },
+                set: function (value) {
+                    this._isChildRelocatable = value;
                     this.Refresh();
                 },
                 enumerable: true,
@@ -8094,6 +8514,19 @@ var Fw;
             StuckerBoxView.prototype.OnInnerSingleClick = function () {
                 //this.Log(`${this.ClassName}.OnSingleClick`);
                 var _this = this;
+                // 再配置不能のとき
+                if (!this._isChildRelocatable) {
+                    if (this._lockButton.IsVisible) {
+                        this._lockButton.ClearAnimatedClass();
+                        this._lockButton.Hide();
+                    }
+                    if (this._isChildRelocation) {
+                        // 子View再配置モードのとき
+                        // 配置を確定させる。
+                        this.CommitRelocation();
+                    }
+                    return;
+                }
                 if (this._lockButton.IsVisible) {
                     // ロックボタン表示中のとき
                     if (!this._isChildRelocation) {
@@ -8851,6 +9284,8 @@ var Fw;
                 });
                 _this.AddEventListener(Events.SingleClick, function (e) {
                     //this.Log(`${this.ClassName}.SingleClick`);
+                    if (_this.IsReadOnly)
+                        return;
                     _this.BoolValue = !_this.BoolValue;
                     _this.Refresh();
                 });
@@ -8884,6 +9319,20 @@ var Fw;
                 },
                 set: function (value) {
                     this.SetValue(value);
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(ToggleButtonInputView.prototype, "IsReadOnly", {
+                get: function () {
+                    return this._isReadOnly;
+                },
+                set: function (value) {
+                    var changed = (this._isReadOnly !== value);
+                    if (changed) {
+                        this._isReadOnly = value;
+                        this.Elem.attr('readonly', this._isReadOnly);
+                    }
                 },
                 enumerable: true,
                 configurable: true
@@ -8954,7 +9403,6 @@ var App;
     (function (Models) {
         var Stores;
         (function (Stores) {
-            var Dump = Fw.Util.Dump;
             var OperationStore = /** @class */ (function (_super) {
                 __extends(OperationStore, _super);
                 function OperationStore() {
@@ -9062,9 +9510,7 @@ var App;
                     throw new Error('Not Supported');
                 };
                 OperationStore.prototype.Write = function (entity) {
-                    //throw new Error('Not Supported');
-                    alert('Not Supported');
-                    Dump.Log('Not Supported');
+                    throw new Error('Not Supported');
                 };
                 OperationStore._instance = null;
                 return OperationStore;
@@ -9310,7 +9756,8 @@ var App;
                 function ButtonView() {
                     var _this = _super.call(this) || this;
                     _this.HasBorder = false;
-                    _this.BackgroundColor = Color.MainBackground;
+                    _this.BorderRadius = 10;
+                    _this.BackgroundColor = Color.Transparent;
                     _this.HoverColor = Color.MainHover;
                     _this.Color = Color.Main;
                     return _this;
@@ -9323,6 +9770,8 @@ var App;
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../../lib/popperjs/index.d.ts" />
+/// <reference path="../../../../lib/tippyjs/index.d.ts" />
 /// <reference path="../../../Fw/Views/RelocatableButtonView.ts" />
 /// <reference path="../../../Fw/Views/Property/Anchor.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
@@ -9335,6 +9784,7 @@ var App;
     (function (Views_9) {
         var Controls;
         (function (Controls) {
+            var Dump = Fw.Util.Dump;
             var Views = Fw.Views;
             var Property = Fw.Views.Property;
             var Color = App.Items.Color;
@@ -9374,6 +9824,17 @@ var App;
                         this._name = value;
                         if (this.ImageSrc === '')
                             this.Text = value;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(ControlButtonView.prototype, "Tooltip", {
+                    get: function () {
+                        return this._tooltip;
+                    },
+                    set: function (value) {
+                        this._tooltip = value;
+                        this.Refresh();
                     },
                     enumerable: true,
                     configurable: true
@@ -9449,6 +9910,15 @@ var App;
                     this.Name = this._control.Name;
                     this.SetImage(this._control.IconUrl);
                     this.SetColor(this._control.Color);
+                    if (this._control.Name
+                        && this._control.Name !== ''
+                        && this._control.IconUrl
+                        && this._control.IconUrl !== '') {
+                        this.Tooltip = this._control.Name;
+                    }
+                    else {
+                        this.Tooltip = null;
+                    }
                     this.Refresh();
                 };
                 ControlButtonView.prototype.SetImage = function (value) {
@@ -9481,6 +9951,32 @@ var App;
                     }
                     this.Refresh();
                 };
+                ControlButtonView.prototype.InnerRefresh = function () {
+                    try {
+                        _super.prototype.InnerRefresh.call(this);
+                        if (this._tippy) {
+                            this._tippy.destroy();
+                            this._tippy = null;
+                        }
+                        if (this._tooltip && this._tooltip !== '') {
+                            this._tippy = tippy.one(this.Dom, {
+                                content: this._tooltip,
+                                delay: 100,
+                                arrow: true,
+                                arrowType: 'round',
+                                size: 'large',
+                                duration: 500,
+                                animation: 'scale'
+                            });
+                        }
+                    }
+                    catch (e) {
+                        Dump.ErrorLog(e, this.ClassName);
+                    }
+                    finally {
+                        this.ResumeLayout();
+                    }
+                };
                 ControlButtonView.prototype.Dispose = function () {
                     if (this._control) {
                         this._control.RemoveEventListener(EntityEvents.Changed, this.ApplyFromEntity, this);
@@ -9497,6 +9993,36 @@ var App;
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Views/ButtonView.ts" />
+/// <reference path="../../../Fw/Views/Property/Anchor.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../Items/Color.ts" />
+var App;
+(function (App) {
+    var Views;
+    (function (Views_10) {
+        var Controls;
+        (function (Controls) {
+            var Color = App.Items.Color;
+            var PropertyButtonView = /** @class */ (function (_super) {
+                __extends(PropertyButtonView, _super);
+                function PropertyButtonView() {
+                    var _this = _super.call(this) || this;
+                    _this.HasBorder = true;
+                    _this.BorderRadius = 0;
+                    _this.BackgroundColor = Color.Transparent;
+                    _this.HoverColor = Color.MainHover;
+                    _this.Color = Color.Main;
+                    return _this;
+                }
+                return PropertyButtonView;
+            }(Fw.Views.ButtonView));
+            Controls.PropertyButtonView = PropertyButtonView;
+        })(Controls = Views_10.Controls || (Views_10.Controls = {}));
+    })(Views = App.Views || (App.Views = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../../Fw/Views/PageView.ts" />
 /// <reference path="../../../Fw/Views/Property/Anchor.ts" />
 /// <reference path="../../../Fw/Events/PageViewEvents.ts" />
@@ -9505,7 +10031,7 @@ var App;
 var App;
 (function (App) {
     var Views;
-    (function (Views_10) {
+    (function (Views_11) {
         var Pages;
         (function (Pages) {
             var Views = Fw.Views;
@@ -9522,7 +10048,7 @@ var App;
                     _this.BtnColor = new Controls.ItemSelectButtonView();
                     _this.LabelRm = new Views.LabelView();
                     _this.SboRm = new Views.SelectBoxInputView();
-                    _this.DeleteButton = new Controls.ButtonView();
+                    _this.DeleteButton = new Controls.PropertyButtonView();
                     _this.SetClassName('ControlHeaderPropertyPageView');
                     var background = new Views.ImageView();
                     background.SetAnchor(0, 0, 0, 0);
@@ -9544,6 +10070,7 @@ var App;
                     _this.InputPanel.Size.Width = 280;
                     _this.InputPanel.SetAnchor(70, 10, null, 10);
                     _this.InputPanel.Color = App.Items.Color.MainBackground;
+                    _this.InputPanel.IsChildRelocatable = false;
                     _this.Add(_this.InputPanel);
                     var lbl1 = new Views.LabelView();
                     lbl1.Text = 'Name';
@@ -9590,7 +10117,7 @@ var App;
                 return ControlHeaderPropertyPageView;
             }(Fw.Views.PageView));
             Pages.ControlHeaderPropertyPageView = ControlHeaderPropertyPageView;
-        })(Pages = Views_10.Pages || (Views_10.Pages = {}));
+        })(Pages = Views_11.Pages || (Views_11.Pages = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
@@ -9604,7 +10131,7 @@ var App;
 var App;
 (function (App) {
     var Views;
-    (function (Views_11) {
+    (function (Views_12) {
         var Pages;
         (function (Pages) {
             var Views = Fw.Views;
@@ -9624,11 +10151,11 @@ var App;
                     _this.TarCode = new Views.TextAreaInputView();
                     _this.TxtMac = new Views.TextBoxInputView();
                     _this.SboRemote = new Views.SelectBoxInputView();
-                    _this.BtnLearn = new Controls.ButtonView();
-                    _this.BtnSend = new Controls.ButtonView();
+                    _this.BtnLearn = new Controls.PropertyButtonView();
+                    _this.BtnSend = new Controls.PropertyButtonView();
                     _this.ChkToggleOn = new Views.CheckBoxInputView();
                     _this.ChkToggleOff = new Views.CheckBoxInputView();
-                    _this.DeleteButton = new Controls.ButtonView();
+                    _this.DeleteButton = new Controls.PropertyButtonView();
                     _this.SetClassName('ControlPropertyPageView');
                     var background = new Views.ImageView();
                     background.SetAnchor(0, 0, 0, 0);
@@ -9650,6 +10177,7 @@ var App;
                     _this.InputPanel.Size.Width = 280;
                     _this.InputPanel.SetAnchor(70, 10, null, 10);
                     _this.InputPanel.Color = Color.MainBackground;
+                    _this.InputPanel.IsChildRelocatable = false;
                     _this.Add(_this.InputPanel);
                     var lbl1 = new Views.LabelView();
                     lbl1.Text = 'Name';
@@ -9725,7 +10253,7 @@ var App;
                 return ControlPropertyPageView;
             }(Fw.Views.PageView));
             Pages.ControlPropertyPageView = ControlPropertyPageView;
-        })(Pages = Views_11.Pages || (Views_11.Pages = {}));
+        })(Pages = Views_12.Pages || (Views_12.Pages = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
@@ -9739,7 +10267,7 @@ var App;
 var App;
 (function (App) {
     var Views;
-    (function (Views_12) {
+    (function (Views_13) {
         var Pages;
         (function (Pages) {
             var Views = Fw.Views;
@@ -9805,7 +10333,7 @@ var App;
                 return ControlSetPageView;
             }(Fw.Views.PageView));
             Pages.ControlSetPageView = ControlSetPageView;
-        })(Pages = Views_12.Pages || (Views_12.Pages = {}));
+        })(Pages = Views_13.Pages || (Views_13.Pages = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
@@ -9818,7 +10346,7 @@ var App;
 var App;
 (function (App) {
     var Views;
-    (function (Views_13) {
+    (function (Views_14) {
         var Pages;
         (function (Pages) {
             var Views = Fw.Views;
@@ -9853,13 +10381,14 @@ var App;
                     _this.SelectorPanel.RightMargin = 20;
                     _this.SelectorPanel.SetAnchor(70, 10, null, 10);
                     _this.SelectorPanel.Color = App.Items.Color.MainBackground;
+                    _this.SelectorPanel.IsChildRelocatable = false;
                     _this.Add(_this.SelectorPanel);
                     return _this;
                 }
                 return ItemSelectPageView;
             }(Fw.Views.PageView));
             Pages.ItemSelectPageView = ItemSelectPageView;
-        })(Pages = Views_13.Pages || (Views_13.Pages = {}));
+        })(Pages = Views_14.Pages || (Views_14.Pages = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
@@ -9872,7 +10401,7 @@ var App;
 var App;
 (function (App) {
     var Views;
-    (function (Views_14) {
+    (function (Views_15) {
         var Popup;
         (function (Popup) {
             var CancellablePopup = /** @class */ (function (_super) {
@@ -9911,7 +10440,7 @@ var App;
             }(Popup.PopupBase));
             Popup.CancellablePopup = CancellablePopup;
             Popup.Cancellable = CancellablePopup.Instance;
-        })(Popup = Views_14.Popup || (Views_14.Popup = {}));
+        })(Popup = Views_15.Popup || (Views_15.Popup = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
@@ -9924,7 +10453,7 @@ var App;
 var App;
 (function (App) {
     var Views;
-    (function (Views_15) {
+    (function (Views_16) {
         var Popup;
         (function (Popup) {
             var ConfirmPopup = /** @class */ (function (_super) {
@@ -9992,7 +10521,7 @@ var App;
             }(Popup.PopupBase));
             Popup.ConfirmPopup = ConfirmPopup;
             Popup.Confirm = ConfirmPopup.Instance;
-        })(Popup = Views_15.Popup || (Views_15.Popup = {}));
+        })(Popup = Views_16.Popup || (Views_16.Popup = {}));
     })(Views = App.Views || (App.Views = {}));
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />

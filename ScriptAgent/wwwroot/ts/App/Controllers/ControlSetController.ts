@@ -38,14 +38,14 @@ namespace App.Controllers {
     import ItemSelectControllerBase = App.Controllers.ItemSelectControllerBase;
     import ItemSelectButtonView = App.Views.Controls.ItemSelectButtonView;
 
-    export class ControlSetController extends ItemSelectControllerBase {
+    export class ControlSetController extends ItemSelectControllerBase implements IControlSetController {
 
-        private _page: Pages.ControlSetPageView;
-        private _controlSet: Entities.ControlSet;
-        private _operationType: ModalOperationType;
+        protected _page: Pages.ControlSetPageView;
+        protected _controlSet: Entities.ControlSet;
+        protected _operationType: ModalOperationType;
 
-        constructor() {
-            super('ControlSet');
+        constructor(controllerId: string = null) {
+            super(controllerId || 'ControlSet');
 
             this.SetClassName('ControlSetController');
 
@@ -65,10 +65,12 @@ namespace App.Controllers {
                 this._controlSet = null;
 
                 // View側削除処理、ButtonPanel.Childrenを削除操作するため、要素退避しておく。
-                const buttons = Util.Obj.Mirror(this._page.ButtonPanel.Children);
-                _.each(buttons, (btn: Fw.Views.IView) => {
-                    this._page.ButtonPanel.Remove(btn);
-                    btn.Dispose();
+                const views = Util.Obj.Mirror(this._page.ButtonPanel.Children);
+                _.each(views, (view: Fw.Views.IView) => {
+                    if (view instanceof Controls.ControlButtonView) {
+                        this._page.ButtonPanel.Remove(view);
+                        view.Dispose();
+                    }
                 });
 
                 // 登録処理、結果を確認せず画面を閉じる。
@@ -190,10 +192,12 @@ namespace App.Controllers {
         public SetEntity(entity: Entities.ControlSet): void {
 
             // View側削除処理、ButtonPanel.Childrenを削除操作するため、要素退避しておく。
-            const buttons = Util.Obj.Mirror(this._page.ButtonPanel.Children);
-            _.each(buttons, (btn: Fw.Views.IView) => {
-                this._page.ButtonPanel.Remove(btn);
-                btn.Dispose();
+            const views = Util.Obj.Mirror(this._page.ButtonPanel.Children);
+            _.each(views, (view: Fw.Views.IView) => {
+                if (view instanceof Controls.ControlButtonView) {
+                    this._page.ButtonPanel.Remove(view);
+                    view.Dispose();
+                }
             });
             this._page.ButtonPanel.InnerLength = this._page.ButtonPanel.Size.Height;
 
@@ -225,7 +229,7 @@ namespace App.Controllers {
             this.ApplyFromEntity();
         }
 
-        private async OnButtonClicked(e: Fw.Events.EventObject) {
+        protected async OnButtonClicked(e: Fw.Events.EventObject) {
 
             switch (this._operationType) {
                 case ModalOperationType.Exec:
@@ -259,7 +263,7 @@ namespace App.Controllers {
             }
         }
 
-        private ApplyFromEntity(): void {
+        protected ApplyFromEntity(): void {
             if (!this._controlSet)
                 return;
 
@@ -328,6 +332,12 @@ namespace App.Controllers {
             ctr.ShowModal();
         }
 
+        /**
+         * 学習指示／コード取得
+         */
+        public async GetLearnedCode(): Promise<string> {
+            throw new Error("Method not implemented.");
+        }
 
         /**
          * コード実行
@@ -348,7 +358,7 @@ namespace App.Controllers {
                 Popup.Alert.Open({
                     Message: 'Select your Rm-Device,<br/>' + guide,
                 });
-                return null;
+                return false;
             }
 
             if (!control.Code || control.Code === '') {
@@ -385,44 +395,45 @@ namespace App.Controllers {
                     Message: message,
                 });
 
-                return null;
+                return false;
             }
 
+            if (this._operationType === ModalOperationType.Edit) {
+                const newCs = await Stores.ControlSets.Write(this._controlSet);
 
-            const newCs = await Stores.ControlSets.Write(this._controlSet);
+                if (newCs !== null) {
+                    this._controlSet = newCs;
+                    this.SetEntity(this._controlSet);
 
-            if (newCs !== null) {
-                this._controlSet = newCs;
-                this.SetEntity(this._controlSet);
+                    const newCtl = _.find(newCs.Controls, (c: Entities.Control) => {
+                        return (c.PositionLeft === control.PositionLeft
+                            && c.PositionTop === control.PositionTop
+                            && c.Name === control.Name
+                            && c.Code === control.Code);
+                    });
 
-                const newCtl = _.find(newCs.Controls, (c: Entities.Control) => {
-                    return (c.PositionLeft === control.PositionLeft
-                        && c.PositionTop === control.PositionTop
-                        && c.Name === control.Name
-                        && c.Code === control.Code);
-                });
+                    if (!newCtl) {
+                        Popup.Alert.Open({
+                            Message: 'Unexpected...Control not Found.'
+                        });
+                        return false;
+                    }
+                    control = newCtl;
 
-                if (!newCtl) {
+                    const ctr1 = this.Manager.Get('ControlProperty') as ControlPropertyController;
+                    if (ctr1.View.IsVisible)
+                        ctr1.SetEntity(control, this._controlSet);
+
+                    const ctr2 = this.Manager.Get('ControlHeaderProperty') as ControlHeaderPropertyController;
+                    if (ctr2.View.IsVisible)
+                        ctr2.SetEntity(this._controlSet);
+
+                } else {
                     Popup.Alert.Open({
-                        Message: 'Unexpected...Control not Found.'
+                        Message: 'Ouch! Save Failure.<br/>Server online?'
                     });
                     return false;
                 }
-                control = newCtl;
-
-                const ctr1 = this.Manager.Get('ControlProperty') as ControlPropertyController;
-                if (ctr1.View.IsVisible)
-                    ctr1.SetEntity(control, this._controlSet);
-
-                const ctr2 = this.Manager.Get('ControlHeaderProperty') as ControlHeaderPropertyController;
-                if (ctr2.View.IsVisible)
-                    ctr2.SetEntity(this._controlSet);
-
-            } else {
-                Popup.Alert.Open({
-                    Message: 'Ouch! Save Failure.<br/>Server online?'
-                });
-                return false;
             }
 
             const result = await Stores.Operations.Exec(this._controlSet, control);
@@ -482,13 +493,17 @@ namespace App.Controllers {
                 return;
 
             // View側削除処理
-            const buttons = Util.Obj.Mirror(this._page.ButtonPanel.Children);
-            _.each(buttons, (btn: Controls.ControlButtonView) => {
-                if (btn.Control === control) {
-                    this._page.ButtonPanel.Remove(btn);
-                    btn.Dispose();
+            const views = Util.Obj.Mirror(this._page.ButtonPanel.Children);
+            _.each(views, (view: Fw.Views.IView) => {
+                if (
+                    view instanceof Controls.ControlButtonView
+                    && view.Control === control
+                ) {
+                    this._page.ButtonPanel.Remove(view);
+                    view.Dispose();
                 }
             });
+
 
             // Model側削除処理
             const idx = this._controlSet.Controls.indexOf(control);
@@ -509,10 +524,12 @@ namespace App.Controllers {
             //if (!this.IsOnEditMode)
             //    return;
 
-            const buttons = Util.Obj.Mirror(this._page.ButtonPanel.Children);
-            _.each(buttons, (btn: Fw.Views.IView) => {
-                this._page.ButtonPanel.Remove(btn);
-                btn.Dispose();
+            const views = Util.Obj.Mirror(this._page.ButtonPanel.Children);
+            _.each(views, (view: Fw.Views.IView) => {
+                if (view instanceof Controls.ControlButtonView) {
+                    this._page.ButtonPanel.Remove(view);
+                    view.Dispose();
+                }
             });
 
             const controlSet = this._controlSet;

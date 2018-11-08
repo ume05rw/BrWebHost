@@ -52,11 +52,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\BroadlinkWeb\Areas\Api\Controllers\ControlSetsController.cs" Link="Areas\Api\Controllers\ControlSetsController.cs" />
     <Compile Include="..\BroadlinkWeb\Areas\Api\Controllers\ScriptsController.cs" Link="Areas\Api\Controllers\ScriptsController.cs" />
     <Compile Include="..\BroadlinkWeb\Controllers\HomeController.cs" Link="Controllers\HomeController.cs" />
     <Compile Include="..\BroadlinkWeb\Extensions\ServiceCollectionExtensions.cs" Link="Extensions\ServiceCollectionExtensions.cs" />
     <Compile Include="..\BroadlinkWeb\Extensions\WebHostServiceExtensions.cs" Link="Extensions\WebHostServiceExtensions.cs" />
+    <Compile Include="..\BroadlinkWeb\Models\Entities\ControlCommand.cs" Link="Models\Entities\ControlCommand.cs" />
     <Compile Include="..\BroadlinkWeb\Models\Entities\Enums.cs" Link="Models\Entities\Enums.cs" />
     <Compile Include="..\BroadlinkWeb\Models\Entities\Error.cs" Link="Models\Entities\Error.cs" />
     <Compile Include="..\BroadlinkWeb\Models\Entities\Header.cs" Link="Models\Entities\Header.cs" />
@@ -408,7 +408,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Api\Controllers\" />
     <Folder Include="Controllers\" />
     <Folder Include="Extensions\" />
     <Folder Include="Models\ViewModels\" />

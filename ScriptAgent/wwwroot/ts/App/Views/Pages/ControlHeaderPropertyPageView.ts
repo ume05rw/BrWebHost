@@ -23,7 +23,7 @@ namespace App.Views.Pages {
         public BtnColor: Controls.ItemSelectButtonView;
         public LabelRm: Views.LabelView;
         public SboRm: Views.SelectBoxInputView;
-        public DeleteButton: Controls.ButtonView;
+        public DeleteButton: Controls.PropertyButtonView;
 
         constructor() {
             super();
@@ -35,7 +35,7 @@ namespace App.Views.Pages {
             this.BtnColor = new Controls.ItemSelectButtonView();
             this.LabelRm = new Views.LabelView();
             this.SboRm = new Views.SelectBoxInputView();
-            this.DeleteButton = new Controls.ButtonView();
+            this.DeleteButton = new Controls.PropertyButtonView();
 
             this.SetClassName('ControlHeaderPropertyPageView');
 
@@ -62,6 +62,7 @@ namespace App.Views.Pages {
             this.InputPanel.Size.Width = 280;
             this.InputPanel.SetAnchor(70, 10, null, 10);
             this.InputPanel.Color = App.Items.Color.MainBackground;
+            this.InputPanel.IsChildRelocatable = false;
             this.Add(this.InputPanel);
 
             const lbl1 = new Views.LabelView();

@@ -53,6 +53,7 @@ namespace App.Views.Pages {
             this.SelectorPanel.RightMargin = 20;
             this.SelectorPanel.SetAnchor(70, 10, null, 10);
             this.SelectorPanel.Color = App.Items.Color.MainBackground;
+            this.SelectorPanel.IsChildRelocatable = false;
             this.Add(this.SelectorPanel);
         }
     }

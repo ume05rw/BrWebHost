@@ -12,7 +12,7 @@ namespace Fw.Views {
 
     export abstract class InputViewBase extends ViewBase implements IInputView {
 
-        private _name: string;
+        protected _name: string;
         public get Name(): string {
             return this._name;
         }
@@ -21,7 +21,7 @@ namespace Fw.Views {
             this.Elem.attr('name', this._name);
         }
 
-        private _value: string;
+        protected _value: string;
         public get Value(): string {
             this._value = this.Elem.val();
             return this._value;
@@ -41,7 +41,7 @@ namespace Fw.Views {
             }
         }
 
-        private _isReadOnly: boolean;
+        protected _isReadOnly: boolean;
         public get IsReadOnly(): boolean {
             return this._isReadOnly;
         }
