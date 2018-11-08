@@ -91,6 +91,12 @@ namespace BroadlinkWeb
                 // とりあえず握りつぶす。
             }
 
+
+            // アプリケーション起動／終了をハンドルする。
+            // https://stackoverflow.com/questions/41675577/where-can-i-log-an-asp-net-core-apps-start-stop-error-events
+            applicationLifetime.ApplicationStopping.Register(this.OnShutdown);
+
+
             if (env.IsDevelopment())
             {
                 app.UseBrowserLink();
@@ -115,6 +121,11 @@ namespace BroadlinkWeb
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+        }
+
+        private void OnShutdown()
+        {
+            RemoteHostStore.DisposeReciever();
         }
     }
 }
