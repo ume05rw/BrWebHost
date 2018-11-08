@@ -350,8 +350,8 @@ namespace Monitor
                 var netFwRuleType = Type.GetTypeFromProgID("HNetCfg.FWRule", false);
 
                 var rule1 = (INetFwRule)Activator.CreateInstance(netFwRuleType);
-                rule1.Name = "BrWebHost_TCP5004";
-                rule1.Description = "Allow BrWebHost TCP port 5004";
+                rule1.Name = "BrWebHost_TCP_OUT_5004";
+                rule1.Description = "Allow BrWebHost TCP OUT port 5004";
                 rule1.ApplicationName = pathToExe;
                 rule1.Protocol = (int)NET_FW_IP_PROTOCOL_.NET_FW_IP_PROTOCOL_TCP;
                 rule1.LocalPorts = "5004";
@@ -363,17 +363,44 @@ namespace Monitor
                 rulesObject.Add(rule1);
 
                 var rule2 = (INetFwRule)Activator.CreateInstance(netFwRuleType);
-                rule2.Name = "BrWebHost_UDP5004";
-                rule2.Description = "Allow BrWebHost UDP port 5004";
+                rule2.Name = "BrWebHost_TCP_IN_5004";
+                rule2.Description = "Allow BrWebHost TCP IN port 5004";
                 rule2.ApplicationName = pathToExe;
                 rule2.Protocol = (int)NET_FW_IP_PROTOCOL_.NET_FW_IP_PROTOCOL_TCP;
                 rule2.LocalPorts = "5004";
-                rule2.Direction = NET_FW_RULE_DIRECTION_.NET_FW_RULE_DIR_OUT;
+                rule2.Direction = NET_FW_RULE_DIRECTION_.NET_FW_RULE_DIR_IN;
                 rule2.Enabled = true;
                 rule2.Grouping = "@firewallapi.dll,-23255";
                 rule2.Profiles = CurrentProfiles;
                 rule2.Action = NET_FW_ACTION_.NET_FW_ACTION_ALLOW;
                 rulesObject.Add(rule2);
+
+
+                var rule3 = (INetFwRule)Activator.CreateInstance(netFwRuleType);
+                rule3.Name = "BrWebHost_UDP_OUT_5004";
+                rule3.Description = "Allow BrWebHost UDP OUT port 5004";
+                rule3.ApplicationName = pathToExe;
+                rule3.Protocol = (int)NET_FW_IP_PROTOCOL_.NET_FW_IP_PROTOCOL_UDP;
+                rule3.LocalPorts = "5004";
+                rule3.Direction = NET_FW_RULE_DIRECTION_.NET_FW_RULE_DIR_OUT;
+                rule3.Enabled = true;
+                rule3.Grouping = "@firewallapi.dll,-23255";
+                rule3.Profiles = CurrentProfiles;
+                rule3.Action = NET_FW_ACTION_.NET_FW_ACTION_ALLOW;
+                rulesObject.Add(rule3);
+
+                var rule4 = (INetFwRule)Activator.CreateInstance(netFwRuleType);
+                rule4.Name = "BrWebHost_UDP_IN_5004";
+                rule4.Description = "Allow BrWebHost UDP IN port 5004";
+                rule4.ApplicationName = pathToExe;
+                rule4.Protocol = (int)NET_FW_IP_PROTOCOL_.NET_FW_IP_PROTOCOL_UDP;
+                rule4.LocalPorts = "5004";
+                rule4.Direction = NET_FW_RULE_DIRECTION_.NET_FW_RULE_DIR_IN;
+                rule4.Enabled = true;
+                rule4.Grouping = "@firewallapi.dll,-23255";
+                rule4.Profiles = CurrentProfiles;
+                rule4.Action = NET_FW_ACTION_.NET_FW_ACTION_ALLOW;
+                rulesObject.Add(rule4);
             }
             catch (Exception ex)
             {
