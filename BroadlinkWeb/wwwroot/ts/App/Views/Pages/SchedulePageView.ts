@@ -7,6 +7,7 @@
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../Controls/HeaderBarView.ts" />
 /// <reference path="../../Items/Color.ts" />
+/// <reference path="../../Items/Lang/Lang.ts" />
 
 namespace App.Views.Pages {
     import Dump = Fw.Util.Dump;
@@ -16,6 +17,7 @@ namespace App.Views.Pages {
     import Controls = App.Views.Controls;
     import Color = App.Items.Color;
     import SelectBoxEvents = Fw.Events.SelectBoxInputViewEvents;
+    import Lang = App.Items.Lang.Lang;
 
     export class SchedulePageView extends Fw.Views.PageView {
 
@@ -78,7 +80,7 @@ namespace App.Views.Pages {
             background.Src = 'images/Pages/ControlSet/background.jpg';
             this.Add(background);
 
-            this.HeaderBar.Text = 'Scene';
+            this.HeaderBar.Text = Lang.Scene;
             this.HeaderBar.RightButton.Hide(0);
             this.Add(this.HeaderBar);
 
@@ -103,7 +105,7 @@ namespace App.Views.Pages {
             this.InputPanel.IsChildRelocatable = false;
             this.Add(this.InputPanel);
 
-            this.LblName.Text = 'Name';
+            this.LblName.Text = Lang.Name;
             this.LblName.TextAlign = Property.TextAlign.Left;
             this.LblName.AutoSize = true;
             this.LblName.SetAnchor(null, 5, null, null);
@@ -112,10 +114,9 @@ namespace App.Views.Pages {
 
             this.TxtName.SetAnchor(null, 5, 15, null);
             this.TxtName.Size.Height = 30;
-            this.TxtName.Name = 'Name';
             this.InputPanel.Add(this.TxtName);
 
-            this.LblColor.Text = 'Color';
+            this.LblColor.Text = Lang.Color;
             this.LblColor.TextAlign = Property.TextAlign.Left;
             this.LblColor.AutoSize = true;
             this.LblColor.SetAnchor(null, 5, null, null);
@@ -127,7 +128,7 @@ namespace App.Views.Pages {
             this.InputPanel.AddSpacer();
 
             const lbl6 = new Views.LabelView();
-            lbl6.Text = 'Operation';
+            lbl6.Text = Lang.Operation;
             lbl6.TextAlign = Property.TextAlign.Left;
             lbl6.AutoSize = true;
             lbl6.SetAnchor(null, 5, null, null);
@@ -138,7 +139,7 @@ namespace App.Views.Pages {
             this.InputPanel.Add(this.SdvControl);
 
             const lbl3 = new Views.LabelView();
-            lbl3.Text = 'Timer Enable';
+            lbl3.Text = Lang.TimerEnable;
             lbl3.TextAlign = Property.TextAlign.Left;
             lbl3.AutoSize = true;
             lbl3.SetAnchor(null, 5, null, null);
@@ -147,12 +148,11 @@ namespace App.Views.Pages {
 
             this.ChkEnabled.SetAnchor(null, 15, 15, null);
             this.ChkEnabled.Size.Height = 30;
-            this.ChkEnabled.Name = 'Enabled';
-            this.ChkEnabled.Text = 'Enable';
+            this.ChkEnabled.Text = Lang.Enable;
             this.InputPanel.Add(this.ChkEnabled);
 
             const lbl5 = new Views.LabelView();
-            lbl5.Text = 'Start Time';
+            lbl5.Text = Lang.StartTime;
             lbl5.TextAlign = Property.TextAlign.Left;
             lbl5.AutoSize = true;
             lbl5.SetAnchor(null, 5, null, null);
@@ -192,7 +192,7 @@ namespace App.Views.Pages {
 
 
             const lbl4 = new Views.LabelView();
-            lbl4.Text = 'Weekday Action';
+            lbl4.Text = Lang.WeekdayAction;
             lbl4.TextAlign = Property.TextAlign.Left;
             lbl4.AutoSize = true;
             lbl4.SetAnchor(null, 5, null, null);
@@ -201,49 +201,42 @@ namespace App.Views.Pages {
 
             this.ChkWeekdaySunday.SetAnchor(null, 15, 15, null);
             this.ChkWeekdaySunday.Size.Height = 30;
-            this.ChkWeekdaySunday.Name = 'Sunday';
-            this.ChkWeekdaySunday.Text = 'Sunday';
+            this.ChkWeekdaySunday.Text = Lang.Sunday;
             this.InputPanel.Add(this.ChkWeekdaySunday);
 
             this.ChkWeekdayMonday.SetAnchor(null, 15, 15, null);
             this.ChkWeekdayMonday.Size.Height = 30;
-            this.ChkWeekdayMonday.Name = 'Monday';
-            this.ChkWeekdayMonday.Text = 'Monday';
+            this.ChkWeekdayMonday.Text = Lang.Monday;
             this.InputPanel.Add(this.ChkWeekdayMonday);
 
             this.ChkWeekdayTuesday.SetAnchor(null, 15, 15, null);
             this.ChkWeekdayTuesday.Size.Height = 30;
-            this.ChkWeekdayTuesday.Name = 'Tuesday';
-            this.ChkWeekdayTuesday.Text = 'Tuesday';
+            this.ChkWeekdayTuesday.Text = Lang.Tuesday;
             this.InputPanel.Add(this.ChkWeekdayTuesday);
 
             this.ChkWeekdayWednesday.SetAnchor(null, 15, 15, null);
             this.ChkWeekdayWednesday.Size.Height = 30;
-            this.ChkWeekdayWednesday.Name = 'Wednesday';
-            this.ChkWeekdayWednesday.Text = 'Wednesday';
+            this.ChkWeekdayWednesday.Text = Lang.Wednesday;
             this.InputPanel.Add(this.ChkWeekdayWednesday);
 
             this.ChkWeekdayThursday.SetAnchor(null, 15, 15, null);
             this.ChkWeekdayThursday.Size.Height = 30;
-            this.ChkWeekdayThursday.Name = 'Thursday';
-            this.ChkWeekdayThursday.Text = 'Thursday';
+            this.ChkWeekdayThursday.Text = Lang.Thursday;
             this.InputPanel.Add(this.ChkWeekdayThursday);
 
             this.ChkWeekdayFriday.SetAnchor(null, 15, 15, null);
             this.ChkWeekdayFriday.Size.Height = 30;
-            this.ChkWeekdayFriday.Name = 'Friday';
-            this.ChkWeekdayFriday.Text = 'Friday';
+            this.ChkWeekdayFriday.Text = Lang.Friday;
             this.InputPanel.Add(this.ChkWeekdayFriday);
 
             this.ChkWeekdaySaturday.SetAnchor(null, 15, 15, null);
             this.ChkWeekdaySaturday.Size.Height = 30;
-            this.ChkWeekdaySaturday.Name = 'Saturday';
-            this.ChkWeekdaySaturday.Text = 'Saturday';
+            this.ChkWeekdaySaturday.Text = Lang.Saturday;
             this.InputPanel.Add(this.ChkWeekdaySaturday);
 
             this.DeleteButton.SetAnchor(null, 5, 15, null);
             this.DeleteButton.Size.Height = 30;
-            this.DeleteButton.Text = '*Delete*';
+            this.DeleteButton.Text = Lang.Delete;
             this.InputPanel.Add(this.DeleteButton);
         }
 

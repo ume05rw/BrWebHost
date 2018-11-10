@@ -17,6 +17,7 @@
 /// <reference path="../Items/ModalOperationType.ts" />
 /// <reference path="ItemSelectControllerBase.ts" />
 /// <reference path="../Views/Controls/ItemSelectButtonView.ts" />
+/// <reference path="../Items/Lang/Lang.ts" />
 
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
@@ -37,6 +38,7 @@ namespace App.Controllers {
     import ModalOperationType = App.Items.ModalOperationType;
     import ItemSelectControllerBase = App.Controllers.ItemSelectControllerBase;
     import ItemSelectButtonView = App.Views.Controls.ItemSelectButtonView;
+    import Lang = App.Items.Lang.Lang;
 
     export class ControlSetController extends ItemSelectControllerBase implements IControlSetController {
 
@@ -77,7 +79,7 @@ namespace App.Controllers {
                 let isSave = true;
                 if (controlSet.Controls.length <= 0) {
                     isSave = await App.Views.Popup.Confirm.OpenAsync({
-                        Message: 'No buttons.<br/>Save OK?'
+                        Message: Lang.NoButtonsSaveOk
                     });
                 }
 
@@ -92,7 +94,7 @@ namespace App.Controllers {
                     this.SetEditMode();
                     this.Show();
                     Popup.Alert.Open({
-                        Message: 'Ouch! Save Failure.<br/>Server online?'
+                        Message: Lang.SaveFailureServerOnline
                     });
                 } else {
                     // 保存成功
@@ -308,19 +310,19 @@ namespace App.Controllers {
                             btn.HoverEnable = false;
                             switch (control.Code) {
                                 case 'Temp':
-                                    btn.Name = 'Temp.<br/>' + control.Value;
+                                    btn.Name = Lang.Temp + '<br/>' + control.Value;
                                     break;
                                 case 'Humidity':
-                                    btn.Name = 'Humidity<br/>' + control.Value;
+                                    btn.Name = Lang.Hudimity + '<br/>' + control.Value;
                                     break;
                                 case 'Voc':
-                                    btn.Name = 'VOC<br/>' + control.Value;
+                                    btn.Name = Lang.Voc + '<br/>' + control.Value;
                                     break;
                                 case 'Light':
-                                    btn.Name = 'Light<br/>' + control.Value;
+                                    btn.Name = Lang.Brightness + '<br/>' + control.Value;
                                     break;
                                 case 'Noise':
-                                    btn.Name = 'Noise<br/>' + control.Value;
+                                    btn.Name = Lang.Noise + '<br/>' + control.Value;
                                     break;
                                 default:
                                     break;
@@ -426,13 +428,13 @@ namespace App.Controllers {
 
             if (!id) {
                 Popup.Alert.Open({
-                    Message: 'Select your Rm-Device.<br />Click Header.'
+                    Message: Lang.SelectYourRmDevice
                 });
                 return null;
             }
 
             Popup.Cancellable.Open({
-                Message: 'Set Remote Control head to Rm,<br/> and Push target Button.',
+                Message: Lang.SetRemoteControlHead,
                 CallbackCancel: () => {
                     // キャンセル指示を送信
                     Stores.Rms.CancelLearning(id);
@@ -467,10 +469,10 @@ namespace App.Controllers {
                 && !this._controlSet.BrDeviceId
             ) {
                 const guide = (this._operationType === ModalOperationType.Edit)
-                    ? 'Click Header.'
-                    : 'Go Edit.';
+                    ? Lang.ClickHeader
+                    : Lang.GoEdit;
                 Popup.Alert.Open({
-                    Message: 'Select your Rm-Device,<br/>' + guide,
+                    Message: Lang.SelectYourRmDevicePart + guide,
                 });
                 return false;
             }
@@ -481,27 +483,27 @@ namespace App.Controllers {
                 switch (this._controlSet.OperationType) {
                     case OperationType.RemoteControl:
                         const guide = (this._operationType === ModalOperationType.Edit)
-                            ? 'Click Learn-Button.'
-                            : 'Go Edit.';
-                        message = 'Learn your Remote Control Button.<br/>' + guide;
+                            ? Lang.ClickLearnButton
+                            : Lang.GoEdit;
+                        message = Lang.LearnYourRemoteControlButtonPart + guide;
                         break;
                     case OperationType.BroadlinkDevice:
                         alert('ここにはこないはずやで！！');
-                        message = 'Unexpected Operation...?';
+                        message = Lang.UnexpectedOperation;
                         break;
                     case OperationType.WakeOnLan:
-                        message = 'Set MAC-Address,<br/>Go Edit.';
+                        message = Lang.SetMacAddressGoEdit;
                         break;
                     case OperationType.Script:
-                        message = 'Write Script,<br/>Go Edit.';
+                        message = Lang.WriteScriptGoEdit;
                         break;
                     case OperationType.RemoteHostScript:
-                        message = 'Select Remote Script,<br/>Go Edit.';
+                        message = Lang.SelectRemoteScriptGoEdit;
                         break;
                     case OperationType.Scene:
                     default:
                         alert('ここにはこないはずやで！！');
-                        message = 'Unexpected Operation...?';
+                        message = Lang.UnexpectedOperation;
                         break;
                 }
 
@@ -528,7 +530,7 @@ namespace App.Controllers {
 
                     if (!newCtl) {
                         Popup.Alert.Open({
-                            Message: 'Unexpected...Control not Found.'
+                            Message: Lang.UnexpectedControlNotFound
                         });
                         return false;
                     }
@@ -544,7 +546,7 @@ namespace App.Controllers {
 
                 } else {
                     Popup.Alert.Open({
-                        Message: 'Ouch! Save Failure.<br/>Server online?'
+                        Message: Lang.SaveFailureServerOnline
                     });
                     return false;
                 }

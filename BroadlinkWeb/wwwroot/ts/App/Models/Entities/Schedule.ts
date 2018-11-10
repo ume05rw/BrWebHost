@@ -5,6 +5,7 @@
 /// <reference path="../../Items/Color.ts" />
 /// <reference path="../../Items/Icon.ts" />
 /// <reference path="../../Items/Weekday.ts" />
+/// <reference path="../../Items/Lang/Lang.ts" />
 
 namespace App.Models.Entities {
     import Dump = Fw.Util.Dump;
@@ -12,10 +13,11 @@ namespace App.Models.Entities {
     import Icon = App.Items.Icon;
     import Weekday = App.Items.Weekday;
     import OperationTemplate = App.Items.OperationTemplate;
+    import Lang = App.Items.Lang.Lang;
 
     export class Schedule extends Fw.Models.EntityBase {
 
-        public Name: string = 'New Timer';
+        public Name: string = Lang.NewTimer;
 
         public IconUrl: string = Icon.GetByOperationTemplate(OperationTemplate.Schedule, true);
 

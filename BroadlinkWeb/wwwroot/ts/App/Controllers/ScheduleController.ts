@@ -23,6 +23,7 @@
 /// <reference path="../Items/Color.ts" />
 /// <reference path="../Items/Icon.ts" />
 /// <reference path="OperationSelectController.ts" />
+/// <reference path="../Items/Lang/Lang.ts" />
 
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
@@ -49,6 +50,7 @@ namespace App.Controllers {
     import Weekday = App.Items.Weekday;
     import Color = App.Items.Color;
     import Icon = App.Items.Icon;
+    import Lang = App.Items.Lang.Lang;
 
     export class ScheduleController extends Fw.Controllers.ControllerBase {
 
@@ -86,7 +88,7 @@ namespace App.Controllers {
                     this.SetEditMode();
                     this.Show();
                     Popup.Alert.Open({
-                        Message: 'Ouch! Save Failure.<br/>Server online?'
+                        Message: Lang.SaveFailureServerOnline
                     });
                 } else {
                     // 保存成功
@@ -130,7 +132,7 @@ namespace App.Controllers {
                     return;
 
                 const res = await Popup.Confirm.OpenAsync({
-                    Message: 'This Timer will be REMOVED.<br/>Are you ok?'
+                    Message: Lang.ThisTimerWillBeRemoved
                 });
 
                 if (res !== true)
@@ -243,7 +245,7 @@ namespace App.Controllers {
             this._page.BtnColor.HoverColor = App.Items.Color.GetButtonHoverColor(schedule.Color);
 
             this._page.SdvControl.ControlSetButton.ImageSrc = '';
-            this._page.SdvControl.ControlSetButton.Text = 'Select<br/>Remotes';
+            this._page.SdvControl.ControlSetButton.Text = Lang.SelectRemote;
             this._page.SdvControl.ControlSetLabel.Text = '';
             this._page.SdvControl.ControlSetButton.Color = Color.ButtonColors[0];
             this._page.SdvControl.ControlSetButton.BackgroundColor = Color.MainBackground;

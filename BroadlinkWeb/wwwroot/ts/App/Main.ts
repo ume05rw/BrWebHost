@@ -1,4 +1,4 @@
-﻿/// <reference path="../../lib/jquery/index.d.ts" />
+/// <reference path="../../lib/jquery/index.d.ts" />
 /// <reference path="../../lib/underscore/index.d.ts" />
 /// <reference path="../Fw/Util/Dump.ts" />
 /// <reference path="../Fw/Controllers/Manager.ts" />
@@ -22,6 +22,7 @@ namespace App {
             Fw.Config.XhrBaseUrl = proto + '//' + host + ':' + port + '/api/';
 
             Dump.Log('StartUp');
+            App.Items.Lang.InitLang();
 
             const main = new App.Controllers.MainController();
             Manager.Instance.SetController(main);

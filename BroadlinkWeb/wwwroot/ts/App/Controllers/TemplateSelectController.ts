@@ -12,6 +12,7 @@
 /// <reference path="../Items/OperationTemplate.ts" />
 /// <reference path="../Items/Color.ts" />
 /// <reference path="../Items/Icon.ts" />
+/// <reference path="../Items/Lang/Lang.ts" />
 
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
@@ -23,6 +24,7 @@ namespace App.Controllers {
     import OperationTemplate = App.Items.OperationTemplate;
     import Color = App.Items.Color;
     import Icon = App.Items.Icon;
+    import Lang = App.Items.Lang.Lang;
 
     export class TemplateSelectController extends ItemSelectControllerBase {
 
@@ -39,11 +41,11 @@ namespace App.Controllers {
         }
 
         private InitView(): void {
-            this._page.Label.Text = 'Select New Operation';
+            this._page.Label.Text = Lang.SelectNewOperation;
 
             // TV
             const btn2 = this.GetNewButton();
-            btn2.Label.Text = 'TV';
+            btn2.Label.Text = Lang.Tv;
             btn2.Button.ImageSrc = Icon.GetByOperationTemplate(OperationTemplate.Tv);
             btn2.Button.BackgroundColor = Color.ButtonColors[4];
             btn2.Button.HoverColor = Color.ButtonHoverColors[4];
@@ -55,7 +57,7 @@ namespace App.Controllers {
 
             // AV
             const btn3 = this.GetNewButton();
-            btn3.Label.Text = 'AV';
+            btn3.Label.Text = Lang.Av;
             btn3.Button.ImageSrc = Icon.GetByOperationTemplate(OperationTemplate.Av);
             btn3.Button.BackgroundColor = Color.ButtonColors[5];
             btn3.Button.HoverColor = Color.ButtonHoverColors[5];
@@ -67,7 +69,7 @@ namespace App.Controllers {
 
             // 照明
             const btn4 = this.GetNewButton();
-            btn4.Label.Text = 'Light';
+            btn4.Label.Text = Lang.Light;
             btn4.Button.ImageSrc = Icon.GetByOperationTemplate(OperationTemplate.Light);
             btn4.Button.BackgroundColor = Color.ButtonColors[3];
             btn4.Button.HoverColor = Color.ButtonHoverColors[3];
@@ -79,7 +81,7 @@ namespace App.Controllers {
 
             // フリー編集
             const btn5 = this.GetNewButton();
-            btn5.Label.Text = 'Free';
+            btn5.Label.Text = Lang.Free;
             btn5.Button.ImageSrc = Icon.GetByOperationTemplate(OperationTemplate.Free);
             btn5.Button.BackgroundColor = Color.ButtonColors[7];
             btn5.Button.HoverColor = Color.ButtonHoverColors[7];
@@ -97,7 +99,7 @@ namespace App.Controllers {
 
             // WoL
             const btn6 = this.GetNewButton();
-            btn6.Label.Text = 'WoL';
+            btn6.Label.Text = Lang.Wol;
             btn6.Button.ImageSrc = Icon.GetByOperationTemplate(OperationTemplate.WoL);
             btn6.Button.BackgroundColor = Color.ButtonColors[2];
             btn6.Button.HoverColor = Color.ButtonHoverColors[2];
@@ -109,7 +111,7 @@ namespace App.Controllers {
 
             // ローカル実行
             const btn7 = this.GetNewButton();
-            btn7.Label.Text = 'Script';
+            btn7.Label.Text = Lang.Script;
             btn7.Button.ImageSrc = Icon.GetByOperationTemplate(OperationTemplate.Script);
             btn7.Button.BackgroundColor = Color.ButtonColors[2];
             btn7.Button.HoverColor = Color.ButtonHoverColors[2];
@@ -121,7 +123,7 @@ namespace App.Controllers {
 
             // リモート実行
             const btn8 = this.GetNewButton();
-            btn8.Label.Text = 'Remote';
+            btn8.Label.Text = Lang.Remote;
             btn8.Button.ImageSrc = Icon.GetByOperationTemplate(OperationTemplate.RemoteHostScript);
             btn8.Button.BackgroundColor = Color.ButtonColors[2];
             btn8.Button.HoverColor = Color.ButtonHoverColors[2];
@@ -139,7 +141,7 @@ namespace App.Controllers {
 
             // シーン
             const btn1 = this.GetNewButton();
-            btn1.Label.Text = 'Scene';
+            btn1.Label.Text = Lang.Scene;
             btn1.Button.ImageSrc = Icon.GetByOperationTemplate(OperationTemplate.Scene);
             btn1.Button.Color = Color.ButtonColors[8];
             btn1.Button.BackgroundColor = Color.ButtonColors[8]
@@ -151,7 +153,7 @@ namespace App.Controllers {
 
             // スケジュール
             const btn9 = this.GetNewButton();
-            btn9.Label.Text = 'Timer';
+            btn9.Label.Text = Lang.Timer;
             btn9.Button.ImageSrc = Icon.GetByOperationTemplate(OperationTemplate.Schedule);
             btn9.Button.Color = Color.ButtonColors[9];
             btn9.Button.BackgroundColor = Color.ButtonColors[9]

@@ -7,6 +7,7 @@
 /// <reference path="../Entities/Control.ts" />
 /// <reference path="../Entities/A1Values.ts" />
 /// <reference path="../Entities/DateTimeRange.ts" />
+/// <reference path="../../Items/Lang/Lang.ts" />
 
 namespace App.Models.Stores {
     import Dump = Fw.Util.Dump;
@@ -15,6 +16,7 @@ namespace App.Models.Stores {
     import A1Values = App.Models.Entities.A1Values;
     import Xhr = Fw.Util.Xhr;
     import DateTimeRange = App.Models.Entities.DateTimeRange;
+    import Lang = App.Items.Lang.Lang;
 
     export class A1Store extends Fw.Models.StoreBase<A1Values> {
 
@@ -142,30 +144,30 @@ namespace App.Models.Stores {
 
         public GetVodString(voc: number): string {
             switch (voc) {
-                case 0: return 'Excellent';
-                case 1: return 'Good';
-                case 2: return 'Normal';
-                case 3: return 'Bad';
-                default: return 'Unknown';
+                case 0: return Lang.Excellent;
+                case 1: return Lang.Good;
+                case 2: return Lang.Normal;
+                case 3: return Lang.Bad;
+                default: return Lang.Unknown;
             }
         }
 
         public GetLightString(voc: number): string {
             switch (voc) {
-                case 0: return 'Dark';
-                case 1: return 'Dim';
-                case 2: return 'Normal';
-                case 3: return 'Bright';
-                default: return 'Unknown';
+                case 0: return Lang.Dark;
+                case 1: return Lang.Dim;
+                case 2: return Lang.Normal;
+                case 3: return Lang.Bad;
+                default: return Lang.Unknown;
             }
         }
 
         public GetNoiseString(voc: number): string {
             switch (voc) {
-                case 0: return 'Quiet';
-                case 1: return 'Normal';
-                case 2: return 'Noisy';
-                default: return 'Unknown';
+                case 0: return Lang.Quiet;
+                case 1: return Lang.Normal;
+                case 2: return Lang.Noisy;
+                default: return Lang.Unknown;
             }
         }
 

@@ -22,6 +22,7 @@
 /// <reference path="../Items/DeviceType.ts" />
 /// <reference path="../Items/ModalOperationType.ts" />
 /// <reference path="OperationSelectController.ts" />
+/// <reference path="../Items/Lang/Lang.ts" />
 
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
@@ -48,6 +49,7 @@ namespace App.Controllers {
     import Control = App.Models.Entities.Control;
     import Job = App.Models.Entities.Job;
     import SceneStatus = App.Models.Entities.SceneStatus;
+    import Lang = App.Items.Lang.Lang;
 
     export class SceneController extends Fw.Controllers.ControllerBase {
 
@@ -87,7 +89,7 @@ namespace App.Controllers {
                 let isSave = true;
                 if (scene.Details.length <= 0) {
                     isSave = await App.Views.Popup.Confirm.OpenAsync({
-                        Message: 'No operations.<br/>Save OK?'
+                        Message: Lang.NoOperationsSaveOk
                     });
                 }
 
@@ -102,7 +104,7 @@ namespace App.Controllers {
                     this.SetEditMode();
                     this.Show();
                     Popup.Alert.Open({
-                        Message: 'Ouch! Save Failure.<br/>Server online?'
+                        Message: Lang.SaveFailureServerOnline
                     });
                 } else {
                     // 保存成功

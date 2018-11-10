@@ -5,7 +5,7 @@
 /// <reference path="../../../Fw/Events/PageViewEvents.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../Controls/HeaderBarView.ts" />
-
+/// <reference path="../../Items/Lang/Lang.ts" />
 
 namespace App.Views.Pages {
     import Dump = Fw.Util.Dump;
@@ -13,6 +13,7 @@ namespace App.Views.Pages {
     import Views = Fw.Views;
     import Property = Fw.Views.Property;
     import Controls = App.Views.Controls;
+    import Lang = App.Items.Lang.Lang;
 
     export class ControlHeaderPropertyPageView extends Fw.Views.PageView {
 
@@ -54,7 +55,7 @@ namespace App.Views.Pages {
             label.FontSize = Property.FontSize.Large;
             label.Color = App.Items.Color.Main;
             label.SetAnchor(null, 5, null, null);
-            label.Text = 'Remote Control';
+            label.Text = Lang.RemoteControl;
             this.HeaderBar.Add(label);
 
             this.InputPanel.Position.Policy = Property.PositionPolicy.LeftTop;
@@ -66,7 +67,7 @@ namespace App.Views.Pages {
             this.Add(this.InputPanel);
 
             const lbl1 = new Views.LabelView();
-            lbl1.Text = 'Name';
+            lbl1.Text = Lang.Name;
             lbl1.TextAlign = Property.TextAlign.Left;
             lbl1.AutoSize = true;
             lbl1.SetAnchor(null, 5, null, null);
@@ -75,12 +76,11 @@ namespace App.Views.Pages {
 
             this.TxtName.SetAnchor(null, 5, 15, null);
             this.TxtName.Size.Height = 30;
-            this.TxtName.Name = 'Name';
             this.InputPanel.Add(this.TxtName);
 
 
             this.LabelColor = new Views.LabelView();
-            this.LabelColor.Text = 'Color';
+            this.LabelColor.Text = Lang.Color;
             this.LabelColor.TextAlign = Property.TextAlign.Left;
             this.LabelColor.AutoSize = true;
             this.LabelColor.SetAnchor(null, 5, null, null);
@@ -92,7 +92,7 @@ namespace App.Views.Pages {
             this.InputPanel.AddSpacer();
 
             this.LabelRm = new Views.LabelView();
-            this.LabelRm.Text = 'Target';
+            this.LabelRm.Text = Lang.Controller;
             this.LabelRm.TextAlign = Property.TextAlign.Left;
             this.LabelRm.AutoSize = true;
             this.LabelRm.SetAnchor(null, 5, null, null);
@@ -101,7 +101,6 @@ namespace App.Views.Pages {
 
             this.SboRm.SetAnchor(null, 5, 15, null);
             this.SboRm.Size.Height = 30;
-            this.SboRm.Name = 'Rm';
             _.each(App.Items.Icon.Names, (iconName) => {
                 const dispName = iconName.substr(0, iconName.indexOf('.')).replace('_', ' ');
                 this.SboRm.AddItem(dispName, `images/icons/${iconName}`);
@@ -110,7 +109,7 @@ namespace App.Views.Pages {
 
             this.DeleteButton.SetAnchor(null, 5, 15, null);
             this.DeleteButton.Size.Height = 30;
-            this.DeleteButton.Text = '*Delete*';
+            this.DeleteButton.Text = Lang.Delete;
             this.InputPanel.Add(this.DeleteButton);
         }
     }

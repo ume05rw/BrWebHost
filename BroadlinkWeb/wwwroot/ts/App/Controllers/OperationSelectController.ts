@@ -17,6 +17,7 @@
 /// <reference path="../Models/Stores/ControlSetStore.ts" />
 /// <reference path="../Models/Entities/ControlSet.ts" />
 /// <reference path="../Models/Entities/Scene.ts" />
+/// <reference path="../Items/Lang/Lang.ts" />
 
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
@@ -33,6 +34,7 @@ namespace App.Controllers {
     import ControlSet = App.Models.Entities.ControlSet;
     import Scene = App.Models.Entities.Scene;
     import DeviceType = App.Items.DeviceType;
+    import Lang = App.Items.Lang.Lang;
 
     export class OperationSelectController extends ItemSelectControllerBase {
 
@@ -47,7 +49,7 @@ namespace App.Controllers {
             this.SetClassName('OperationSelectController');
 
             this._page = this.View as Pages.ItemSelectPageView;
-            this._page.Label.Text = 'Select Remote Control';
+            this._page.Label.Text = Lang.SelectRemoteControl;
 
             this._controlSets = null;
             this.IsSceneIncludes = false;

@@ -10,6 +10,7 @@
 /// <reference path="../../Items/Icon.ts" />
 /// <reference path="../../Events/Controls/ControlButtonViewEvents.ts" />
 /// <reference path="../../Models/Stores/SceneDetailStore.ts" />
+/// <reference path="../../Items/Lang/Lang.ts" />
 
 namespace App.Views.Controls {
     import Dump = Fw.Util.Dump;
@@ -21,6 +22,7 @@ namespace App.Views.Controls {
     import TextBoxEvents = Fw.Events.TextBoxInputViewEvents;
     import EntityEvents = Fw.Events.EntityEvents;
     import Stores = App.Models.Stores;
+    import Lang = App.Items.Lang.Lang;
 
     export class SceneDetailView extends Fw.Views.BoxView {
 
@@ -101,7 +103,7 @@ namespace App.Views.Controls {
             this.WaitPreLabel.AutoSize = false;
             this.WaitPreLabel.TextAlign = Property.TextAlign.Right;
             this.WaitPreLabel.FontSize = Property.FontSize.XSmall;
-            this.WaitPreLabel.Text = 'Wait:';
+            this.WaitPreLabel.Text = Lang.Wait;
             this.WaitPreLabel.SetTransAnimation(true);
             this.Add(this.WaitPreLabel);
 
@@ -110,7 +112,7 @@ namespace App.Views.Controls {
             this.WaitPostLabel.AutoSize = false;
             this.WaitPostLabel.TextAlign = Property.TextAlign.Left;
             this.WaitPostLabel.FontSize = Property.FontSize.XSmall;
-            this.WaitPostLabel.Text = 'Sec';
+            this.WaitPostLabel.Text = Lang.Sec;
             this.WaitPostLabel.SetTransAnimation(true);
             this.Add(this.WaitPostLabel);
 
@@ -186,7 +188,7 @@ namespace App.Views.Controls {
                     }
                 } else {
                     this.ControlSetButton.ImageSrc = '';
-                    this.ControlSetButton.Text = 'Select<br/>Remotes';
+                    this.ControlSetButton.Text = Lang.SelectRemote;
                     this.ControlSetLabel.Text = '';
                     this.ControlSetButton.Color = Color.ButtonColors[0];
                     this.ControlSetButton.BackgroundColor = Color.MainBackground;
@@ -213,7 +215,7 @@ namespace App.Views.Controls {
                 } else {
                     this.ControlButton.ImageSrc = '';
                     this.ControlButton.Text = (cset)
-                        ? 'Select<br/>Button'
+                        ? Lang.SelectButton
                         : '';
                     this.ControlLabel.Text = '';
                     this.ControlButton.Color = Color.ButtonColors[0];
@@ -225,7 +227,7 @@ namespace App.Views.Controls {
 
             } else {
                 this.ControlSetButton.ImageSrc = '';
-                this.ControlSetButton.Text = 'Select<br/>Remotes';
+                this.ControlSetButton.Text = Lang.SelectRemote;
                 this.ControlSetLabel.Text = '';
                 this.ControlSetButton.Color = Color.ButtonColors[0];
                 this.ControlSetButton.BackgroundColor = Color.ButtonColors[0];

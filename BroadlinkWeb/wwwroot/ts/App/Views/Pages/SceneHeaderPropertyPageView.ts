@@ -5,7 +5,7 @@
 /// <reference path="../../../Fw/Events/PageViewEvents.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../Controls/HeaderBarView.ts" />
-
+/// <reference path="../../Items/Lang/Lang.ts" />
 
 namespace App.Views.Pages {
     import Dump = Fw.Util.Dump;
@@ -13,6 +13,7 @@ namespace App.Views.Pages {
     import Views = Fw.Views;
     import Property = Fw.Views.Property;
     import Controls = App.Views.Controls;
+    import Lang = App.Items.Lang.Lang;
 
     export class SceneHeaderPropertyPageView extends Fw.Views.PageView {
 
@@ -50,7 +51,7 @@ namespace App.Views.Pages {
             label.FontSize = Property.FontSize.Large;
             label.Color = App.Items.Color.Main;
             label.SetAnchor(null, 5, null, null);
-            label.Text = 'Property';
+            label.Text = Lang.Property;
             this.HeaderBar.Add(label);
 
             this.InputPanel.Position.Policy = Property.PositionPolicy.LeftTop;
@@ -62,7 +63,7 @@ namespace App.Views.Pages {
             this.Add(this.InputPanel);
 
             const lbl1 = new Views.LabelView();
-            lbl1.Text = 'Name';
+            lbl1.Text = Lang.Name;
             lbl1.TextAlign = Property.TextAlign.Left;
             lbl1.AutoSize = true;
             lbl1.SetAnchor(null, 5, null, null);
@@ -71,12 +72,11 @@ namespace App.Views.Pages {
 
             this.TxtName.SetAnchor(null, 5, 15, null);
             this.TxtName.Size.Height = 30;
-            this.TxtName.Name = 'Name';
             this.InputPanel.Add(this.TxtName);
 
 
             this.LabelColor = new Views.LabelView();
-            this.LabelColor.Text = 'Color';
+            this.LabelColor.Text = Lang.Color;
             this.LabelColor.TextAlign = Property.TextAlign.Left;
             this.LabelColor.AutoSize = true;
             this.LabelColor.SetAnchor(null, 5, null, null);
@@ -89,7 +89,7 @@ namespace App.Views.Pages {
 
             this.DeleteButton.SetAnchor(null, 5, 15, null);
             this.DeleteButton.Size.Height = 30;
-            this.DeleteButton.Text = '*Delete*';
+            this.DeleteButton.Text = Lang.Delete;
             this.InputPanel.Add(this.DeleteButton);
         }
     }

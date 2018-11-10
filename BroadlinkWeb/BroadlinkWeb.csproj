@@ -28,6 +28,8 @@
     <Content Remove="wwwroot\ts\App\Items\ChartType.ts" />
     <Content Remove="wwwroot\ts\App\Items\ControlSetTemplate.ts" />
     <Content Remove="wwwroot\ts\App\Items\DeviceType.ts" />
+    <Content Remove="wwwroot\ts\App\Items\Lang\Ja.ts" />
+    <Content Remove="wwwroot\ts\App\Items\Lang\Lang.ts" />
     <Content Remove="wwwroot\ts\App\Items\ModalOperationType.ts" />
     <Content Remove="wwwroot\ts\App\Items\OperationTemplate.ts" />
     <Content Remove="wwwroot\ts\App\Items\OperationType.ts" />
@@ -195,6 +197,8 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\SceneController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\ScheduleController.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Items\ChartType.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Items\Lang\Ja.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Items\Lang\Lang.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Items\ModalOperationType.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Items\DeviceType.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Items\Color.ts" />

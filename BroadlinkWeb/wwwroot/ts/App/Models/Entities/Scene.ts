@@ -5,16 +5,18 @@
 /// <reference path="../../Items/Color.ts" />
 /// <reference path="../../Items/Icon.ts" />
 /// <reference path="../../Items/OperationType.ts" />
+/// <reference path="../../Items/Lang/Lang.ts" />
 
 namespace App.Models.Entities {
     import Dump = Fw.Util.Dump;
     import Color = App.Items.Color;
     import Icon = App.Items.Icon;
     import OperationTemplate = App.Items.OperationTemplate;
+    import Lang = App.Items.Lang.Lang;
 
     export class Scene extends Fw.Models.EntityBase {
 
-        public Name: string = 'New Scene';
+        public Name: string = Lang.NewScene;
 
         public IconUrl: string = Icon.GetByOperationTemplate(OperationTemplate.Scene, true);
 

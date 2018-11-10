@@ -11,6 +11,7 @@
 /// <reference path="ControlSetController.ts" />
 /// <reference path="../../Fw/Events/EntityEvents.ts" />
 /// <reference path="../Views/Controls/ButtonView.ts" />
+/// <reference path="../Items/Lang/Lang.ts" />
 
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
@@ -22,6 +23,7 @@ namespace App.Controllers {
     import EntityEvents = Fw.Events.EntityEvents;
     import Color = App.Items.Color;
     import ChartType = App.Items.ChartType;
+    import Lang = App.Items.Lang.Lang;
 
     export class A1SetController extends ControlSetController {
 
@@ -50,17 +52,17 @@ namespace App.Controllers {
 
             this._btnChartChange.SetAnchor(520, 5, null, null);
             this._btnChartChange.SetSize(250, 30);
-            this._btnChartChange.Text = 'to Daily';
+            this._btnChartChange.Text = Lang.ToDaily;
             this._page.ButtonPanel.Add(this._btnChartChange);
 
             this._btnChartChange.AddEventListener(Fw.Events.ButtonViewEvents.SingleClick, () => {
                 if (this._chartType === ChartType.Hourly) {
                     this._chartType = ChartType.Daily;
-                    this._btnChartChange.Text = 'to Hourly';
+                    this._btnChartChange.Text = Lang.ToHourly;
                     this.SetChart();
                 } else if (this._chartType === ChartType.Daily) {
                     this._chartType = ChartType.Hourly;
-                    this._btnChartChange.Text = 'to Daily';
+                    this._btnChartChange.Text = Lang.ToDaily;
                     this.SetChart();
                 } else {
                     // グラフタイプが追加された？
@@ -177,7 +179,7 @@ namespace App.Controllers {
                     labels: labels,
                     datasets: [
                         {
-                            label: 'Temp.',
+                            label: Lang.Temp,
                             data: temperatures,
                             fill: true,
                             backgroundColor: Color.GetRgba(Color.ButtonHoverColors[5], 0.7),
@@ -185,7 +187,7 @@ namespace App.Controllers {
                             borderWidth: 2
                         },
                         {
-                            label: 'Hudimity',
+                            label: Lang.Hudimity,
                             data: humidities,
                             fill: true,
                             backgroundColor: Color.GetRgba(Color.ButtonHoverColors[1], 0.7),
@@ -193,7 +195,7 @@ namespace App.Controllers {
                             borderWidth: 2
                         },
                         {
-                            label: 'Voc',
+                            label: Lang.Voc,
                             data: vocs,
                             fill: true,
                             backgroundColor: Color.GetRgba(Color.ButtonHoverColors[2], 0.7),
@@ -201,7 +203,7 @@ namespace App.Controllers {
                             borderWidth: 2
                         },
                         {
-                            label: 'Light',
+                            label: Lang.Brightness,
                             data: lights,
                             fill: true,
                             backgroundColor: Color.GetRgba(Color.ButtonHoverColors[4], 0.7),
@@ -209,7 +211,7 @@ namespace App.Controllers {
                             borderWidth: 2
                         },
                         {
-                            label: 'Noise',
+                            label: Lang.Noise,
                             data: noises,
                             fill: true,
                             backgroundColor: Color.GetRgba(Color.ButtonHoverColors[7], 0.7),
@@ -268,19 +270,19 @@ namespace App.Controllers {
 
                         switch (control.Code) {
                             case 'Temp':
-                                btn.Name = 'Temp.<br/>' + control.Value;
+                                btn.Name = Lang.Temp + '<br/>' + control.Value;
                                 break;
                             case 'Humidity':
-                                btn.Name = 'Humidity<br/>' + control.Value;
+                                btn.Name = Lang.Hudimity + '<br/>' + control.Value;
                                 break;
                             case 'Voc':
-                                btn.Name = 'VOC<br/>' + control.Value;
+                                btn.Name = Lang.Voc + '<br/>' + control.Value;
                                 break;
                             case 'Light':
-                                btn.Name = 'Light<br/>' + control.Value;
+                                btn.Name = Lang.Brightness + '<br/>' + control.Value;
                                 break;
                             case 'Noise':
-                                btn.Name = 'Noise<br/>' + control.Value;
+                                btn.Name = Lang.Noise + '<br/>' + control.Value;
                                 break;
                             default:
                                 break;
