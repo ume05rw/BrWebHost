@@ -2,7 +2,7 @@
 /// <reference path="Ja.ts" />
 
 namespace App.Items.Lang {
-    export const Lang = {
+    export const En = {
         Title: 'BrWebHost',
 
         Property: 'Property',
@@ -102,33 +102,4 @@ namespace App.Items.Lang {
         SelectRemoteScriptGoEdit: 'Select Remote Script,<br/>Go Edit.',
         UnexpectedControlNotFound: 'Unexpected...Control not Found.',
     };
-
-    export function InitLang(): void {
-        let lang: string = (window.navigator.languages && window.navigator.languages[0])
-            || window.navigator.language
-            || (window.navigator as any).userLanguage
-            || (window.navigator as any).browserLanguage;
-
-        // 言語取得できないとき、デフォルト
-        if (!lang)
-            return;
-
-        const langFull = lang.toLowerCase();
-        const langCode = langFull.substr(0, 2);
-        switch (langCode) {
-            case 'ja':
-                // 日本語
-                _.extend(Lang, Ja);
-                break;
-            case 'zh':
-                // 中国語
-                if (langFull == 'zh-cn') {
-                    // 大陸
-                }
-                break;
-            default:
-                _.extend(Lang, En);
-                break;
-        }
-    }
 }

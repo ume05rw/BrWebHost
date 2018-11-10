@@ -155,20 +155,32 @@ namespace BroadlinkWeb.Models.Stores
                     // 次回起動時間を過ぎたとき
                     try
                     {
-                        // 1.実行する。
-                        var errors = await this.ExecSchedule(schedule);
-
-                        // 2.カレントジョブに結果を記録する。
-                        var job = schedule.CurrentJob;
-                        if (errors.Length > 0)
+                        var elapsed = now - schedule.NextDateTime;
+                        if (elapsed < (new TimeSpan(0, 1, 30)))
                         {
-                            // エラー終了時
-                            await job.SetFinish(true, errors, "ScheduleStore.Tick Error");
+                            // 指定時間超過が1分半以下のとき
+                            // 通常実行
+                            // 1.実行する。
+                            var errors = await this.ExecSchedule(schedule);
+
+                            // 2.カレントジョブに結果を記録する。
+                            var job = schedule.CurrentJob;
+                            if (errors.Length > 0)
+                            {
+                                // エラー終了時
+                                await job.SetFinish(true, errors, "ScheduleStore.Tick Error");
+                            }
+                            else
+                            {
+                                // 正常終了時
+                                await job.SetFinish(false, null);
+                            }
                         }
                         else
                         {
-                            // 正常終了時
-                            await job.SetFinish(false, null);
+                            // 指定時間を1分半以上過ぎたとき
+                            var job = schedule.CurrentJob;
+                            await job.SetFinish(true, null, "ScheduleStore.Tick Timeout");
                         }
 
                         // 3.カレントジョブを新規取得する。
