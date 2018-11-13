@@ -71,7 +71,13 @@ namespace BroadlinkWeb.Models.Stores
         {
             using (var serviceScope = SceneStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
-                foreach (var detail in scene.Details)
+                var dbc = serviceScope.ServiceProvider.GetService<Dbc>();
+                var details = dbc.SceneDetails
+                    .Where(e => e.SceneId == scene.Id)
+                    .OrderBy(e => e.Order)
+                    .ToArray();
+
+                foreach (var detail in details)
                 {
                     if (detail.ControlSet == null || detail.Control == null)
                     {
