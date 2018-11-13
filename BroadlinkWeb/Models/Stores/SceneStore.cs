@@ -73,6 +73,8 @@ namespace BroadlinkWeb.Models.Stores
             {
                 var dbc = serviceScope.ServiceProvider.GetService<Dbc>();
                 var details = dbc.SceneDetails
+                    .Include(e => e.ControlSet)
+                    .Include(e => e.Control)
                     .Where(e => e.SceneId == scene.Id)
                     .OrderBy(e => e.Order)
                     .ToArray();
