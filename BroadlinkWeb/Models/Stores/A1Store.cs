@@ -246,11 +246,11 @@ namespace BroadlinkWeb.Models.Stores
                 .GroupBy(e => e.Recorded.Hour, (key, g) => new A1Values()
                 {
                     BrDeviceId = id,
-                    Temperature = (g.Average(d => d.Temperature)),
-                    Humidity = g.Average(e => e.Humidity),
-                    Voc = g.Average(e => e.Voc),
-                    Light = g.Average(e => e.Light),
-                    Noise = g.Average(e => e.Noise),
+                    Temperature = Xb.Num.Round((decimal)g.Average(d => d.Temperature), Xb.Num.RoundType.HalfUp, 2),
+                    Humidity = Xb.Num.Round((decimal)g.Average(e => e.Humidity), Xb.Num.RoundType.HalfUp, 2),
+                    Voc = Xb.Num.Round((decimal)g.Average(e => e.Voc), Xb.Num.RoundType.HalfUp, 2),
+                    Light = Xb.Num.Round((decimal)g.Average(e => e.Light), Xb.Num.RoundType.HalfUp, 2),
+                    Noise = Xb.Num.Round((decimal)g.Average(e => e.Noise), Xb.Num.RoundType.HalfUp, 2),
                     Recorded = new DateTime(
                         g.First().Recorded.Year,
                         g.First().Recorded.Month,
@@ -278,16 +278,16 @@ namespace BroadlinkWeb.Models.Stores
                 .Where(e => e.BrDeviceId == id)
                 .Where(e => range.StartDateTime <= e.Recorded && e.Recorded <= range.EndDateTime)
                                 .ToArray();
-
+            
             var result = values
                 .GroupBy(e => e.Recorded.Day, (key, g) => new A1Values()
                 {
                     BrDeviceId = id,
-                    Temperature = g.Average(e => e.Temperature),
-                    Humidity = g.Average(e => e.Humidity),
-                    Voc = g.Average(e => e.Voc),
-                    Light = g.Average(e => e.Light),
-                    Noise = g.Average(e => e.Noise),
+                    Temperature = Xb.Num.Round((decimal)g.Average(e => e.Temperature), Xb.Num.RoundType.HalfUp, 2),
+                    Humidity = Xb.Num.Round((decimal)g.Average(e => e.Humidity), Xb.Num.RoundType.HalfUp, 2),
+                    Voc = Xb.Num.Round((decimal)g.Average(e => e.Voc), Xb.Num.RoundType.HalfUp, 2),
+                    Light = Xb.Num.Round((decimal)g.Average(e => e.Light), Xb.Num.RoundType.HalfUp, 2),
+                    Noise = Xb.Num.Round((decimal)g.Average(e => e.Noise), Xb.Num.RoundType.HalfUp, 2),
                     Recorded = new DateTime(
                         g.First().Recorded.Year,
                         g.First().Recorded.Month,
