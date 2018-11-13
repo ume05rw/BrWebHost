@@ -62,7 +62,7 @@ namespace App.Items.Lang {
         Hudimity: '湿度',
         Voc: 'VOC',
         Brightness: '明るさ',
-        Noise: '騒音',
+        Noise: 'ノイズ',
 
         MacAddress: 'MACアドレス',
         Script: 'スクリプト',

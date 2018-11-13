@@ -1,5 +1,7 @@
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="Ja.ts" />
+/// <reference path="En.ts" />
+/// <reference path="ZhCn.ts" />
 
 namespace App.Items.Lang {
     export const Lang = {
@@ -122,8 +124,9 @@ namespace App.Items.Lang {
                 break;
             case 'zh':
                 // 中国語
-                if (langFull == 'zh-cn') {
+                if (langFull === 'zh-cn') {
                     // 大陸
+                    _.extend(Lang, ZhCn);
                 }
                 break;
             default:
