@@ -17,7 +17,7 @@ namespace App.Items.Lang {
         IconColor: 'Icon / Color',
         Learn: 'Learn',
         Test: 'Test',
-        Scene: 'Scene',
+        Scene: 'Combination',
         Operation: 'Operation',
         TimerEnable: 'Timer Enable',
         Enable: 'Enable',
@@ -51,7 +51,7 @@ namespace App.Items.Lang {
         Noisy: 'Noisy',
 
         NewRemoteControl: 'New Remote Control',
-        NewScene: 'New Scene',
+        NewScene: 'New Combination',
         NewTimer: 'New Timer',
         ToggleAssigns: 'Toggle Assigns',
         MainPanelToggleOn: 'Main-Panel Toggle ON',
@@ -84,7 +84,7 @@ namespace App.Items.Lang {
 
         ThisRemoteControlWillBeRemoved: 'This Remote Control will be REMOVED.<br/>Are you ok?',
         ThisButtonWillBeRemoved: 'This Button will be removed.<br/>Are you ok?',
-        ThisSceneWillBeRemoved: 'This Scene will be REMOVED.<br/>Are you ok?',
+        ThisSceneWillBeRemoved: 'This Combination will be REMOVED.<br/>Are you ok?',
         ThisTimerWillBeRemoved: 'This Timer will be REMOVED.<br/>Are you ok?',
         NoButtonsSaveOk: 'No buttons.<br/>Save OK?',
         NoOperationsSaveOk: 'No operations.<br/>Save OK?',
