@@ -4,11 +4,15 @@
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../../../Fw/Util/Xhr/Query.ts" />
 /// <reference path="../Entities/SceneDetail.ts" />
+/// <reference path="../../Items/Lang/Lang.ts" />
+/// <reference path="../../Items/ValidationFailType.ts" />
 
 namespace App.Models.Stores {
     import Dump = Fw.Util.Dump;
     import SceneDetail = App.Models.Entities.SceneDetail;
     import Xhr = Fw.Util.Xhr;
+    import Lang = App.Items.Lang.Lang;
+    import ValidationFailType = App.Items.ValidationFailType;
 
     export class SceneDetailStore extends Fw.Models.StoreBase<SceneDetail> {
 
@@ -49,6 +53,11 @@ namespace App.Models.Stores {
                     result.push(entity);
             });
             return result;
+        }
+
+        public async Validate(detail: SceneDetail): Promise<Array<Entities.ValidationResult>> {
+            let errors = new Array<Entities.ValidationResult>();
+            return errors;
         }
     }
 

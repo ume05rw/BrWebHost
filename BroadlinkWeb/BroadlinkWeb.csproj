@@ -35,6 +35,7 @@
     <Content Remove="wwwroot\ts\App\Items\ModalOperationType.ts" />
     <Content Remove="wwwroot\ts\App\Items\OperationTemplate.ts" />
     <Content Remove="wwwroot\ts\App\Items\OperationType.ts" />
+    <Content Remove="wwwroot\ts\App\Items\ValidationFailType.ts" />
     <Content Remove="wwwroot\ts\App\Items\Weekday.ts" />
     <Content Remove="wwwroot\ts\App\Main.ts" />
     <Content Remove="wwwroot\ts\App\Models\Entities\A1Values.ts" />
@@ -51,6 +52,7 @@
     <Content Remove="wwwroot\ts\App\Models\Entities\Schedule.ts" />
     <Content Remove="wwwroot\ts\App\Models\Entities\Script.ts" />
     <Content Remove="wwwroot\ts\App\Models\Entities\Sp2Status.ts" />
+    <Content Remove="wwwroot\ts\App\Models\Entities\ValidationResult.ts" />
     <Content Remove="wwwroot\ts\App\Models\Stores\A1Store.ts" />
     <Content Remove="wwwroot\ts\App\Models\Stores\BrDeviceStore.ts" />
     <Content Remove="wwwroot\ts\App\Models\Stores\ControlSetStore.ts" />
@@ -65,6 +67,7 @@
     <Content Remove="wwwroot\ts\App\Models\Stores\ScheduleStore.ts" />
     <Content Remove="wwwroot\ts\App\Models\Stores\ScriptStore.ts" />
     <Content Remove="wwwroot\ts\App\Models\Stores\Sp2Store.ts" />
+    <Content Remove="wwwroot\ts\App\Models\Stores\ValidationStore.ts" />
     <Content Remove="wwwroot\ts\App\Models\Stores\WolStore.ts" />
     <Content Remove="wwwroot\ts\App\Views\Controls\ButtonView.ts" />
     <Content Remove="wwwroot\ts\App\Views\Controls\ControlButtonView.ts" />
@@ -217,6 +220,7 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Items\OperationType.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Items\Icon.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Items\OperationTemplate.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Items\ValidationFailType.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Items\Weekday.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Main.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Controllers\MainController.ts" />
@@ -234,6 +238,7 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\Schedule.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\Script.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\Sp2Status.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Models\Entities\ValidationResult.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\A1Store.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\BrDeviceStore.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\ControlSetStore.ts" />
@@ -248,6 +253,7 @@
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\ScheduleStore.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\ScriptStore.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\Sp2Store.ts" />
+    <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\ValidationStore.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Models\Stores\WolStore.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\ButtonView.ts" />
     <TypeScriptCompile Include="wwwroot\ts\App\Views\Controls\ControlButtonView.ts" />

@@ -9,6 +9,8 @@
 /// <reference path="../Entities/Header.ts" />
 /// <reference path="ControlStore.ts" />
 /// <reference path="../../Items/OperationType.ts" />
+/// <reference path="../../Items/Lang/Lang.ts" />
+/// <reference path="../../Items/ValidationFailType.ts" />
 
 namespace App.Models.Stores {
     import Dump = Fw.Util.Dump;
@@ -19,6 +21,8 @@ namespace App.Models.Stores {
     import ControlSetTemplate = App.Items.ControlSetTemplate;
     import Header = App.Models.Entities.Header;
     import OperationType = App.Items.OperationType;
+    import Lang = App.Items.Lang.Lang;
+    import ValidationFailType = App.Items.ValidationFailType;
 
     export class ControlSetStore extends Fw.Models.StoreBase<ControlSet> {
 
@@ -289,6 +293,67 @@ namespace App.Models.Stores {
                 this.Log(res.Errors);
                 return null;
             }
+        }
+
+        public async Validate(controlSet: ControlSet): Promise<Array<Entities.ValidationResult>> {
+            let errors = new Array<Entities.ValidationResult>();
+
+            switch (controlSet.OperationType) {
+                case OperationType.RemoteControl:
+                    // RMコントローラ選択の検証
+
+                    if (!controlSet.BrDeviceId) {
+                        const err = new Entities.ValidationResult(
+                            controlSet,
+                            'BrDeviceId',
+                            Lang.RmControllerNotSelected,
+                            ValidationFailType.Warning
+                        );
+                        errors.push(err);
+                    }
+
+                    break;
+                case OperationType.BroadlinkDevice:
+                    // バリデート対象なし
+                    break;
+                case OperationType.WakeOnLan:
+                    // Controlのみ
+
+                    break;
+                case OperationType.Script:
+                    // Controlのみ
+
+                    break;
+                case OperationType.RemoteHostScript:
+                    // Controlのみ
+
+                    break;
+                case OperationType.Scene:
+                default:
+                    // ここには来ないはず。
+                    alert('なんでやー');
+                    throw new Error('なんでやー');
+            }
+
+            // OperationType.RemoteControl: IRコードの検証
+            // OperationType.WakeOnLan: MACアドレスの検証
+            // OperationType.Script: 未入力の検証
+            // OperationType.RemoteHostScript: 未選択の検証
+            for (let i = 0; i < controlSet.Controls.length; i++) {
+                const control = controlSet.Controls[i];
+                const errs = await Stores.Controls.Validate(controlSet.OperationType, control);
+                if (errs.length > 0)
+                    errors = errors.concat(errs);
+            }
+
+            // 要注意。_.each内でawaitしても、処理終了を待たないで続行してしまう。
+            //_.each(controlSet.Controls, async (control: Entities.Control) => {
+            //    const errs = await Stores.Controls.Validate(controlSet.OperationType, control);
+            //    if (errs.length > 0)
+            //        errors = errors.concat(errs);
+            //});
+
+            return errors;
         }
 
     }

@@ -107,6 +107,19 @@ namespace App.Items.Lang {
         WriteScriptGoEdit: 'Write Script,<br/>Go Edit.',
         SelectRemoteScriptGoEdit: 'Select Remote Script,<br/>Go Edit.',
         UnexpectedControlNotFound: 'Unexpected...Control not Found.',
+
+        RmControllerNotSelected: 'Rm-Controller not selected.',
+        InvalidProntoCode: 'Code is Invalid, Retry to Learn.',
+        InvalidMacChar: 'MAC Address Charactor is Invalid.',
+        InvalidMacFormat: 'MAC Address Format is Invalid.',
+        ScriptNull: 'Script has not been entered.',
+        RemoteScriptNull: 'Remote Script not selected.',
+        CheckYourInput: 'Check your input.',
+
+        ErrorsAndWarnings: 'Errors and Warnings',
+        Errors: 'Errors',
+        Warnings: 'Warnings',
+        SaveAnyway: 'Save anyway?',
     };
 
     export function InitLang(): void {

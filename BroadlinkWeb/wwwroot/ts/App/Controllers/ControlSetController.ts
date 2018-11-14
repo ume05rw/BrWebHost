@@ -18,6 +18,7 @@
 /// <reference path="ItemSelectControllerBase.ts" />
 /// <reference path="../Views/Controls/ItemSelectButtonView.ts" />
 /// <reference path="../Items/Lang/Lang.ts" />
+/// <reference path="../Items/ValidationFailType.ts" />
 
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
@@ -39,6 +40,7 @@ namespace App.Controllers {
     import ItemSelectControllerBase = App.Controllers.ItemSelectControllerBase;
     import ItemSelectButtonView = App.Views.Controls.ItemSelectButtonView;
     import Lang = App.Items.Lang.Lang;
+    import ValidationFailType = App.Items.ValidationFailType;
 
     export class ControlSetController extends ItemSelectControllerBase implements IControlSetController {
 
@@ -60,6 +62,52 @@ namespace App.Controllers {
             this._page.HeaderBar.LeftButton.Hide(0);
             this._page.HeaderBar.LeftButton.AddEventListener(ButtonEvents.SingleClick, async () => {
                 // 編集モードの状態で、戻るボタンクリック。
+                if (this._operationType !== ModalOperationType.Edit
+                    || !this._controlSet)
+                    return;
+
+                const errors = await Stores.Validations.Validate(this._controlSet);
+                if (errors.length > 0) {
+                    if (Stores.Validations.HasError(errors)) {
+                        // エラーがあるとき
+                        Popup.Alert.Open({
+                            Message: Stores.Validations.GetMessage(errors) + Lang.CheckYourInput
+                        });
+
+                        const err = Stores.Validations.GetFirstError(errors);
+                        if (err.Entity instanceof Entities.ControlSet) {
+                            const ctr = this.Manager.Get('ControlHeaderProperty') as ControlHeaderPropertyController;
+                            ctr.SetEntity(this._controlSet);
+                            ctr.ShowModal();
+                        } else if (err.Entity instanceof Entities.Control) {
+                            const ctr = this.Manager.Get('ControlProperty') as ControlPropertyController;
+                            ctr.SetEntity(err.Entity, this._controlSet);
+                            ctr.ShowModal();
+                        }
+
+                        return;
+                    } else {
+                        // 警告だけのとき
+                        const exec = await Popup.Confirm.OpenAsync({
+                            Message: Stores.Validations.GetMessage(errors) + Lang.SaveAnyway
+                        });
+                        if (exec === false) {
+                            const err = errors[0];
+                            if (err.Entity instanceof Entities.ControlSet) {
+                                const ctr = this.Manager.Get('ControlHeaderProperty') as ControlHeaderPropertyController;
+                                ctr.SetEntity(this._controlSet);
+                                ctr.ShowModal();
+                            } else if (err.Entity instanceof Entities.Control) {
+                                const ctr = this.Manager.Get('ControlProperty') as ControlPropertyController;
+                                ctr.SetEntity(err.Entity, this._controlSet);
+                                ctr.ShowModal();
+                            }
+
+                            return;
+                        }
+                    }
+                }
+
                 // ControlSetエンティティを保存する。
                 const controlSet = this._controlSet;
                 const ctr = this.Manager.Get('Main') as MainController;

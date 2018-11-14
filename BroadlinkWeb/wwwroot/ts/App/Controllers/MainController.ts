@@ -87,12 +87,21 @@ namespace App.Controllers {
                 switch (item) {
                     case OperationTemplate.Tv:
                         ctrSet = await Stores.ControlSets.GetTemplateClone(ControlSetTemplate.Tv);
+                        const rmDev1 = Stores.BrDevices.GetFirstRmDevice();
+                        if (rmDev1 !== null)
+                            ctrSet.BrDeviceId = rmDev1.Id;
                         break;
                     case OperationTemplate.Av:
                         ctrSet = await Stores.ControlSets.GetTemplateClone(ControlSetTemplate.Av);
+                        const rmDev2 = Stores.BrDevices.GetFirstRmDevice();
+                        if (rmDev2 !== null)
+                            ctrSet.BrDeviceId = rmDev2.Id;
                         break;
                     case OperationTemplate.Light:
                         ctrSet = await Stores.ControlSets.GetTemplateClone(ControlSetTemplate.Light);
+                        const rmDev3 = Stores.BrDevices.GetFirstRmDevice();
+                        if (rmDev3 !== null)
+                            ctrSet.BrDeviceId = rmDev3.Id;
                         break;
                     case OperationTemplate.Free:
                         ctrSet = await Stores.ControlSets.GetTemplateClone(ControlSetTemplate.NoControl);
@@ -100,6 +109,9 @@ namespace App.Controllers {
                         ctrSet.Name = 'Free Edit';
                         ctrSet.Color = Color.ButtonColors[7];
                         ctrSet.IconUrl = Icon.GetByOperationTemplate(OperationTemplate.Free, true);
+                        const rmDev4 = Stores.BrDevices.GetFirstRmDevice();
+                        if (rmDev4 !== null)
+                            ctrSet.BrDeviceId = rmDev4.Id;
                         break;
                     case OperationTemplate.WoL:
                         ctrSet = await Stores.ControlSets.GetTemplateClone(ControlSetTemplate.SingleControl);

@@ -8,7 +8,8 @@
 /// <reference path="../Entities/Header.ts" />
 /// <reference path="../Entities/Job.ts" />
 /// <reference path="ControlStore.ts" />
-
+/// <reference path="../../Items/Lang/Lang.ts" />
+/// <reference path="../../Items/ValidationFailType.ts" />
 
 namespace App.Models.Stores {
     import Dump = Fw.Util.Dump;
@@ -18,6 +19,8 @@ namespace App.Models.Stores {
     import Schedule = App.Models.Entities.Schedule;
     import Header = App.Models.Entities.Header;
     import Job = App.Models.Entities.Job;
+    import Lang = App.Items.Lang.Lang;
+    import ValidationFailType = App.Items.ValidationFailType;
 
     export class ScheduleStore extends Fw.Models.StoreBase<Schedule> {
 
@@ -163,6 +166,11 @@ namespace App.Models.Stores {
                 this.Log(res.Errors);
                 return false;
             }
+        }
+
+        public async Validate(schedule: Schedule): Promise<Array<Entities.ValidationResult>> {
+            let errors = new Array<Entities.ValidationResult>();
+            return errors;
         }
     }
 

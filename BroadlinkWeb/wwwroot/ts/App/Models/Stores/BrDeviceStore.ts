@@ -145,6 +145,20 @@ namespace App.Models.Stores {
             }
         }
 
+        public GetFirstRmDevice(): BrDevice {
+            const keys = Object.keys(this.List);
+            for (let i = 0; i < keys.length; i++) {
+                const dev = this.List[keys[i]];
+                if (dev.DeviceType === DeviceType.Rm
+                    || dev.DeviceType === DeviceType.Rm2Pro
+                ) {
+                    return dev;
+                }
+            }
+
+            return null;
+        }
+
         protected GetNewEntity(): BrDevice {
             return new BrDevice();
         }
