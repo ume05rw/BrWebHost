@@ -36,8 +36,11 @@ namespace App.Models.Stores {
             this.SetClassName('ControlStore');
             this.EnableLog = true;
 
-            this._regPronto = new RegExp('/^([a-fA-F0-9 ]+)$/');
-            this._regMacAddr = new RegExp('/^([a-fA-F0-9-:]+)$/');
+            // new RegExpは使わない。エスケープ手段が通常と異なる？
+            //this._regPronto = new RegExp('/^([a-fA-F0-9 ]+)$/');
+            this._regPronto = /^([a-fA-F0-9 ]+)$/;
+            //this._regMacAddr = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/; //フォーマット制限付きのMACアドレスチェック。
+            this._regMacAddr = /^([0-9A-Fa-f:-]+)$/; //文字種制限のみにする。
         }
 
         protected GetNewEntity(): Control {
@@ -63,13 +66,13 @@ namespace App.Models.Stores {
             return result;
         }
 
-        public async Validate(operationType: OperationType, control: Control): Promise<Array<Entities.ValidationResult>> {
+        public Validate(operationType: OperationType, control: Control): Array<Entities.ValidationResult> {
             const errors = new Array<Entities.ValidationResult>();
 
             switch (operationType) {
                 case OperationType.RemoteControl:
                     // IR-Prontoコードの検証
-                    const err1 = await this.ValidatePronto(control);
+                    const err1 = this.ValidatePronto(control);
                     if (err1 !== true)
                         errors.push(err1);
                     break;
@@ -78,19 +81,19 @@ namespace App.Models.Stores {
                     break;
                 case OperationType.WakeOnLan:
                     // MACアドレスの検証
-                    const err2 = await this.ValidateMacAddr(control);
+                    const err2 = this.ValidateMacAddr(control);
                     if (err2 !== true)
                         errors.push(err2);
                     break;
                 case OperationType.Script:
                     // 未入力の検証
-                    const err3 = await this.ValidateScript(control);
+                    const err3 = this.ValidateScript(control);
                     if (err3 !== true)
                         errors.push(err3);
                     break;
                 case OperationType.RemoteHostScript:
                     // 未選択の検証
-                    const err4 = await this.ValidateRemoteHostScript(control);
+                    const err4 = this.ValidateRemoteHostScript(control);
                     if (err4 !== true)
                         errors.push(err4);
                     break;
@@ -104,7 +107,7 @@ namespace App.Models.Stores {
             return errors;
         }
 
-        public async ValidatePronto(control: Control): Promise<Entities.ValidationResult | true> {
+        public ValidatePronto(control: Control): Entities.ValidationResult | true {
             if (control.Code === '')
                 return true;
 
@@ -113,35 +116,39 @@ namespace App.Models.Stores {
                 : new Entities.ValidationResult(control, 'Code', Lang.InvalidProntoCode + ` [${control.Name}]`);
         }
 
-        public async ValidateMacAddr(control: Control): Promise<Entities.ValidationResult | true> {
+        public ValidateMacAddr(control: Control): Entities.ValidationResult | true {
 
-            if (control.Code === '')
-                return true;
-
-            if (!this._regMacAddr.test(control.Code)) {
-                return new Entities.ValidationResult(control, 'Code', Lang.InvalidMacChar + ` [${control.Name}]`);
-            }
-
-            if (control.Code.indexOf('-') >= 0) {
-                const hexs = control.Code.split('-');
-                if (hexs.length !== 6)
-                    return new Entities.ValidationResult(control, 'Code', Lang.InvalidMacFormat + ` [${control.Name}]`);
-            } else if (control.Code.indexOf(':') >= 0) {
-                const hexs = control.Code.split(';');
-                if (hexs.length !== 6)
-                    return new Entities.ValidationResult(control, 'Code', Lang.InvalidMacFormat + ` [${control.Name}]`);
+            if (!control.Code || control.Code === '') {
+                return new Entities.ValidationResult(control, 'Code', Lang.MacAddressNotSetted + ` [${control.Name}]`);
             } else {
-                return new Entities.ValidationResult(control, 'Code', Lang.InvalidMacFormat + ` [${control.Name}]`);
+                if (!this._regMacAddr.test(control.Code)) {
+                    return new Entities.ValidationResult(control, 'Code', Lang.InvalidMacChar + ` [${control.Name}]`);
+                }
+
+                if (control.Code.indexOf('-') >= 0) {
+                    const hexs = control.Code.split('-');
+                    if (hexs.length !== 6) {
+                        return new Entities.ValidationResult(control, 'Code', Lang.InvalidMacFormat + ` [${control.Name}]`);
+                    }
+                } else if (control.Code.indexOf(':') >= 0) {
+                    const hexs = control.Code.split(':');
+                    if (hexs.length !== 6)
+                        return new Entities.ValidationResult(control, 'Code', Lang.InvalidMacFormat + ` [${control.Name}]`);
+                } else {
+                    return new Entities.ValidationResult(control, 'Code', Lang.InvalidMacFormat + ` [${control.Name}]`);
+                }
             }
+
+            return true;
         }
 
-        public async ValidateScript(control: Control): Promise<Entities.ValidationResult | true> {
+        public ValidateScript(control: Control): Entities.ValidationResult | true {
             return (control.Code && control.Code !== '')
                 ? true
                 : new Entities.ValidationResult(control, 'Code', Lang.ScriptNull + ` [${control.Name}]`);
         }
 
-        public async ValidateRemoteHostScript(control: Control): Promise<Entities.ValidationResult | true> {
+        public ValidateRemoteHostScript(control: Control): Entities.ValidationResult | true {
             return (control.Code && control.Code !== '')
                 ? true
                 : new Entities.ValidationResult(control, 'Code', Lang.RemoteScriptNull + ` [${control.Name}]`);

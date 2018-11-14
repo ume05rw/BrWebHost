@@ -295,7 +295,7 @@ namespace App.Models.Stores {
             }
         }
 
-        public async Validate(controlSet: ControlSet): Promise<Array<Entities.ValidationResult>> {
+        public Validate(controlSet: ControlSet): Array<Entities.ValidationResult> {
             let errors = new Array<Entities.ValidationResult>();
 
             switch (controlSet.OperationType) {
@@ -341,7 +341,7 @@ namespace App.Models.Stores {
             // OperationType.RemoteHostScript: 未選択の検証
             for (let i = 0; i < controlSet.Controls.length; i++) {
                 const control = controlSet.Controls[i];
-                const errs = await Stores.Controls.Validate(controlSet.OperationType, control);
+                const errs = Stores.Controls.Validate(controlSet.OperationType, control);
                 if (errs.length > 0)
                     errors = errors.concat(errs);
             }

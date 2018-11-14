@@ -73,7 +73,29 @@ namespace App.Controllers {
 
             this._page.HeaderBar.LeftButton.AddEventListener(ButtonEvents.SingleClick, async () => {
                 // 編集モードの状態で、戻るボタンクリック。
-                // Sceneエンティティを保存する。
+
+                // バリデーション
+                const errors = await Stores.Validations.Validate(this._schedule);
+                if (errors.length > 0) {
+                    if (Stores.Validations.HasError(errors)) {
+                        // エラーがあるとき
+                        Popup.Alert.Open({
+                            Message: Stores.Validations.GetMessage(errors) + Lang.CheckYourInput
+                        });
+
+                        return;
+                    } else {
+                        // 警告だけのとき
+                        const exec = await Popup.Confirm.OpenAsync({
+                            Message: Stores.Validations.GetMessage(errors) + Lang.SaveAnyway
+                        });
+                        if (exec === false) {
+                            return;
+                        }
+                    }
+                }
+
+                // Scheduleエンティティを保存する。
                 const schedule = this._schedule;
                 const ctr = this.Manager.Get('Main') as MainController;
                 ctr.Show();

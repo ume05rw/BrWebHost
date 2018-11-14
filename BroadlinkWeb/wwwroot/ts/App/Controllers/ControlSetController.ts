@@ -66,6 +66,7 @@ namespace App.Controllers {
                     || !this._controlSet)
                     return;
 
+                // バリデーション
                 const errors = await Stores.Validations.Validate(this._controlSet);
                 if (errors.length > 0) {
                     if (Stores.Validations.HasError(errors)) {

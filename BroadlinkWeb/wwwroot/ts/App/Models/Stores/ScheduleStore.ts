@@ -168,8 +168,33 @@ namespace App.Models.Stores {
             }
         }
 
-        public async Validate(schedule: Schedule): Promise<Array<Entities.ValidationResult>> {
+        public Validate(schedule: Schedule): Array<Entities.ValidationResult> {
             let errors = new Array<Entities.ValidationResult>();
+
+            if (
+                (!schedule.SceneId || schedule.SceneId === 0)
+                && (!schedule.ControlSetId || schedule.ControlSetId === 0)
+                && (!schedule.ControlId || schedule.ControlId === 0)
+            ) {
+                errors.push(new Entities.ValidationResult(
+                    schedule,
+                    'SceneId',
+                    Lang.NoOperations,
+                    ValidationFailType.Warning
+                ));
+            }
+
+            if (schedule.Enabled === true
+                && schedule.WeekdayFlags === '0000000'
+            ) {
+                errors.push(new Entities.ValidationResult(
+                    schedule,
+                    'WeekdayFlags',
+                    Lang.EnableButWeekdayNotSelected,
+                    ValidationFailType.Warning
+                ));
+            }
+
             return errors;
         }
     }

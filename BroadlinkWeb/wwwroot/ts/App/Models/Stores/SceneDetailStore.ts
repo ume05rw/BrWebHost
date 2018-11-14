@@ -55,8 +55,25 @@ namespace App.Models.Stores {
             return result;
         }
 
-        public async Validate(detail: SceneDetail): Promise<Array<Entities.ValidationResult>> {
+        public Validate(index: number, detail: SceneDetail): Array<Entities.ValidationResult> {
             let errors = new Array<Entities.ValidationResult>();
+
+            if (!detail.ControlSetId || detail.ControlSetId === 0) {
+                errors.push(new Entities.ValidationResult(
+                    detail,
+                    'ControlSetId',
+                    Lang.OperationNotSelected + ` No.[${(index + 1)}]`)
+                );
+            }
+
+            if (!detail.ControlId || detail.ControlId === 0) {
+                errors.push(new Entities.ValidationResult(
+                    detail,
+                    'ControlId',
+                    Lang.OperationDetailNotSelected + ` No.[${(index + 1)}]`)
+                );
+            }
+
             return errors;
         }
     }

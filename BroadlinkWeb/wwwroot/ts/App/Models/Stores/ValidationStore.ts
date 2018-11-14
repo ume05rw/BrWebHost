@@ -47,7 +47,7 @@ namespace App.Models.Stores {
         }
 
 
-        public async Validate(entity: ControlSet | Scene | Schedule): Promise<Array<Entities.ValidationResult>> {
+        public Validate(entity: ControlSet | Scene | Schedule): Array<Entities.ValidationResult> {
             if (entity instanceof ControlSet) {
                 return Stores.ControlSets.Validate(entity);
             } else if (entity instanceof Scene) {
@@ -98,11 +98,11 @@ namespace App.Models.Stores {
             _.each(errors, (err: Entities.ValidationResult) => {
                 if (err.Type === ValidationFailType.Error) {
                     hasError = true;
-                    errs.push('　　・' + err.Message + '<br/>');
+                    errs.push('・' + err.Message + '<br/>');
                 }
                 if (err.Type === ValidationFailType.Warning) {
                     hasWarning = true;
-                    warns.push('　　・' + err.Message + '<br/>');
+                    warns.push('・' + err.Message + '<br/>');
                 }
             });
 
@@ -111,10 +111,10 @@ namespace App.Models.Stores {
             if (hasError && hasWarning) {
                 result = Lang.ErrorsAndWarnings + '<br/><br/>';
                 result += '　' + Lang.Errors + ':<br/>';
-                result += errs.join('・');
+                result += errs.join();
                 result += '<br/>';
                 result += '　' + Lang.Warnings + ':<br/>';
-                result += warns.join('・');
+                result += warns.join();
                 result += '<br/>';
 
             } else if (hasError) {

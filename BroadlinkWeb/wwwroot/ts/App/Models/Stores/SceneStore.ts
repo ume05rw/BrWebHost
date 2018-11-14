@@ -222,13 +222,22 @@ namespace App.Models.Stores {
             }
         }
 
-        public async Validate(scene: Scene): Promise<Array<Entities.ValidationResult>> {
+        public Validate(scene: Scene): Array<Entities.ValidationResult> {
             let errors = new Array<Entities.ValidationResult>();
+
+            if (!scene.Details || scene.Details.length <= 0) {
+                errors.push(new Entities.ValidationResult(
+                    scene,
+                    'Details',
+                    Lang.NoOperations,
+                    ValidationFailType.Warning
+                ));
+            }
 
             // 要注意。_.each内でawaitしても、処理終了を待たないで続行してしまう。一つずつfor文でawaitする。
             for (let i = 0; i < scene.Details.length; i++) {
                 const detail = scene.Details[i];
-                const errs = await Stores.SceneDetails.Validate(detail);
+                const errs = Stores.SceneDetails.Validate(i, detail);
                 if (errs.length > 0)
                     errors = errors.concat(errs);
             }

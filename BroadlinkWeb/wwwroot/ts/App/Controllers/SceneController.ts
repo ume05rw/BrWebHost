@@ -72,6 +72,44 @@ namespace App.Controllers {
 
             this._page.HeaderBar.LeftButton.AddEventListener(ButtonEvents.SingleClick, async () => {
                 // 編集モードの状態で、戻るボタンクリック。
+
+                // バリデーション
+                const errors = await Stores.Validations.Validate(this._scene);
+                if (errors.length > 0) {
+                    if (Stores.Validations.HasError(errors)) {
+                        // エラーがあるとき
+                        Popup.Alert.Open({
+                            Message: Stores.Validations.GetMessage(errors) + Lang.CheckYourInput
+                        });
+
+                        const err = Stores.Validations.GetFirstError(errors);
+                        if (err.Entity instanceof Entities.Scene) {
+                            const ctr = this.Manager.Get('SceneHeaderProperty') as SceneHeaderPropertyController;
+                            ctr.SetEntity(this._scene);
+                            ctr.ShowModal();
+                        } else if (err.Entity instanceof Entities.Control) {
+                        }
+
+                        return;
+                    } else {
+                        // 警告だけのとき
+                        const exec = await Popup.Confirm.OpenAsync({
+                            Message: Stores.Validations.GetMessage(errors) + Lang.SaveAnyway
+                        });
+                        if (exec === false) {
+                            const err = errors[0];
+                            if (err.Entity instanceof Entities.Scene) {
+                                const ctr = this.Manager.Get('SceneHeaderProperty') as SceneHeaderPropertyController;
+                                ctr.SetEntity(this._scene);
+                                ctr.ShowModal();
+                            } else if (err.Entity instanceof Entities.Control) {
+                            }
+
+                            return;
+                        }
+                    }
+                }
+
                 // Sceneエンティティを保存する。
                 const scene = this._scene;
                 const ctr = this.Manager.Get('Main') as MainController;

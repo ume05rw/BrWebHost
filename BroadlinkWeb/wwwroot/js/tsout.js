@@ -1467,6 +1467,7 @@ var App;
                 UnexpectedControlNotFound: 'Unexpected...Control not Found.',
                 RmControllerNotSelected: 'Rm-Controller not selected.',
                 InvalidProntoCode: 'Code is Invalid, Retry to Learn.',
+                MacAddressNotSetted: 'MAC Address not setted.',
                 InvalidMacChar: 'MAC Address Charactor is Invalid.',
                 InvalidMacFormat: 'MAC Address Format is Invalid.',
                 ScriptNull: 'Script has not been entered.',
@@ -1476,6 +1477,10 @@ var App;
                 Errors: 'Errors',
                 Warnings: 'Warnings',
                 SaveAnyway: 'Save anyway?',
+                NoOperations: 'No Operations.',
+                OperationNotSelected: 'Operation not selected.',
+                OperationDetailNotSelected: 'Operation-Detail not selected.',
+                EnableButWeekdayNotSelected: 'Timer Enable, but Weekday not selected.',
             };
             function InitLang() {
                 var lang = (window.navigator.languages && window.navigator.languages[0])
@@ -8090,8 +8095,11 @@ var App;
                     var _this = _super.call(this) || this;
                     _this.SetClassName('ControlStore');
                     _this.EnableLog = true;
-                    _this._regPronto = new RegExp('/^([a-fA-F0-9 ]+)$/');
-                    _this._regMacAddr = new RegExp('/^([a-fA-F0-9-:]+)$/');
+                    // new RegExpは使わない。エスケープ手段が通常と異なる？
+                    //this._regPronto = new RegExp('/^([a-fA-F0-9 ]+)$/');
+                    _this._regPronto = /^([a-fA-F0-9 ]+)$/;
+                    //this._regMacAddr = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/; //フォーマット制限付きのMACアドレスチェック。
+                    _this._regMacAddr = /^([0-9A-Fa-f:-]+)$/; //文字種制限のみにする。
                     return _this;
                 }
                 Object.defineProperty(ControlStore, "Instance", {
@@ -8128,112 +8136,84 @@ var App;
                     return result;
                 };
                 ControlStore.prototype.Validate = function (operationType, control) {
-                    return __awaiter(this, void 0, void 0, function () {
-                        var errors, _a, err1, err2, err3, err4;
-                        return __generator(this, function (_b) {
-                            switch (_b.label) {
-                                case 0:
-                                    errors = new Array();
-                                    _a = operationType;
-                                    switch (_a) {
-                                        case 1 /* RemoteControl */: return [3 /*break*/, 1];
-                                        case 2 /* BroadlinkDevice */: return [3 /*break*/, 3];
-                                        case 3 /* WakeOnLan */: return [3 /*break*/, 4];
-                                        case 4 /* Script */: return [3 /*break*/, 6];
-                                        case 5 /* RemoteHostScript */: return [3 /*break*/, 8];
-                                        case 99 /* Scene */: return [3 /*break*/, 10];
-                                    }
-                                    return [3 /*break*/, 10];
-                                case 1: return [4 /*yield*/, this.ValidatePronto(control)];
-                                case 2:
-                                    err1 = _b.sent();
-                                    if (err1 !== true)
-                                        errors.push(err1);
-                                    return [3 /*break*/, 11];
-                                case 3: 
-                                // バリデート対象なし
-                                return [3 /*break*/, 11];
-                                case 4: return [4 /*yield*/, this.ValidateMacAddr(control)];
-                                case 5:
-                                    err2 = _b.sent();
-                                    if (err2 !== true)
-                                        errors.push(err2);
-                                    return [3 /*break*/, 11];
-                                case 6: return [4 /*yield*/, this.ValidateScript(control)];
-                                case 7:
-                                    err3 = _b.sent();
-                                    if (err3 !== true)
-                                        errors.push(err3);
-                                    return [3 /*break*/, 11];
-                                case 8: return [4 /*yield*/, this.ValidateRemoteHostScript(control)];
-                                case 9:
-                                    err4 = _b.sent();
-                                    if (err4 !== true)
-                                        errors.push(err4);
-                                    return [3 /*break*/, 11];
-                                case 10:
-                                    // ここには来ないはず。
-                                    alert('なんでやー');
-                                    throw new Error('なんでやー');
-                                case 11: return [2 /*return*/, errors];
-                            }
-                        });
-                    });
+                    var errors = new Array();
+                    switch (operationType) {
+                        case 1 /* RemoteControl */:
+                            // IR-Prontoコードの検証
+                            var err1 = this.ValidatePronto(control);
+                            if (err1 !== true)
+                                errors.push(err1);
+                            break;
+                        case 2 /* BroadlinkDevice */:
+                            // バリデート対象なし
+                            break;
+                        case 3 /* WakeOnLan */:
+                            // MACアドレスの検証
+                            var err2 = this.ValidateMacAddr(control);
+                            if (err2 !== true)
+                                errors.push(err2);
+                            break;
+                        case 4 /* Script */:
+                            // 未入力の検証
+                            var err3 = this.ValidateScript(control);
+                            if (err3 !== true)
+                                errors.push(err3);
+                            break;
+                        case 5 /* RemoteHostScript */:
+                            // 未選択の検証
+                            var err4 = this.ValidateRemoteHostScript(control);
+                            if (err4 !== true)
+                                errors.push(err4);
+                            break;
+                        case 99 /* Scene */:
+                        default:
+                            // ここには来ないはず。
+                            alert('なんでやー');
+                            throw new Error('なんでやー');
+                    }
+                    return errors;
                 };
                 ControlStore.prototype.ValidatePronto = function (control) {
-                    return __awaiter(this, void 0, void 0, function () {
-                        return __generator(this, function (_a) {
-                            if (control.Code === '')
-                                return [2 /*return*/, true];
-                            return [2 /*return*/, (this._regPronto.test(control.Code))
-                                    ? true
-                                    : new Models.Entities.ValidationResult(control, 'Code', Lang.InvalidProntoCode + (" [" + control.Name + "]"))];
-                        });
-                    });
+                    if (control.Code === '')
+                        return true;
+                    return (this._regPronto.test(control.Code))
+                        ? true
+                        : new Models.Entities.ValidationResult(control, 'Code', Lang.InvalidProntoCode + (" [" + control.Name + "]"));
                 };
                 ControlStore.prototype.ValidateMacAddr = function (control) {
-                    return __awaiter(this, void 0, void 0, function () {
-                        var hexs, hexs;
-                        return __generator(this, function (_a) {
-                            if (control.Code === '')
-                                return [2 /*return*/, true];
-                            if (!this._regMacAddr.test(control.Code)) {
-                                return [2 /*return*/, new Models.Entities.ValidationResult(control, 'Code', Lang.InvalidMacChar + (" [" + control.Name + "]"))];
+                    if (!control.Code || control.Code === '') {
+                        return new Models.Entities.ValidationResult(control, 'Code', Lang.MacAddressNotSetted + (" [" + control.Name + "]"));
+                    }
+                    else {
+                        if (!this._regMacAddr.test(control.Code)) {
+                            return new Models.Entities.ValidationResult(control, 'Code', Lang.InvalidMacChar + (" [" + control.Name + "]"));
+                        }
+                        if (control.Code.indexOf('-') >= 0) {
+                            var hexs = control.Code.split('-');
+                            if (hexs.length !== 6) {
+                                return new Models.Entities.ValidationResult(control, 'Code', Lang.InvalidMacFormat + (" [" + control.Name + "]"));
                             }
-                            if (control.Code.indexOf('-') >= 0) {
-                                hexs = control.Code.split('-');
-                                if (hexs.length !== 6)
-                                    return [2 /*return*/, new Models.Entities.ValidationResult(control, 'Code', Lang.InvalidMacFormat + (" [" + control.Name + "]"))];
-                            }
-                            else if (control.Code.indexOf(':') >= 0) {
-                                hexs = control.Code.split(';');
-                                if (hexs.length !== 6)
-                                    return [2 /*return*/, new Models.Entities.ValidationResult(control, 'Code', Lang.InvalidMacFormat + (" [" + control.Name + "]"))];
-                            }
-                            else {
-                                return [2 /*return*/, new Models.Entities.ValidationResult(control, 'Code', Lang.InvalidMacFormat + (" [" + control.Name + "]"))];
-                            }
-                            return [2 /*return*/];
-                        });
-                    });
+                        }
+                        else if (control.Code.indexOf(':') >= 0) {
+                            var hexs = control.Code.split(':');
+                            if (hexs.length !== 6)
+                                return new Models.Entities.ValidationResult(control, 'Code', Lang.InvalidMacFormat + (" [" + control.Name + "]"));
+                        }
+                        else {
+                            return new Models.Entities.ValidationResult(control, 'Code', Lang.InvalidMacFormat + (" [" + control.Name + "]"));
+                        }
+                    }
+                    return true;
                 };
                 ControlStore.prototype.ValidateScript = function (control) {
-                    return __awaiter(this, void 0, void 0, function () {
-                        return __generator(this, function (_a) {
-                            return [2 /*return*/, (control.Code && control.Code !== '')
-                                    ? true
-                                    : new Models.Entities.ValidationResult(control, 'Code', Lang.ScriptNull + (" [" + control.Name + "]"))];
-                        });
-                    });
+                    return (control.Code && control.Code !== '')
+                        ? true
+                        : new Models.Entities.ValidationResult(control, 'Code', Lang.ScriptNull + (" [" + control.Name + "]"));
                 };
                 ControlStore.prototype.ValidateRemoteHostScript = function (control) {
-                    return __awaiter(this, void 0, void 0, function () {
-                        return __generator(this, function (_a) {
-                            return [2 /*return*/, (control.Code && control.Code !== '')
-                                    ? true
-                                    : new Models.Entities.ValidationResult(control, 'Code', Lang.RemoteScriptNull + (" [" + control.Name + "]"))];
-                        });
-                    });
+                    return (control.Code && control.Code !== '')
+                        ? true
+                        : new Models.Entities.ValidationResult(control, 'Code', Lang.RemoteScriptNull + (" [" + control.Name + "]"));
                 };
                 ControlStore._instance = null;
                 return ControlStore;
@@ -8562,63 +8542,50 @@ var App;
                     });
                 };
                 ControlSetStore.prototype.Validate = function (controlSet) {
-                    return __awaiter(this, void 0, void 0, function () {
-                        var errors, err, i, control, errs;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    errors = new Array();
-                                    switch (controlSet.OperationType) {
-                                        case 1 /* RemoteControl */:
-                                            // RMコントローラ選択の検証
-                                            if (!controlSet.BrDeviceId) {
-                                                err = new Models.Entities.ValidationResult(controlSet, 'BrDeviceId', Lang.RmControllerNotSelected, 2 /* Warning */);
-                                                errors.push(err);
-                                            }
-                                            break;
-                                        case 2 /* BroadlinkDevice */:
-                                            // バリデート対象なし
-                                            break;
-                                        case 3 /* WakeOnLan */:
-                                            // Controlのみ
-                                            break;
-                                        case 4 /* Script */:
-                                            // Controlのみ
-                                            break;
-                                        case 5 /* RemoteHostScript */:
-                                            // Controlのみ
-                                            break;
-                                        case 99 /* Scene */:
-                                        default:
-                                            // ここには来ないはず。
-                                            alert('なんでやー');
-                                            throw new Error('なんでやー');
-                                    }
-                                    i = 0;
-                                    _a.label = 1;
-                                case 1:
-                                    if (!(i < controlSet.Controls.length)) return [3 /*break*/, 4];
-                                    control = controlSet.Controls[i];
-                                    return [4 /*yield*/, Stores.Controls.Validate(controlSet.OperationType, control)];
-                                case 2:
-                                    errs = _a.sent();
-                                    if (errs.length > 0)
-                                        errors = errors.concat(errs);
-                                    _a.label = 3;
-                                case 3:
-                                    i++;
-                                    return [3 /*break*/, 1];
-                                case 4: 
-                                // 要注意。_.each内でawaitしても、処理終了を待たないで続行してしまう。
-                                //_.each(controlSet.Controls, async (control: Entities.Control) => {
-                                //    const errs = await Stores.Controls.Validate(controlSet.OperationType, control);
-                                //    if (errs.length > 0)
-                                //        errors = errors.concat(errs);
-                                //});
-                                return [2 /*return*/, errors];
+                    var errors = new Array();
+                    switch (controlSet.OperationType) {
+                        case 1 /* RemoteControl */:
+                            // RMコントローラ選択の検証
+                            if (!controlSet.BrDeviceId) {
+                                var err = new Models.Entities.ValidationResult(controlSet, 'BrDeviceId', Lang.RmControllerNotSelected, 2 /* Warning */);
+                                errors.push(err);
                             }
-                        });
-                    });
+                            break;
+                        case 2 /* BroadlinkDevice */:
+                            // バリデート対象なし
+                            break;
+                        case 3 /* WakeOnLan */:
+                            // Controlのみ
+                            break;
+                        case 4 /* Script */:
+                            // Controlのみ
+                            break;
+                        case 5 /* RemoteHostScript */:
+                            // Controlのみ
+                            break;
+                        case 99 /* Scene */:
+                        default:
+                            // ここには来ないはず。
+                            alert('なんでやー');
+                            throw new Error('なんでやー');
+                    }
+                    // OperationType.RemoteControl: IRコードの検証
+                    // OperationType.WakeOnLan: MACアドレスの検証
+                    // OperationType.Script: 未入力の検証
+                    // OperationType.RemoteHostScript: 未選択の検証
+                    for (var i = 0; i < controlSet.Controls.length; i++) {
+                        var control = controlSet.Controls[i];
+                        var errs = Stores.Controls.Validate(controlSet.OperationType, control);
+                        if (errs.length > 0)
+                            errors = errors.concat(errs);
+                    }
+                    // 要注意。_.each内でawaitしても、処理終了を待たないで続行してしまう。
+                    //_.each(controlSet.Controls, async (control: Entities.Control) => {
+                    //    const errs = await Stores.Controls.Validate(controlSet.OperationType, control);
+                    //    if (errs.length > 0)
+                    //        errors = errors.concat(errs);
+                    //});
+                    return errors;
                 };
                 ControlSetStore._instance = null;
                 return ControlSetStore;
@@ -8875,6 +8842,7 @@ var App;
         var Stores;
         (function (Stores) {
             var SceneDetail = App.Models.Entities.SceneDetail;
+            var Lang = App.Items.Lang.Lang;
             var SceneDetailStore = /** @class */ (function (_super) {
                 __extends(SceneDetailStore, _super);
                 function SceneDetailStore() {
@@ -8916,14 +8884,15 @@ var App;
                     });
                     return result;
                 };
-                SceneDetailStore.prototype.Validate = function (detail) {
-                    return __awaiter(this, void 0, void 0, function () {
-                        var errors;
-                        return __generator(this, function (_a) {
-                            errors = new Array();
-                            return [2 /*return*/, errors];
-                        });
-                    });
+                SceneDetailStore.prototype.Validate = function (index, detail) {
+                    var errors = new Array();
+                    if (!detail.ControlSetId || detail.ControlSetId === 0) {
+                        errors.push(new Models.Entities.ValidationResult(detail, 'ControlSetId', Lang.OperationNotSelected + (" No.[" + (index + 1) + "]")));
+                    }
+                    if (!detail.ControlId || detail.ControlId === 0) {
+                        errors.push(new Models.Entities.ValidationResult(detail, 'ControlId', Lang.OperationDetailNotSelected + (" No.[" + (index + 1) + "]")));
+                    }
+                    return errors;
                 };
                 SceneDetailStore._instance = null;
                 return SceneDetailStore;
@@ -9322,11 +9291,46 @@ var App;
                 _this._operationType = 1 /* Exec */;
                 _this._page.HeaderBar.LeftButton.Hide(0);
                 _this._page.HeaderBar.LeftButton.AddEventListener(ButtonEvents.SingleClick, function () { return __awaiter(_this, void 0, void 0, function () {
-                    var scene, ctr, buttons, isSave, res;
+                    var errors, err, ctr_5, exec, err, ctr_6, scene, ctr, buttons, isSave, res;
                     var _this = this;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
-                            case 0:
+                            case 0: return [4 /*yield*/, Stores.Validations.Validate(this._scene)];
+                            case 1:
+                                errors = _a.sent();
+                                if (!(errors.length > 0)) return [3 /*break*/, 4];
+                                if (!Stores.Validations.HasError(errors)) return [3 /*break*/, 2];
+                                // エラーがあるとき
+                                Popup.Alert.Open({
+                                    Message: Stores.Validations.GetMessage(errors) + Lang.CheckYourInput
+                                });
+                                err = Stores.Validations.GetFirstError(errors);
+                                if (err.Entity instanceof Entities.Scene) {
+                                    ctr_5 = this.Manager.Get('SceneHeaderProperty');
+                                    ctr_5.SetEntity(this._scene);
+                                    ctr_5.ShowModal();
+                                }
+                                else if (err.Entity instanceof Entities.Control) {
+                                }
+                                return [2 /*return*/];
+                            case 2: return [4 /*yield*/, Popup.Confirm.OpenAsync({
+                                    Message: Stores.Validations.GetMessage(errors) + Lang.SaveAnyway
+                                })];
+                            case 3:
+                                exec = _a.sent();
+                                if (exec === false) {
+                                    err = errors[0];
+                                    if (err.Entity instanceof Entities.Scene) {
+                                        ctr_6 = this.Manager.Get('SceneHeaderProperty');
+                                        ctr_6.SetEntity(this._scene);
+                                        ctr_6.ShowModal();
+                                    }
+                                    else if (err.Entity instanceof Entities.Control) {
+                                    }
+                                    return [2 /*return*/];
+                                }
+                                _a.label = 4;
+                            case 4:
                                 scene = this._scene;
                                 ctr = this.Manager.Get('Main');
                                 ctr.Show();
@@ -9337,18 +9341,18 @@ var App;
                                     btn.Dispose();
                                 });
                                 isSave = true;
-                                if (!(scene.Details.length <= 0)) return [3 /*break*/, 2];
+                                if (!(scene.Details.length <= 0)) return [3 /*break*/, 6];
                                 return [4 /*yield*/, App.Views.Popup.Confirm.OpenAsync({
                                         Message: Lang.NoOperationsSaveOk
                                     })];
-                            case 1:
+                            case 5:
                                 isSave = _a.sent();
-                                _a.label = 2;
-                            case 2:
+                                _a.label = 6;
+                            case 6:
                                 if (!isSave)
                                     return [2 /*return*/];
                                 return [4 /*yield*/, Stores.Scenes.Write(scene)];
-                            case 3:
+                            case 7:
                                 res = _a.sent();
                                 if (!res) {
                                     // 保存失敗
@@ -9889,16 +9893,35 @@ var App;
                 _this._operationType = 1 /* Exec */;
                 _this._page.HeaderBar.LeftButton.Hide(0);
                 _this._page.HeaderBar.LeftButton.AddEventListener(ButtonEvents.SingleClick, function () { return __awaiter(_this, void 0, void 0, function () {
-                    var schedule, ctr, res;
+                    var errors, exec, schedule, ctr, res;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
-                            case 0:
+                            case 0: return [4 /*yield*/, Stores.Validations.Validate(this._schedule)];
+                            case 1:
+                                errors = _a.sent();
+                                if (!(errors.length > 0)) return [3 /*break*/, 4];
+                                if (!Stores.Validations.HasError(errors)) return [3 /*break*/, 2];
+                                // エラーがあるとき
+                                Popup.Alert.Open({
+                                    Message: Stores.Validations.GetMessage(errors) + Lang.CheckYourInput
+                                });
+                                return [2 /*return*/];
+                            case 2: return [4 /*yield*/, Popup.Confirm.OpenAsync({
+                                    Message: Stores.Validations.GetMessage(errors) + Lang.SaveAnyway
+                                })];
+                            case 3:
+                                exec = _a.sent();
+                                if (exec === false) {
+                                    return [2 /*return*/];
+                                }
+                                _a.label = 4;
+                            case 4:
                                 schedule = this._schedule;
                                 ctr = this.Manager.Get('Main');
                                 ctr.Show();
                                 this._schedule = null;
                                 return [4 /*yield*/, Stores.Schedules.Write(schedule)];
-                            case 1:
+                            case 5:
                                 res = _a.sent();
                                 if (!res) {
                                     // 保存失敗
@@ -10451,6 +10474,39 @@ var App;
 })(App || (App = {}));
 /// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/EntityBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../Items/ValidationFailType.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Entities;
+        (function (Entities) {
+            var ValidationResult = /** @class */ (function (_super) {
+                __extends(ValidationResult, _super);
+                function ValidationResult(entity, name, message, type) {
+                    if (name === void 0) { name = null; }
+                    if (message === void 0) { message = null; }
+                    if (type === void 0) { type = 1 /* Error */; }
+                    var _this = _super.call(this) || this;
+                    _this.Entity = entity;
+                    if (name)
+                        _this.Name = name;
+                    if (message)
+                        _this.Message = message;
+                    if (type)
+                        _this.Type = type;
+                    return _this;
+                }
+                return ValidationResult;
+            }(Fw.Models.EntityBase));
+            Entities.ValidationResult = ValidationResult;
+        })(Entities = Models.Entities || (Models.Entities = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../../Fw/Models/StoreBase.ts" />
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../../../Fw/Util/Xhr/Query.ts" />
@@ -10956,6 +11012,7 @@ var App;
             var Xhr = Fw.Util.Xhr;
             var Scene = App.Models.Entities.Scene;
             var Header = App.Models.Entities.Header;
+            var Lang = App.Items.Lang.Lang;
             var SceneStore = /** @class */ (function (_super) {
                 __extends(SceneStore, _super);
                 function SceneStore() {
@@ -11162,30 +11219,18 @@ var App;
                     });
                 };
                 SceneStore.prototype.Validate = function (scene) {
-                    return __awaiter(this, void 0, void 0, function () {
-                        var errors, i, detail, errs;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    errors = new Array();
-                                    i = 0;
-                                    _a.label = 1;
-                                case 1:
-                                    if (!(i < scene.Details.length)) return [3 /*break*/, 4];
-                                    detail = scene.Details[i];
-                                    return [4 /*yield*/, Stores.SceneDetails.Validate(detail)];
-                                case 2:
-                                    errs = _a.sent();
-                                    if (errs.length > 0)
-                                        errors = errors.concat(errs);
-                                    _a.label = 3;
-                                case 3:
-                                    i++;
-                                    return [3 /*break*/, 1];
-                                case 4: return [2 /*return*/, errors];
-                            }
-                        });
-                    });
+                    var errors = new Array();
+                    if (!scene.Details || scene.Details.length <= 0) {
+                        errors.push(new Models.Entities.ValidationResult(scene, 'Details', Lang.NoOperations, 2 /* Warning */));
+                    }
+                    // 要注意。_.each内でawaitしても、処理終了を待たないで続行してしまう。一つずつfor文でawaitする。
+                    for (var i = 0; i < scene.Details.length; i++) {
+                        var detail = scene.Details[i];
+                        var errs = Stores.SceneDetails.Validate(i, detail);
+                        if (errs.length > 0)
+                            errors = errors.concat(errs);
+                    }
+                    return errors;
                 };
                 SceneStore._instance = null;
                 return SceneStore;
@@ -11216,6 +11261,7 @@ var App;
             var Xhr = Fw.Util.Xhr;
             var Schedule = App.Models.Entities.Schedule;
             var Header = App.Models.Entities.Header;
+            var Lang = App.Items.Lang.Lang;
             var ScheduleStore = /** @class */ (function (_super) {
                 __extends(ScheduleStore, _super);
                 function ScheduleStore() {
@@ -11371,13 +11417,17 @@ var App;
                     });
                 };
                 ScheduleStore.prototype.Validate = function (schedule) {
-                    return __awaiter(this, void 0, void 0, function () {
-                        var errors;
-                        return __generator(this, function (_a) {
-                            errors = new Array();
-                            return [2 /*return*/, errors];
-                        });
-                    });
+                    var errors = new Array();
+                    if ((!schedule.SceneId || schedule.SceneId === 0)
+                        && (!schedule.ControlSetId || schedule.ControlSetId === 0)
+                        && (!schedule.ControlId || schedule.ControlId === 0)) {
+                        errors.push(new Models.Entities.ValidationResult(schedule, 'SceneId', Lang.NoOperations, 2 /* Warning */));
+                    }
+                    if (schedule.Enabled === true
+                        && schedule.WeekdayFlags === '0000000') {
+                        errors.push(new Models.Entities.ValidationResult(schedule, 'WeekdayFlags', Lang.EnableButWeekdayNotSelected, 2 /* Warning */));
+                    }
+                    return errors;
                 };
                 ScheduleStore._instance = null;
                 return ScheduleStore;
@@ -11593,6 +11643,135 @@ var App;
             }(Fw.Models.StoreBase));
             Stores.Sp2Store = Sp2Store;
             Stores.Sp2s = Sp2Store.Instance;
+        })(Stores = Models.Stores || (Models.Stores = {}));
+    })(Models = App.Models || (App.Models = {}));
+})(App || (App = {}));
+/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/underscore/index.d.ts" />
+/// <reference path="../../../Fw/Models/StoreBase.ts" />
+/// <reference path="../../../Fw/Util/Dump.ts" />
+/// <reference path="../../../Fw/Util/Xhr/Query.ts" />
+/// <reference path="../Entities/ControlSet.ts" />
+/// <reference path="../Entities/Control.ts" />
+/// <reference path="../Entities/Scene.ts" />
+/// <reference path="../Entities/SceneDetail.ts" />
+/// <reference path="../Entities/Schedule.ts" />
+/// <reference path="../Entities/ValidationResult.ts" />
+/// <reference path="../../Items/OperationType.ts" />
+/// <reference path="../../Items/Lang/Lang.ts" />
+/// <reference path="../../Items/ValidationFailType.ts" />
+var App;
+(function (App) {
+    var Models;
+    (function (Models) {
+        var Stores;
+        (function (Stores) {
+            var ControlSet = App.Models.Entities.ControlSet;
+            var Scene = App.Models.Entities.Scene;
+            var Schedule = App.Models.Entities.Schedule;
+            var Lang = App.Items.Lang.Lang;
+            var ValidationStore = /** @class */ (function (_super) {
+                __extends(ValidationStore, _super);
+                function ValidationStore() {
+                    return _super !== null && _super.apply(this, arguments) || this;
+                }
+                Object.defineProperty(ValidationStore, "Instance", {
+                    get: function () {
+                        if (ValidationStore._instance === null)
+                            ValidationStore._instance = new ValidationStore();
+                        return ValidationStore._instance;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                ValidationStore.prototype.Write = function (entity) {
+                    throw new Error("Method not implemented.");
+                };
+                ValidationStore.prototype.GetNewEntity = function () {
+                    throw new Error("Method not implemented.");
+                };
+                ValidationStore.prototype.Validate = function (entity) {
+                    if (entity instanceof ControlSet) {
+                        return Stores.ControlSets.Validate(entity);
+                    }
+                    else if (entity instanceof Scene) {
+                        return Stores.Scenes.Validate(entity);
+                    }
+                    else if (entity instanceof Schedule) {
+                        return Stores.Schedules.Validate(entity);
+                    }
+                    else {
+                        // ここには来ないはず。
+                        alert('なんでやー');
+                        throw new Error('なんでやー');
+                    }
+                };
+                ValidationStore.prototype.HasError = function (errors) {
+                    for (var i = 0; i < errors.length; i++) {
+                        if (errors[i].Type === 1 /* Error */)
+                            return true;
+                    }
+                    return false;
+                };
+                ValidationStore.prototype.HasWarning = function (errors) {
+                    for (var i = 0; i < errors.length; i++) {
+                        if (errors[i].Type === 2 /* Warning */)
+                            return true;
+                    }
+                    return false;
+                };
+                ValidationStore.prototype.GetFirstError = function (errors) {
+                    for (var i = 0; i < errors.length; i++) {
+                        if (errors[i].Type === 1 /* Error */)
+                            return errors[i];
+                    }
+                    return null;
+                };
+                ValidationStore.prototype.GetMessage = function (errors) {
+                    var hasError = false;
+                    var hasWarning = false;
+                    var errs = new Array();
+                    var warns = new Array();
+                    _.each(errors, function (err) {
+                        if (err.Type === 1 /* Error */) {
+                            hasError = true;
+                            errs.push('・' + err.Message + '<br/>');
+                        }
+                        if (err.Type === 2 /* Warning */) {
+                            hasWarning = true;
+                            warns.push('・' + err.Message + '<br/>');
+                        }
+                    });
+                    var result = '';
+                    if (hasError && hasWarning) {
+                        result = Lang.ErrorsAndWarnings + '<br/><br/>';
+                        result += '　' + Lang.Errors + ':<br/>';
+                        result += errs.join();
+                        result += '<br/>';
+                        result += '　' + Lang.Warnings + ':<br/>';
+                        result += warns.join();
+                        result += '<br/>';
+                    }
+                    else if (hasError) {
+                        result = 'Errors<br/><br/>';
+                        result += errs.join();
+                        result += '<br/>';
+                    }
+                    else if (hasWarning) {
+                        result = 'Warnings<br/><br/>';
+                        result += warns.join();
+                        result += '<br/>';
+                    }
+                    else {
+                        return '';
+                    }
+                    return result;
+                };
+                ValidationStore._instance = null;
+                return ValidationStore;
+            }(Fw.Models.StoreBase));
+            Stores.ValidationStore = ValidationStore;
+            Stores.Validations = ValidationStore.Instance;
         })(Stores = Models.Stores || (Models.Stores = {}));
     })(Models = App.Models || (App.Models = {}));
 })(App || (App = {}));
@@ -16300,171 +16479,4 @@ var Fw;
         })(Property = Views.Property || (Views.Property = {}));
     })(Views = Fw.Views || (Fw.Views = {}));
 })(Fw || (Fw = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Models/EntityBase.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-/// <reference path="../../Items/ValidationFailType.ts" />
-var App;
-(function (App) {
-    var Models;
-    (function (Models) {
-        var Entities;
-        (function (Entities) {
-            var ValidationResult = /** @class */ (function (_super) {
-                __extends(ValidationResult, _super);
-                function ValidationResult(entity, name, message, type) {
-                    if (name === void 0) { name = null; }
-                    if (message === void 0) { message = null; }
-                    if (type === void 0) { type = 1 /* Error */; }
-                    var _this = _super.call(this) || this;
-                    _this.Entity = entity;
-                    if (name)
-                        _this.Name = name;
-                    if (message)
-                        _this.Message = message;
-                    if (type)
-                        _this.Type = type;
-                    return _this;
-                }
-                return ValidationResult;
-            }(Fw.Models.EntityBase));
-            Entities.ValidationResult = ValidationResult;
-        })(Entities = Models.Entities || (Models.Entities = {}));
-    })(Models = App.Models || (App.Models = {}));
-})(App || (App = {}));
-/// <reference path="../../../../lib/jquery/index.d.ts" />
-/// <reference path="../../../../lib/underscore/index.d.ts" />
-/// <reference path="../../../Fw/Models/StoreBase.ts" />
-/// <reference path="../../../Fw/Util/Dump.ts" />
-/// <reference path="../../../Fw/Util/Xhr/Query.ts" />
-/// <reference path="../Entities/ControlSet.ts" />
-/// <reference path="../Entities/Control.ts" />
-/// <reference path="../Entities/Scene.ts" />
-/// <reference path="../Entities/SceneDetail.ts" />
-/// <reference path="../Entities/Schedule.ts" />
-/// <reference path="../Entities/ValidationResult.ts" />
-/// <reference path="../../Items/OperationType.ts" />
-/// <reference path="../../Items/Lang/Lang.ts" />
-/// <reference path="../../Items/ValidationFailType.ts" />
-var App;
-(function (App) {
-    var Models;
-    (function (Models) {
-        var Stores;
-        (function (Stores) {
-            var ControlSet = App.Models.Entities.ControlSet;
-            var Scene = App.Models.Entities.Scene;
-            var Schedule = App.Models.Entities.Schedule;
-            var Lang = App.Items.Lang.Lang;
-            var ValidationStore = /** @class */ (function (_super) {
-                __extends(ValidationStore, _super);
-                function ValidationStore() {
-                    return _super !== null && _super.apply(this, arguments) || this;
-                }
-                Object.defineProperty(ValidationStore, "Instance", {
-                    get: function () {
-                        if (ValidationStore._instance === null)
-                            ValidationStore._instance = new ValidationStore();
-                        return ValidationStore._instance;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                ValidationStore.prototype.Write = function (entity) {
-                    throw new Error("Method not implemented.");
-                };
-                ValidationStore.prototype.GetNewEntity = function () {
-                    throw new Error("Method not implemented.");
-                };
-                ValidationStore.prototype.Validate = function (entity) {
-                    return __awaiter(this, void 0, void 0, function () {
-                        return __generator(this, function (_a) {
-                            if (entity instanceof ControlSet) {
-                                return [2 /*return*/, Stores.ControlSets.Validate(entity)];
-                            }
-                            else if (entity instanceof Scene) {
-                                return [2 /*return*/, Stores.Scenes.Validate(entity)];
-                            }
-                            else if (entity instanceof Schedule) {
-                                return [2 /*return*/, Stores.Schedules.Validate(entity)];
-                            }
-                            else {
-                                // ここには来ないはず。
-                                alert('なんでやー');
-                                throw new Error('なんでやー');
-                            }
-                            return [2 /*return*/];
-                        });
-                    });
-                };
-                ValidationStore.prototype.HasError = function (errors) {
-                    for (var i = 0; i < errors.length; i++) {
-                        if (errors[i].Type === 1 /* Error */)
-                            return true;
-                    }
-                    return false;
-                };
-                ValidationStore.prototype.HasWarning = function (errors) {
-                    for (var i = 0; i < errors.length; i++) {
-                        if (errors[i].Type === 2 /* Warning */)
-                            return true;
-                    }
-                    return false;
-                };
-                ValidationStore.prototype.GetFirstError = function (errors) {
-                    for (var i = 0; i < errors.length; i++) {
-                        if (errors[i].Type === 1 /* Error */)
-                            return errors[i];
-                    }
-                    return null;
-                };
-                ValidationStore.prototype.GetMessage = function (errors) {
-                    var hasError = false;
-                    var hasWarning = false;
-                    var errs = new Array();
-                    var warns = new Array();
-                    _.each(errors, function (err) {
-                        if (err.Type === 1 /* Error */) {
-                            hasError = true;
-                            errs.push('　　・' + err.Message + '<br/>');
-                        }
-                        if (err.Type === 2 /* Warning */) {
-                            hasWarning = true;
-                            warns.push('　　・' + err.Message + '<br/>');
-                        }
-                    });
-                    var result = '';
-                    if (hasError && hasWarning) {
-                        result = Lang.ErrorsAndWarnings + '<br/><br/>';
-                        result += '　' + Lang.Errors + ':<br/>';
-                        result += errs.join('・');
-                        result += '<br/>';
-                        result += '　' + Lang.Warnings + ':<br/>';
-                        result += warns.join('・');
-                        result += '<br/>';
-                    }
-                    else if (hasError) {
-                        result = 'Errors<br/><br/>';
-                        result += errs.join();
-                        result += '<br/>';
-                    }
-                    else if (hasWarning) {
-                        result = 'Warnings<br/><br/>';
-                        result += warns.join();
-                        result += '<br/>';
-                    }
-                    else {
-                        return '';
-                    }
-                    return result;
-                };
-                ValidationStore._instance = null;
-                return ValidationStore;
-            }(Fw.Models.StoreBase));
-            Stores.ValidationStore = ValidationStore;
-            Stores.Validations = ValidationStore.Instance;
-        })(Stores = Models.Stores || (Models.Stores = {}));
-    })(Models = App.Models || (App.Models = {}));
-})(App || (App = {}));
 //# sourceMappingURL=tsout.js.map
