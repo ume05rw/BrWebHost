@@ -176,11 +176,48 @@ namespace App.Models.Stores {
                 && (!schedule.ControlSetId || schedule.ControlSetId === 0)
                 && (!schedule.ControlId || schedule.ControlId === 0)
             ) {
+                // Scene, ControlSet, Control全部未入力
                 errors.push(new Entities.ValidationResult(
                     schedule,
                     'SceneId',
-                    Lang.NoOperations,
-                    ValidationFailType.Warning
+                    Lang.NoOperations
+                ));
+            } else if (
+                !(!schedule.SceneId || schedule.SceneId === 0)
+                && (!schedule.ControlSetId || schedule.ControlSetId === 0)
+                && (!schedule.ControlId || schedule.ControlId === 0)
+            ) {
+                // Sceneが入力され、ControlSet, Controlが未入力
+                // 正しい。
+            } else if (
+                (!schedule.SceneId || schedule.SceneId === 0)
+                && !(!schedule.ControlSetId || schedule.ControlSetId === 0)
+                && !(!schedule.ControlId || schedule.ControlId === 0)
+            ) {
+                // Sceneが未入力、ControlSet, Controlが入力されている。
+                // 正しい。
+            } else if (
+                (!schedule.SceneId || schedule.SceneId === 0)
+                && !(!schedule.ControlSetId || schedule.ControlSetId === 0)
+                && (!schedule.ControlId || schedule.ControlId === 0)
+            ) {
+                // Scene, Controlが未入力、ControlSetだけが入力されている。
+                errors.push(new Entities.ValidationResult(
+                    schedule,
+                    'Control',
+                    Lang.OperationDetailNotSelected
+                ));
+            } else if (
+                (!schedule.SceneId || schedule.SceneId === 0)
+                && (!schedule.ControlSetId || schedule.ControlSetId === 0)
+                && !(!schedule.ControlId || schedule.ControlId === 0)
+            ) {
+                // Scene、ControlSetが未入力、Controlのみ入力されている。
+                // ここに来ることはないはず。
+                errors.push(new Entities.ValidationResult(
+                    schedule,
+                    'ControlSet',
+                    Lang.OperationNotSelected
                 ));
             }
 

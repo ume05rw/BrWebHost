@@ -111,19 +111,19 @@ namespace App.Models.Stores {
             if (hasError && hasWarning) {
                 result = Lang.ErrorsAndWarnings + '<br/><br/>';
                 result += '　' + Lang.Errors + ':<br/>';
-                result += errs.join();
+                result += errs.join('');
                 result += '<br/>';
                 result += '　' + Lang.Warnings + ':<br/>';
-                result += warns.join();
+                result += warns.join('');
                 result += '<br/>';
 
             } else if (hasError) {
                 result = 'Errors<br/><br/>';
-                result += errs.join();
+                result += errs.join('');
                 result += '<br/>';
             } else if (hasWarning) {
                 result = 'Warnings<br/><br/>';
-                result += warns.join();
+                result += warns.join('');
                 result += '<br/>';
             } else {
                 return '';

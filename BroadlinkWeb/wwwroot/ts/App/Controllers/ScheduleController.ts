@@ -268,10 +268,18 @@ namespace App.Controllers {
 
             this._page.SdvControl.ControlSetButton.ImageSrc = '';
             this._page.SdvControl.ControlSetButton.Text = Lang.SelectRemote;
-            this._page.SdvControl.ControlSetLabel.Text = '';
             this._page.SdvControl.ControlSetButton.Color = Color.ButtonColors[0];
             this._page.SdvControl.ControlSetButton.BackgroundColor = Color.MainBackground;
             this._page.SdvControl.ControlSetButton.HoverColor = Color.ButtonHoverColors[0];
+            this._page.SdvControl.ControlSetLabel.Text = '';
+
+            this._page.SdvControl.ControlButton.ImageSrc = '';
+            this._page.SdvControl.ControlButton.Text = '--';
+            this._page.SdvControl.ControlButton.Color = Color.ButtonColors[0];
+            this._page.SdvControl.ControlButton.BackgroundColor = Color.MainBackground;
+            this._page.SdvControl.ControlButton.HoverColor = Color.ButtonHoverColors[0];
+            this._page.SdvControl.ControlLabel.Text = '';
+
             if (schedule.SceneId) {
                 const entity = Stores.Scenes.List[schedule.SceneId];
                 if (entity) {
