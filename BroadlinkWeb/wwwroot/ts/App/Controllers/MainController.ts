@@ -104,9 +104,11 @@ namespace App.Controllers {
                     case OperationTemplate.WoL:
                         ctrSet = await Stores.ControlSets.GetTemplateClone(ControlSetTemplate.SingleControl);
                         ctrSet.OperationType = OperationType.WakeOnLan;
-                        ctrSet.Name = 'WoL';
+                        ctrSet.Name = 'Wake on LAN';
                         ctrSet.Color = Color.ButtonColors[2];
                         ctrSet.IconUrl = Icon.GetByOperationTemplate(OperationTemplate.WoL, true);
+                        ctrSet.Controls[0].Name = 'WoL';
+                        ctrSet.Controls[0].Code = '';
                         ctrSet.Controls[0].IsAssignToggleOn = true;
                         ctrSet.Controls[0].IsAssignToggleOff = true;
                         break;
@@ -116,6 +118,8 @@ namespace App.Controllers {
                         ctrSet.Name = 'Script';
                         ctrSet.Color = Color.ButtonColors[2];
                         ctrSet.IconUrl = Icon.GetByOperationTemplate(OperationTemplate.Script, true);
+                        ctrSet.Controls[0].Name = 'Script';
+                        ctrSet.Controls[0].Code = '';
                         ctrSet.Controls[0].IsAssignToggleOn = true;
                         ctrSet.Controls[0].IsAssignToggleOff = true;
                         break;
@@ -125,6 +129,8 @@ namespace App.Controllers {
                         ctrSet.Name = 'Remote Script';
                         ctrSet.Color = Color.ButtonColors[2];
                         ctrSet.IconUrl = Icon.GetByOperationTemplate(OperationTemplate.RemoteHostScript, true);
+                        ctrSet.Controls[0].Name = 'Remote';
+                        ctrSet.Controls[0].Code = '';
                         ctrSet.Controls[0].IsAssignToggleOn = true;
                         ctrSet.Controls[0].IsAssignToggleOff = true;
                         break;
