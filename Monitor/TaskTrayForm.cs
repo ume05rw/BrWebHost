@@ -98,6 +98,13 @@ namespace Monitor
             var menu = new ContextMenuStrip();
             this._icon.ContextMenuStrip = menu;
 
+            var menuItem1 = new ToolStripMenuItem();
+            menuItem1.Text = "&Show Browser";
+            menuItem1.Click += (sender, e) => {
+                this.StartBrowser();
+            };
+            menu.Items.Add(menuItem1);
+
             this._menuItemStart = new ToolStripMenuItem();
             
             this._menuItemStart.Click += this.OnStart;
@@ -108,12 +115,12 @@ namespace Monitor
             this._menuItemStop.Click += this.OnStop;
             menu.Items.Add(this._menuItemStop);
 
-            var menuItem = new ToolStripMenuItem();
-            menuItem.Text = "&Exit Monitor";
-            menuItem.Click += (sender, e) => {
+            var menuItem2 = new ToolStripMenuItem();
+            menuItem2.Text = "&Exit Monitor";
+            menuItem2.Click += (sender, e) => {
                 Application.Exit();
             };
-            menu.Items.Add(menuItem);
+            menu.Items.Add(menuItem2);
 
             switch (this._target)
             {
@@ -126,7 +133,8 @@ namespace Monitor
                     this._menuItemStop.Text = "&Stop BrScriptAgent";
                     break;
                 case Target.Test:
-                    
+                    this._menuItemStart.Text = "&Start TestApp";
+                    this._menuItemStop.Text = "&Stop TestApp";
                     break;
                 default:
                     throw new ArgumentException($"Unexpected target: {this._target}");
