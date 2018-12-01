@@ -184,7 +184,7 @@
     <PackageReference Include="SQLitePCLRaw.provider.e_sqlite3.netstandard11" Version="1.1.11" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
     <PackageReference Include="Xb.App.Process" Version="1.0.2" />
-    <PackageReference Include="Xb.Net" Version="1.0.5.1" />
+    <PackageReference Include="Xb.Net" Version="1.0.5.2" />
   </ItemGroup>
 
   <ItemGroup>
