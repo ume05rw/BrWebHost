@@ -29,19 +29,20 @@ namespace BroadlinkWeb
         public void ConfigureServices(IServiceCollection services)
         {
             // 追加済みのサービスの中から、ILoggerFactoryのインスタンスを取得する。
-            var logService = services
+            ILoggerFactory loggerFactory = null;
+            var logServiceDescripter = services
                 .FirstOrDefault(s => s.ServiceType == typeof(ILoggerFactory));
+
+            var hasLoggerFactory = (logServiceDescripter != null && logServiceDescripter.ImplementationInstance != null);
+            if (logServiceDescripter != null && logServiceDescripter.ImplementationInstance != null)
+                loggerFactory = (ILoggerFactory)logServiceDescripter.ImplementationInstance;
 
             services.AddDbContext<Dbc>(options =>
             {
                 // ILoggerFactoryが取得出来ていれば、追加しておく。
                 // DBのクエリログが各種ロガーに通知されるようになる。
-                if (logService != null
-                    && logService.ImplementationInstance != null)
-                {
-                    var loggreFactory = (ILoggerFactory)logService.ImplementationInstance;
-                    options.UseLoggerFactory(loggreFactory);
-                }
+                if (loggerFactory != null)
+                    options.UseLoggerFactory(loggerFactory);
 
                 var dbPath = System.IO.Path.Combine(Program.CurrentPath, "scriptagent.db");
 

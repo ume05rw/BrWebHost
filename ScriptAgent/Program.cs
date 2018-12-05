@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ScriptAgent.Extensions;
+using NLog;
+using NLog.Web;
 
 namespace BroadlinkWeb
 {
@@ -24,7 +26,7 @@ namespace BroadlinkWeb
     {
         public static int Port = 5004;
 
-        public static string _currentPath = "";
+        private static string _currentPath = "";
         public static string CurrentPath
         {
             get
@@ -43,6 +45,9 @@ namespace BroadlinkWeb
         /// </remarks>
         public static void Main(string[] args)
         {
+            // ロガーインスタンスを、Asp.NetCoreと無関係に取得する。
+            var logger = NLog.LogManager.LoadConfiguration("nlog.config").GetCurrentClassLogger();
+
             // サービスとして起動するかどうかのフラグ
             // 引数に"--winservice"を付与して起動すると、Windowsサービスとして起動する。
             bool isService = args.Contains("--winservice");
@@ -95,14 +100,28 @@ namespace BroadlinkWeb
             //    2-2) XXX.exe --console true
             //         --> args = [ "--console", "true" ]
 
-            // サービスかどうかで起動方法を分ける
-            if (isService)
+            try
             {
-                Program.BuildWebHost(new string[] { }).RunAsCustomService();
+                logger.Debug("Start");
+
+                // サービスかどうかで起動方法を分ける
+                if (isService)
+                {
+                    Program.BuildWebHost(new string[] { }).RunAsCustomService();
+                }
+                else
+                {
+                    Program.BuildWebHost(new string[] { }).Run();
+                }
             }
-            else
+            catch (Exception ex)
             {
-                Program.BuildWebHost(new string[] { }).Run();
+                logger.Error(ex, "Exception!!!");
+                throw;
+            }
+            finally
+            {
+                NLog.LogManager.Shutdown();
             }
         }
 
@@ -116,6 +135,14 @@ namespace BroadlinkWeb
         /// </remarks>
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                .ConfigureLogging(logging =>
+                {
+                    // NLog 以外で設定された Provider の無効化.
+                    logging.ClearProviders();
+                    // 最小ログレベルの設定.   //これがないと正常動作しない模様
+                    logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
+                })
+                .UseNLog()
                 .UseKestrel()
                 .UseContentRoot(Program._currentPath)
                 .UseStartup<Startup>()
