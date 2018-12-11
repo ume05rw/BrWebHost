@@ -40,7 +40,7 @@ namespace BroadlinkWeb.Models.Stores
                 var status = new LoopJobStatus();
                 var hour = DateTime.Now.Hour;
 
-                // 1分に1回、A1デバイスの値を取得して平均値を作る。
+                // 20秒に1回、スケジュールの実行時間を検証する。
                 while (true)
                 {
                     try
@@ -67,7 +67,10 @@ namespace BroadlinkWeb.Models.Stores
                             var json = JsonConvert.SerializeObject(status);
                             await ScheduleStore._loopRunnerJob.SetProgress((decimal)0.5, json);
 
-                            // 10秒待機
+                            // ガベコレ実行。
+                            GC.Collect();
+
+                            // 20秒待機
                             await Task.Delay(1000 * 20);
                         }
                     }
