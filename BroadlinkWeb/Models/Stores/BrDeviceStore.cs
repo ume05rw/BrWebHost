@@ -13,7 +13,7 @@ using Newtonsoft.Json;
 
 namespace BroadlinkWeb.Models.Stores
 {
-    public class BrDeviceStore
+    public class BrDeviceStore : IDisposable
     {
         private static List<SharpBroadlink.Devices.IDevice> SbDevices
             = new List<SharpBroadlink.Devices.IDevice>();
@@ -28,16 +28,19 @@ namespace BroadlinkWeb.Models.Stores
             using (var serviceScope = BrDeviceStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 // ジョブを取得する。
-                var jobStore = serviceScope.ServiceProvider.GetService<JobStore>();
-                BrDeviceStore._loopRunnerJob = jobStore.CreateJob("Broadlink-Device LoopScanner")
-                    .ConfigureAwait(false)
-                    .GetAwaiter()
-                    .GetResult();
+                using (var jobStore = serviceScope.ServiceProvider.GetService<JobStore>())
+                {
+                    BrDeviceStore._loopRunnerJob = jobStore.CreateJob("Broadlink-Device LoopScanner")
+                        .ConfigureAwait(false)
+                        .GetAwaiter()
+                        .GetResult();
+                }
 
                 // 最初の一回目スキャンは同期的に行う。
                 Xb.Util.Out("First Broadlink Device Scan");
-                var store = serviceScope.ServiceProvider.GetService<BrDeviceStore>();
-                store.Refresh();
+
+                using (var store = serviceScope.ServiceProvider.GetService<BrDeviceStore>())
+                    store.Refresh();
             }
 
             // なんか違和感がある実装。
@@ -62,11 +65,12 @@ namespace BroadlinkWeb.Models.Stores
                         }
 
                         using (var serviceScope = BrDeviceStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+                        using (var store = serviceScope.ServiceProvider.GetService<BrDeviceStore>())
                         {
                             await Task.Delay(1000 * 60 * 5);
 
                             Xb.Util.Out("Regularly Broadlink Device Scan");
-                            var store = serviceScope.ServiceProvider.GetService<BrDeviceStore>();
+                            
                             var devs = store.Refresh();
 
                             status.Count++;
@@ -101,6 +105,7 @@ namespace BroadlinkWeb.Models.Stores
         {
             BrDeviceStore.Provider = null;
         }
+
 
         private Dbc _dbc;
         private ControlSetStore _controlSetStore;
@@ -255,9 +260,9 @@ namespace BroadlinkWeb.Models.Stores
                 .GetResult();
 
             using (var serviceScope = BrDeviceStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            using (var store = serviceScope.ServiceProvider.GetService<ControlSetStore>())
             {
                 Xb.Util.Out("BrDevicesController.Refresh - Ensure Device's ControlSet");
-                var store = serviceScope.ServiceProvider.GetService<ControlSetStore>();
                 store.EnsureBrControlSets(entities)
                     .ConfigureAwait(false)
                     .GetAwaiter()
@@ -342,5 +347,36 @@ namespace BroadlinkWeb.Models.Stores
                     || sbDev.Id[2] != 0
                     || sbDev.Id[3] != 0);
         }
+
+        #region IDisposable Support
+        private bool IsDisposed = false; // 重複する呼び出しを検出するには
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!IsDisposed)
+            {
+                if (disposing)
+                {
+                    this._dbc.Dispose();
+                    this._dbc = null;
+
+                    this._controlSetStore.Dispose();
+                    this._controlSetStore = null;
+                }
+
+                // TODO: アンマネージド リソース (アンマネージド オブジェクト) を解放し、下のファイナライザーをオーバーライドします。
+                // TODO: 大きなフィールドを null に設定します。
+
+                IsDisposed = true;
+            }
+        }
+
+        // このコードは、破棄可能なパターンを正しく実装できるように追加されました。
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 }

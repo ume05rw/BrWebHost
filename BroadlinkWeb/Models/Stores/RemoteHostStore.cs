@@ -15,7 +15,7 @@ using System.Net.Http.Headers;
 
 namespace BroadlinkWeb.Models.Stores
 {
-    public class RemoteHostStore
+    public class RemoteHostStore : IDisposable
     {
         private const string CallString = "hello?";
         private const string ResponseString = "here!";
@@ -110,9 +110,9 @@ namespace BroadlinkWeb.Models.Stores
         private static void SetLoopRunner()
         {
             using (var serviceScope = RemoteHostStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            using (var jobStore = serviceScope.ServiceProvider.GetService<JobStore>())
             {
                 // ジョブを取得する。
-                var jobStore = serviceScope.ServiceProvider.GetService<JobStore>();
                 RemoteHostStore._loopRunnerJob = jobStore.CreateJob("RemoteHost LoopScanner")
                     .ConfigureAwait(false)
                     .GetAwaiter()
@@ -120,13 +120,15 @@ namespace BroadlinkWeb.Models.Stores
 
                 // 最初の一回目スキャンは同期的に行う。
                 Xb.Util.Out("First Remote Host Scan");
-                var hostStore = serviceScope.ServiceProvider.GetService<RemoteHostStore>();
-                hostStore.Refresh();
+                using (var hostStore = serviceScope.ServiceProvider.GetService<RemoteHostStore>())
+                    hostStore.Refresh();
 
-                var scriptStore = serviceScope.ServiceProvider.GetService<RemoteScriptStore>();
-                scriptStore.Refresh()
-                    .GetAwaiter()
-                    .GetResult();
+                using (var scriptStore = serviceScope.ServiceProvider.GetService<RemoteScriptStore>())
+                {
+                    scriptStore.Refresh()
+                        .GetAwaiter()
+                        .GetResult();
+                }
             }
 
             // なんか違和感がある実装。
@@ -155,19 +157,21 @@ namespace BroadlinkWeb.Models.Stores
                             await Task.Delay(1000 * 60 * 5);
 
                             Xb.Util.Out("Regularly Remote Host Scan");
-                            var hostStore = serviceScope.ServiceProvider.GetService<RemoteHostStore>();
-                            var hosts = hostStore.Refresh();
+                            using (var hostStore = serviceScope.ServiceProvider.GetService<RemoteHostStore>())
+                            using (var scriptStore = serviceScope.ServiceProvider.GetService<RemoteScriptStore>())
+                            {
+                                var hosts = hostStore.Refresh();
 
-                            var scriptStore = serviceScope.ServiceProvider.GetService<RemoteScriptStore>();
-                            var scripts = scriptStore.Refresh()
-                                .ConfigureAwait(false)
-                                .GetAwaiter()
-                                .GetResult();
+                                var scripts = scriptStore.Refresh()
+                                    .ConfigureAwait(false)
+                                    .GetAwaiter()
+                                    .GetResult();
 
-                            status.Count++;
-                            status.StatusMessage = $"Remote Hosts Count: {hosts.Count()}";
-                            var json = JsonConvert.SerializeObject(status);
-                            await RemoteHostStore._loopRunnerJob.SetProgress((decimal)0.5, json);
+                                status.Count++;
+                                status.StatusMessage = $"Remote Hosts Count: {hosts.Count()}";
+                                var json = JsonConvert.SerializeObject(status);
+                                await RemoteHostStore._loopRunnerJob.SetProgress((decimal)0.5, json);
+                            }
                         }
                     }
                     catch (Exception ex)
@@ -276,8 +280,8 @@ namespace BroadlinkWeb.Models.Stores
             var ipStr = (new IPAddress(addrBytes)).ToString();
 
             using (var serviceScope = RemoteHostStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            using (var dbc = serviceScope.ServiceProvider.GetService<Dbc>())
             {
-                var dbc = serviceScope.ServiceProvider.GetService<Dbc>();
                 var exists = dbc.RemoteHosts
                     .FirstOrDefault(r => r.IpAddressString == ipStr);
 
@@ -349,5 +353,34 @@ namespace BroadlinkWeb.Models.Stores
             else
                 return (false, JsonConvert.SerializeObject(remoteResult.Errors));
         }
+
+
+        #region IDisposable Support
+        private bool IsDisposed = false; // 重複する呼び出しを検出するには
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!IsDisposed)
+            {
+                if (disposing)
+                {
+                    this._dbc.Dispose();
+                    this._dbc = null;
+                }
+
+                // TODO: アンマネージド リソース (アンマネージド オブジェクト) を解放し、下のファイナライザーをオーバーライドします。
+                // TODO: 大きなフィールドを null に設定します。
+
+                IsDisposed = true;
+            }
+        }
+
+        // このコードは、破棄可能なパターンを正しく実装できるように追加されました。
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 }

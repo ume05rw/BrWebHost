@@ -13,7 +13,7 @@ using SharpBroadlink.Devices;
 
 namespace BroadlinkWeb.Models.Stores
 {
-    public class ControlSetStore
+    public class ControlSetStore : IDisposable
     {
         private static IServiceProvider Provider;
         public static void SetServiceProvider(IServiceProvider provider)
@@ -24,6 +24,7 @@ namespace BroadlinkWeb.Models.Stores
         {
             ControlSetStore.Provider = null;
         }
+
 
         private Dbc _dbc;
 
@@ -369,16 +370,18 @@ namespace BroadlinkWeb.Models.Stores
                     case OperationType.WakeOnLan:
                         try
                         {
-                            var wolStore = serviceScope.ServiceProvider.GetService<WolStore>();
-                            var res = await wolStore.Exec(control.Code);
-                            if (res == false)
+                            using (var wolStore = serviceScope.ServiceProvider.GetService<WolStore>())
                             {
-                                errors.Add(new Error()
+                                var res = await wolStore.Exec(control.Code);
+                                if (res == false)
                                 {
-                                    Name = "Code",
-                                    Message = "Broadlink Device Not Found."
-                                });
-                                break;
+                                    errors.Add(new Error()
+                                    {
+                                        Name = "Code",
+                                        Message = "Broadlink Device Not Found."
+                                    });
+                                    break;
+                                }
                             }
                         }
                         catch (Exception ex)
@@ -395,16 +398,18 @@ namespace BroadlinkWeb.Models.Stores
                     case OperationType.Script:
                         try
                         {
-                            var scriptStore = serviceScope.ServiceProvider.GetService<ScriptStore>();
-                            var res = await scriptStore.Exec(control.Code);
-                            if (!res.IsSucceeded)
+                            using (var scriptStore = serviceScope.ServiceProvider.GetService<ScriptStore>())
                             {
-                                errors.Add(new Error()
+                                var res = await scriptStore.Exec(control.Code);
+                                if (!res.IsSucceeded)
                                 {
-                                    Name = "Code",
-                                    Message = $"ControlSetStore.Exec[WakeOnLan]: {res.Result}"
-                                });
-                                break;
+                                    errors.Add(new Error()
+                                    {
+                                        Name = "Code",
+                                        Message = $"ControlSetStore.Exec[WakeOnLan]: {res.Result}"
+                                    });
+                                    break;
+                                }
                             }
                         }
                         catch (Exception ex)
@@ -421,31 +426,33 @@ namespace BroadlinkWeb.Models.Stores
                     case OperationType.RemoteHost:
                         try
                         {
-                            var rhStore = serviceScope.ServiceProvider.GetService<RemoteHostStore>();
-                            Script script;
-                            try
+                            using (var rhStore = serviceScope.ServiceProvider.GetService<RemoteHostStore>())
                             {
-                                script = JsonConvert.DeserializeObject<Script>(control.Code);
-                            }
-                            catch (Exception)
-                            {
-                                errors.Add(new Error()
+                                Script script;
+                                try
                                 {
-                                    Name = "Code",
-                                    Message = "ControlSetStore.Exec[RemoteHost]: Remote Script Not Recognize."
-                                });
-                                break;
-                            }
+                                    script = JsonConvert.DeserializeObject<Script>(control.Code);
+                                }
+                                catch (Exception)
+                                {
+                                    errors.Add(new Error()
+                                    {
+                                        Name = "Code",
+                                        Message = "ControlSetStore.Exec[RemoteHost]: Remote Script Not Recognize."
+                                    });
+                                    break;
+                                }
 
-                            var res = await rhStore.Exec(script);
-                            if (!res.IsSucceeded)
-                            {
-                                errors.Add(new Error()
+                                var res = await rhStore.Exec(script);
+                                if (!res.IsSucceeded)
                                 {
-                                    Name = "Code",
-                                    Message = $"ControlSetStore.Exec[RemoteHost]: {res.Result}"
-                                });
-                                break;
+                                    errors.Add(new Error()
+                                    {
+                                        Name = "Code",
+                                        Message = $"ControlSetStore.Exec[RemoteHost]: {res.Result}"
+                                    });
+                                    break;
+                                }
                             }
                         }
                         catch (Exception ex)
@@ -500,9 +507,11 @@ namespace BroadlinkWeb.Models.Stores
 
                     if (isChanged)
                     {
-                        var dbc = serviceScope.ServiceProvider.GetService<Dbc>();
-                        dbc.Entry(controlSet).State = EntityState.Modified;
-                        await dbc.SaveChangesAsync();
+                        using (var dbc = serviceScope.ServiceProvider.GetService<Dbc>())
+                        {
+                            dbc.Entry(controlSet).State = EntityState.Modified;
+                            await dbc.SaveChangesAsync();
+                        }
                     }
                 }
             }
@@ -518,55 +527,58 @@ namespace BroadlinkWeb.Models.Stores
                 switch (device.DeviceType)
                 {
                     case DeviceType.Sp2:
-                        var sp2Store = serviceScope.ServiceProvider.GetService<Sp2Store>();
-                        var sp2Status = await sp2Store.GetStatus(device.Id);
-
-                        switch (control.Code)
+                        using (var sp2Store = serviceScope.ServiceProvider.GetService<Sp2Store>())
                         {
-                            case "PowerOn":
-                                sp2Status.Power = true;
-                                break;
-                            case "PowerOff":
-                                sp2Status.Power = false;
-                                break;
-                            case "LightOn":
-                                sp2Status.NightLight = true;
-                                break;
-                            case "LightOff":
-                                sp2Status.NightLight = false;
-                                break;
-                            default:
-                                throw new Exception("ここにはこないはず");
-                        }
+                            var sp2Status = await sp2Store.GetStatus(device.Id);
 
-                        var res = await sp2Store.SetStatus(device.Id, sp2Status);
-                        if (res == false)
-                        {
-                            errors.Add(new Error()
+                            switch (control.Code)
                             {
-                                Name = "Code",
-                                Message = "ControlSetStore.ExecBrDevice[Sp2]: Sp2 Switch Set Failure."
-                            });
-                            break;
+                                case "PowerOn":
+                                    sp2Status.Power = true;
+                                    break;
+                                case "PowerOff":
+                                    sp2Status.Power = false;
+                                    break;
+                                case "LightOn":
+                                    sp2Status.NightLight = true;
+                                    break;
+                                case "LightOff":
+                                    sp2Status.NightLight = false;
+                                    break;
+                                default:
+                                    throw new Exception("ここにはこないはず");
+                            }
+
+                            var res = await sp2Store.SetStatus(device.Id, sp2Status);
+                            if (res == false)
+                            {
+                                errors.Add(new Error()
+                                {
+                                    Name = "Code",
+                                    Message = "ControlSetStore.ExecBrDevice[Sp2]: Sp2 Switch Set Failure."
+                                });
+                                break;
+                            }
                         }
 
                         break;
                     case DeviceType.A1:
-                        var a1Store = serviceScope.ServiceProvider.GetService<A1Store>();
-
-                        try
+                        using (var a1Store = serviceScope.ServiceProvider.GetService<A1Store>())
                         {
-                            // 値を取得して何をするでもない。
-                            await a1Store.GetValues(device.Id);
-                        }
-                        catch (Exception ex)
-                        {
-                            errors.Add(new Error()
+                            try
                             {
-                                Name = "Code",
-                                Message = "ControlSetStore.ExecBrDevice[A1]: A1 Sensor Get Value Failure: " + ex.Message
-                            });
-                            break;
+                                // 値を取得して何をするでもない。
+                                await a1Store.GetValues(device.Id);
+                            }
+                            catch (Exception ex)
+                            {
+                                errors.Add(new Error()
+                                {
+                                    Name = "Code",
+                                    Message = "ControlSetStore.ExecBrDevice[A1]: A1 Sensor Get Value Failure: " + ex.Message
+                                });
+                                break;
+                            }
                         }
 
                         break;
@@ -589,10 +601,38 @@ namespace BroadlinkWeb.Models.Stores
         private async Task<BrDevice> GetBrDevice(int? id)
         {
             using (var serviceScope = ControlSetStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            using (var brStore = serviceScope.ServiceProvider.GetService<BrDeviceStore>())
             {
-                var brStore = serviceScope.ServiceProvider.GetService<BrDeviceStore>();
                 return await brStore.Get((int)id);
             }
         }
+
+        #region IDisposable Support
+        private bool IsDisposed = false; // 重複する呼び出しを検出するには
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!IsDisposed)
+            {
+                if (disposing)
+                {
+                    this._dbc.Dispose();
+                    this._dbc = null;
+                }
+
+                // TODO: アンマネージド リソース (アンマネージド オブジェクト) を解放し、下のファイナライザーをオーバーライドします。
+                // TODO: 大きなフィールドを null に設定します。
+
+                IsDisposed = true;
+            }
+        }
+
+        // このコードは、破棄可能なパターンを正しく実装できるように追加されました。
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 }

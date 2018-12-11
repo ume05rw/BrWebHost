@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace BroadlinkWeb.Models.Stores
 {
-    public class Sp2Store
+    public class Sp2Store : IDisposable
     {
         private BrDeviceStore _brDeviceStore;
 
@@ -83,5 +83,34 @@ namespace BroadlinkWeb.Models.Stores
 
             return true;
         }
+
+
+        #region IDisposable Support
+        private bool IsDisposed = false; // 重複する呼び出しを検出するには
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!IsDisposed)
+            {
+                if (disposing)
+                {
+                    this._brDeviceStore.Dispose();
+                    this._brDeviceStore = null;
+                }
+
+                // TODO: アンマネージド リソース (アンマネージド オブジェクト) を解放し、下のファイナライザーをオーバーライドします。
+                // TODO: 大きなフィールドを null に設定します。
+
+                IsDisposed = true;
+            }
+        }
+
+        // このコードは、破棄可能なパターンを正しく実装できるように追加されました。
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 }

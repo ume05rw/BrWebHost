@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace BroadlinkWeb.Models.Stores
 {
-    public class ScheduleStore
+    public class ScheduleStore : IDisposable
     {
         private static IServiceProvider Provider = null;
         private static Task LoopRunner = null;
@@ -24,9 +24,9 @@ namespace BroadlinkWeb.Models.Stores
             ScheduleStore.Provider = provider;
 
             using (var serviceScope = ScheduleStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            using (var jobStore = serviceScope.ServiceProvider.GetService<JobStore>())
             {
                 // ジョブを取得する。
-                var jobStore = serviceScope.ServiceProvider.GetService<JobStore>();
                 ScheduleStore._loopRunnerJob = jobStore.CreateJob("Schedule LoopScanner")
                     .ConfigureAwait(false)
                     .GetAwaiter()
@@ -56,10 +56,9 @@ namespace BroadlinkWeb.Models.Stores
                         }
 
                         using (var serviceScope = ScheduleStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+                        using (var store = serviceScope.ServiceProvider.GetService<ScheduleStore>())
                         {
                             Xb.Util.Out("Regularly Scehule Ticker");
-
-                            var store = serviceScope.ServiceProvider.GetService<ScheduleStore>();
                             var schedules = await store.Tick();
 
                             // ジョブ状態を記録
@@ -226,14 +225,18 @@ namespace BroadlinkWeb.Models.Stores
             {
                 if (schedule.Scene != null)
                 {
-                    var sceneStore = serviceScope.ServiceProvider.GetService<SceneStore>();
-                    await sceneStore.Exec(schedule.Scene);
-                    return errors.ToArray();
+                    using (var sceneStore = serviceScope.ServiceProvider.GetService<SceneStore>())
+                    {
+                        await sceneStore.Exec(schedule.Scene);
+                        return errors.ToArray();
+                    }
                 }
                 else if (schedule.Control != null && schedule.ControlSet != null)
                 {
-                    var controlSetStore = serviceScope.ServiceProvider.GetService<ControlSetStore>();
-                    return await controlSetStore.Exec(schedule.Control);
+                    using (var controlSetStore = serviceScope.ServiceProvider.GetService<ControlSetStore>())
+                    {
+                        return await controlSetStore.Exec(schedule.Control);
+                    }
                 }
                 else
                 {
@@ -286,5 +289,34 @@ namespace BroadlinkWeb.Models.Stores
 
             return result;
         }
+
+
+        #region IDisposable Support
+        private bool IsDisposed = false; // 重複する呼び出しを検出するには
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!IsDisposed)
+            {
+                if (disposing)
+                {
+                    this._dbc.Dispose();
+                    this._dbc = null;
+                }
+
+                // TODO: アンマネージド リソース (アンマネージド オブジェクト) を解放し、下のファイナライザーをオーバーライドします。
+                // TODO: 大きなフィールドを null に設定します。
+
+                IsDisposed = true;
+            }
+        }
+
+        // このコードは、破棄可能なパターンを正しく実装できるように追加されました。
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 }

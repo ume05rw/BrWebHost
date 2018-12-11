@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace BroadlinkWeb.Models.Stores
 {
-    public class SceneStore
+    public class SceneStore : IDisposable
     {
         private static IServiceProvider Provider;
         public static void SetServiceProvider(IServiceProvider provider)
@@ -70,8 +70,8 @@ namespace BroadlinkWeb.Models.Stores
         public async Task<bool> InnerExec(Job job, Scene scene, SceneStatus status)
         {
             using (var serviceScope = SceneStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            using (var dbc = serviceScope.ServiceProvider.GetService<Dbc>())
             {
-                var dbc = serviceScope.ServiceProvider.GetService<Dbc>();
                 var details = dbc.SceneDetails
                     .Include(e => e.ControlSet)
                     .Include(e => e.Control)
@@ -88,17 +88,19 @@ namespace BroadlinkWeb.Models.Stores
                         return false;
                     }
 
-                    var controlSetStore = serviceScope.ServiceProvider.GetService<ControlSetStore>();
-                    var errors = await controlSetStore.Exec(detail.Control);
-
-                    if (errors.Length > 0)
+                    using (var controlSetStore = serviceScope.ServiceProvider.GetService<ControlSetStore>())
                     {
-                        var errString = string.Join(", ", errors.Select(e => $"{e.Name}: {e.Message}").ToArray());
-                        status.Error = $"Operation Failure by Step: {status.Step}, {errString}";
-                        await job.SetFinish(true, status, status.Error);
-                        return false;
+                        var errors = await controlSetStore.Exec(detail.Control);
+
+                        if (errors.Length > 0)
+                        {
+                            var errString = string.Join(", ", errors.Select(e => $"{e.Name}: {e.Message}").ToArray());
+                            status.Error = $"Operation Failure by Step: {status.Step}, {errString}";
+                            await job.SetFinish(true, status, status.Error);
+                            return false;
+                        }
+                        await job.SetProgress((double)status.Step / (double)status.TotalStep, status);
                     }
-                    await job.SetProgress((double)status.Step / (double)status.TotalStep , status);
 
                     // Stepはループ中に常に加算しておく。想定外挙動を検知し易いように。
                     status.Step++;
@@ -108,7 +110,7 @@ namespace BroadlinkWeb.Models.Stores
                         await Task.Delay((int)(detail.WaitSecond * 1000))
                             .ConfigureAwait(false);
                     }
-                }
+                }   
             }
 
             // 正常終了時、Step値を辻褄合わせする。
@@ -117,5 +119,36 @@ namespace BroadlinkWeb.Models.Stores
 
             return true;
         }
+
+        #region IDisposable Support
+        private bool IsDisposed = false; // 重複する呼び出しを検出するには
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!IsDisposed)
+            {
+                if (disposing)
+                {
+                    this._dbc.Dispose();
+                    this._dbc = null;
+
+                    this._jobStore.Dispose();
+                    this._jobStore = null;
+                }
+
+                // TODO: アンマネージド リソース (アンマネージド オブジェクト) を解放し、下のファイナライザーをオーバーライドします。
+                // TODO: 大きなフィールドを null に設定します。
+
+                IsDisposed = true;
+            }
+        }
+
+        // このコードは、破棄可能なパターンを正しく実装できるように追加されました。
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 }

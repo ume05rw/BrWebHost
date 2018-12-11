@@ -185,17 +185,17 @@ namespace BroadlinkWeb.Models.Entities
         private async Task<bool> Save()
         {
             using (var serviceScope = this._provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            using (var dbc = serviceScope.ServiceProvider.GetService<Dbc>())
             {
                 try
                 {
-                    var dbc = serviceScope.ServiceProvider.GetService<Dbc>();
-
                     if (this.Id == default(int))
                         dbc.Jobs.Add(this); // 新規Entity
                     else
                         dbc.Entry(this).State = EntityState.Modified; // 既存Entity
 
                     await dbc.SaveChangesAsync();
+                    
                 }
                 catch (Exception ex)
                 {

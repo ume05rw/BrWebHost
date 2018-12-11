@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace BroadlinkWeb.Models.Stores
 {
-    public class A1Store
+    public class A1Store : IDisposable
     {
         private static IServiceProvider Provider = null;
         private static Task LoopRunner = null;
@@ -22,7 +22,6 @@ namespace BroadlinkWeb.Models.Stores
         public static void SetLoopRunner(IServiceProvider provider)
         {
             A1Store.Provider = provider;
-
 
             using (var serviceScope = A1Store.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
@@ -62,13 +61,12 @@ namespace BroadlinkWeb.Models.Stores
                         }
 
                         using (var serviceScope = A1Store.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+                        using (var brStore = serviceScope.ServiceProvider.GetService<BrDeviceStore>())
+                        using (var a1Store = serviceScope.ServiceProvider.GetService<A1Store>())
+                        using (var dbc = serviceScope.ServiceProvider.GetService<Dbc>())
                         {
                             Xb.Util.Out("Regularly A1-Sensor Record");
                             sumCount++; // カウントは1から。
-
-                            var brStore = serviceScope.ServiceProvider.GetService<BrDeviceStore>();
-                            var a1Store = serviceScope.ServiceProvider.GetService<A1Store>();
-                            var dbc = serviceScope.ServiceProvider.GetService<Dbc>();
 
                             var brs = await brStore.GetList();
                             var a1s = brs.Where(b => b.DeviceType == DeviceType.A1).ToArray();
@@ -302,5 +300,36 @@ namespace BroadlinkWeb.Models.Stores
 
             return result;
         }
+
+        #region IDisposable Support
+        private bool IsDisposed = false; // 重複する呼び出しを検出するには
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!IsDisposed)
+            {
+                if (disposing)
+                {
+                    this._dbc.Dispose();
+                    this._dbc = null;
+
+                    this._brDeviceStore.Dispose();
+                    this._brDeviceStore = null;
+                }
+
+                // TODO: アンマネージド リソース (アンマネージド オブジェクト) を解放し、下のファイナライザーをオーバーライドします。
+                // TODO: 大きなフィールドを null に設定します。
+
+                IsDisposed = true;
+            }
+        }
+
+        // このコードは、破棄可能なパターンを正しく実装できるように追加されました。
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 }

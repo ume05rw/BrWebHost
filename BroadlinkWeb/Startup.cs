@@ -38,23 +38,26 @@ namespace BroadlinkWeb
                 loggerFactory = (ILoggerFactory)logServiceDescripter.ImplementationInstance;
 
             services.AddDbContext<Dbc>(options =>
-            {
-                // ILoggerFactoryが取得出来ていれば、追加しておく。
-                // DBのクエリログが各種ロガーに通知されるようになる。
-                if (loggerFactory != null)
-                    options.UseLoggerFactory(loggerFactory);
+                {
+                    // ILoggerFactoryが取得出来ていれば、追加しておく。
+                    // DBのクエリログが各種ロガーに通知されるようになる。
+                    if (loggerFactory != null)
+                        options.UseLoggerFactory(loggerFactory);
 
-                var dbPath = System.IO.Path.Combine(Program.CurrentPath, "brwebhost.db");
+                    var dbPath = System.IO.Path.Combine(Program.CurrentPath, "brwebhost.db");
 
-                // マイグレーション時は例外にしないように。
-                //if (!System.IO.File.Exists(dbPath))
-                //    throw new Exception("DB-File Not Found!!: " + dbPath);
+                    // マイグレーション時は例外にしないように。
+                    //if (!System.IO.File.Exists(dbPath))
+                    //    throw new Exception("DB-File Not Found!!: " + dbPath);
 
-                options.UseSqlite($"Data Source=\"{dbPath}\"");
+                    options.UseSqlite($"Data Source=\"{dbPath}\"");
 
-                // MySQL接続のとき
-                //options.UseMySQL(this.Configuration.GetConnectionString("DbConnectionMySql"));
-            });
+                    // MySQL接続のとき
+                    //options.UseMySQL(this.Configuration.GetConnectionString("DbConnectionMySql"));
+                },
+                ServiceLifetime.Transient, // 呼び出し都度インスタンシエイトする。
+                ServiceLifetime.Transient
+            );
 
             services
                 .AddMvc()

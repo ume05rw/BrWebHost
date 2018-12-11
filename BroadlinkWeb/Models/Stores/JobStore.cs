@@ -11,19 +11,19 @@ using SharpBroadlink.Devices;
 
 namespace BroadlinkWeb.Models.Stores
 {
-    public class JobStore
+    public class JobStore : IDisposable
     {
-        private Dbc _dbc;
-        private IServiceProvider _provider;
+        //private Dbc _dbc;
+        //private IServiceProvider _provider;
 
         public JobStore(
-            [FromServices] Dbc dbc,
-            [FromServices] IServiceProvider provider
+            //[FromServices] Dbc dbc,
+            //[FromServices] IServiceProvider provider
         )
         {
             Xb.Util.Out("JobStore.Constructor");
-            this._dbc = dbc;
-            this._provider = provider;
+            //this._dbc = dbc;
+            //this._provider = provider;
         }
 
         public async Task<Job> CreateJob(string name, string json = null)
@@ -51,5 +51,31 @@ namespace BroadlinkWeb.Models.Stores
 
             return result;
         }
+
+        #region IDisposable Support
+        private bool IsDisposed = false; // 重複する呼び出しを検出するには
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!IsDisposed)
+            {
+                if (disposing)
+                {
+                }
+
+                // TODO: アンマネージド リソース (アンマネージド オブジェクト) を解放し、下のファイナライザーをオーバーライドします。
+                // TODO: 大きなフィールドを null に設定します。
+
+                IsDisposed = true;
+            }
+        }
+
+        // このコードは、破棄可能なパターンを正しく実装できるように追加されました。
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 }

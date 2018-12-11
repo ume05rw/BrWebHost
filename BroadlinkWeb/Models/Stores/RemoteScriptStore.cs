@@ -16,11 +16,13 @@ using Newtonsoft.Json.Linq;
 
 namespace BroadlinkWeb.Models.Stores
 {
-    public class RemoteScriptStore
+    public class RemoteScriptStore : IDisposable
     {
         private Dbc _dbc;
 
-        public RemoteScriptStore([FromServices] Dbc dbc)
+        public RemoteScriptStore(
+            [FromServices] Dbc dbc
+        )
         {
             Xb.Util.Out("RemoteScriptStore.Constructor");
             this._dbc = dbc;
@@ -105,7 +107,7 @@ namespace BroadlinkWeb.Models.Stores
                 {
                     this._dbc.AddRange(newScripts);
                     hasDbChanged = true;
-                    
+
                 }
 
                 // 保存済みに存在し、応答に無いもの = 削除された
@@ -127,5 +129,34 @@ namespace BroadlinkWeb.Models.Stores
 
             return this._dbc.RemoteScripts.ToArray();
         }
+
+
+        #region IDisposable Support
+        private bool IsDisposed = false; // 重複する呼び出しを検出するには
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!IsDisposed)
+            {
+                if (disposing)
+                {
+                    this._dbc.Dispose();
+                    this._dbc = null;
+                }
+
+                // TODO: アンマネージド リソース (アンマネージド オブジェクト) を解放し、下のファイナライザーをオーバーライドします。
+                // TODO: 大きなフィールドを null に設定します。
+
+                IsDisposed = true;
+            }
+        }
+
+        // このコードは、破棄可能なパターンを正しく実装できるように追加されました。
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 }
