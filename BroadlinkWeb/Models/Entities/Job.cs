@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Microsoft.Extensions.Logging;
 
 namespace BroadlinkWeb.Models.Entities
 {
@@ -195,10 +196,11 @@ namespace BroadlinkWeb.Models.Entities
                         dbc.Entry(this).State = EntityState.Modified; // 既存Entity
 
                     await dbc.SaveChangesAsync();
-                    
                 }
                 catch (Exception ex)
                 {
+                    var logger = serviceScope.ServiceProvider.GetService<ILogger<Job>>();
+                    logger.LogError(ex, "Job.Save Failure.");
                     Xb.Util.Out(ex);
                     return false;
                 }

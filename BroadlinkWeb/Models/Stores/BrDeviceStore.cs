@@ -10,6 +10,7 @@ using SharpBroadlink;
 using Microsoft.Extensions.DependencyInjection;
 using SharpBroadlink.Devices;
 using Newtonsoft.Json;
+using Microsoft.Extensions.Logging;
 
 namespace BroadlinkWeb.Models.Stores
 {
@@ -18,12 +19,14 @@ namespace BroadlinkWeb.Models.Stores
         private static List<SharpBroadlink.Devices.IDevice> SbDevices
             = new List<SharpBroadlink.Devices.IDevice>();
         private static IServiceProvider Provider = null;
+        private static ILogger Logger = null;
         private static Task LoopRunner = null;
         private static Job _loopRunnerJob = null;
 
         public static void SetLoopRunner(IServiceProvider provider)
         {
             BrDeviceStore.Provider = provider;
+            BrDeviceStore.Logger = BrDeviceStore.Provider.GetService<ILogger<BrDeviceStore>>();
 
             using (var serviceScope = BrDeviceStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
@@ -82,6 +85,8 @@ namespace BroadlinkWeb.Models.Stores
                     }
                     catch (Exception ex)
                     {
+                        BrDeviceStore.Logger.LogError(ex, "BrDeviceStore.LoopRunner Failure.");
+
                         Xb.Util.Out(ex);
                         Xb.Util.Out("FUUUUUUUUUUUUUUUUUUUUUUCK!!!");
                         Xb.Util.Out("Regularly Scan FAIL!!!!!!!!!!!!");

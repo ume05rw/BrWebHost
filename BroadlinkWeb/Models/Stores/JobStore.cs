@@ -13,17 +13,9 @@ namespace BroadlinkWeb.Models.Stores
 {
     public class JobStore : IDisposable
     {
-        //private Dbc _dbc;
-        //private IServiceProvider _provider;
-
-        public JobStore(
-            //[FromServices] Dbc dbc,
-            //[FromServices] IServiceProvider provider
-        )
+        public JobStore()
         {
             Xb.Util.Out("JobStore.Constructor");
-            //this._dbc = dbc;
-            //this._provider = provider;
         }
 
         public async Task<Job> CreateJob(string name, string json = null)

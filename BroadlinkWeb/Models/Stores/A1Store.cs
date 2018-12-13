@@ -2,6 +2,7 @@ using BroadlinkWeb.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SharpBroadlink;
 using SharpBroadlink.Devices;
@@ -16,12 +17,14 @@ namespace BroadlinkWeb.Models.Stores
     public class A1Store : IDisposable
     {
         private static IServiceProvider Provider = null;
+        private static ILogger Logger = null;
         private static Task LoopRunner = null;
         private static Job _loopRunnerJob = null;
 
         public static void SetLoopRunner(IServiceProvider provider)
         {
             A1Store.Provider = provider;
+            A1Store.Logger = A1Store.Provider.GetService<ILogger<A1Store>>();
 
             using (var serviceScope = A1Store.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             using (var jobStore = serviceScope.ServiceProvider.GetService<JobStore>())
@@ -150,6 +153,8 @@ namespace BroadlinkWeb.Models.Stores
                     }
                     catch (Exception ex)
                     {
+                        A1Store.Logger.LogError(ex, "A1Store.LoopRunner Failure.");
+
                         Xb.Util.Out(ex);
                         Xb.Util.Out("FUUUUUUUUUUUUUUUUUUUUUUCK!!!");
                         Xb.Util.Out("Regularly Scan FAIL!!!!!!!!!!!!");

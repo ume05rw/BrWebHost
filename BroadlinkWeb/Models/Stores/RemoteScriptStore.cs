@@ -107,7 +107,6 @@ namespace BroadlinkWeb.Models.Stores
                 {
                     this._dbc.AddRange(newScripts);
                     hasDbChanged = true;
-
                 }
 
                 // 保存済みに存在し、応答に無いもの = 削除された

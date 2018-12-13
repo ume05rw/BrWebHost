@@ -12,6 +12,7 @@ using System.Text;
 using Newtonsoft.Json;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using Microsoft.Extensions.Logging;
 
 namespace BroadlinkWeb.Models.Stores
 {
@@ -28,12 +29,15 @@ namespace BroadlinkWeb.Models.Stores
 
 
         private static IServiceProvider Provider = null;
+        private static ILogger Logger = null;
         private static Task LoopRunner = null;
         private static Job _loopRunnerJob = null;
 
         public static void SetLoopRunnerAndReciever(IServiceProvider provider)
         {
             RemoteHostStore.Provider = provider;
+            RemoteHostStore.Logger = RemoteHostStore.Provider.GetService<ILogger<RemoteHostStore>>();
+
             RemoteHostStore.SetReciever();
             RemoteHostStore.SetLoopRunner();
         }
@@ -76,35 +80,42 @@ namespace BroadlinkWeb.Models.Stores
 
         private static void OnRecieverRecieved(object sender, Xb.Net.RemoteData rdata)
         {
-            // 受信文字列が仕様外のとき、なにもしない。
-            var call = Encoding.UTF8.GetString(rdata.Bytes);
-            if (call != RemoteHostStore.CallString)
-                return;
-
-            var addr = rdata.RemoteEndPoint.Address.GetAddressBytes();
-
-            // IPv4射影アドレスのとき、v4アドレスに変換。
-            if (
-                // 長さが16バイト
-                addr.Length == 16
-                // 先頭10バイトが全て0
-                && addr.Take(10).All(b => b == 0)
-                // 11, 12バイトが FF
-                && addr.Skip(10).Take(2).All(b => b == 255)
-            )
+            try
             {
-                addr = addr.Skip(12).Take(4).ToArray();
+                // 受信文字列が仕様外のとき、なにもしない。
+                var call = Encoding.UTF8.GetString(rdata.Bytes);
+                if (call != RemoteHostStore.CallString)
+                    return;
+
+                var addr = rdata.RemoteEndPoint.Address.GetAddressBytes();
+
+                // IPv4射影アドレスのとき、v4アドレスに変換。
+                if (
+                    // 長さが16バイト
+                    addr.Length == 16
+                    // 先頭10バイトが全て0
+                    && addr.Take(10).All(b => b == 0)
+                    // 11, 12バイトが FF
+                    && addr.Skip(10).Take(2).All(b => b == 255)
+                )
+                {
+                    addr = addr.Skip(12).Take(4).ToArray();
+                }
+
+                // ローカルアドレスからの呼びかけのとき、なにもしない。
+                if (RemoteHostStore._localAddresses.Any(b => b.SequenceEqual(addr)))
+                    return;
+
+                // 応答を返す。
+                var resStr = RemoteHostStore.ResponseString + System.Environment.MachineName;
+                var response = Encoding.UTF8.GetBytes(resStr);
+                //RemoteHostStore._socket.SendTo(response, rdata.RemoteEndPoint);
+                Xb.Net.Udp.SendOnce(response, rdata.RemoteEndPoint);
             }
-
-            // ローカルアドレスからの呼びかけのとき、なにもしない。
-            if (RemoteHostStore._localAddresses.Any(b => b.SequenceEqual(addr)))
-                return;
-
-            // 応答を返す。
-            var resStr = RemoteHostStore.ResponseString + System.Environment.MachineName;
-            var response = Encoding.UTF8.GetBytes(resStr);
-            //RemoteHostStore._socket.SendTo(response, rdata.RemoteEndPoint);
-            Xb.Net.Udp.SendOnce(response, rdata.RemoteEndPoint);
+            catch (Exception ex)
+            {
+                RemoteHostStore.Logger.LogError(ex, "RemoteHostStore.OnRecieverRecieved Failure.");
+            }
         }
 
         private static void SetLoopRunner()
@@ -176,6 +187,8 @@ namespace BroadlinkWeb.Models.Stores
                     }
                     catch (Exception ex)
                     {
+                        RemoteHostStore.Logger.LogError(ex, "RemoteHostStore.LoopRunner Failure.");
+
                         Xb.Util.Out(ex);
                         Xb.Util.Out("FUUUUUUUUUUUUUUUUUUUUUUCK!!!");
                         Xb.Util.Out("Regularly Scan FAIL!!!!!!!!!!!!");

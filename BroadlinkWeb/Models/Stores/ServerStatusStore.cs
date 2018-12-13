@@ -19,6 +19,7 @@ namespace BroadlinkWeb.Models.Stores
     public class ServerStatusStore : IDisposable
     {
         private static IServiceProvider Provider = null;
+        private static ILogger Logger = null;
         private static Task LoopRunner = null;
         private static Job _loopRunnerJob = null;
         private static Process Process = null;
@@ -26,6 +27,7 @@ namespace BroadlinkWeb.Models.Stores
         public static void SetLoopRunner(IServiceProvider provider)
         {
             ServerStatusStore.Provider = provider;
+            ServerStatusStore.Logger = ServerStatusStore.Provider.GetService<ILogger<ServerStatusStore>>();
             ServerStatusStore.Process = Process.GetCurrentProcess();
 
             using (var serviceScope = ServerStatusStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
@@ -92,8 +94,7 @@ namespace BroadlinkWeb.Models.Stores
 
                             srvStatus.Recorded = DateTime.Now;
 
-                            var logger = serviceScope.ServiceProvider.GetService<ILogger<ServerStatusStore>>();
-                            logger.Log(
+                            ServerStatusStore.Logger.Log(
                                 LogLevel.Debug,
                                 "Server Status: " + JsonConvert.SerializeObject(srvStatus)
                             );
@@ -129,6 +130,8 @@ namespace BroadlinkWeb.Models.Stores
                     }
                     catch (Exception ex)
                     {
+                        ServerStatusStore.Logger.LogError(ex, "ServerStatusStore.LoopRunner Failure.");
+
                         Xb.Util.Out(ex);
                         Xb.Util.Out("FUUUUUUUUUUUUUUUUUUUUUUCK!!!");
                         Xb.Util.Out("Regularly Scan FAIL!!!!!!!!!!!!");
