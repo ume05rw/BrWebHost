@@ -32,6 +32,7 @@ namespace BroadlinkWeb.Models
 
         public DbSet<Job> Jobs { get; set; }
 
+        public DbSet<ServerStatus> ServerStatuses { get; set; }
 
         /// <summary>
         /// Constructor

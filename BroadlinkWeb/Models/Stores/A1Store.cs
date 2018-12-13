@@ -24,9 +24,9 @@ namespace BroadlinkWeb.Models.Stores
             A1Store.Provider = provider;
 
             using (var serviceScope = A1Store.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            using (var jobStore = serviceScope.ServiceProvider.GetService<JobStore>())
             {
                 // ジョブを取得する。
-                var jobStore = serviceScope.ServiceProvider.GetService<JobStore>();
                 A1Store._loopRunnerJob = jobStore.CreateJob("A1 Sensor Recorder")
                     .ConfigureAwait(false)
                     .GetAwaiter()

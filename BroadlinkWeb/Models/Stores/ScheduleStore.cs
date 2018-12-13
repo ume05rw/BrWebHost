@@ -67,9 +67,6 @@ namespace BroadlinkWeb.Models.Stores
                             var json = JsonConvert.SerializeObject(status);
                             await ScheduleStore._loopRunnerJob.SetProgress((decimal)0.5, json);
 
-                            // ガベコレ実行。
-                            GC.Collect();
-
                             // 20秒待機
                             await Task.Delay(1000 * 20);
                         }

@@ -87,7 +87,8 @@ namespace BroadlinkWeb
                 .AddDbStore<ScriptStore>()
                 .AddDbStore<Sp2Store>()
                 .AddDbStore<A1Store>()
-                .AddDbStore<ScheduleStore>();
+                .AddDbStore<ScheduleStore>()
+                .AddDbStore<ServerStatusStore>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -104,6 +105,7 @@ namespace BroadlinkWeb
                 // マイグレーションと通常起動の区別がつかないか？
                 // なんか違和感がある実装。
                 // 代替案はあるか？
+                ServerStatusStore.SetLoopRunner(app.ApplicationServices);
                 BrDeviceStore.SetLoopRunner(app.ApplicationServices);
                 RemoteHostStore.SetLoopRunnerAndReciever(app.ApplicationServices);
                 A1Store.SetLoopRunner(app.ApplicationServices);

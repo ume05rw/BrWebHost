@@ -355,6 +355,42 @@ namespace BroadlinkWeb.Migrations
                     b.ToTable("schedules");
                 });
 
+            modelBuilder.Entity("BroadlinkWeb.Models.Entities.ServerStatus", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("ActiveCPTs");
+
+                    b.Property<int>("ActiveWTs");
+
+                    b.Property<int>("AvailableCPTs");
+
+                    b.Property<int>("AvailableWTs");
+
+                    b.Property<int>("MaxCPTs");
+
+                    b.Property<int>("MaxWTs");
+
+                    b.Property<long>("NonpagedSystemMemorySize");
+
+                    b.Property<long>("PagedMemorySize");
+
+                    b.Property<long>("PagedSystemMemorySize");
+
+                    b.Property<long>("PrivateMemorySize");
+
+                    b.Property<DateTime>("Recorded");
+
+                    b.Property<long>("VirtualMemorySize");
+
+                    b.Property<long>("WorkingSetSize");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("serverstatuses");
+                });
+
             modelBuilder.Entity("BroadlinkWeb.Models.Entities.Control", b =>
                 {
                     b.HasOne("BroadlinkWeb.Models.Entities.ControlSet", "ControlSet")
