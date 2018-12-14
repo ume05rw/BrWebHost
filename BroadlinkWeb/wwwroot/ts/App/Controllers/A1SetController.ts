@@ -149,13 +149,15 @@ namespace App.Controllers {
                         const hour = (val.RecordedDate)
                             ? val.RecordedDate.getHours()
                             : 0;
-                        labels.push(((hour % 4) === 0) ? hour.toString() : '');
+                        //labels.push(((hour % 4) === 0) ? hour.toString() : '');
+                        labels.push(hour.toString());
                         break;
                     case ChartType.Daily:
                         const day = (val.RecordedDate)
                             ? val.RecordedDate.getDate()
                             : 0;
-                        labels.push(((day % 4) === 0) ? day.toString() : '');
+                        //labels.push(((day % 4) === 0) ? day.toString() : '');
+                        labels.push(day.toString());
                         break;
                     default:
                         // グラフタイプが追加された？
