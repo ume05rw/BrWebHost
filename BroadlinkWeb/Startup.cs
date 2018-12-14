@@ -18,12 +18,14 @@ namespace BroadlinkWeb
 {
     public class Startup
     {
+        public IConfiguration Configuration { get; }
+        private ILogger _logger { get; set; }
+
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            this.Configuration = configuration;
         }
-
-        public IConfiguration Configuration { get; }
+        
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -96,6 +98,8 @@ namespace BroadlinkWeb
         {
             try
             {
+                this._logger = app.ApplicationServices.GetService<ILogger<ServerStatusStore>>();
+
                 // スコープされていないサービスプロバイダの参照を、各static実装にセットしておく。
                 Job.SetServiceProvider(app.ApplicationServices);
                 SceneStore.SetServiceProvider(app.ApplicationServices);
@@ -153,6 +157,8 @@ namespace BroadlinkWeb
 
         private void OnShutdown()
         {
+            this._logger.Log(LogLevel.Debug, "Startup.OnShutdown");
+
             Job.ReleaseServiceProvider();
             SceneStore.ReleaseServiceProvider();
             ControlSetStore.ReleaseServiceProvider();
