@@ -41,7 +41,6 @@ namespace BroadlinkWeb.Models.Stores
             ScheduleStore.LoopRunner = Task.Run(async () =>
             {
                 var status = new LoopJobStatus();
-                var hour = DateTime.Now.Hour;
 
                 // 20秒に1回、スケジュールの実行時間を検証する。
                 while (true)

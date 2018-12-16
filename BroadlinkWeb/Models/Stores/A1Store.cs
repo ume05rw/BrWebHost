@@ -160,6 +160,11 @@ namespace BroadlinkWeb.Models.Stores
                         Xb.Util.Out("Regularly Scan FAIL!!!!!!!!!!!!");
                         //throw;
 
+                        hour = DateTime.Now.Hour;
+                        sumCount = 0;
+                        sums = new Dictionary<int, A1Values>();
+                        records = new Dictionary<int, A1Values>();
+
                         status.Count++;
                         status.ErrorCount++;
                         status.LatestError = string.Join(" ", Xb.Util.GetErrorString(ex));

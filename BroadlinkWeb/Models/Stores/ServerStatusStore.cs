@@ -137,6 +137,8 @@ namespace BroadlinkWeb.Models.Stores
                         Xb.Util.Out("Regularly Scan FAIL!!!!!!!!!!!!");
                         //throw;
 
+                        srvStatus = new ServerStatus();
+
                         jobStatus.Count++;
                         jobStatus.ErrorCount++;
                         jobStatus.LatestError = string.Join(" ", Xb.Util.GetErrorString(ex));
