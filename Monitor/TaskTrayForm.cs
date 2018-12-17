@@ -81,6 +81,8 @@ namespace Monitor
 
             this.SetFirewall();
             this.InitTasktray();
+            this.OnStart(this, new EventArgs());
+            this.StartMonitor();
         }
 
         private void InitTasktray()
@@ -139,9 +141,6 @@ namespace Monitor
                 default:
                     throw new ArgumentException($"Unexpected target: {this._target}");
             }
-
-            this.OnStart(this, new EventArgs());
-            this.StartMonitor();
         }
 
         private void OnStart(object sender, EventArgs e)

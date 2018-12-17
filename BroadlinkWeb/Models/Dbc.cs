@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace BroadlinkWeb.Models
@@ -12,6 +13,14 @@ namespace BroadlinkWeb.Models
     /// </summary>
     public class Dbc : DbContext
     {
+        private class LockerObject
+        {
+            public bool IsLocked { get; set; }
+        }
+
+        private static LockerObject Locker = new LockerObject();
+
+
         public DbSet<BrDevice> BrDevices { get; set; }
 
         public DbSet<ControlSet> ControlSets { get; set; }
@@ -44,6 +53,52 @@ namespace BroadlinkWeb.Models
             Xb.Util.Out("Dbc.Constructor");
         }
 
+        /// <summary>
+        /// SaveChanges
+        /// </summary>
+        /// <returns></returns>
+        /// <remarks>
+        /// SQLiteのとき、マルチスレッドでDBファイル取得に失敗する現象への対応。
+        /// </remarks>
+        public override int SaveChanges()
+        {
+            var result = default(int);
+
+            lock(Dbc.Locker)
+            {
+                Dbc.Locker.IsLocked = true;
+
+                result = base.SaveChanges();
+
+                Dbc.Locker.IsLocked = false;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// SaveChangesAsync
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// SQLiteのとき、マルチスレッドでDBファイル取得に失敗する現象への対応。
+        /// </remarks>
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var result = default(Task<int>);
+
+            lock(Dbc.Locker)
+            {
+                Dbc.Locker.IsLocked = true;
+
+                result = base.SaveChangesAsync(cancellationToken);
+
+                Dbc.Locker.IsLocked = false;
+            }
+
+            return result;
+        }
 
         public override void Dispose()
         {
@@ -52,6 +107,7 @@ namespace BroadlinkWeb.Models
         }
 
 
+        #region "Creating Seed"
 
         /// <summary>
         /// シード生成
@@ -858,5 +914,7 @@ namespace BroadlinkWeb.Models
                 }
             );
         }
+
+        #endregion
     }
 }
