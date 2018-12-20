@@ -165,6 +165,9 @@ namespace BroadlinkWeb.Models.Stores
                         sums = new Dictionary<int, A1Values>();
                         records = new Dictionary<int, A1Values>();
 
+                        // 1秒待機。DBアクセスを連続させない。
+                        await Task.Delay(1000);
+
                         status.Count++;
                         status.ErrorCount++;
                         status.LatestError = string.Join(" ", Xb.Util.GetErrorString(ex));

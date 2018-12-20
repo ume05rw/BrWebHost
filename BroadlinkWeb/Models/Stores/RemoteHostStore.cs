@@ -193,6 +193,9 @@ namespace BroadlinkWeb.Models.Stores
                         Xb.Util.Out("FUUUUUUUUUUUUUUUUUUUUUUCK!!!");
                         Xb.Util.Out("Regularly Scan FAIL!!!!!!!!!!!!");
 
+                        // 1秒待機。DBアクセスを連続させない。
+                        await Task.Delay(1000);
+
                         status.Count++;
                         status.ErrorCount++;
                         status.LatestError = string.Join(" ", Xb.Util.GetErrorString(ex));

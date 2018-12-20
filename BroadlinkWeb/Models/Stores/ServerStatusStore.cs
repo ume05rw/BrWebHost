@@ -139,6 +139,9 @@ namespace BroadlinkWeb.Models.Stores
 
                         srvStatus = new ServerStatus();
 
+                        // 1秒待機。DBアクセスを連続させない。
+                        await Task.Delay(1000);
+
                         jobStatus.Count++;
                         jobStatus.ErrorCount++;
                         jobStatus.LatestError = string.Join(" ", Xb.Util.GetErrorString(ex));
