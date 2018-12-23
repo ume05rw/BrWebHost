@@ -9,8 +9,8 @@ namespace BroadlinkWeb.Models.Entities
     [NotMapped]
     public class LoopJobStatus
     {
-        public int Count { get; set; } = 0;
-        public int ErrorCount { get; set; } = 0;
+        public long Count { get; set; } = 0;
+        public long ErrorCount { get; set; } = 0;
         public string StatusMessage { get; set; } = "";
         public string LatestError { get; set; } = "";
     }

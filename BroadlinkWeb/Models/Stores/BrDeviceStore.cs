@@ -18,101 +18,102 @@ namespace BroadlinkWeb.Models.Stores
     {
         private static List<SharpBroadlink.Devices.IDevice> SbDevices
             = new List<SharpBroadlink.Devices.IDevice>();
-        private static IServiceProvider Provider = null;
-        private static ILogger Logger = null;
-        private static Task LoopRunner = null;
-        private static Job _loopRunnerJob = null;
 
-        public static void SetLoopRunner(IServiceProvider provider)
-        {
-            BrDeviceStore.Provider = provider;
-            BrDeviceStore.Logger = BrDeviceStore.Provider.GetService<ILogger<BrDeviceStore>>();
+        //private static IServiceProvider Provider = null;
+        //private static ILogger Logger = null;
+        //private static Task LoopRunner = null;
+        //private static Job _loopRunnerJob = null;
 
-            using (var serviceScope = BrDeviceStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
-            {
-                // ジョブを取得する。
-                using (var jobStore = serviceScope.ServiceProvider.GetService<JobStore>())
-                {
-                    BrDeviceStore._loopRunnerJob = jobStore.CreateJob("Broadlink-Device LoopScanner")
-                        .ConfigureAwait(false)
-                        .GetAwaiter()
-                        .GetResult();
-                }
+        //public static void SetLoopRunner(IServiceProvider provider)
+        //{
+        //    BrDeviceStore.Provider = provider;
+        //    BrDeviceStore.Logger = BrDeviceStore.Provider.GetService<ILogger<BrDeviceStore>>();
 
-                // 最初の一回目スキャンは同期的に行う。
-                Xb.Util.Out("First Broadlink Device Scan");
+        //    using (var serviceScope = BrDeviceStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+        //    {
+        //        // ジョブを取得する。
+        //        using (var jobStore = serviceScope.ServiceProvider.GetService<JobStore>())
+        //        {
+        //            BrDeviceStore._loopRunnerJob = jobStore.CreateJob("Broadlink-Device LoopScanner")
+        //                .ConfigureAwait(false)
+        //                .GetAwaiter()
+        //                .GetResult();
+        //        }
 
-                using (var store = serviceScope.ServiceProvider.GetService<BrDeviceStore>())
-                    store.Refresh();
-            }
+        //        // 最初の一回目スキャンは同期的に行う。
+        //        Xb.Util.Out("First Broadlink Device Scan");
 
-            // なんか違和感がある実装。
-            // 代替案はあるか？
-            BrDeviceStore.LoopRunner = Task.Run(async () =>
-            {
-                var status = new LoopJobStatus();
+        //        using (var store = serviceScope.ServiceProvider.GetService<BrDeviceStore>())
+        //            store.Refresh();
+        //    }
 
-                // 5分に1回、LAN上のBroadlinkデバイスをスキャンする。
-                while (true)
-                {
-                    try
-                    {
-                        try
-                        {
-                            if (BrDeviceStore.Provider == null)
-                                break;
-                        }
-                        catch (Exception)
-                        {
-                            break;
-                        }
+        //    // なんか違和感がある実装。
+        //    // 代替案はあるか？
+        //    BrDeviceStore.LoopRunner = Task.Run(async () =>
+        //    {
+        //        var status = new LoopJobStatus();
 
-                        using (var serviceScope = BrDeviceStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
-                        using (var store = serviceScope.ServiceProvider.GetService<BrDeviceStore>())
-                        {
-                            await Task.Delay(1000 * 60 * 5);
+        //        // 5分に1回、LAN上のBroadlinkデバイスをスキャンする。
+        //        while (true)
+        //        {
+        //            try
+        //            {
+        //                try
+        //                {
+        //                    if (BrDeviceStore.Provider == null)
+        //                        break;
+        //                }
+        //                catch (Exception)
+        //                {
+        //                    break;
+        //                }
 
-                            Xb.Util.Out("Regularly Broadlink Device Scan");
+        //                using (var serviceScope = BrDeviceStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+        //                using (var store = serviceScope.ServiceProvider.GetService<BrDeviceStore>())
+        //                {
+        //                    await Task.Delay(1000 * 60 * 5);
+
+        //                    Xb.Util.Out("Regularly Broadlink Device Scan");
                             
-                            var devs = store.Refresh();
+        //                    var devs = store.Refresh();
 
-                            status.Count++;
-                            status.StatusMessage = $"Cached Device Count: {devs.Count()}";
-                            var json = JsonConvert.SerializeObject(status);
+        //                    status.Count++;
+        //                    status.StatusMessage = $"Cached Device Count: {devs.Count()}";
+        //                    var json = JsonConvert.SerializeObject(status);
 
-                            await BrDeviceStore._loopRunnerJob.SetProgress((decimal)0.5, json);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        BrDeviceStore.Logger.LogError(ex, "BrDeviceStore.LoopRunner Failure.");
+        //                    await BrDeviceStore._loopRunnerJob.SetProgress((decimal)0.5, json);
+        //                }
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                BrDeviceStore.Logger.LogError(ex, "BrDeviceStore.LoopRunner Failure.");
 
-                        Xb.Util.Out(ex);
-                        Xb.Util.Out("FUUUUUUUUUUUUUUUUUUUUUUCK!!!");
-                        Xb.Util.Out("Regularly Scan FAIL!!!!!!!!!!!!");
-                        //throw;
+        //                Xb.Util.Out(ex);
+        //                Xb.Util.Out("FUUUUUUUUUUUUUUUUUUUUUUCK!!!");
+        //                Xb.Util.Out("Regularly Scan FAIL!!!!!!!!!!!!");
+        //                //throw;
 
-                        // 1秒待機。DBアクセスを連続させない。
-                        await Task.Delay(1000);
+        //                // 1秒待機。DBアクセスを連続させない。
+        //                await Task.Delay(1000);
 
-                        status.Count++;
-                        status.ErrorCount++;
-                        status.LatestError = string.Join(" ", Xb.Util.GetErrorString(ex));
-                        var json = JsonConvert.SerializeObject(status);
-                        await BrDeviceStore._loopRunnerJob.SetProgress((decimal)0.5, json);
-                    }
-                }
+        //                status.Count++;
+        //                status.ErrorCount++;
+        //                status.LatestError = string.Join(" ", Xb.Util.GetErrorString(ex));
+        //                var json = JsonConvert.SerializeObject(status);
+        //                await BrDeviceStore._loopRunnerJob.SetProgress((decimal)0.5, json);
+        //            }
+        //        }
 
-                BrDeviceStore.ReleaseServiceProvider();
+        //        BrDeviceStore.ReleaseServiceProvider();
 
-                Xb.Util.Out("BrDeviceStore.LoopScan Closed");
-            });
-        }
+        //        Xb.Util.Out("BrDeviceStore.LoopScan Closed");
+        //    });
+        //}
 
-        public static void ReleaseServiceProvider()
-        {
-            BrDeviceStore.Provider = null;
-        }
+        //public static void ReleaseServiceProvider()
+        //{
+        //    BrDeviceStore.Provider = null;
+        //}
 
 
         private Dbc _dbc;
@@ -266,16 +267,6 @@ namespace BroadlinkWeb.Models.Stores
                 .ConfigureAwait(false)
                 .GetAwaiter()
                 .GetResult();
-
-            using (var serviceScope = BrDeviceStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
-            using (var store = serviceScope.ServiceProvider.GetService<ControlSetStore>())
-            {
-                Xb.Util.Out("BrDevicesController.Refresh - Ensure Device's ControlSet");
-                store.EnsureBrControlSets(entities)
-                    .ConfigureAwait(false)
-                    .GetAwaiter()
-                    .GetResult();
-            }
 
             return entities;
         }

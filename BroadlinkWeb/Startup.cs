@@ -104,16 +104,15 @@ namespace BroadlinkWeb
                 Job.SetServiceProvider(app.ApplicationServices);
                 SceneStore.SetServiceProvider(app.ApplicationServices);
                 ControlSetStore.SetServiceProvider(app.ApplicationServices);
+                RemoteHostStore.SetServiceProvider(app.ApplicationServices);
+                RemoteHostStore.SetReciever();
+                ScheduleStore.SetServiceProvider(app.ApplicationServices);
 
                 // TODO: マイグレーション時にも以下が実行されてしまい、落ちる。
                 // マイグレーションと通常起動の区別がつかないか？
                 // なんか違和感がある実装。
                 // 代替案はあるか？
-                ServerStatusStore.SetLoopRunner(app.ApplicationServices);
-                BrDeviceStore.SetLoopRunner(app.ApplicationServices);
-                RemoteHostStore.SetLoopRunnerAndReciever(app.ApplicationServices);
-                A1Store.SetLoopRunner(app.ApplicationServices);
-                ScheduleStore.SetLoopRunner(app.ApplicationServices);
+                Timer.CreateInstance(app.ApplicationServices);
             }
             catch (Exception ex)
             {
@@ -159,12 +158,12 @@ namespace BroadlinkWeb
         {
             this._logger.Log(LogLevel.Debug, "Startup.OnShutdown");
 
+            Timer.DisposeInstance();
+
             Job.ReleaseServiceProvider();
             SceneStore.ReleaseServiceProvider();
             ControlSetStore.ReleaseServiceProvider();
             RemoteHostStore.ReleaseServiceProvider();
-            BrDeviceStore.ReleaseServiceProvider();
-            A1Store.ReleaseServiceProvider();
             ScheduleStore.ReleaseServiceProvider();
         }
     }

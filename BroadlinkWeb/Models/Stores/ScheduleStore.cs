@@ -17,86 +17,10 @@ namespace BroadlinkWeb.Models.Stores
     public class ScheduleStore : IDisposable
     {
         private static IServiceProvider Provider = null;
-        private static ILogger Logger = null;
-        private static Task LoopRunner = null;
-        private static Job _loopRunnerJob = null;
 
-        public static void SetLoopRunner(IServiceProvider provider)
+        public static void SetServiceProvider(IServiceProvider provider)
         {
             ScheduleStore.Provider = provider;
-            ScheduleStore.Logger = ScheduleStore.Provider.GetService<ILogger<ScheduleStore>>();
-
-            using (var serviceScope = ScheduleStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
-            using (var jobStore = serviceScope.ServiceProvider.GetService<JobStore>())
-            {
-                // ジョブを取得する。
-                ScheduleStore._loopRunnerJob = jobStore.CreateJob("Schedule LoopScanner")
-                    .ConfigureAwait(false)
-                    .GetAwaiter()
-                    .GetResult();
-            }
-
-            // なんか違和感がある実装。
-            // 代替案はあるか？
-            ScheduleStore.LoopRunner = Task.Run(async () =>
-            {
-                var status = new LoopJobStatus();
-
-                // 20秒に1回、スケジュールの実行時間を検証する。
-                while (true)
-                {
-                    try
-                    {
-                        try
-                        {
-                            if (ScheduleStore.Provider == null)
-                                break;
-                        }
-                        catch (Exception)
-                        {
-                            break;
-                        }
-
-                        using (var serviceScope = ScheduleStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
-                        using (var store = serviceScope.ServiceProvider.GetService<ScheduleStore>())
-                        {
-                            Xb.Util.Out("Regularly Scehule Ticker");
-                            var schedules = await store.Tick();
-
-                            // ジョブ状態を記録
-                            status.Count++;
-                            status.StatusMessage = $"Schedule Count: {schedules.Length}";
-                            var json = JsonConvert.SerializeObject(status);
-                            await ScheduleStore._loopRunnerJob.SetProgress((decimal)0.5, json);
-
-                            // 20秒待機
-                            await Task.Delay(1000 * 20);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        ScheduleStore.Logger.LogError(ex, "ScheduleStore.LoopRunner Failure.");
-
-                        Xb.Util.Out(ex);
-                        Xb.Util.Out("FUUUUUUUUUUUUUUUUUUUUUUCK!!!");
-                        Xb.Util.Out("Regularly Scan FAIL!!!!!!!!!!!!");
-                        //throw;
-
-                        // 1秒待機。DBアクセスを連続させない。
-                        await Task.Delay(1000);
-
-                        status.Count++;
-                        status.ErrorCount++;
-                        status.LatestError = string.Join(" ", Xb.Util.GetErrorString(ex));
-                        var json = JsonConvert.SerializeObject(status);
-                        await ScheduleStore._loopRunnerJob.SetProgress((decimal)0.5, json);
-                    }
-                }
-
-                ScheduleStore.ReleaseServiceProvider();
-
-                Xb.Util.Out("ScheduleStore.LoopScan Closed");
-            });
         }
 
         public static void ReleaseServiceProvider()

@@ -23,26 +23,34 @@ namespace BroadlinkWeb.Models.Stores
 
         private static Xb.Net.Udp _socket = null;
         private static List<byte[]> _localAddresses;
-
-        // 一応、維持。
-        private static Xb.App.Process Replyer = null;
-
-
         private static IServiceProvider Provider = null;
         private static ILogger Logger = null;
-        private static Task LoopRunner = null;
-        private static Job _loopRunnerJob = null;
 
-        public static void SetLoopRunnerAndReciever(IServiceProvider provider)
+        public static void SetServiceProvider(IServiceProvider provider)
         {
             RemoteHostStore.Provider = provider;
             RemoteHostStore.Logger = RemoteHostStore.Provider.GetService<ILogger<RemoteHostStore>>();
-
-            RemoteHostStore.SetReciever();
-            RemoteHostStore.SetLoopRunner();
         }
 
-        private static void SetReciever()
+        public static void ReleaseServiceProvider()
+        {
+            RemoteHostStore.Provider = null;
+            RemoteHostStore.Logger = null;
+
+            if (RemoteHostStore._socket != null)
+            {
+                RemoteHostStore._socket.Dispose();
+                RemoteHostStore._socket = null;
+            }
+
+            if (RemoteHostStore._localAddresses != null)
+            {
+                RemoteHostStore._localAddresses.Clear();
+                RemoteHostStore._localAddresses = null;
+            }
+        }
+
+        public static void SetReciever()
         {
             try
             {
@@ -61,7 +69,11 @@ namespace BroadlinkWeb.Models.Stores
                 //    = Xb.App.Process.Create("dotnet", $"\"{dllPath}\" {Program.Port}", false, execPath);
 
                 if (RemoteHostStore._socket != null)
+                {
                     RemoteHostStore._socket.Dispose();
+                    RemoteHostStore._socket = null;
+                }
+                    
 
                 RemoteHostStore._localAddresses = new List<byte[]>();
                 var locals = Xb.Net.Util.GetLocalAddresses();
@@ -115,114 +127,6 @@ namespace BroadlinkWeb.Models.Stores
             catch (Exception ex)
             {
                 RemoteHostStore.Logger.LogError(ex, "RemoteHostStore.OnRecieverRecieved Failure.");
-            }
-        }
-
-        private static void SetLoopRunner()
-        {
-            using (var serviceScope = RemoteHostStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
-            using (var jobStore = serviceScope.ServiceProvider.GetService<JobStore>())
-            {
-                // ジョブを取得する。
-                RemoteHostStore._loopRunnerJob = jobStore.CreateJob("RemoteHost LoopScanner")
-                    .ConfigureAwait(false)
-                    .GetAwaiter()
-                    .GetResult();
-
-                // 最初の一回目スキャンは同期的に行う。
-                Xb.Util.Out("First Remote Host Scan");
-                using (var hostStore = serviceScope.ServiceProvider.GetService<RemoteHostStore>())
-                    hostStore.Refresh();
-
-                using (var scriptStore = serviceScope.ServiceProvider.GetService<RemoteScriptStore>())
-                {
-                    scriptStore.Refresh()
-                        .GetAwaiter()
-                        .GetResult();
-                }
-            }
-
-            // なんか違和感がある実装。
-            // 代替案はあるか？
-            RemoteHostStore.LoopRunner = Task.Run(async () =>
-            {
-                var status = new LoopJobStatus();
-
-                // 5分に1回、LAN上のBroadlink-Webホストをスキャンする。
-                while (true)
-                {
-                    try
-                    {
-                        try
-                        {
-                            if (RemoteHostStore.Provider == null)
-                                break;
-                        }
-                        catch (Exception)
-                        {
-                            break;
-                        }
-
-                        using (var serviceScope = RemoteHostStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
-                        {
-                            await Task.Delay(1000 * 60 * 5);
-
-                            Xb.Util.Out("Regularly Remote Host Scan");
-                            using (var hostStore = serviceScope.ServiceProvider.GetService<RemoteHostStore>())
-                            using (var scriptStore = serviceScope.ServiceProvider.GetService<RemoteScriptStore>())
-                            {
-                                var hosts = hostStore.Refresh();
-
-                                var scripts = scriptStore.Refresh()
-                                    .ConfigureAwait(false)
-                                    .GetAwaiter()
-                                    .GetResult();
-
-                                status.Count++;
-                                status.StatusMessage = $"Remote Hosts Count: {hosts.Count()}";
-                                var json = JsonConvert.SerializeObject(status);
-                                await RemoteHostStore._loopRunnerJob.SetProgress((decimal)0.5, json);
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        RemoteHostStore.Logger.LogError(ex, "RemoteHostStore.LoopRunner Failure.");
-
-                        Xb.Util.Out(ex);
-                        Xb.Util.Out("FUUUUUUUUUUUUUUUUUUUUUUCK!!!");
-                        Xb.Util.Out("Regularly Scan FAIL!!!!!!!!!!!!");
-
-                        // 1秒待機。DBアクセスを連続させない。
-                        await Task.Delay(1000);
-
-                        status.Count++;
-                        status.ErrorCount++;
-                        status.LatestError = string.Join(" ", Xb.Util.GetErrorString(ex));
-                        var json = JsonConvert.SerializeObject(status);
-                        await RemoteHostStore._loopRunnerJob.SetProgress((decimal)0.5, json);
-                    }
-                }
-
-                RemoteHostStore.ReleaseServiceProvider();
-
-                Xb.Util.Out("RemoteHostStore.LoopScan Closed");
-            });
-        }
-
-        public static void ReleaseServiceProvider()
-        {
-            RemoteHostStore.Provider = null;
-            if (RemoteHostStore.Replyer != null)
-                RemoteHostStore.Replyer.Dispose();
-
-            if (RemoteHostStore._socket != null)
-                RemoteHostStore._socket.Dispose();
-
-            if (RemoteHostStore._localAddresses != null)
-            {
-                RemoteHostStore._localAddresses.Clear();
-                RemoteHostStore._localAddresses = null;
             }
         }
 
