@@ -6,9 +6,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
 using BroadlinkWeb.Models.Entities;
+using BroadlinkWeb.Models.Stores;
 using Newtonsoft.Json;
 
-namespace BroadlinkWeb.Models.Stores
+namespace BroadlinkWeb.Models
 {
     public class Timer : IDisposable
     {
@@ -145,11 +146,19 @@ namespace BroadlinkWeb.Models.Stores
                         {
                             this._logger.LogDebug("Timer._loopRunner Count Reset.");
                             this._loopJobStatus.Count = 0;
-                        }                            
+                        }
 
+                        var statusJson = JsonConvert.SerializeObject(this._loopJobStatus);
+                        Xb.Util.Out("Timer._loopRunner Status: " + statusJson);
+                        this._logger.LogDebug("Timer._loopRunner Status: " + statusJson);
+
+                        // 30回に一度、JobStatusのレコードを更新する。
+                        // 1秒に一回では多すぎる。
                         this._loopJobStatus.Count++;
-                        var json = JsonConvert.SerializeObject(this._loopJobStatus);
-                        await this._loopJob.SetProgress((decimal)0.5, json);
+                        if (this._loopJobStatus.Count % 30 == 0)
+                        {
+                            await this._loopJob.SetProgress((decimal)0.5, statusJson);
+                        }
 
                         await Task.Delay(1000);
                     }
