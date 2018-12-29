@@ -85,6 +85,14 @@ namespace BroadlinkWeb.Models.Entities
         /// </summary>
         public long PagedSystemMemorySize { get; set; }
 
+        /// <summary>
+        /// プロセスが開いているファイル数
+        /// </summary>
+        /// <remarks>
+        /// Linuxのみ対応
+        /// </remarks>
+        public int OpenedFiledCount { get; set; }
+
         [Required]
         //[Column(Order = 10, TypeName = "datetime")]
         [DataType(DataType.DateTime)]

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -55,6 +56,34 @@ namespace BroadlinkWeb.Models.Stores
             srvStatus.MaxCPTs = maxCPTs;
             srvStatus.ActiveWTs = (maxWTs - availableWTs);
             srvStatus.ActiveCPTs = (maxCPTs - availableCPTs);
+
+            srvStatus.OpenedFiledCount = -1;
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                var bash = new System.Diagnostics.Process();
+                bash.StartInfo.FileName = "/bin/bash";
+                bash.StartInfo.Arguments = $"-c \"ls /proc/{proc.Id}/fd/ | wc -l\"";
+                bash.StartInfo.UseShellExecute = false;
+                bash.StartInfo.RedirectStandardOutput = true;
+                bash.StartInfo.RedirectStandardError = true;
+                bash.StartInfo.CreateNoWindow = false;
+
+                bash.Start();
+
+                var output = bash.StandardOutput.ReadToEnd();
+                var error = bash.StandardError.ReadToEnd();
+
+                bash.WaitForExit();
+                bash.Close();
+                bash.Dispose();
+
+                int cnt;
+                if (!string.IsNullOrEmpty(output)
+                    && int.TryParse(output, out cnt))
+                {
+                    srvStatus.OpenedFiledCount = cnt;
+                }
+            }
 
             srvStatus.Recorded = DateTime.Now;
 

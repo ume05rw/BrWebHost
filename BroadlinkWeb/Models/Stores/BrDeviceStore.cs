@@ -227,7 +227,15 @@ namespace BroadlinkWeb.Models.Stores
             foreach (var sbDev in broadlinkDevices)
             {
                 if (!BrDeviceStore.SbDevices.Any(sb => this.IsDeviceMatch(sb, sbDev)))
+                {
                     BrDeviceStore.SbDevices.Add(sbDev);
+                }
+                else
+                {
+                    // 新規取得したデバイスのうち、キャッシュにあるものは破棄しておく。
+                    // UDPソケットが開きっぱなしになるため。
+                    sbDev.Dispose();
+                }
             }
 
             // DB登録済みのデバイスエンティティ取得
@@ -241,7 +249,7 @@ namespace BroadlinkWeb.Models.Stores
             }
 
             // DB未登録デバイスオブジェクトのEntityを生成
-            var newDevices = broadlinkDevices
+            var newDevices = BrDeviceStore.SbDevices
                 .Where(bd => entities.FirstOrDefault(en => this.IsDeviceMatch(en, bd)) == null)
                 .Select(bd => new BrDevice()
                 {

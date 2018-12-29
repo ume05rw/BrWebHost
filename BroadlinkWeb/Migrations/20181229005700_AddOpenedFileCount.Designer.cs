@@ -3,14 +3,16 @@ using System;
 using BroadlinkWeb.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BroadlinkWeb.Migrations
 {
     [DbContext(typeof(Dbc))]
-    partial class DbcModelSnapshot : ModelSnapshot
+    [Migration("20181229005700_AddOpenedFileCount")]
+    partial class AddOpenedFileCount
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
