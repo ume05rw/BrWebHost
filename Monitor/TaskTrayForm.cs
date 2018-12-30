@@ -63,17 +63,22 @@ namespace Monitor
 
             var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
             this._currentPath = Path.GetDirectoryName(pathToExe);
+            System.IO.Directory.SetCurrentDirectory(this._currentPath);
 
+            int startDelaySec = 0;
             switch (this._target)
             {
                 case Target.BroadlinkWeb:
                     this._fileName = Path.Combine(this._currentPath, TaskTrayForm.FileNameMain);
+                    startDelaySec = 15;
                     break;
                 case Target.ScriptAgent:
                     this._fileName = Path.Combine(this._currentPath, TaskTrayForm.FileNameAgent);
+                    startDelaySec = 3;
                     break;
                 case Target.Test:
                     this._fileName = "notepad.exe";
+                    startDelaySec = 0;
                     break;
                 default:
                     throw new ArgumentException($"Unexpected target: {target}");
@@ -83,6 +88,13 @@ namespace Monitor
             this.InitTasktray();
             this.OnStart(this, new EventArgs());
             this.StartMonitor();
+
+            Task.Delay(startDelaySec * 1000)
+                .ContinueWith((p) => 
+                {
+                    this.StartBrowser();
+                })
+                .ConfigureAwait(false);
         }
 
         private void InitTasktray()
@@ -153,12 +165,22 @@ namespace Monitor
                 this._brProcess = new Process();
 
                 this._brProcess.StartInfo.UseShellExecute = false;
-                this._brProcess.StartInfo.RedirectStandardOutput = true;
-                this._brProcess.StartInfo.RedirectStandardError = true;
+
+                // リリース用 ※Redirect** はtrueにしないこと。Kestrelが起動しない。
+                this._brProcess.StartInfo.CreateNoWindow = true;
+                this._brProcess.StartInfo.RedirectStandardOutput = false;
+                this._brProcess.StartInfo.RedirectStandardError = false;
                 this._brProcess.StartInfo.RedirectStandardInput = false;
                 //this._brProcess.StartInfo.StandardOutputEncoding = this.Encoding;
 
-                this._brProcess.StartInfo.CreateNoWindow = true;
+                //// デバッグ用 - コンソール上で実行状況を表示する。
+                //this._brProcess.StartInfo.CreateNoWindow = false;
+                //this._brProcess.StartInfo.RedirectStandardOutput = false;
+                //this._brProcess.StartInfo.RedirectStandardError = false;
+                //this._brProcess.StartInfo.RedirectStandardInput = false;
+                ////this._brProcess.StartInfo.StandardOutputEncoding = this.Encoding;
+
+
                 this._brProcess.StartInfo.WorkingDirectory = this._currentPath;
                 this._brProcess.StartInfo.FileName = this._fileName;
                 //this._brProcess.StartInfo.Arguments = "--console";
@@ -178,8 +200,6 @@ namespace Monitor
                     this._menuItemStart.Enabled = false;
                     this._menuItemStop.Enabled = false;
                 });
-
-                this.StartBrowser();
             }
             catch (Exception ex)
             {
