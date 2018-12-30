@@ -26,8 +26,8 @@ namespace Monitor
     /// </remarks>
     public class TaskTrayForm : Form
     {
-        private const string FileNameMain = "BroadlinkWeb.exe";
-        private const string FileNameAgent = "ScriptAgent.exe";
+        public const string FileNameMain = "BroadlinkWeb.exe";
+        public const string FileNameAgent = "ScriptAgent.exe";
 
         public enum Target
         {
@@ -43,6 +43,7 @@ namespace Monitor
         private Icon _okIcon;
         private ToolStripMenuItem _menuItemStart;
         private ToolStripMenuItem _menuItemStop;
+        private WaitIndicator _waitIndicator;
 
         private Target _target;
         private string _currentPath;
@@ -56,29 +57,30 @@ namespace Monitor
         {
             this._target = target;
             this.ShowInTaskbar = false;
+            this._waitIndicator = new WaitIndicator();
 
             Job.IsMonitorEnabled = false;
             Job.IsDumpStatus = false;
             Job.Init();
 
+
             var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
             this._currentPath = Path.GetDirectoryName(pathToExe);
-            System.IO.Directory.SetCurrentDirectory(this._currentPath);
 
             int startDelaySec = 0;
             switch (this._target)
             {
                 case Target.BroadlinkWeb:
                     this._fileName = Path.Combine(this._currentPath, TaskTrayForm.FileNameMain);
-                    startDelaySec = 15;
+                    startDelaySec = 25;
                     break;
                 case Target.ScriptAgent:
                     this._fileName = Path.Combine(this._currentPath, TaskTrayForm.FileNameAgent);
-                    startDelaySec = 3;
+                    startDelaySec = 8;
                     break;
                 case Target.Test:
                     this._fileName = "notepad.exe";
-                    startDelaySec = 0;
+                    startDelaySec = 10;
                     break;
                 default:
                     throw new ArgumentException($"Unexpected target: {target}");
@@ -89,10 +91,18 @@ namespace Monitor
             this.OnStart(this, new EventArgs());
             this.StartMonitor();
 
+            Job.RunUI(() => {
+                this._waitIndicator.Show();
+            });
+
             Task.Delay(startDelaySec * 1000)
                 .ContinueWith((p) => 
                 {
                     this.StartBrowser();
+
+                    Job.RunUI(() => {
+                        this._waitIndicator.Hide();
+                    });
                 })
                 .ConfigureAwait(false);
         }
@@ -313,8 +323,6 @@ namespace Monitor
 
         private async Task<bool> StartBrowser()
         {
-            await Task.Delay(5000);
-
             var addr = this.GetLocalPrimaryAddress();
             var browser = new Process();
 
