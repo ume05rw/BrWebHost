@@ -220,7 +220,7 @@ namespace App.Controllers {
 
             Dump.Log('Store Initialize Start');
 
-            // 各Storeにキャッシュしつつ描画。並列で行う。
+            // 各Storeにキャッシュしつつ描画。
             const promises: Promise<boolean>[] = [];
             promises.push(this.RefreshControlSets());
             promises.push(this.RefreshScenesAndSchedules());
