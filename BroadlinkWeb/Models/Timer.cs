@@ -261,18 +261,18 @@ namespace BroadlinkWeb.Models
                 }
             }), 60 * 5));
 
-            // 60分に1回: A1センサーの値を記録する。
+            // 1分に1回: A1センサーの値を取得、一時間の平均値を記録する。
             this.Add(new TimerJob("A1SensorRecorder", new Action(() =>
             {
                 using (var serviceScope = this._provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
                 using (var store = serviceScope.ServiceProvider.GetService<A1Store>())
                 {
-                    store.ExecTimerJob()
+                    store.Tick()
                         .ConfigureAwait(false)
                         .GetAwaiter()
                         .GetResult();
                 }
-            }), 60 * 60));
+            }), 60));
 
             // 20秒に1回: スケジュールの検証、予定時間が来たら実行する。
             this.Add(new TimerJob("ScheduleExecuter", new Action(() =>

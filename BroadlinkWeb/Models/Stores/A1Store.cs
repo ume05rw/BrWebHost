@@ -16,6 +16,76 @@ namespace BroadlinkWeb.Models.Stores
 {
     public class A1Store : IDisposable
     {
+        private class ValueStacker
+        {
+            public int DeviceId { get; set; }
+            public int Count { get; set; }
+            public DateTime Recorded { get; set; }
+            public A1Values Sum { get; set; }
+            public A1Values Avg { get; set; }
+
+            public ValueStacker(int deviceId)
+            {
+                this.DeviceId = deviceId;
+                this.Clear();
+            }
+
+            public void Clear()
+            {
+                this.Count = 0;
+                this.Recorded = DateTime.Now;
+                this.Sum = new A1Values()
+                {
+                    Temperature = 0,
+                    Humidity = 0,
+                    Voc = 0,
+                    Light = 0,
+                    Noise = 0,
+                    BrDeviceId = this.DeviceId,
+                    AcquiredCount = 0,
+                    Created = DateTime.Now,
+                    Updated = DateTime.Now
+                };
+                this.Avg = new A1Values()
+                {
+                    Temperature = 0,
+                    Humidity = 0,
+                    Voc = 0,
+                    Light = 0,
+                    Noise = 0,
+                    BrDeviceId = this.DeviceId,
+                    AcquiredCount = 0,
+                    Created = DateTime.Now,
+                    Updated = DateTime.Now
+                };
+            }
+
+            public void Add(A1Values values)
+            {
+                this.Recorded = DateTime.Now;
+                this.Count++;
+
+                this.Sum.Temperature += values.Temperature;
+                this.Sum.Humidity += values.Humidity;
+                this.Sum.Voc += values.Voc;
+                this.Sum.Light += values.Light;
+                this.Sum.Noise += values.Noise;
+
+                this.Avg.AcquiredCount = this.Count;
+                this.Avg.Recorded = this.Recorded;
+                this.Avg.Updated = this.Recorded;
+                this.Avg.Temperature = this.Sum.Temperature / this.Count;
+                this.Avg.Humidity = this.Sum.Humidity / this.Count;
+                this.Avg.Voc = this.Sum.Voc / this.Count;
+                this.Avg.Light = this.Sum.Light / this.Count;
+                this.Avg.Noise = this.Sum.Noise / this.Count;
+            }
+        }
+
+        private static Dictionary<int, ValueStacker> Stacker = new Dictionary<int, ValueStacker>();
+
+
+
         private Dbc _dbc;
         private BrDeviceStore _brDeviceStore;
 
@@ -29,15 +99,28 @@ namespace BroadlinkWeb.Models.Stores
         }
 
 
-        public async Task<bool> ExecTimerJob()
+        public async Task<bool> Tick()
         {
             var brs = await this._brDeviceStore.GetList();
             var entities = brs.Where(b => b.DeviceType == DeviceType.A1).ToArray();
 
             foreach (var entity in entities)
             {
+                if (!A1Store.Stacker.ContainsKey(entity.Id))
+                    A1Store.Stacker.Add(entity.Id, new ValueStacker(entity.Id));
+
+                var stack = A1Store.Stacker[entity.Id];
+
+                if (stack.Recorded.Hour != DateTime.Now.Hour)
+                    stack.Clear();
+
                 var record = await this.GetValues(entity.Id);
-                this._dbc.Add(record);
+                stack.Add(record);
+
+                if (stack.Avg.Id == default(int))
+                    this._dbc.Add(stack.Avg);
+                else
+                    this._dbc.Entry(stack.Avg).State = EntityState.Modified;
             }
             this._dbc.SaveChanges();
 
