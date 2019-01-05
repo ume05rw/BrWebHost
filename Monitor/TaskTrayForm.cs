@@ -15,6 +15,8 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using NetFwTypeLib;
+using System.Net.Http;
+using System.Net.Http.Headers;
 
 namespace Monitor
 {
@@ -67,20 +69,16 @@ namespace Monitor
             var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
             this._currentPath = Path.GetDirectoryName(pathToExe);
 
-            int startDelaySec = 0;
             switch (this._target)
             {
                 case Target.BroadlinkWeb:
                     this._fileName = Path.Combine(this._currentPath, TaskTrayForm.FileNameMain);
-                    startDelaySec = 25;
                     break;
                 case Target.ScriptAgent:
                     this._fileName = Path.Combine(this._currentPath, TaskTrayForm.FileNameAgent);
-                    startDelaySec = 8;
                     break;
                 case Target.Test:
                     this._fileName = "notepad.exe";
-                    startDelaySec = 10;
                     break;
                 default:
                     throw new ArgumentException($"Unexpected target: {target}");
@@ -95,7 +93,37 @@ namespace Monitor
                 this._waitIndicator.Show();
             });
 
-            Task.Delay(startDelaySec * 1000)
+            Task.Run(async () => 
+                {
+                    while(true)
+                    {
+                        if (this._target == Target.Test)
+                            break;
+
+                        var url = "http://localhost:5004";
+                        var client = new HttpClient();
+                        client.DefaultRequestHeaders.Accept.Clear();
+                        client.DefaultRequestHeaders.Accept.Add(
+                            new MediaTypeWithQualityHeaderValue("application/vnd.github.v3+json")
+                        );
+                        client.DefaultRequestHeaders.Add("User-Agent", ".NET Foundation Repository Reporter");
+                        // タイムアウトを3秒に。デフォルトは30秒くらい？待ってしまう。
+                        client.Timeout = TimeSpan.FromMilliseconds(3000);
+
+                        HttpResponseMessage resMsg;
+                        try
+                        {
+                            resMsg = await client.GetAsync(url);
+                            break;
+                        }
+                        catch (Exception)
+                        {
+                            // リモートから応答が無いとき、ループを続ける。
+                        }
+
+                        await Task.Delay(1000);
+                    }
+                })
                 .ContinueWith((p) => 
                 {
                     this.StartBrowser();
