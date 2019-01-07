@@ -34,7 +34,7 @@ namespace App.Models.Stores {
             super();
 
             this.SetClassName('ControlStore');
-            this.EnableLog = true;
+            //this.EnableLog = true;
 
             // new RegExpは使わない。エスケープ手段が通常と異なる？
             //this._regPronto = new RegExp('/^([a-fA-F0-9 ]+)$/');

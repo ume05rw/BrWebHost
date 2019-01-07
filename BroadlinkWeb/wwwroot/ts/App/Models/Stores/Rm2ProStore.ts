@@ -30,7 +30,7 @@ namespace App.Models.Stores {
             super();
             
             this.SetClassName('Rm2ProStore');
-            this.EnableLog = true;
+            //this.EnableLog = true;
         }
 
 

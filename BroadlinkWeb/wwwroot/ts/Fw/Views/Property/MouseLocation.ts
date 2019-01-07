@@ -1,14 +1,25 @@
-﻿/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Events/ViewEvents.ts" />
 /// <reference path="../../Util/Dump.ts" />
+/// <reference path="Position.ts" />
 
 namespace Fw.Views.Property {
+    import Position = Fw.Views.Property.Position;
 
     export class MouseLocation {
 
         public static Create(e: JQueryEventObject): MouseLocation {
             return new MouseLocation(e);
+        }
+
+        public static GetPosition(e: JQueryEventObject): Position {
+            const loc = new MouseLocation(e);
+            const result = new Position();
+            result.X = loc.ClientX;
+            result.Y = loc.ClientY;
+
+            return result;
         }
 
 

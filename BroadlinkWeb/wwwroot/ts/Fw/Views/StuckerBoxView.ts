@@ -102,7 +102,7 @@ namespace Fw.Views {
             this.Elem.addClass(this.ClassName);
 
             this._margin = 10;
-            this._rightMargin = 40;
+            this._rightMargin = 20;
             this._referencePoint = Property.ReferencePoint.LeftTop;
             this._scrollMargin = 0;
             this._isChildRelocatable = true;
@@ -142,8 +142,6 @@ namespace Fw.Views {
             this._backupView = null;
             this._dummyView.Elem.addClass('Shadow');
             this._dummyView.Position.Policy = Property.PositionPolicy.LeftTop;
-
-            //this.EnableLog = true;
 
             // 下に定義済みのメソッドをthisバインドしておく。
             this.OnInnerMouseDown = this.OnInnerMouseDown.bind(this);
@@ -218,6 +216,8 @@ namespace Fw.Views {
             //if (e.eventPhase !== 2)
             //    return;
 
+            //this.Log(`mousedown`);
+
             this._mouseClickTime = new Date();
 
             const ml = MouseLocation.Create(e);
@@ -230,7 +230,6 @@ namespace Fw.Views {
             if (this._isChildRelocation) {
             } else {
                 //this.Log(`${this.ClassName}.OnInnerMouseDown`);
-                //e.preventDefault();
 
                 this._isInnerDragging = true;
                 Fw.Root.Instance.SetTextSelection(false);
@@ -243,18 +242,18 @@ namespace Fw.Views {
             //if (e.eventPhase !== 2)
             //    return;
 
+            //this.Log(`mousemove`);
+
             if (this._isChildRelocation || this._scrollMargin === 0)
                 return;
-
-            e.preventDefault();
 
             // * ドラッグ処理中でないとき *　は無視する。
             if (!this._isInnerDragging)
                 return;
 
-            // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
-            if (e.eventPhase !== 2)
-                return;
+            //// 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
+            //if (e.eventPhase !== 2)
+            //    return;
 
             const ml = MouseLocation.Create(e);
             const addY = ml.ClientY - this._dragStartMousePosition.Y;
@@ -277,8 +276,6 @@ namespace Fw.Views {
             // * ドラッグ処理中のとき *　は無視する。
             if (this._isInnerDragging)
                 return;
-
-            e.preventDefault();
 
             const orgEv = e.originalEvent as any;
             const delta = orgEv.deltaY
@@ -309,6 +306,8 @@ namespace Fw.Views {
             //if (e.eventPhase !== 2)
             //    return;
 
+            this.Log(`mouseup`);
+
             // シングルクリック判定
             if (this._mouseClickTime) {
                 const elasped = (new Date()).getTime() - this._mouseClickTime.getTime();
@@ -328,7 +327,6 @@ namespace Fw.Views {
                 // 子View再配置モードのとき
             } else {
                 // 内部Viewドラッグ中のとき
-                //e.preventDefault();
 
                 // ドラッグ終了処理。
                 this._isInnerDragging = false;
@@ -396,7 +394,6 @@ namespace Fw.Views {
          * @param e
          */
         private OnLockButtonClick(e: JQueryEventObject): void {
-            e.stopPropagation();
 
             //if (e.eventPhase !== 2)
             //    return;
@@ -510,8 +507,6 @@ namespace Fw.Views {
          * @param e
          */
         private OnChildMouseDown(e: JQueryEventObject): void {
-            e.stopPropagation();
-
             //// 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
             //if (e.eventPhase !== 2)
             //    return;
@@ -519,8 +514,6 @@ namespace Fw.Views {
             //this.Log(`${this.ClassName}.OnChildMouseDown`);
             if (!this._isChildRelocation)
                 return;
-
-            e.preventDefault();
 
             const rect = this.Dom.getBoundingClientRect();
 
@@ -552,8 +545,6 @@ namespace Fw.Views {
 
             if (!this._isChildRelocation || !this._isChildDragging)
                 return;
-
-            e.preventDefault();
 
             //this.Log(`${this.ClassName}.OnChildMouseMove`);
 
@@ -587,8 +578,6 @@ namespace Fw.Views {
             if (!this._isChildRelocation) {
                 this._isChildDragging = false;
             } else {
-                e.preventDefault();
-
                 this._isChildDragging = false;
 
                 if (this._relocationTargetView) {

@@ -32,7 +32,7 @@ namespace App.Models.Stores {
             super();
 
             this.SetClassName('WolStore');
-            this.EnableLog = true;
+            //this.EnableLog = true;
         }
 
         public async Exec(controlSet: ControlSet, control: Control): Promise<boolean> {

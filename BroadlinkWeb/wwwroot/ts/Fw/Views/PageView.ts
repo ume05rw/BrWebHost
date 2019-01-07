@@ -284,8 +284,6 @@ namespace Fw.Views {
             // jQueryのイベントバブリングに注意。
             // Domツリーが構成された後では、Fw上で追加したコントロールの全て、
             // ツリーの上位に向かってイベントが伝播していく。
-            // AddEventListenerでバインドしたラムダの先頭行には、常に event.stopPropagation() を
-            // 最初に書くように。
 
             // ページリフレッシュ時は、子Viewをリフレッシュ指示する。
             _.each(this.Children, (v: IView) => {

@@ -29,7 +29,7 @@ namespace App.Models.Stores {
             super();
 
             this.SetClassName('SceneDetailStore');
-            this.EnableLog = true;
+            //this.EnableLog = true;
         }
 
         protected GetNewEntity(): SceneDetail {

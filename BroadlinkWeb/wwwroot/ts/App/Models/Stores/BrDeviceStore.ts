@@ -32,7 +32,7 @@ namespace App.Models.Stores {
             super();
 
             this.SetClassName('BrDeviceStore');
-            this.EnableLog = true;
+            //this.EnableLog = true;
         }
 
         public Get(id: number): BrDevice {

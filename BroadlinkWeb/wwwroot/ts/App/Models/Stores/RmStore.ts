@@ -34,7 +34,7 @@ namespace App.Models.Stores {
             super();
 
             this.SetClassName('RmStore');
-            this.EnableLog = true;
+            //this.EnableLog = true;
         }
 
         public async GetLearnedCode(brDeviceId: number): Promise<RmCommand> {

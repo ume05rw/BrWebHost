@@ -25,7 +25,7 @@ namespace App.Models.Stores {
             super();
 
             this.SetClassName('JobStore');
-            this.EnableLog = true;
+            //this.EnableLog = true;
         }
 
 

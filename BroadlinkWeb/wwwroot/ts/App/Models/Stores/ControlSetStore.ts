@@ -38,7 +38,7 @@ namespace App.Models.Stores {
             super();
 
             this.SetClassName('ControlSetStore');
-            this.EnableLog = true;
+            //this.EnableLog = true;
         }
 
         protected GetNewEntity(): ControlSet {

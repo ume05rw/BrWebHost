@@ -4,11 +4,13 @@
 /// <reference path="../Events/ControlViewEvents.ts" />
 /// <reference path="ButtonView.ts" />
 /// <reference path="Property/MouseLocation.ts" />
+/// <reference path="Property/Position.ts" />
 
 namespace Fw.Views {
     import Dump = Fw.Util.Dump;
     import Events = Fw.Events.ControlViewEvents;
     import MouseLocation = Fw.Views.Property.MouseLocation;
+    import Position = Fw.Views.Property.Position;
 
     export class RelocatableButtonView extends ButtonView {
 
@@ -21,8 +23,9 @@ namespace Fw.Views {
         private _clickEventLocalTimer: number = null;
         private _isMouseMoveEventListened: boolean = false;
         private _isDragging: boolean = false;
-        private _dragStartMousePosition: Property.Position;
-        private _dragStartViewPosition: Property.Position;
+        private _rbvMouseStartPosition: Property.Position;
+        private _rbvMouseLatestPosition: Property.Position;
+        private _rbvViewStartPosition: Property.Position;
         private _mouseDownTime: Date = null;
 
         private _gridSize: number = 60;
@@ -50,8 +53,9 @@ namespace Fw.Views {
             super()
 
             this._shadow = $('<div class="IView BoxView Shadow"></div>');
-            this._dragStartMousePosition = new Property.Position();
-            this._dragStartViewPosition = new Property.Position();
+            this._rbvMouseStartPosition = new Property.Position();
+            this._rbvMouseLatestPosition = new Property.Position();
+            this._rbvViewStartPosition = new Property.Position();
 
             this.SetClassName('RelocatableControlView');
             this.Elem.addClass(this.ClassName);
@@ -61,25 +65,28 @@ namespace Fw.Views {
                     this.SetRelocatable(true);
             });
 
+            // ControlViewのマウスイベントを破棄、クリック等は独自実装する。
             this.Elem.off('mousedown mouseup mouseout');
 
             this.Elem.on('mousedown', (e) => {
-                e.preventDefault();
-
                 this._isDragging = (this._isRelocatable)
                     ? true
                     : false;
 
-                const ml = MouseLocation.Create(e);
-                this._dragStartMousePosition.X = ml.PageX;
-                this._dragStartMousePosition.Y = ml.PageY;
+                // 再配置処理中のとき、親Viewにマウスイベントを伝播させない。
+                if (this._isRelocatable && this._isDragging) {
+                    e.stopPropagation();
+                }
+
+                this._rbvMouseStartPosition = MouseLocation.GetPosition(e);
+                this._rbvMouseLatestPosition = MouseLocation.GetPosition(e);
 
                 if (this.Position.Policy === Property.PositionPolicy.Centering) {
-                    this._dragStartViewPosition.X = this.Position.X;
-                    this._dragStartViewPosition.Y = this.Position.Y;
+                    this._rbvViewStartPosition.X = this.Position.X;
+                    this._rbvViewStartPosition.Y = this.Position.Y;
                 } else {
-                    this._dragStartViewPosition.X = this.Position.Left;
-                    this._dragStartViewPosition.Y = this.Position.Top;
+                    this._rbvViewStartPosition.X = this.Position.Left;
+                    this._rbvViewStartPosition.Y = this.Position.Top;
                 }
 
                 if (this._clickEventLocalTimer != null)
@@ -89,7 +96,10 @@ namespace Fw.Views {
                     // ロングタップイベント
                     this._clickEventLocalTimer = null;
 
-                    if (!this._isRelocatable) {
+                    if (
+                        !this._isRelocatable
+                        && Position.Distance(this._rbvMouseStartPosition, this._rbvMouseLatestPosition) < 15
+                    ) {
                         this.DispatchEvent(Events.LongClick);
                     }
                 }, 1000);
@@ -97,7 +107,12 @@ namespace Fw.Views {
 
             // ↓mouseoutイベントは捕捉しない。途切れまくるので。
             this.Elem.on('mouseup', (e) => {
-                e.preventDefault();
+                this._rbvMouseLatestPosition = MouseLocation.GetPosition(e);
+
+                // 再配置処理中のとき、親Viewにマウスイベントを伝播させない。
+                if (this._isRelocatable && this._isDragging) {
+                    e.stopPropagation();
+                }
 
                 if (!this._isRelocatable) {
                     this._isDragging = false;
@@ -120,11 +135,7 @@ namespace Fw.Views {
                     clearTimeout(this._clickEventLocalTimer);
                     this._clickEventLocalTimer = null;
 
-                    const ml = MouseLocation.Create(e);
-                    const addX = ml.PageX - this._dragStartMousePosition.X;
-                    const addY = ml.PageY - this._dragStartMousePosition.Y;
-
-                    if ((Math.abs(addX) + Math.abs(addY)) < 10) {
+                    if (Position.Distance(this._rbvMouseStartPosition, this._rbvMouseLatestPosition) < 15) {
                         this.DispatchEvent(Events.SingleClick);
                     }
                 }
@@ -160,18 +171,24 @@ namespace Fw.Views {
 
         private OnMouseMove(e: JQueryEventObject): void {
             //this.Log('RelocatableButtonView.OnMouseMove');
-            e.preventDefault();
+
+            this._rbvMouseLatestPosition = MouseLocation.GetPosition(e);
+
             if (this._isRelocatable && this._isDragging) {
+
+                // 再配置処理中のとき、親Viewにマウスイベントを伝播させない。
+                e.stopPropagation();
+
                 const ml = MouseLocation.Create(e);
-                const addX = ml.PageX - this._dragStartMousePosition.X;
-                const addY = ml.PageY - this._dragStartMousePosition.Y;
+                const addX = ml.ClientX - this._rbvMouseStartPosition.X;
+                const addY = ml.ClientY - this._rbvMouseStartPosition.Y;
 
                 if (this.Position.Policy === Property.PositionPolicy.Centering) {
-                    this.Position.X = this._dragStartViewPosition.X + addX;
-                    this.Position.Y = this._dragStartViewPosition.Y + addY;
+                    this.Position.X = this._rbvViewStartPosition.X + addX;
+                    this.Position.Y = this._rbvViewStartPosition.Y + addY;
                 } else {
-                    this.Position.Left = this._dragStartViewPosition.X + addX;
-                    this.Position.Top = this._dragStartViewPosition.Y + addY;
+                    this.Position.Left = this._rbvViewStartPosition.X + addX;
+                    this.Position.Top = this._rbvViewStartPosition.Y + addY;
                 }
 
                 // マウスボタン押下中のクリックイベント発火を抑止する。

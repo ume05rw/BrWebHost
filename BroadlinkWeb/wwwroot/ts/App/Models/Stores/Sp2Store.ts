@@ -29,7 +29,7 @@ namespace App.Models.Stores {
             super();
 
             this.SetClassName('Sp2Store');
-            this.EnableLog = true;
+            //this.EnableLog = true;
         }
 
         public async Get(controlSet: ControlSet): Promise<Sp2Status> {

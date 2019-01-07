@@ -32,7 +32,7 @@ namespace App.Models.Stores {
             super();
 
             this.SetClassName('RemoteStore');
-            this.EnableLog = true;
+            //this.EnableLog = true;
         }
 
         public async GetList(): Promise<Script[]> {

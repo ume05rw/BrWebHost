@@ -1,4 +1,4 @@
-﻿/// <reference path="../../../../lib/jquery/index.d.ts" />
+/// <reference path="../../../../lib/jquery/index.d.ts" />
 /// <reference path="../../../../lib/underscore/index.d.ts" />
 /// <reference path="../../Events/ViewEvents.ts" />
 /// <reference path="../../Util/Dump.ts" />
@@ -11,6 +11,24 @@ namespace Fw.Views.Property {
     import Num = Fw.Util.Num;
 
     export class Position {
+
+        public static Distance(pos1: Position, pos2: Position): Number {
+            const addX = Math.abs(pos1.X - pos2.X);
+            const addY = Math.abs(pos1.Y - pos2.Y);
+            return addX + addY;
+        }
+
+        public static DistanceX(pos1: Position, pos2: Position): Number {
+            const addX = Math.abs(pos1.X - pos2.X);
+            return addX;
+        }
+
+        public static DistanceY(pos1: Position, pos2: Position): Number {
+            const addY = Math.abs(pos1.Y - pos2.Y);
+            return addY;
+        }
+
+
         private _view: IView = null;
 
         private _policy: PositionPolicy = PositionPolicy.Centering;
@@ -23,7 +41,7 @@ namespace Fw.Views.Property {
 
             const changed = (this._policy !== value);
 
-            if (changed && this._view.Parent) {
+            if (changed && this._view && this._view.Parent) {
                 if (this._policy === PositionPolicy.Centering) {
                     // 更新前が中央ポリシーのとき
                     // 現在の値を左上ポリシー値に計算して保持させる。
@@ -224,31 +242,32 @@ namespace Fw.Views.Property {
         public readonly MyHalfHeight: number;
 
         constructor(view: IView) {
-            let parentWidth: number;
-            let parentHeight: number;
-
-            if (view.Parent) {
-                // 親Viewが存在する
-                parentWidth = view.Parent.Size.Width;
-                parentHeight = view.Parent.Size.Height;
+            if (!view) {
+                this.ParentHalfWidth = 0;
+                this.ParentHalfHeight = 0;
+                this.MyHalfWidth = 0;
+                this.MyHalfHeight = 0;
             } else {
-                // 親Viewが存在しない
-                const parent = $(view.Elem.parent());
-                parentWidth = parent.width();
-                parentHeight = parent.height();
+                let parentWidth: number;
+                let parentHeight: number;
+
+                if (view.Parent) {
+                    // 親Viewが存在する
+                    parentWidth = view.Parent.Size.Width;
+                    parentHeight = view.Parent.Size.Height;
+                } else {
+                    // 親Viewが存在しない
+                    const parent = $(view.Elem.parent());
+                    parentWidth = parent.width();
+                    parentHeight = parent.height();
+                }
+
+                this.ParentHalfWidth = parentWidth / 2;
+                this.ParentHalfHeight = parentHeight / 2;
+
+                this.MyHalfWidth = view.Size.Width / 2;
+                this.MyHalfHeight = view.Size.Height / 2;
             }
-
-
-            this.ParentHalfWidth = parentWidth / 2;
-            this.ParentHalfHeight = parentHeight / 2;
-
-            this.MyHalfWidth = view.Size.Width / 2;
-            this.MyHalfHeight = view.Size.Height / 2;
-
-            //this.ParentWidth = parentWidth;
-            //this.ParentHeight = parentHeight;
-            //this.MyWidth = view.Size.Width;
-            //this.MyHeight = view.Size.Height;
         }
     }
 }

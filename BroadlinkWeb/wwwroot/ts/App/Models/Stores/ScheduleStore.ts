@@ -37,7 +37,7 @@ namespace App.Models.Stores {
             super();
 
             this.SetClassName('SceneStore');
-            this.EnableLog = true;
+            //this.EnableLog = true;
         }
 
         protected GetNewEntity(): Schedule {

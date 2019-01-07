@@ -33,7 +33,7 @@ namespace App.Models.Stores {
             super();
 
             this.SetClassName('A1Store');
-            this.EnableLog = true;
+            //this.EnableLog = true;
         }
 
         public async Get(controlSet: ControlSet): Promise<A1Values> {
