@@ -76,13 +76,24 @@ namespace BroadlinkWeb.Models.Stores
                     await this._dbc.SaveChangesAsync();
                 }
 
-                if (schedule.NextDateTime == null)
+                if (!schedule.Enabled)
                 {
-                    await schedule.CurrentJob.SetProgress((decimal)0.5, "ScheduleStore.Tick: Enable but All-Weekday Disabled.");
+                    // スケジュールが無効のとき
+                    await schedule.CurrentJob.SetProgress((decimal)0.5, "ScheduleStore.Tick: Disabled.");
+                }
+                else if (schedule.NextDateTime == null)
+                {
+                    // スケジュールが有効だが、起動時刻が未セットのとき
+                    await schedule.CurrentJob.SetProgress((decimal)0.5, "ScheduleStore.Tick: Enabled, but All-Weekday Disabled.");
+                }
+                else if (now < schedule.NextDateTime)
+                {
+                    // スケジュールが有効で、起動時刻に到達していないとき
+                    await schedule.CurrentJob.SetProgress((decimal)0.5, "ScheduleStore.Tick: Waiting...");
                 }
                 else if (schedule.NextDateTime <= now)
                 {
-                    // 次回起動時間を過ぎたとき
+                    // スケジュールが有効で、起動時間を過ぎたとき
                     try
                     {
                         var elapsed = now - schedule.NextDateTime;
@@ -134,10 +145,6 @@ namespace BroadlinkWeb.Models.Stores
                         if (schedule.CurrentJob != null)
                             await schedule.CurrentJob.SetProgress(0.5, $"ScheduleStore.Tick: Unexpected Exception: {ex.Message} / {ex.StackTrace}");
                     }
-                }
-                else if (now < schedule.NextDateTime)
-                {
-                    await schedule.CurrentJob.SetProgress((decimal)0.5, "ScheduleStore.Tick: Waiting...");
                 }
                 else
                 {
