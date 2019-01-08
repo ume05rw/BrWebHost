@@ -1,2 +1,4 @@
 BrWebHost/wwwroot/js/* linguist-vendored
+BrWebHost/wwwroot/lib/* linguist-vendored
 ScriptAgent/wwwroot/js/* linguist-vendored
+ScriptAgent/wwwroot/lib/* linguist-vendored
