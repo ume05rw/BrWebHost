@@ -1,1 +1,2 @@
-BrWebHost/Startup.cs linguist-vendored
+BrWebHost/wwwroot/* linguist-vendored
+ScriptAgent/wwwroot/* linguist-vendored
