@@ -246,5 +246,4 @@ ModelManifest.xml
 # FAKE - F# Make
 .fake/
 
-
 /ScriptAgent/scriptagent.db
