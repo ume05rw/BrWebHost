@@ -60,10 +60,10 @@ namespace App.Views.Pages {
             this.Add(this.ControlSetPanel);
 
             const iconRights = new Views.HtmlView('a');
-            iconRights.SetSize(210, 16);
+            iconRights.SetSize(235, 16);
             iconRights.SetAnchor(null, null, 5, 2);
             iconRights.Color = '#9d9e9e';
-            iconRights.InnerHtml = 'designed by Lucy G from Flaticon';
+            iconRights.InnerHtml = 'Icon designed by Lucy G from Flaticon';
             iconRights.Dom.style.fontSize = '12px';
             iconRights.Elem.attr('href', 'https://www.flaticon.com/packs/free-basic-ui-elements');
             iconRights.Elem.attr('target', '_blank');
