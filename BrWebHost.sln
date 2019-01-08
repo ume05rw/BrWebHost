@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2047
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BroadlinkWeb", "BroadlinkWeb\BroadlinkWeb.csproj", "{2504457F-F449-42AF-B916-D734C44D5043}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BrWebHost", "BrWebHost\BrWebHost.csproj", "{2504457F-F449-42AF-B916-D734C44D5043}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScriptAgent", "ScriptAgent\ScriptAgent.csproj", "{BD55237E-1859-4B14-826D-78D06F758FEE}"
 EndProject
