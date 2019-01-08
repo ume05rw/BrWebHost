@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using BroadlinkWeb.Models.Entities;
+using BrWebHost.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SharpBroadlink;
@@ -13,7 +13,7 @@ using Newtonsoft.Json;
 using System.Net.Http;
 using System.Net.Http.Headers;
 
-namespace BroadlinkWeb.Models.Stores
+namespace BrWebHost.Models.Stores
 {
     public class RemoteHostStore
     {

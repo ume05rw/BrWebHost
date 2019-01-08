@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using BroadlinkWeb.Models;
-using BroadlinkWeb.Models.Entities;
-using BroadlinkWeb.Models.Stores;
+using BrWebHost.Models;
+using BrWebHost.Models.Entities;
+using BrWebHost.Models.Stores;
 using SharpBroadlink.Devices;
 
-namespace BroadlinkWeb.Areas.Api.Controllers
+namespace BrWebHost.Areas.Api.Controllers
 {
     [Produces("application/json")]
     [Route("api/ControlSets")]

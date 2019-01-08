@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BroadlinkWeb.Models.Entities
+namespace BrWebHost.Models.Entities
 {
     [Table("controlsets")] // テーブル名を小文字指定しないとLinuxで動作しない。
     //[MySqlCharset("utf8")]

@@ -20,10 +20,10 @@ namespace Monitor
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            var target = TaskTrayForm.Target.BroadlinkWeb;
+            var target = TaskTrayForm.Target.BrWebHost;
 
             if (args.Contains("--main"))
-                target = TaskTrayForm.Target.BroadlinkWeb;
+                target = TaskTrayForm.Target.BrWebHost;
             else if (args.Contains("--agent"))
                 target = TaskTrayForm.Target.ScriptAgent;
             else if (args.Contains("--test"))
@@ -35,7 +35,7 @@ namespace Monitor
                 var dirPath = Path.GetDirectoryName(pathToExe);
                 
                 if (File.Exists(Path.Combine(dirPath, TaskTrayForm.FileNameMain)))
-                    target = TaskTrayForm.Target.BroadlinkWeb;
+                    target = TaskTrayForm.Target.BrWebHost;
                 else if (File.Exists(Path.Combine(dirPath, TaskTrayForm.FileNameAgent)))
                     target = TaskTrayForm.Target.ScriptAgent;
                 else

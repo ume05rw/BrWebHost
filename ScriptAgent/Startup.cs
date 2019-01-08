@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BroadlinkWeb.Models;
+using BrWebHost.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -10,11 +10,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Serialization;
-using BroadlinkWeb.Extensions;
-using BroadlinkWeb.Models.Stores;
-using BroadlinkWeb.Models.Entities;
+using BrWebHost.Extensions;
+using BrWebHost.Models.Stores;
+using BrWebHost.Models.Entities;
 
-namespace BroadlinkWeb
+namespace BrWebHost
 {
     public class Startup
     {

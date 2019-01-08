@@ -12,7 +12,7 @@ using ScriptAgent.Extensions;
 using NLog;
 using NLog.Web;
 
-namespace BroadlinkWeb
+namespace BrWebHost
 {
     /// <summary>
     /// 起動プログラム

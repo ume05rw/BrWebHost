@@ -28,12 +28,12 @@ namespace Monitor
     /// </remarks>
     public class TaskTrayForm : Form
     {
-        public const string FileNameMain = "BroadlinkWeb.exe";
+        public const string FileNameMain = "BrWebHost.exe";
         public const string FileNameAgent = "ScriptAgent.exe";
 
         public enum Target
         {
-            BroadlinkWeb = 1,
+            BrWebHost = 1,
             ScriptAgent = 2,
             Test = 3
         }
@@ -71,7 +71,7 @@ namespace Monitor
 
             switch (this._target)
             {
-                case Target.BroadlinkWeb:
+                case Target.BrWebHost:
                     this._fileName = Path.Combine(this._currentPath, TaskTrayForm.FileNameMain);
                     break;
                 case Target.ScriptAgent:
@@ -176,7 +176,7 @@ namespace Monitor
 
             switch (this._target)
             {
-                case Target.BroadlinkWeb:
+                case Target.BrWebHost:
                     this._menuItemStart.Text = "&Start BrWebHost";
                     this._menuItemStop.Text = "&Stop BrWebHost";
                     break;
