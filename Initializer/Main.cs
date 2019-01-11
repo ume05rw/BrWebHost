@@ -17,6 +17,8 @@ namespace Initializer
             this.InitializeComponent();
         }
 
+#region "Events"
+
         private void Main_Load(object sender, EventArgs e)
         {
             this.LoadSettings();
@@ -29,10 +31,17 @@ namespace Initializer
                 : '*';
         }
 
+        private void btnNext_Click(object sender, EventArgs e)
+        {
+
+        }
+
         private void Main_FormClosing(object sender, FormClosingEventArgs e)
         {
             this.SaveSettings();
         }
+
+#endregion
 
         private void LoadSettings()
         {
@@ -46,5 +55,7 @@ namespace Initializer
             Properties.Settings.Default.Password = this.txtPassword.Text;
             Properties.Settings.Default.Save();
         }
+
+
     }
 }

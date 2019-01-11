@@ -8059,6 +8059,7 @@ var App;
 /// <reference path="../Items/OperationType.ts" />
 /// <reference path="../Items/Color.ts" />
 /// <reference path="../Items/Icon.ts" />
+/// <reference path="../Items/Lang/Lang.ts" />
 var App;
 (function (App) {
     var Controllers;
@@ -8077,6 +8078,7 @@ var App;
         var ScheduleButtonView = App.Views.Controls.ScheduleButtonView;
         var Color = App.Items.Color;
         var Icon = App.Items.Icon;
+        var Lang = App.Items.Lang.Lang;
         var MainController = /** @class */ (function (_super) {
             __extends(MainController, _super);
             function MainController() {
@@ -8086,21 +8088,34 @@ var App;
                 _this.SetPageView(new Pages.MainPageView());
                 _this._page = _this.View;
                 _this.InitStores()
-                    .then(function () {
-                    Dump.Log('SubController Load Start');
-                    var controlSetCtr = new Controllers.ControlSetController();
-                    var controlHeaderPropertyCtr = new Controllers.ControlHeaderPropertyController();
-                    var controlPropertyCtr = new Controllers.ControlPropertyController();
-                    var a1SetCtr = new Controllers.A1SetController();
-                    var templateSelectCtr = new Controllers.TemplateSelectController();
-                    var sceneCtr = new Controllers.SceneController();
-                    var operationSelectStr = new Controllers.OperationSelectController();
-                    var sceneHeaderPropertyCtr = new Controllers.SceneHeaderPropertyController();
-                    var scheduleCtr = new Controllers.ScheduleController();
-                    var iconSelectCtr = new Controllers.IconSelectController();
-                    var colorSelectCtr = new Controllers.ColorSelectController();
-                    Dump.Log('SubController Load End');
-                });
+                    .then(function () { return __awaiter(_this, void 0, void 0, function () {
+                    var hostname, controlSetCtr, controlHeaderPropertyCtr, controlPropertyCtr, a1SetCtr, templateSelectCtr, sceneCtr, operationSelectStr, sceneHeaderPropertyCtr, scheduleCtr, iconSelectCtr, colorSelectCtr;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0: return [4 /*yield*/, Stores.Remotes.GetHostname()];
+                            case 1:
+                                hostname = _a.sent();
+                                if (hostname != null) {
+                                    this._page.HeaderBar.Text = Lang.Title + ' - ' + hostname;
+                                    this._page.HeaderBar.Refresh();
+                                }
+                                Dump.Log('SubController Load Start');
+                                controlSetCtr = new Controllers.ControlSetController();
+                                controlHeaderPropertyCtr = new Controllers.ControlHeaderPropertyController();
+                                controlPropertyCtr = new Controllers.ControlPropertyController();
+                                a1SetCtr = new Controllers.A1SetController();
+                                templateSelectCtr = new Controllers.TemplateSelectController();
+                                sceneCtr = new Controllers.SceneController();
+                                operationSelectStr = new Controllers.OperationSelectController();
+                                sceneHeaderPropertyCtr = new Controllers.SceneHeaderPropertyController();
+                                scheduleCtr = new Controllers.ScheduleController();
+                                iconSelectCtr = new Controllers.IconSelectController();
+                                colorSelectCtr = new Controllers.ColorSelectController();
+                                Dump.Log('SubController Load End');
+                                return [2 /*return*/];
+                        }
+                    });
+                }); });
                 _this._page.HeaderBar.RightButton.AddEventListener(ButtonEvents.SingleClick, function () { return __awaiter(_this, void 0, void 0, function () {
                     var ctr, item, ctrSet, _a, rmDev1, rmDev2, rmDev3, rmDev4, ctr1, scene, detail, ctr2_1, schedule, ctr2;
                     return __generator(this, function (_b) {
@@ -14119,6 +14134,30 @@ var App;
                     enumerable: true,
                     configurable: true
                 });
+                RemoteStore.prototype.GetHostname = function () {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var params, res;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    this.Log('GetHostname');
+                                    params = new Xhr.Params('RemoteHosts/GetHostname', Xhr.MethodType.Get);
+                                    return [4 /*yield*/, Xhr.Query.Invoke(params)];
+                                case 1:
+                                    res = _a.sent();
+                                    if (res.Succeeded) {
+                                        return [2 /*return*/, res.Values];
+                                    }
+                                    else {
+                                        this.Log('Query Fail');
+                                        this.Log(res.Errors);
+                                        return [2 /*return*/, null];
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
                 RemoteStore.prototype.GetList = function () {
                     return __awaiter(this, void 0, void 0, function () {
                         var params, res, id_1;

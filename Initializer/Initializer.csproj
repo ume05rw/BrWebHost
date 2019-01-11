@@ -71,6 +71,7 @@
     <Compile Include="Main.Designer.cs">
       <DependentUpon>Main.cs</DependentUpon>
     </Compile>
+    <Compile Include="Models\WifiTest.cs" />
     <Compile Include="NativeWifi\Interop.cs" />
     <Compile Include="NativeWifi\WlanApi.cs" />
     <Compile Include="Program.cs" />
