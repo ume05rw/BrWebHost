@@ -83,8 +83,10 @@ namespace Fw.Views {
         private _isChildDragging: boolean = false;
         private _isInnerDragging: boolean = false;
         private _relocationTargetView: IView = null;
-        private _dragStartMousePosition: Property.Position = new Property.Position();
-        private _dragStartViewPosition: Property.Position = new Property.Position();
+        private _sbvInMouseStartPosition: Property.Position = new Property.Position();
+        private _sbvInViewStartPosition: Property.Position = new Property.Position();
+        private _sbvChMouseStartPosition: Property.Position = new Property.Position();
+        private _sbvChViewStartPosition: Property.Position = new Property.Position();
 
         constructor() {
             super();
@@ -221,11 +223,11 @@ namespace Fw.Views {
             this._mouseClickTime = new Date();
 
             const ml = MouseLocation.Create(e);
-            this._dragStartMousePosition.X = ml.ClientX;
-            this._dragStartMousePosition.Y = ml.ClientY;
+            this._sbvInMouseStartPosition.X = ml.ClientX;
+            this._sbvInMouseStartPosition.Y = ml.ClientY;
 
-            this._dragStartViewPosition.X = this._innerBox.Position.Left;
-            this._dragStartViewPosition.Y = this._innerBox.Position.Top;
+            this._sbvInViewStartPosition.X = this._innerBox.Position.Left;
+            this._sbvInViewStartPosition.Y = this._innerBox.Position.Top;
 
             if (this._isChildRelocation) {
             } else {
@@ -256,8 +258,8 @@ namespace Fw.Views {
             //    return;
 
             const ml = MouseLocation.Create(e);
-            const addY = ml.ClientY - this._dragStartMousePosition.Y;
-            let top = this._dragStartViewPosition.Y + addY;
+            const addY = ml.ClientY - this._sbvInMouseStartPosition.Y;
+            let top = this._sbvInViewStartPosition.Y + addY;
 
             const margin = this._scrollMargin * -1;
             if (top < margin)
@@ -312,8 +314,8 @@ namespace Fw.Views {
             if (this._mouseClickTime) {
                 const elasped = (new Date()).getTime() - this._mouseClickTime.getTime();
                 const ml = MouseLocation.Create(e);
-                const addX = ml.ClientX - this._dragStartMousePosition.X;
-                const addY = ml.ClientY - this._dragStartMousePosition.Y;
+                const addX = ml.ClientX - this._sbvInMouseStartPosition.X;
+                const addY = ml.ClientY - this._sbvInMouseStartPosition.Y;
                 if (elasped < 800
                     && (Math.abs(addX) + Math.abs(addY)) < 30
                 ) {
@@ -525,10 +527,10 @@ namespace Fw.Views {
                 //this.Log('OnChildMouseDown - view found: ' + (view as ButtonView).Label);
                 this._isChildDragging = true;
                 this._relocationTargetView = view;
-                this._dragStartMousePosition.X = ml.PageX;
-                this._dragStartMousePosition.Y = ml.PageY;
-                this._dragStartViewPosition.X = view.Position.Left;
-                this._dragStartViewPosition.Y = view.Position.Top;
+                this._sbvChMouseStartPosition.X = ml.PageX;
+                this._sbvChMouseStartPosition.Y = ml.PageY;
+                this._sbvChViewStartPosition.X = view.Position.Left;
+                this._sbvChViewStartPosition.Y = view.Position.Top;
                 this.SetDummyView(view);
                 view.SetTransAnimation(false);
             }
@@ -551,11 +553,11 @@ namespace Fw.Views {
             const view = this._relocationTargetView;
 
             const ml = MouseLocation.Create(e);
-            const addX = ml.PageX - this._dragStartMousePosition.X;
-            const addY = ml.PageY - this._dragStartMousePosition.Y;
+            const addX = ml.PageX - this._sbvChMouseStartPosition.X;
+            const addY = ml.PageY - this._sbvChMouseStartPosition.Y;
 
-            view.Position.Left = this._dragStartViewPosition.X + addX;
-            view.Position.Top = this._dragStartViewPosition.Y + addY;
+            view.Position.Left = this._sbvChViewStartPosition.X + addX;
+            view.Position.Top = this._sbvChViewStartPosition.Y + addY;
 
             const replaceView = this.GetNearestByView(view);
             if (replaceView !== null && replaceView !== this._dummyView) {

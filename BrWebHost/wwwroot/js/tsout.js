@@ -12687,8 +12687,10 @@ var Fw;
                 _this._isChildDragging = false;
                 _this._isInnerDragging = false;
                 _this._relocationTargetView = null;
-                _this._dragStartMousePosition = new Property.Position();
-                _this._dragStartViewPosition = new Property.Position();
+                _this._sbvInMouseStartPosition = new Property.Position();
+                _this._sbvInViewStartPosition = new Property.Position();
+                _this._sbvChMouseStartPosition = new Property.Position();
+                _this._sbvChViewStartPosition = new Property.Position();
                 _this._innerBox = new Views.BoxView();
                 _this._positionBarMax = new Views.LineView(Property.Direction.Vertical);
                 _this._positionBarCurrent = new Views.LineView(Property.Direction.Vertical);
@@ -12859,10 +12861,10 @@ var Fw;
                 //this.Log(`mousedown`);
                 this._mouseClickTime = new Date();
                 var ml = MouseLocation.Create(e);
-                this._dragStartMousePosition.X = ml.ClientX;
-                this._dragStartMousePosition.Y = ml.ClientY;
-                this._dragStartViewPosition.X = this._innerBox.Position.Left;
-                this._dragStartViewPosition.Y = this._innerBox.Position.Top;
+                this._sbvInMouseStartPosition.X = ml.ClientX;
+                this._sbvInMouseStartPosition.Y = ml.ClientY;
+                this._sbvInViewStartPosition.X = this._innerBox.Position.Left;
+                this._sbvInViewStartPosition.Y = this._innerBox.Position.Top;
                 if (this._isChildRelocation) {
                 }
                 else {
@@ -12885,8 +12887,8 @@ var Fw;
                 //if (e.eventPhase !== 2)
                 //    return;
                 var ml = MouseLocation.Create(e);
-                var addY = ml.ClientY - this._dragStartMousePosition.Y;
-                var top = this._dragStartViewPosition.Y + addY;
+                var addY = ml.ClientY - this._sbvInMouseStartPosition.Y;
+                var top = this._sbvInViewStartPosition.Y + addY;
                 var margin = this._scrollMargin * -1;
                 if (top < margin)
                     top = margin;
@@ -12930,8 +12932,8 @@ var Fw;
                 if (this._mouseClickTime) {
                     var elasped = (new Date()).getTime() - this._mouseClickTime.getTime();
                     var ml = MouseLocation.Create(e);
-                    var addX = ml.ClientX - this._dragStartMousePosition.X;
-                    var addY = ml.ClientY - this._dragStartMousePosition.Y;
+                    var addX = ml.ClientX - this._sbvInMouseStartPosition.X;
+                    var addY = ml.ClientY - this._sbvInMouseStartPosition.Y;
                     if (elasped < 800
                         && (Math.abs(addX) + Math.abs(addY)) < 30) {
                         this.OnInnerSingleClick();
@@ -13110,10 +13112,10 @@ var Fw;
                     //this.Log('OnChildMouseDown - view found: ' + (view as ButtonView).Label);
                     this._isChildDragging = true;
                     this._relocationTargetView = view;
-                    this._dragStartMousePosition.X = ml.PageX;
-                    this._dragStartMousePosition.Y = ml.PageY;
-                    this._dragStartViewPosition.X = view.Position.Left;
-                    this._dragStartViewPosition.Y = view.Position.Top;
+                    this._sbvChMouseStartPosition.X = ml.PageX;
+                    this._sbvChMouseStartPosition.Y = ml.PageY;
+                    this._sbvChViewStartPosition.X = view.Position.Left;
+                    this._sbvChViewStartPosition.Y = view.Position.Top;
                     this.SetDummyView(view);
                     view.SetTransAnimation(false);
                 }
@@ -13131,10 +13133,10 @@ var Fw;
                 //this.Log(`${this.ClassName}.OnChildMouseMove`);
                 var view = this._relocationTargetView;
                 var ml = MouseLocation.Create(e);
-                var addX = ml.PageX - this._dragStartMousePosition.X;
-                var addY = ml.PageY - this._dragStartMousePosition.Y;
-                view.Position.Left = this._dragStartViewPosition.X + addX;
-                view.Position.Top = this._dragStartViewPosition.Y + addY;
+                var addX = ml.PageX - this._sbvChMouseStartPosition.X;
+                var addY = ml.PageY - this._sbvChMouseStartPosition.Y;
+                view.Position.Left = this._sbvChViewStartPosition.X + addX;
+                view.Position.Top = this._sbvChViewStartPosition.Y + addY;
                 var replaceView = this.GetNearestByView(view);
                 if (replaceView !== null && replaceView !== this._dummyView) {
                     this.Swap(replaceView, this._dummyView);
