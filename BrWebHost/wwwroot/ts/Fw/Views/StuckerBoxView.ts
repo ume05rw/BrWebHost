@@ -439,6 +439,7 @@ namespace Fw.Views {
                 v.SuppressEvent(ControlViewEvents.LongClick);
             });
 
+
             if (!this._lockButton.IsVisible) {
                 _.delay(() => {
                     if (!this._lockButton.IsVisible) {
@@ -561,7 +562,8 @@ namespace Fw.Views {
 
             const replaceView = this.GetNearestByView(view);
             if (replaceView !== null && replaceView !== this._dummyView) {
-                this.Swap(replaceView, this._dummyView);
+                //this.Swap(replaceView, this._dummyView);
+                this.Insert(this._dummyView, replaceView);
             }
 
             this.Refresh();
@@ -601,18 +603,24 @@ namespace Fw.Views {
             }
         }
 
-        private Swap(view1: IView, view2: IView): void {
-            const view1Index = this._innerBox.Children.indexOf(view1);
-            const view2Index = this._innerBox.Children.indexOf(view2);
+        private Insert(toView: IView, targetView: IView): void {
+            const toViewIndex = this._innerBox.Children.indexOf(toView);
+            let targetViewIndex = this._innerBox.Children.indexOf(targetView);
 
-            if (view1Index < 0)
-                throw new Error('Not contained view1');
+            if (toViewIndex < 0)
+                throw new Error('Not contained toViewIndex');
 
-            if (view2Index < 0)
-                throw new Error('Not contained view2');
+            if (targetViewIndex < 0)
+                throw new Error('Not contained targetViewIndex');
 
-            this._innerBox.Children[view1Index] = view2;
-            this._innerBox.Children[view2Index] = view1;
+            // 差し込み対象を一旦配列から削除
+            this._innerBox.Children.splice(toViewIndex, 1);
+
+            // 割り込み目標の位置を取得
+            targetViewIndex = this._innerBox.Children.indexOf(targetView);
+
+            // 差し込み対象を目標位置に差し込む。
+            this._innerBox.Children.splice(targetViewIndex, 0, toView);
         }
 
         private GetNearestByView(view: IView): IView {

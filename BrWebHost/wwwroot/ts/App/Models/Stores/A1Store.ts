@@ -57,6 +57,7 @@ namespace App.Models.Stores {
                 controlSet.GetControlByCode('Noise').Value = this.GetNoiseString(result.Noise);
                 controlSet.DispatchChanged();
 
+
                 return result;
             } else {
                 this.Log('Query Fail');
