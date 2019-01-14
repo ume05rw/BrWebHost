@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Initializer.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -36,12 +37,27 @@ namespace Initializer
 
         }
 
+        private void btnClose_Click(object sender, EventArgs e)
+        {
+            // TODO: 場合によって、メッセージボックスを表示する。
+            this.Close();
+        }
+
         private void Main_FormClosing(object sender, FormClosingEventArgs e)
         {
             this.SaveSettings();
         }
 
-#endregion
+        private void btnTest_Click(object sender, EventArgs e)
+        {
+            var wTest = new WifiTest();
+            var wifiInterface = wTest.GetInterface();
+            var prof = wTest.GetCurrentProfile(wifiInterface);
+            var brProf = new BroadlinkProfile();
+            var a = 1;
+        }
+
+        #endregion
 
         private void LoadSettings()
         {
@@ -55,7 +71,5 @@ namespace Initializer
             Properties.Settings.Default.Password = this.txtPassword.Text;
             Properties.Settings.Default.Save();
         }
-
-
     }
 }
