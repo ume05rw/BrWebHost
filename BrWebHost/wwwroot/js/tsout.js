@@ -15813,10 +15813,21 @@ var Fw;
                 view.Position.Top = this._sbvChViewStartPosition.Y + addY;
                 var replaceView = this.GetNearestByView(view);
                 if (replaceView !== null && replaceView !== this._dummyView) {
-                    //this.Swap(replaceView, this._dummyView);
-                    this.Insert(this._dummyView, replaceView);
+                    this.MoveView(this._dummyView, replaceView);
                 }
                 this.Refresh();
+            };
+            StuckerBoxView.prototype.MoveView = function (movingView, toView) {
+                var movingIndex = this._innerBox.Children.indexOf(movingView);
+                var toIndex = this._innerBox.Children.indexOf(toView);
+                if (movingIndex < 0)
+                    throw new Error('Not contained movingView');
+                if (toIndex < 0)
+                    throw new Error('Not contained toView');
+                // 差し込み対象を一旦配列から削除
+                this._innerBox.Children.splice(movingIndex, 1);
+                // 差し込み対象を目標位置に差し込む。※toIndexは配列に存在しなくても(=末尾でも)良い。
+                this._innerBox.Children.splice(toIndex, 0, movingView);
             };
             /**
              * 子要素上でマウスボタンが離れたとき
@@ -15847,20 +15858,6 @@ var Fw;
                         this.DispatchEvent(Events.OrderUncommitChanged);
                     this.Refresh();
                 }
-            };
-            StuckerBoxView.prototype.Insert = function (toView, targetView) {
-                var toViewIndex = this._innerBox.Children.indexOf(toView);
-                var targetViewIndex = this._innerBox.Children.indexOf(targetView);
-                if (toViewIndex < 0)
-                    throw new Error('Not contained toViewIndex');
-                if (targetViewIndex < 0)
-                    throw new Error('Not contained targetViewIndex');
-                // 差し込み対象を一旦配列から削除
-                this._innerBox.Children.splice(toViewIndex, 1);
-                // 割り込み目標の位置を取得
-                targetViewIndex = this._innerBox.Children.indexOf(targetView);
-                // 差し込み対象を目標位置に差し込む。
-                this._innerBox.Children.splice(targetViewIndex, 0, toView);
             };
             StuckerBoxView.prototype.GetNearestByView = function (view) {
                 var diff = Number.MAX_VALUE;

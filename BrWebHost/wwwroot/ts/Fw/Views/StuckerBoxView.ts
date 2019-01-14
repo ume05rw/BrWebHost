@@ -562,11 +562,28 @@ namespace Fw.Views {
 
             const replaceView = this.GetNearestByView(view);
             if (replaceView !== null && replaceView !== this._dummyView) {
-                //this.Swap(replaceView, this._dummyView);
-                this.Insert(this._dummyView, replaceView);
+                this.MoveView(this._dummyView, replaceView);
             }
 
             this.Refresh();
+        }
+
+        private MoveView(movingView: IView, toView: IView): void {
+            const movingIndex = this._innerBox.Children.indexOf(movingView);
+            let toIndex = this._innerBox.Children.indexOf(toView);
+
+            if (movingIndex < 0)
+                throw new Error('Not contained movingView');
+
+            if (toIndex < 0)
+                throw new Error('Not contained toView');
+
+
+            // 差し込み対象を一旦配列から削除
+            this._innerBox.Children.splice(movingIndex, 1);
+
+            // 差し込み対象を目標位置に差し込む。※toIndexは配列に存在しなくても(=末尾でも)良い。
+            this._innerBox.Children.splice(toIndex, 0, movingView);
         }
 
         /**
@@ -603,25 +620,7 @@ namespace Fw.Views {
             }
         }
 
-        private Insert(toView: IView, targetView: IView): void {
-            const toViewIndex = this._innerBox.Children.indexOf(toView);
-            let targetViewIndex = this._innerBox.Children.indexOf(targetView);
 
-            if (toViewIndex < 0)
-                throw new Error('Not contained toViewIndex');
-
-            if (targetViewIndex < 0)
-                throw new Error('Not contained targetViewIndex');
-
-            // 差し込み対象を一旦配列から削除
-            this._innerBox.Children.splice(toViewIndex, 1);
-
-            // 割り込み目標の位置を取得
-            targetViewIndex = this._innerBox.Children.indexOf(targetView);
-
-            // 差し込み対象を目標位置に差し込む。
-            this._innerBox.Children.splice(targetViewIndex, 0, toView);
-        }
 
         private GetNearestByView(view: IView): IView {
             let diff = Number.MAX_VALUE;
