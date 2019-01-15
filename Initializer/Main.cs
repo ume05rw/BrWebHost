@@ -21,6 +21,43 @@ namespace Initializer
             Xb.App.Job.Init();
 
             this.InitializeComponent();
+            this.Height = 332;
+
+            //this.cboSecurityMode.Items
+            var dt = new DataTable();
+            dt.Columns.Add("Id", typeof(SharpBroadlink.Broadlink.WifiSecurityMode));
+            dt.Columns.Add("Name", typeof(string));
+            dt.Rows.Add(new object[] 
+            {
+                SharpBroadlink.Broadlink.WifiSecurityMode.None,
+                "None"
+            });
+            dt.Rows.Add(new object[]
+            {
+                SharpBroadlink.Broadlink.WifiSecurityMode.Wep,
+                "Wep"
+            });
+            dt.Rows.Add(new object[]
+            {
+                SharpBroadlink.Broadlink.WifiSecurityMode.WPA1,
+                "WPA1"
+            });
+            dt.Rows.Add(new object[]
+            {
+                SharpBroadlink.Broadlink.WifiSecurityMode.WPA2,
+                "WPA2"
+            });
+            dt.Rows.Add(new object[]
+            {
+                SharpBroadlink.Broadlink.WifiSecurityMode.WPA12,
+                "WPA12"
+            });
+
+            this.cboSecurity.ValueMember = "Id";
+            this.cboSecurity.DisplayMember = "Name";
+            this.cboSecurity.DataSource = dt;
+            this.cboSecurity.SelectedValue
+                = SharpBroadlink.Broadlink.WifiSecurityMode.None;
         }
 
 #region "Events"
@@ -40,12 +77,6 @@ namespace Initializer
         private void btnNext_Click(object sender, EventArgs e)
         {
 
-        }
-
-        private void btnClose_Click(object sender, EventArgs e)
-        {
-            // TODO: 場合によって、メッセージボックスを表示する。
-            this.Close();
         }
 
         private void Main_FormClosing(object sender, FormClosingEventArgs e)
@@ -102,8 +133,10 @@ namespace Initializer
                 {
                     Xb.App.Job.RunUI(() =>
                     {
+                        this.cboSecurity.SelectedValue = this._currentProfile.SecurityType;
                         this.txtSsid.Text = this._currentProfile.Ssid;
                         this.txtPassword.Text = "";
+                        this.txtPassword.Focus();
                     });
                 }
             });
@@ -113,12 +146,15 @@ namespace Initializer
         {
             this.txtSsid.Text = Properties.Settings.Default.Ssid;
             this.txtPassword.Text = Properties.Settings.Default.Password;
+            this.cboSecurity.SelectedValue
+                = (SharpBroadlink.Broadlink.WifiSecurityMode)Properties.Settings.Default.Security;
         }
 
         private void SaveSettings()
         {
             Properties.Settings.Default.Ssid = this.txtSsid.Text;
             Properties.Settings.Default.Password = this.txtPassword.Text;
+            Properties.Settings.Default.Security = (int)this.cboSecurity.SelectedValue;
             Properties.Settings.Default.Save();
         }
 
@@ -126,6 +162,7 @@ namespace Initializer
         {
             var ssid = this.txtSsid.Text;
             var password = this.txtPassword.Text;
+            var security = (SharpBroadlink.Broadlink.WifiSecurityMode)this.cboSecurity.SelectedValue;
 
             var brProf = new BroadlinkProfile();
             var connected = await this._wifiInterface.Connect(brProf);
@@ -151,8 +188,8 @@ namespace Initializer
 
             var setted = await SharpBroadlink.Broadlink.Setup(
                 ssid, 
-                password, 
-                SharpBroadlink.Broadlink.WifiSecurityMode.WPA12
+                password,
+                security
             );
 
             if (!setted)

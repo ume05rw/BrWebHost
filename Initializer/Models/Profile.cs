@@ -13,6 +13,7 @@ namespace Initializer.Models
         public string Name { get; }
         public string Xml { get; }
         public string Ssid { get; }
+        public SharpBroadlink.Broadlink.WifiSecurityMode SecurityType { get; }
 
         public Profile(string name, string xml)
         {
@@ -58,6 +59,59 @@ namespace Initializer.Models
                             }
                         }
                         break;
+                    }
+                }
+
+                var auth = "";
+                var enc = "";
+                foreach (XmlNode child1 in root.ChildNodes)
+                {
+                    if (child1.Name == "MSM")
+                    {
+                        foreach (XmlNode child2 in child1.ChildNodes)
+                        {
+                            if (child2.Name == "security")
+                            {
+                                foreach (XmlNode child3 in child2.ChildNodes)
+                                {
+                                    if (child3.Name == "authEncryption")
+                                    {
+                                        foreach (XmlNode child4 in child3.ChildNodes)
+                                        {
+                                            if (child4.Name == "authentication")
+                                                auth = child3.InnerText;
+
+                                            if (child4.Name == "encryption")
+                                                enc = child3.InnerText;
+                                        }
+                                        break;
+                                    }
+                                }
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(auth) 
+                    && !string.IsNullOrEmpty(enc))
+                {
+                    if (auth == "open")
+                    {
+                        this.SecurityType = (enc == "none")
+                            ? SharpBroadlink.Broadlink.WifiSecurityMode.None
+                            : SharpBroadlink.Broadlink.WifiSecurityMode.Wep;
+                    }
+                    else if (auth.IndexOf("WPA") >= 0)
+                    {
+                        this.SecurityType 
+                            = SharpBroadlink.Broadlink.WifiSecurityMode.WPA12;
+                    }
+                    else
+                    {
+                        this.SecurityType 
+                            = SharpBroadlink.Broadlink.WifiSecurityMode.None;
                     }
                 }
             }

@@ -34,10 +34,9 @@
             this.lblPassword = new System.Windows.Forms.Label();
             this.chkPassword = new System.Windows.Forms.CheckBox();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.btnNext = new System.Windows.Forms.Button();
             this.lblPanel1Title = new System.Windows.Forms.Label();
+            this.btnNext = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.btnPrev = new System.Windows.Forms.Button();
             this.pictureBox3 = new System.Windows.Forms.PictureBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
@@ -47,12 +46,17 @@
             this.lblPanel2Title = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
+            this.btnPrev = new System.Windows.Forms.Button();
             this.panel3 = new System.Windows.Forms.Panel();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.pictureBox6 = new System.Windows.Forms.PictureBox();
-            this.label11 = new System.Windows.Forms.Label();
-            this.btnClose = new System.Windows.Forms.Button();
+            this.lblPanel3Title = new System.Windows.Forms.Label();
             this.btnTest = new System.Windows.Forms.Button();
+            this.cboSecurity = new System.Windows.Forms.ComboBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.pictureBox4 = new System.Windows.Forms.PictureBox();
+            this.lblPanel4Title = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
@@ -60,12 +64,14 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox6)).BeginInit();
+            this.panel4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).BeginInit();
             this.SuspendLayout();
             // 
             // lblSsid
             // 
             this.lblSsid.AutoSize = true;
-            this.lblSsid.Location = new System.Drawing.Point(48, 58);
+            this.lblSsid.Location = new System.Drawing.Point(48, 90);
             this.lblSsid.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.lblSsid.Name = "lblSsid";
             this.lblSsid.Size = new System.Drawing.Size(50, 25);
@@ -76,27 +82,27 @@
             // 
             this.txtSsid.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtSsid.Location = new System.Drawing.Point(106, 55);
+            this.txtSsid.Location = new System.Drawing.Point(106, 87);
             this.txtSsid.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.txtSsid.Name = "txtSsid";
-            this.txtSsid.Size = new System.Drawing.Size(478, 32);
+            this.txtSsid.Size = new System.Drawing.Size(475, 32);
             this.txtSsid.TabIndex = 1;
             // 
             // txtPassword
             // 
             this.txtPassword.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtPassword.Location = new System.Drawing.Point(106, 110);
+            this.txtPassword.Location = new System.Drawing.Point(106, 131);
             this.txtPassword.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.txtPassword.Name = "txtPassword";
             this.txtPassword.PasswordChar = '*';
-            this.txtPassword.Size = new System.Drawing.Size(478, 32);
-            this.txtPassword.TabIndex = 3;
+            this.txtPassword.Size = new System.Drawing.Size(475, 32);
+            this.txtPassword.TabIndex = 2;
             // 
             // lblPassword
             // 
             this.lblPassword.AutoSize = true;
-            this.lblPassword.Location = new System.Drawing.Point(6, 113);
+            this.lblPassword.Location = new System.Drawing.Point(6, 134);
             this.lblPassword.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.lblPassword.Name = "lblPassword";
             this.lblPassword.Size = new System.Drawing.Size(92, 25);
@@ -106,10 +112,10 @@
             // chkPassword
             // 
             this.chkPassword.AutoSize = true;
-            this.chkPassword.Location = new System.Drawing.Point(106, 146);
+            this.chkPassword.Location = new System.Drawing.Point(106, 167);
             this.chkPassword.Name = "chkPassword";
             this.chkPassword.Size = new System.Drawing.Size(162, 29);
-            this.chkPassword.TabIndex = 4;
+            this.chkPassword.TabIndex = 3;
             this.chkPassword.Text = "Show Password";
             this.chkPassword.UseVisualStyleBackColor = true;
             this.chkPassword.CheckedChanged += new System.EventHandler(this.chkPassword_CheckedChanged);
@@ -120,27 +126,18 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panel1.BackColor = System.Drawing.Color.Transparent;
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel1.Controls.Add(this.label6);
+            this.panel1.Controls.Add(this.cboSecurity);
             this.panel1.Controls.Add(this.lblPanel1Title);
             this.panel1.Controls.Add(this.lblSsid);
             this.panel1.Controls.Add(this.chkPassword);
             this.panel1.Controls.Add(this.txtSsid);
             this.panel1.Controls.Add(this.txtPassword);
             this.panel1.Controls.Add(this.lblPassword);
-            this.panel1.Location = new System.Drawing.Point(12, 53);
+            this.panel1.Location = new System.Drawing.Point(12, 8);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(600, 236);
-            this.panel1.TabIndex = 5;
-            // 
-            // btnNext
-            // 
-            this.btnNext.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnNext.Location = new System.Drawing.Point(511, 295);
-            this.btnNext.Name = "btnNext";
-            this.btnNext.Size = new System.Drawing.Size(101, 34);
-            this.btnNext.TabIndex = 6;
-            this.btnNext.Text = "Next >>";
-            this.btnNext.UseVisualStyleBackColor = true;
-            this.btnNext.Click += new System.EventHandler(this.btnNext_Click);
+            this.panel1.TabIndex = 0;
             // 
             // lblPanel1Title
             // 
@@ -152,6 +149,18 @@
             this.lblPanel1Title.TabIndex = 5;
             this.lblPanel1Title.Text = "Set your Wi-Fi";
             this.lblPanel1Title.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // btnNext
+            // 
+            this.btnNext.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnNext.Location = new System.Drawing.Point(511, 253);
+            this.btnNext.Name = "btnNext";
+            this.btnNext.Size = new System.Drawing.Size(101, 34);
+            this.btnNext.TabIndex = 6;
+            this.btnNext.Text = "Next >>";
+            this.btnNext.UseVisualStyleBackColor = true;
+            this.btnNext.Click += new System.EventHandler(this.btnNext_Click);
             // 
             // panel2
             // 
@@ -168,20 +177,10 @@
             this.panel2.Controls.Add(this.lblPanel2Title);
             this.panel2.Controls.Add(this.label5);
             this.panel2.Controls.Add(this.label4);
-            this.panel2.Location = new System.Drawing.Point(12, 347);
+            this.panel2.Location = new System.Drawing.Point(12, 296);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(600, 236);
-            this.panel2.TabIndex = 6;
-            // 
-            // btnPrev
-            // 
-            this.btnPrev.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnPrev.Location = new System.Drawing.Point(12, 295);
-            this.btnPrev.Name = "btnPrev";
-            this.btnPrev.Size = new System.Drawing.Size(101, 34);
-            this.btnPrev.TabIndex = 15;
-            this.btnPrev.Text = "<< Prev";
-            this.btnPrev.UseVisualStyleBackColor = true;
+            this.panel2.TabIndex = 1;
             // 
             // pictureBox3
             // 
@@ -268,6 +267,17 @@
             this.label4.TabIndex = 13;
             this.label4.Text = "→";
             // 
+            // btnPrev
+            // 
+            this.btnPrev.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnPrev.Location = new System.Drawing.Point(12, 253);
+            this.btnPrev.Name = "btnPrev";
+            this.btnPrev.Size = new System.Drawing.Size(101, 34);
+            this.btnPrev.TabIndex = 15;
+            this.btnPrev.Text = "<< Prev";
+            this.btnPrev.UseVisualStyleBackColor = true;
+            // 
             // panel3
             // 
             this.panel3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -276,11 +286,11 @@
             this.panel3.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.panel3.Controls.Add(this.progressBar1);
             this.panel3.Controls.Add(this.pictureBox6);
-            this.panel3.Controls.Add(this.label11);
-            this.panel3.Location = new System.Drawing.Point(12, 588);
+            this.panel3.Controls.Add(this.lblPanel3Title);
+            this.panel3.Location = new System.Drawing.Point(12, 538);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(600, 236);
-            this.panel3.TabIndex = 15;
+            this.panel3.TabIndex = 2;
             // 
             // progressBar1
             // 
@@ -297,32 +307,22 @@
             this.pictureBox6.TabIndex = 10;
             this.pictureBox6.TabStop = false;
             // 
-            // label11
+            // lblPanel3Title
             // 
-            this.label11.Dock = System.Windows.Forms.DockStyle.Top;
-            this.label11.Location = new System.Drawing.Point(0, 0);
-            this.label11.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(596, 25);
-            this.label11.TabIndex = 6;
-            this.label11.Text = "Now Setting...";
-            this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // btnClose
-            // 
-            this.btnClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnClose.Location = new System.Drawing.Point(511, 10);
-            this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(101, 34);
-            this.btnClose.TabIndex = 16;
-            this.btnClose.Text = "X";
-            this.btnClose.UseVisualStyleBackColor = true;
-            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
+            this.lblPanel3Title.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lblPanel3Title.Location = new System.Drawing.Point(0, 0);
+            this.lblPanel3Title.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.lblPanel3Title.Name = "lblPanel3Title";
+            this.lblPanel3Title.Size = new System.Drawing.Size(596, 25);
+            this.lblPanel3Title.TabIndex = 6;
+            this.lblPanel3Title.Text = "Now Setting...";
+            this.lblPanel3Title.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // btnTest
             // 
-            this.btnTest.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnTest.Location = new System.Drawing.Point(246, 295);
+            this.btnTest.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnTest.Location = new System.Drawing.Point(246, 253);
             this.btnTest.Name = "btnTest";
             this.btnTest.Size = new System.Drawing.Size(101, 34);
             this.btnTest.TabIndex = 17;
@@ -330,24 +330,77 @@
             this.btnTest.UseVisualStyleBackColor = true;
             this.btnTest.Click += new System.EventHandler(this.btnTest_Click);
             // 
+            // cboSecurity
+            // 
+            this.cboSecurity.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboSecurity.FormattingEnabled = true;
+            this.cboSecurity.Location = new System.Drawing.Point(106, 45);
+            this.cboSecurity.Name = "cboSecurity";
+            this.cboSecurity.Size = new System.Drawing.Size(475, 33);
+            this.cboSecurity.TabIndex = 0;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(19, 48);
+            this.label6.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(79, 25);
+            this.label6.TabIndex = 7;
+            this.label6.Text = "Security";
+            // 
+            // panel4
+            // 
+            this.panel4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel4.BackColor = System.Drawing.Color.Transparent;
+            this.panel4.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel4.Controls.Add(this.pictureBox4);
+            this.panel4.Controls.Add(this.lblPanel4Title);
+            this.panel4.Location = new System.Drawing.Point(12, 780);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(600, 236);
+            this.panel4.TabIndex = 12;
+            // 
+            // pictureBox4
+            // 
+            this.pictureBox4.Location = new System.Drawing.Point(247, 65);
+            this.pictureBox4.Name = "pictureBox4";
+            this.pictureBox4.Size = new System.Drawing.Size(103, 92);
+            this.pictureBox4.TabIndex = 10;
+            this.pictureBox4.TabStop = false;
+            // 
+            // lblPanel4Title
+            // 
+            this.lblPanel4Title.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lblPanel4Title.Location = new System.Drawing.Point(0, 0);
+            this.lblPanel4Title.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.lblPanel4Title.Name = "lblPanel4Title";
+            this.lblPanel4Title.Size = new System.Drawing.Size(596, 25);
+            this.lblPanel4Title.TabIndex = 6;
+            this.lblPanel4Title.Text = "Now Setting...";
+            this.lblPanel4Title.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(624, 827);
-            this.ControlBox = false;
+            this.ClientSize = new System.Drawing.Size(624, 1047);
+            this.Controls.Add(this.panel4);
             this.Controls.Add(this.btnTest);
-            this.Controls.Add(this.btnClose);
             this.Controls.Add(this.btnPrev);
-            this.Controls.Add(this.btnNext);
             this.Controls.Add(this.panel3);
+            this.Controls.Add(this.btnNext);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Font = new System.Drawing.Font("Yu Gothic UI", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.MaximizeBox = false;
+            this.MaximumSize = new System.Drawing.Size(640, 1400);
             this.MinimizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(640, 307);
             this.Name = "Main";
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -362,6 +415,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.panel3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox6)).EndInit();
+            this.panel4.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -388,11 +443,15 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.PictureBox pictureBox6;
-        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label lblPanel3Title;
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.Button btnPrev;
-        private System.Windows.Forms.Button btnClose;
         private System.Windows.Forms.Button btnTest;
+        private System.Windows.Forms.ComboBox cboSecurity;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Panel panel4;
+        private System.Windows.Forms.PictureBox pictureBox4;
+        private System.Windows.Forms.Label lblPanel4Title;
     }
 }
 

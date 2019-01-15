@@ -46,5 +46,17 @@ namespace Initializer.Properties {
                 this["Password"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int Security {
+            get {
+                return ((int)(this["Security"]));
+            }
+            set {
+                this["Security"] = value;
+            }
+        }
     }
 }
