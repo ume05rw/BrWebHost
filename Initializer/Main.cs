@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -19,6 +20,9 @@ namespace Initializer
 
         public Main()
         {
+            Xb.App.Job.IsDumpStatus = false;
+            Xb.App.Job.IsDumpTaskValidation = false;
+            Xb.App.Job.IsMonitorEnabled = false;
             Xb.App.Job.Init();
 
             this.InitializeComponent();
@@ -132,24 +136,32 @@ namespace Initializer
 
         private async Task<bool> Init()
         {
+            Xb.Util.Out("Init");
             this.pnlExec.lblPanelTitle.Text = "Now Booting...";
             this.SetPanel(this.pnlExec);
 
             this.pnlExec.SetProgress(10);
-            await Task.Delay(1000);
+            await Task.Delay(500);
 
+            Xb.Util.Out("Get saved app-settings.");
             var settings = this.pnlWifi.GetSettings();
 
-            this.pnlExec.SetProgress(20);
-            await Task.Delay(1000);
+            this.pnlExec.SetProgress(15);
+            await Task.Delay(500);
 
             await Task.Run(async () =>
             {
+                Xb.Util.Out("Get All Nics.");
+                NetInterface.Init();
+                this.pnlExec.SetProgress(40);
+                await Task.Delay(500);
+
                 // PC上のWiFiインタフェースを取得する。
+                Xb.Util.Out("Get current WiFi interface.");
                 this._wifiInterface = WifiInterface.GetInterface();
 
-                this.pnlExec.SetProgress(40);
-                await Task.Delay(1000);
+                this.pnlExec.SetProgress(60);
+                await Task.Delay(500);
 
                 // PC上にWiFiインタフェースが無い場合
                 if (this._wifiInterface == null)
@@ -163,10 +175,11 @@ namespace Initializer
                 // 以降、WiFiインタフェースが存在するとする。
 
                 // 現在接続中のWiFi情報を取得する。
+                Xb.Util.Out("Get current WiFi profile.");
                 this._currentProfile = this._wifiInterface.GetCurrentProfile();
 
-                this.pnlExec.SetProgress(70);
-                await Task.Delay(1000);
+                this.pnlExec.SetProgress(80);
+                await Task.Delay(500);
 
                 // 保存済SSIDが空で、現在接続中WiFi情報が取れていればセットする。
                 if (this._currentProfile != null
@@ -183,10 +196,6 @@ namespace Initializer
                     this.pnlWifi.SetSettings(newSettings);
                 }
 
-                // 現在稼働中のBroadlinkデバイスを取得する。
-                // 保持しておき、処理終了後の新規デバイス検出に利用する。
-                var devs = Device.Discover();
-
                 this.pnlExec.SetProgress(100);
                 await Task.Delay(500);
 
@@ -202,15 +211,51 @@ namespace Initializer
             this.SetPanel(this.pnlExec);
 
             this.pnlExec.SetProgress(10);
-            await Task.Delay(1000);
+            await Task.Delay(500);
 
+
+            // 現在稼働中のBroadlinkデバイスを取得する。
+            // 保持しておき、処理終了後の新規デバイス検出に利用する。
+            Xb.Util.Out("Get running Broadlink devices.");
+            Device.DisposeAll();
+            var devs = await Device.Discover();
+            Xb.Util.Out("  Already running Device count: " + devs.Length);
+
+            this.pnlExec.SetProgress(20);
+            await Task.Delay(500);
+
+            Xb.Util.Out("Disabling unuse interfaces.");
+            var disabledNics = new List<NetInterface>();
+            var nics = NetInterface.GetAll();
+            foreach (var nic in nics)
+            {
+                var equals = this._wifiInterface.Equals(nic);
+                var enabled = nic.IsEnabled;
+
+                if (!this._wifiInterface.Equals(nic)
+                    && nic.IsEnabled)
+                {
+                    nic.Disable();
+                    disabledNics.Add(nic);
+                }
+            }
+
+            this.pnlExec.SetProgress(30);
+            await Task.Delay(2500);
+
+
+            Xb.Util.Out("Get inputed settings.");
             var settings = this.pnlWifi.GetSettings();
 
+            this.pnlExec.SetProgress(40);
+            await Task.Delay(500);
+
+            Xb.Util.Out("Connect to BroadlinkProv.");
             var brProf = new BroadlinkProfile();
             var connected = await this._wifiInterface.Connect(brProf);
 
-            this.pnlExec.SetProgress(30);
-            await Task.Delay(1000);
+            this.pnlExec.SetProgress(50);
+            await Task.Delay(500);
 
             if (!connected)
             {
@@ -218,7 +263,7 @@ namespace Initializer
                 // メッセージ表示して終了。
                 var message = "Broadlink Device NOT Found.\r\nCheck your Device Preparation, and Retry.";
 
-                if (!await this.RestoreWifi())
+                if (!await this.RestoreNetworks(disabledNics.ToArray()))
                 {
                     message += "\r\n\r\n\r\n";
                     message += "PC's WiFi restoring Failure, Please set it manually.";
@@ -230,14 +275,29 @@ namespace Initializer
                 return false;
             }
 
-            var setted = await SharpBroadlink.Broadlink.Setup(
-                settings.Ssid,
-                settings.Password,
-                settings.Security
-            );
+            Xb.Util.Out("Wait for WiFi settings.");
+            await Task.Delay(2500);
 
-            this.pnlExec.SetProgress(60);
-            await Task.Delay(1000);
+            Xb.Util.Out("Set WiFi settings to Broadlink device.");
+            var setted = false;
+            for(var i = 0; i < 3; i++)
+            {
+                Xb.Util.Out("  try - " + (i + 1));
+                var settedOnce = await SharpBroadlink.Broadlink.Setup(
+                    settings.Ssid,
+                    settings.Password,
+                    settings.Security
+                );
+
+                if (settedOnce && !setted)
+                    setted = true;
+
+                await Task.Delay(500);
+            }
+
+
+            this.pnlExec.SetProgress(65);
+            await Task.Delay(500);
 
             if (!setted)
             {
@@ -245,7 +305,7 @@ namespace Initializer
                 // メッセージ表示して終了。
                 var message = "Broadlink Device initialize Failure.\r\nCheck your Device Preparation, and Retry.";
 
-                if (!await this.RestoreWifi())
+                if (!await this.RestoreNetworks(disabledNics.ToArray()))
                 {
                     message += "\r\n\r\n\r\n";
                     message += "PC's WiFi restoring Failure, Please set it manually.";
@@ -257,20 +317,32 @@ namespace Initializer
                 return false;
             }
 
-            await this.RestoreWifi();
+            Xb.Util.Out("Restoring Nics.");
+            var restored = await this.RestoreNetworks(disabledNics.ToArray());
 
-            this.pnlExec.SetProgress(80);
-            await Task.Delay(1000);
+            if (restored)
+            {
+                this.pnlExec.SetProgress(80);
+                await Task.Delay(2500);
 
-            var devs = await Device.Discover();
+                Xb.Util.Out("Search new Broadlink device.");
+                var devs2 = await Device.Discover();
+                Xb.Util.Out("  new Device count: " + devs2.Length);
 
-            this.pnlExec.SetProgress(90);
-            await Task.Delay(1000);
+                this.pnlExec.SetProgress(90);
+                await Task.Delay(500);
 
-            var message2 = (devs.Length > 0)
-                ? $"New Device IP is...\r\n\r\n    {devs[0].GetIpAddressString()}"
-                : "New Device is Ready!";
-            this.pnlSucceeded.SetMessage(message2);
+                var message2 = (devs.Length > 0)
+                    ? $"New Device IP is...\r\n\r\n    {devs[0].GetIpAddressString()}"
+                    : "New Device is Ready!";
+                this.pnlSucceeded.SetMessage(message2);
+            }
+            else
+            {
+                var message2 = "New Device is Ready!";
+                this.pnlSucceeded.SetMessage(message2);
+            }
+
 
             this.pnlExec.SetProgress(100);
             await Task.Delay(500);
@@ -280,15 +352,28 @@ namespace Initializer
             return true;
         }
 
-        private async Task<bool> RestoreWifi()
+        private async Task<bool> RestoreNetworks(NetInterface[] disabledNics)
         {
+            foreach (var nic in disabledNics)
+            {
+                nic.Enable();
+            }
+
             if (this._currentProfile == null)
             {
                 return true;
             }
             else
             {
-                return await this._wifiInterface.Connect(this._currentProfile);
+                var restored = false;
+                for(var i = 0; i < 3; i++)
+                {
+                    var restoredOnce = await this._wifiInterface.Connect(this._currentProfile);
+
+                    if (restoredOnce && !restored)
+                        restored = true;
+                }
+                return restored;
             }
         }
     }

@@ -82,7 +82,6 @@ namespace Initializer.Models
                 .Where(b => b != (byte)0)
                 .ToArray();
 
-            Array.Reverse(addrBytes);
             var addrString = string.Join(".", addrBytes.Select(b => ((int)b).ToString()));
 
             return addrString;

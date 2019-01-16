@@ -1,6 +1,7 @@
 ﻿using NativeWifi;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,11 +9,13 @@ using static NativeWifi.WlanClient;
 
 namespace Initializer.Models
 {
-    public class WifiInterface
+    public class WifiInterface : NetInterface
     {
         public static WifiInterface GetInterface()
         {
-            WlanInterface result = null;
+            WlanInterface wlanInterface = null;
+            NetworkAdapter networkAdapter = null;
+
             var importance = 0;
 
             var client = new WlanClient();
@@ -23,28 +26,28 @@ namespace Initializer.Models
                 return null;
 
 
-            foreach (WlanInterface wlanIface in interfaces)
+            foreach (WlanInterface wlan in interfaces)
             {
                 var currentImportance = 0;
+                var guid = wlan.NetworkInterface.Id;
+                var nic = NetInterface.GetByGuid(guid);
 
                 // 接続済みのとき、重要度に10000点を加算
-                try
-                {
-                    var current = wlanIface.CurrentConnection;
+                if (nic != null && nic.IsEnabled)
                     currentImportance += 10000;
-                }
-                catch (Exception)
-                {
-                    // 何もしない。
-                }
+
+                //Debug.WriteLine("===== WiFi NIC ===============");
+                //Debug.WriteLine($"Name: {wlan.NetworkInterface.Name}");
+                //Debug.WriteLine($"InterfaceGuid: {wlan.InterfaceGuid}");
+
 
                 // プロファイル個数×1000点を、重要度に加算
-                var profiles = wlanIface.GetProfiles();
+                var profiles = wlan.GetProfiles();
                 currentImportance += (profiles.Length * 1000);
 
                 // 検知済APの信号強度(0～100)を、重要度に加算
-                wlanIface.Scan();
-                var networks = wlanIface.GetAvailableNetworkList(0);
+                wlan.Scan();
+                var networks = wlan.GetAvailableNetworkList(0);
                 foreach (Wlan.WlanAvailableNetwork network in networks)
                 {
                     try
@@ -61,17 +64,21 @@ namespace Initializer.Models
                 if (importance < currentImportance)
                 {
                     importance = currentImportance;
-                    result = wlanIface;
+                    wlanInterface = wlan;
+                    networkAdapter = nic.Adapter;
                 }
             }
 
-            return new WifiInterface(result);
+            return new WifiInterface(networkAdapter, wlanInterface);
         }
 
 
         private WlanInterface _wlanInterface;
 
-        private WifiInterface(WlanInterface wlanInterface)
+        private WifiInterface(
+            NetworkAdapter adapter, 
+            WlanInterface wlanInterface
+        ): base(adapter)
         {
             this._wlanInterface = wlanInterface;
         }
