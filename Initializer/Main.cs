@@ -22,7 +22,7 @@ namespace Initializer
             Xb.App.Job.Init();
 
             this.InitializeComponent();
-            this.Height = 332;
+            this.Height = 300;
 
             this.pnlWifi.Hide();
             this.pnlPreparation.Hide();
@@ -50,7 +50,8 @@ namespace Initializer
 
         private void btnNext_Click(object sender, EventArgs e)
         {
-            this.SetPanel(this.pnlPreparation);
+            if (this.pnlWifi.Validate())
+                this.SetPanel(this.pnlPreparation);
         }
 
         private void btnPrev_Click(object sender, EventArgs e)

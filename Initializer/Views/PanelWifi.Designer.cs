@@ -103,6 +103,7 @@
             // 
             // txtSsid
             // 
+            this.txtSsid.BackColor = System.Drawing.Color.LightCyan;
             this.txtSsid.Location = new System.Drawing.Point(109, 94);
             this.txtSsid.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.txtSsid.Name = "txtSsid";
@@ -111,6 +112,7 @@
             // 
             // txtPassword
             // 
+            this.txtPassword.BackColor = System.Drawing.Color.MistyRose;
             this.txtPassword.Location = new System.Drawing.Point(109, 138);
             this.txtPassword.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.txtPassword.Name = "txtPassword";

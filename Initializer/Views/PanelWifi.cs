@@ -32,6 +32,9 @@ namespace Initializer.Views
 
         private void Init()
         {
+            this.txtSsid.BackColor = Color.LightCyan;
+            this.txtPassword.BackColor = Color.LightCyan;
+
             this.InitCboSecurity();
             this.SetPasswordVisible();
 
@@ -129,6 +132,50 @@ namespace Initializer.Views
                     this.txtPassword.Text
                 );
             });
+
+            return result;
+        }
+
+        public bool Validate()
+        {
+            var result = true;
+
+            Xb.App.Job.RunUISynced(() =>
+            {
+                this.txtSsid.BackColor = Color.LightCyan;
+                this.txtPassword.BackColor = Color.LightCyan;
+            });
+
+            var settings = this.GetSettings();
+
+            if (settings.Security == Broadlink.WifiSecurityMode.None)
+            {
+                return result;
+            }
+            else
+            {
+                // 何かしらセキュリティ設定があるとき。
+                Xb.App.Job.RunUISynced(() =>
+                {
+                    if (string.IsNullOrEmpty(settings.Ssid))
+                    {
+                        this.txtSsid.BackColor = Color.MistyRose;
+                        if (result)
+                            this.txtSsid.Focus();
+
+                        result = false;
+                    }
+
+                    if (string.IsNullOrEmpty(settings.Password))
+                    {
+                        this.txtPassword.BackColor = Color.MistyRose;
+                        if (result)
+                            this.txtPassword.Focus();
+
+                        result = false;
+                    }
+                });
+            }
 
             return result;
         }

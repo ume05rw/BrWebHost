@@ -47,7 +47,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnNext.Location = new System.Drawing.Point(511, 253);
             this.btnNext.Name = "btnNext";
-            this.btnNext.Size = new System.Drawing.Size(101, 34);
+            this.btnNext.Size = new System.Drawing.Size(115, 34);
             this.btnNext.TabIndex = 6;
             this.btnNext.Text = "Next >>";
             this.btnNext.UseVisualStyleBackColor = true;
@@ -59,7 +59,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnPrev.Location = new System.Drawing.Point(12, 253);
             this.btnPrev.Name = "btnPrev";
-            this.btnPrev.Size = new System.Drawing.Size(101, 34);
+            this.btnPrev.Size = new System.Drawing.Size(115, 34);
             this.btnPrev.TabIndex = 15;
             this.btnPrev.Text = "<< Prev";
             this.btnPrev.UseVisualStyleBackColor = true;
@@ -71,7 +71,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnExec.Location = new System.Drawing.Point(295, 253);
             this.btnExec.Name = "btnExec";
-            this.btnExec.Size = new System.Drawing.Size(101, 34);
+            this.btnExec.Size = new System.Drawing.Size(115, 34);
             this.btnExec.TabIndex = 17;
             this.btnExec.Text = "Exec";
             this.btnExec.UseVisualStyleBackColor = true;
@@ -133,7 +133,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnClose.Location = new System.Drawing.Point(402, 253);
             this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(101, 34);
+            this.btnClose.Size = new System.Drawing.Size(115, 34);
             this.btnClose.TabIndex = 23;
             this.btnClose.Text = "Close";
             this.btnClose.UseVisualStyleBackColor = true;
@@ -145,7 +145,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnRetry.Location = new System.Drawing.Point(122, 253);
             this.btnRetry.Name = "btnRetry";
-            this.btnRetry.Size = new System.Drawing.Size(101, 34);
+            this.btnRetry.Size = new System.Drawing.Size(115, 34);
             this.btnRetry.TabIndex = 24;
             this.btnRetry.Text = "Retry";
             this.btnRetry.UseVisualStyleBackColor = true;
@@ -156,7 +156,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(624, 462);
+            this.ClientSize = new System.Drawing.Size(638, 462);
+            this.ControlBox = false;
             this.Controls.Add(this.btnRetry);
             this.Controls.Add(this.btnClose);
             this.Controls.Add(this.pnlFailure);
@@ -174,10 +175,9 @@
             this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(640, 1400);
             this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(640, 307);
+            this.MinimumSize = new System.Drawing.Size(640, 200);
             this.Name = "Main";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Br-Device Initializer";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Main_FormClosing);
             this.Load += new System.EventHandler(this.Main_Load);
             this.ResumeLayout(false);

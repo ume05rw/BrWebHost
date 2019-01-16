@@ -32,7 +32,7 @@ namespace Initializer.Views
             {
                 this.Left = 12;
                 this.Top = 8;
-                this.Width = 600;
+                this.Width = 615;
                 this.Height = 236;
                 this.Show();
             });

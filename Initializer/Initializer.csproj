@@ -119,12 +119,6 @@
     <Compile Include="Views\PanelPreparation.Designer.cs">
       <DependentUpon>PanelPreparation.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\WaitIndicator.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\WaitIndicator.Designer.cs">
-      <DependentUpon>WaitIndicator.cs</DependentUpon>
-    </Compile>
     <EmbeddedResource Include="Main.resx">
       <DependentUpon>Main.cs</DependentUpon>
     </EmbeddedResource>
@@ -156,9 +150,6 @@
     <EmbeddedResource Include="Views\PanelWifi.resx">
       <DependentUpon>PanelWifi.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\WaitIndicator.resx">
-      <DependentUpon>WaitIndicator.cs</DependentUpon>
-    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -174,12 +165,22 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Images\failure.png" />
-    <Content Include="Images\step1.png" />
-    <Content Include="Images\step2.png" />
-    <Content Include="Images\step3.png" />
-    <Content Include="Images\succeeded.png" />
-    <Content Include="indicator.gif">
+    <Content Include="Images\failure.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\step1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\step2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\step3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\succeeded.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\indicator.gif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="normal.ico">
