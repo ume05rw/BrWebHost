@@ -45,7 +45,9 @@ namespace Initializer
 
         private void Main_Load(object sender, EventArgs e)
         {
+#pragma warning disable 4014
             this.Init();
+#pragma warning restore 4014
         }
 
         private void btnNext_Click(object sender, EventArgs e)
@@ -61,7 +63,9 @@ namespace Initializer
 
         private void btnExec_Click(object sender, EventArgs e)
         {
+#pragma warning disable 4014
             this.ExecSettings();
+#pragma warning restore 4014
         }
 
         private void btnClose_Click(object sender, EventArgs e)
@@ -71,7 +75,9 @@ namespace Initializer
 
         private void btnRetry_Click(object sender, EventArgs e)
         {
+#pragma warning disable 4014
             this.Init();
+#pragma warning restore 4014
         }
 
         private void Main_FormClosing(object sender, FormClosingEventArgs e)

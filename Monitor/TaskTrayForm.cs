@@ -349,7 +349,7 @@ namespace Monitor
             this._monitor.ConfigureAwait(false);
         }
 
-        private async Task<bool> StartBrowser()
+        private void StartBrowser()
         {
             var addr = this.GetLocalPrimaryAddress();
             var browser = new Process();
@@ -365,8 +365,6 @@ namespace Monitor
             browser.StartInfo.Arguments = $"/c start http://{addr.ToString()}:5004";
 
             browser.Start();
-
-            return true;
         }
 
         /// <summary>

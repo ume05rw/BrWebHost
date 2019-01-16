@@ -136,7 +136,7 @@ namespace Initializer.Views
             return result;
         }
 
-        public bool Validate()
+        public new bool Validate()
         {
             var result = true;
 

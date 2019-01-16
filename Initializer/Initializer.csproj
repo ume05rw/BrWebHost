@@ -78,7 +78,6 @@
     <Compile Include="Models\Profile.cs" />
     <Compile Include="Models\Settings.cs" />
     <Compile Include="Models\WifiInterface.cs" />
-    <Compile Include="Models\WifiTest.cs" />
     <Compile Include="NativeWifi\Interop.cs" />
     <Compile Include="NativeWifi\WlanApi.cs" />
     <Compile Include="Program.cs" />
