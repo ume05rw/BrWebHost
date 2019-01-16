@@ -25,5 +25,17 @@ namespace Initializer.Views
                 this.Refresh();
             });
         }
+
+        private void linkFlatIcon_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            var url = "https://www.freepik.com/";
+            System.Diagnostics.Process.Start(url);
+        }
+
+        private void linkLicense_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            var url = "http://creativecommons.org/licenses/by/3.0/";
+            System.Diagnostics.Process.Start(url);
+        }
     }
 }

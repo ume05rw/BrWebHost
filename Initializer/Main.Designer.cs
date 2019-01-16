@@ -63,6 +63,7 @@
             this.btnPrev.TabIndex = 15;
             this.btnPrev.Text = "<< Prev";
             this.btnPrev.UseVisualStyleBackColor = true;
+            this.btnPrev.Click += new System.EventHandler(this.btnPrev_Click);
             // 
             // btnExec
             // 

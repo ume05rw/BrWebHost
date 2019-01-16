@@ -74,6 +74,7 @@
     <Compile Include="Main.Designer.cs">
       <DependentUpon>Main.cs</DependentUpon>
     </Compile>
+    <Compile Include="Models\Device.cs" />
     <Compile Include="Models\Profile.cs" />
     <Compile Include="Models\Settings.cs" />
     <Compile Include="Models\WifiInterface.cs" />
@@ -173,6 +174,11 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Images\failure.png" />
+    <Content Include="Images\step1.png" />
+    <Content Include="Images\step2.png" />
+    <Content Include="Images\step3.png" />
+    <Content Include="Images\succeeded.png" />
     <Content Include="indicator.gif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

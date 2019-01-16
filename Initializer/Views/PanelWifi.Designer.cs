@@ -76,7 +76,7 @@
             this.cboSecurity.FormattingEnabled = true;
             this.cboSecurity.Location = new System.Drawing.Point(109, 52);
             this.cboSecurity.Name = "cboSecurity";
-            this.cboSecurity.Size = new System.Drawing.Size(475, 33);
+            this.cboSecurity.Size = new System.Drawing.Size(469, 33);
             this.cboSecurity.TabIndex = 0;
             // 
             // lblSsid
@@ -103,23 +103,19 @@
             // 
             // txtSsid
             // 
-            this.txtSsid.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtSsid.Location = new System.Drawing.Point(109, 94);
             this.txtSsid.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.txtSsid.Name = "txtSsid";
-            this.txtSsid.Size = new System.Drawing.Size(475, 32);
+            this.txtSsid.Size = new System.Drawing.Size(469, 32);
             this.txtSsid.TabIndex = 1;
             // 
             // txtPassword
             // 
-            this.txtPassword.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtPassword.Location = new System.Drawing.Point(109, 138);
             this.txtPassword.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.txtPassword.Name = "txtPassword";
             this.txtPassword.PasswordChar = '*';
-            this.txtPassword.Size = new System.Drawing.Size(475, 32);
+            this.txtPassword.Size = new System.Drawing.Size(469, 32);
             this.txtPassword.TabIndex = 2;
             // 
             // lblPassword

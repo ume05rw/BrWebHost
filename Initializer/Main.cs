@@ -17,8 +17,6 @@ namespace Initializer
         private WifiInterface _wifiInterface = null;
         private Profile _currentProfile = null;
 
-        private List<PanelBase> _panels = new List<PanelBase>();
-
         public Main()
         {
             Xb.App.Job.Init();
@@ -55,9 +53,13 @@ namespace Initializer
             this.SetPanel(this.pnlPreparation);
         }
 
+        private void btnPrev_Click(object sender, EventArgs e)
+        {
+            this.SetPanel(this.pnlWifi);
+        }
+
         private void btnExec_Click(object sender, EventArgs e)
         {
-            this.SetPanel(this.pnlExec);
             this.ExecSettings();
         }
 
@@ -77,58 +79,6 @@ namespace Initializer
         }
 
         #endregion
-
-        private void Init()
-        {
-            this._panels.Clear();
-            this._panels.AddRange(new PanelBase[] 
-            {
-                this.pnlWifi,
-                this.pnlPreparation,
-                this.pnlExec,
-                this.pnlSucceeded,
-                this.pnlFailure
-            });
-
-            var settings = this.pnlWifi.GetSettings();
-
-            Task.Run(() =>
-            {
-                // PC上のWiFiインタフェースを取得する。
-                this._wifiInterface = WifiInterface.GetInterface();
-
-                // PC上にWiFiインタフェースが無い場合
-                if (this._wifiInterface == null)
-                {
-                    // メッセージ表示して終了。
-                    this.pnlFailure.SetMessage("WiFi-Interfaces NOT Found on your PC.\r\nAdd WiFi-Device, and Retry.");
-                    this.SetPanel(this.pnlFailure);
-                    return;
-                }
-
-                // 以降、WiFiインタフェースが存在するとする。
-
-                // 現在接続中のWiFi情報を取得する。
-                this._currentProfile = this._wifiInterface.GetCurrentProfile();
-
-                // 保存済SSIDが空で、現在接続中WiFi情報が取れていればセットする。
-                if (this._currentProfile != null
-                    && !string.IsNullOrEmpty(this._currentProfile.Ssid)
-                    && !settings.Exists
-                )
-                {
-                    var newSettings = new Settings(
-                        this._currentProfile.SecurityType,
-                        this._currentProfile.Ssid,
-                        string.Empty
-                    );
-
-                    this.pnlWifi.SetSettings(newSettings);
-                }
-
-                this.SetPanel(this.pnlWifi);
-            });
-        }
 
         private void SetPanel(PanelBase panel)
         {
@@ -163,25 +113,97 @@ namespace Initializer
                 }
                 else if (panel == this.pnlSucceeded)
                 {
-                    this.btnClose.Hide();
+                    this.btnClose.Show();
                 }
                 else if (panel == this.pnlFailure)
                 {
-                    this.btnRetry.Hide();
-                    this.btnClose.Hide();
+                    this.btnRetry.Show();
+                    this.btnClose.Show();
                 }
             });
         }
 
+        private async Task<bool> Init()
+        {
+            this.pnlExec.lblPanelTitle.Text = "Now Booting...";
+            this.SetPanel(this.pnlExec);
+
+            this.pnlExec.SetProgress(10);
+            await Task.Delay(1000);
+
+            var settings = this.pnlWifi.GetSettings();
+
+            this.pnlExec.SetProgress(20);
+            await Task.Delay(1000);
+
+            await Task.Run(async () =>
+            {
+                // PC上のWiFiインタフェースを取得する。
+                this._wifiInterface = WifiInterface.GetInterface();
+
+                this.pnlExec.SetProgress(40);
+                await Task.Delay(1000);
+
+                // PC上にWiFiインタフェースが無い場合
+                if (this._wifiInterface == null)
+                {
+                    // メッセージ表示して終了。
+                    this.pnlFailure.SetMessage("WiFi-Interfaces NOT Found on your PC.\r\nAdd WiFi-Device, and Retry.");
+                    this.SetPanel(this.pnlFailure);
+                    return;
+                }
+
+                // 以降、WiFiインタフェースが存在するとする。
+
+                // 現在接続中のWiFi情報を取得する。
+                this._currentProfile = this._wifiInterface.GetCurrentProfile();
+
+                this.pnlExec.SetProgress(70);
+                await Task.Delay(1000);
+
+                // 保存済SSIDが空で、現在接続中WiFi情報が取れていればセットする。
+                if (this._currentProfile != null
+                    && !string.IsNullOrEmpty(this._currentProfile.Ssid)
+                    && !settings.Exists
+                )
+                {
+                    var newSettings = new Settings(
+                        this._currentProfile.SecurityType,
+                        this._currentProfile.Ssid,
+                        string.Empty
+                    );
+
+                    this.pnlWifi.SetSettings(newSettings);
+                }
+
+                // 現在稼働中のBroadlinkデバイスを取得する。
+                // 保持しておき、処理終了後の新規デバイス検出に利用する。
+                var devs = Device.Discover();
+
+                this.pnlExec.SetProgress(100);
+                await Task.Delay(500);
+
+                this.SetPanel(this.pnlWifi);
+            });
+
+            return true;
+        }
 
         private async Task<bool> ExecSettings()
         {
+            this.pnlExec.lblPanelTitle.Text = "Now Setting...";
+            this.SetPanel(this.pnlExec);
+
             this.pnlExec.SetProgress(10);
+            await Task.Delay(1000);
 
             var settings = this.pnlWifi.GetSettings();
 
             var brProf = new BroadlinkProfile();
             var connected = await this._wifiInterface.Connect(brProf);
+
+            this.pnlExec.SetProgress(30);
+            await Task.Delay(1000);
 
             if (!connected)
             {
@@ -191,7 +213,8 @@ namespace Initializer
 
                 if (!await this.RestoreWifi())
                 {
-                    message += "\r\n\r\n\r\nWiFi-Restoring Failure, Please set it manually.";
+                    message += "\r\n\r\n\r\n";
+                    message += "PC's WiFi restoring Failure, Please set it manually.";
                 }
 
                 this.pnlFailure.SetMessage(message);
@@ -200,13 +223,14 @@ namespace Initializer
                 return false;
             }
 
-            this.pnlExec.SetProgress(40);
-
             var setted = await SharpBroadlink.Broadlink.Setup(
                 settings.Ssid,
                 settings.Password,
                 settings.Security
             );
+
+            this.pnlExec.SetProgress(60);
+            await Task.Delay(1000);
 
             if (!setted)
             {
@@ -216,7 +240,8 @@ namespace Initializer
 
                 if (!await this.RestoreWifi())
                 {
-                    message += "\r\n\r\n\r\nWiFi-Restoring Failure, Please set it manually.";
+                    message += "\r\n\r\n\r\n";
+                    message += "PC's WiFi restoring Failure, Please set it manually.";
                 }
 
                 this.pnlFailure.SetMessage(message);
@@ -225,11 +250,25 @@ namespace Initializer
                 return false;
             }
 
-            this.pnlExec.SetProgress(80);
-
             await this.RestoreWifi();
 
+            this.pnlExec.SetProgress(80);
+            await Task.Delay(1000);
+
+            var devs = await Device.Discover();
+
+            this.pnlExec.SetProgress(90);
+            await Task.Delay(1000);
+
+            var message2 = (devs.Length > 0)
+                ? $"New Device IP is...\r\n\r\n    {devs[0].GetIpAddressString()}"
+                : "New Device is Ready!";
+            this.pnlSucceeded.SetMessage(message2);
+
             this.pnlExec.SetProgress(100);
+            await Task.Delay(500);
+
+            this.SetPanel(this.pnlSucceeded);
 
             return true;
         }
