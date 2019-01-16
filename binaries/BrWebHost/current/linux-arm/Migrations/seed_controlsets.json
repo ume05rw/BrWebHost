@@ -1,0 +1,38 @@
+[
+	new ControlSet {
+		Id = 1,
+		BrDeviceId = null,
+		Name = "TV",
+		IsTemplate = true
+	},
+	new ControlSet {
+		Id = 2,
+		BrDeviceId = null,
+		Name = "AV",
+		IsTemplate = true
+	},
+	new ControlSet {
+		Id = 3,
+		BrDeviceId = null,
+		Name = "Light",
+		IsTemplate = true
+	},
+	new ControlSet {
+		Id = 4,
+		BrDeviceId = null,
+		Name = "Air Complessor",
+		IsTemplate = true
+	},
+	new ControlSet {
+		Id = 5,
+		BrDeviceId = null,
+		Name = "A1 Sensor",
+		IsTemplate = true
+	},
+	new ControlSet {
+		Id = 6,
+		BrDeviceId = null,
+		Name = "Sp2 Switch",
+		IsTemplate = true
+	}
+]

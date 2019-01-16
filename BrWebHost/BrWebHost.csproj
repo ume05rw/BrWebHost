@@ -3,14 +3,18 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <TypeScriptToolsVersion>3.0</TypeScriptToolsVersion>
-    <Platforms>AnyCPU;x86</Platforms>
+    <Platforms>AnyCPU;x86;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="obj\bin\**" />
+    <Compile Remove="Releases\**" />
     <Content Remove="obj\bin\**" />
+    <Content Remove="Releases\**" />
     <EmbeddedResource Remove="obj\bin\**" />
+    <EmbeddedResource Remove="Releases\**" />
     <None Remove="obj\bin\**" />
+    <None Remove="Releases\**" />
   </ItemGroup>
 
   <ItemGroup>
