@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Initializer.Models.Langs;
 
 namespace Initializer.Views
 {
@@ -15,6 +16,7 @@ namespace Initializer.Views
         public PanelFailure(): base()
         {
             this.InitializeComponent();
+            this.lblPanelTitle.Text = Lang.Instance.SettingFailed;
         }
 
         public void SetMessage(string message)

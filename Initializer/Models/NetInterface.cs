@@ -91,34 +91,34 @@ namespace Initializer.Models
 
         public void Enable()
         {
-            this._adapter.Enable(); // not works
+            this._adapter.Enable(); // not admin, not works 
             //this.SetEnable(true);
         }
 
         public void Disable()
         {
-            this._adapter.Disable(); // not works
+            this._adapter.Disable(); // not admin, not works
             //this.SetEnable(false);
         }
 
-        private void SetEnable(bool enable)
-        {
-            var interfaceName = this._adapter.Name;
+        //private void SetEnable(bool enable)
+        //{
+        //    var interfaceName = this._adapter.Name;
 
-            string control = (enable)
-                ? "enable"
-                : "disable";
+        //    string control = (enable)
+        //        ? "enable"
+        //        : "disable";
 
-            var startInfo =
-                   new ProcessStartInfo("netsh", $"interface set interface \"{interfaceName}\" {control} >> C:\\dev\\tmp\\netsh.txt");
+        //    var startInfo =
+        //           new ProcessStartInfo("netsh", $"interface set interface \"{interfaceName}\" {control} >> C:\\dev\\tmp\\netsh.txt");
 
-            //startInfo.CreateNoWindow = true;
+        //    //startInfo.CreateNoWindow = true;
 
-            var process = new System.Diagnostics.Process();
-            process.StartInfo = startInfo;
+        //    var process = new System.Diagnostics.Process();
+        //    process.StartInfo = startInfo;
 
-            process.Start();
-            process.WaitForExit();
-        }
+        //    process.Start();
+        //    process.WaitForExit();
+        //}
     }
 }

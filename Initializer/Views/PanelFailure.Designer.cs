@@ -70,7 +70,7 @@
             this.txtMessage.Multiline = true;
             this.txtMessage.Name = "txtMessage";
             this.txtMessage.ReadOnly = true;
-            this.txtMessage.Size = new System.Drawing.Size(412, 155);
+            this.txtMessage.Size = new System.Drawing.Size(423, 155);
             this.txtMessage.TabIndex = 12;
             // 
             // linkFlatIcon

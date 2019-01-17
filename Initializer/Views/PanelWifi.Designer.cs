@@ -62,13 +62,13 @@
             // 
             // lblSecurity
             // 
-            this.lblSecurity.AutoSize = true;
-            this.lblSecurity.Location = new System.Drawing.Point(22, 55);
+            this.lblSecurity.Location = new System.Drawing.Point(9, 55);
             this.lblSecurity.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.lblSecurity.Name = "lblSecurity";
-            this.lblSecurity.Size = new System.Drawing.Size(79, 25);
+            this.lblSecurity.Size = new System.Drawing.Size(92, 25);
             this.lblSecurity.TabIndex = 14;
             this.lblSecurity.Text = "Security";
+            this.lblSecurity.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // cboSecurity
             // 
@@ -81,20 +81,19 @@
             // 
             // lblSsid
             // 
-            this.lblSsid.AutoSize = true;
-            this.lblSsid.Location = new System.Drawing.Point(51, 97);
+            this.lblSsid.Location = new System.Drawing.Point(9, 97);
             this.lblSsid.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.lblSsid.Name = "lblSsid";
-            this.lblSsid.Size = new System.Drawing.Size(50, 25);
+            this.lblSsid.Size = new System.Drawing.Size(92, 25);
             this.lblSsid.TabIndex = 9;
             this.lblSsid.Text = "SSID";
+            this.lblSsid.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // chkPassword
             // 
-            this.chkPassword.AutoSize = true;
             this.chkPassword.Location = new System.Drawing.Point(109, 174);
             this.chkPassword.Name = "chkPassword";
-            this.chkPassword.Size = new System.Drawing.Size(162, 29);
+            this.chkPassword.Size = new System.Drawing.Size(469, 29);
             this.chkPassword.TabIndex = 3;
             this.chkPassword.TabStop = false;
             this.chkPassword.Text = "Show Password";
@@ -122,13 +121,13 @@
             // 
             // lblPassword
             // 
-            this.lblPassword.AutoSize = true;
             this.lblPassword.Location = new System.Drawing.Point(9, 141);
             this.lblPassword.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.lblPassword.Name = "lblPassword";
             this.lblPassword.Size = new System.Drawing.Size(92, 25);
             this.lblPassword.TabIndex = 12;
             this.lblPassword.Text = "Password";
+            this.lblPassword.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // PanelWifi
             // 

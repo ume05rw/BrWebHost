@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Initializer.Models;
 using SharpBroadlink;
+using Initializer.Models.Langs;
 
 namespace Initializer.Views
 {
@@ -17,6 +18,11 @@ namespace Initializer.Views
         public PanelWifi() : base()
         {
             this.InitializeComponent();
+            this.lblPanelTitle.Text = Lang.Instance.SetYourWifi;
+            this.lblSecurity.Text = Lang.Instance.Security;
+            this.lblSsid.Text = Lang.Instance.Ssid;
+            this.lblPassword.Text = Lang.Instance.Password;
+            this.chkPassword.Text = Lang.Instance.ShowPassword;
             this.Init();
         }
 

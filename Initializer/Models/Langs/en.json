@@ -1,0 +1,40 @@
+﻿{
+  "AlreadyRunning": "Already Running Br-Initializer now.",
+
+  "NowSetting": "Now Setting...",
+  "NowBooting": "Now Booting...",
+
+  "SettingFailed": "Setting Failed...",
+  "DevicePreparation": "Broadlink-Device Preparation",
+  "PreparationStep1": "1.Plug the USB-cable into your Broadlink device, turn it on.",
+  "PreparationStep2": "2.Long press the reset button until the blue LED is blinking quickly.",
+  "PreparationStep3": "3.Long press again until blue LED is blinking slowly.",
+  "SettingSucceeded": "Setting Succeeded!",
+  "SetYourWifi": "Set your Wi-Fi",
+  "Security": "Security",
+  "Ssid": "SSID",
+  "Password": "Password",
+  "ShowPassword": "Show Password",
+
+  "Prev": "<<Prev",
+  "Next": "Next>>",
+  "Retry": "Retry",
+  "Exec": "Exec",
+  "Close": "Close",
+
+
+
+  "WifiInterfacesNotFound": "WiFi-Interfaces NOT Found on your PC.\r\nAdd WiFi-Device, and Retry.",
+  "BroadlinkDeviceNotFound": "Broadlink Device NOT Found.\r\nCheck your Device Preparation, and Retry.",
+  "PcWifiRestoringFailure": "PC's WiFi restoring Failure, Please set it manually.",
+  "BroadlinkDeviceInitializeFailure": "Broadlink Device initialize Failure.\r\nCheck your Device Preparation, and Retry.",
+  "NewDeviceIpIs": "New Device IP is...",
+  "NewDeviceIsReady": "New Device is Ready!"
+
+  //"": "",
+  //"": "",
+  //"": "",
+  //"": "",
+  //"": "",
+  //"": "",
+}

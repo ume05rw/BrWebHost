@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Initializer.Models.Langs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,6 +15,8 @@ namespace Initializer
         [STAThread]
         static void Main()
         {
+            Lang.Init();
+
             //Mutex名を決める（必ずアプリケーション固有の文字列に変更すること！）
             string mutexName = "BrDeviceInitializer";
             //Mutexオブジェクトを作成する
@@ -37,7 +40,7 @@ namespace Initializer
                 if (hasHandle == false)
                 {
                     //得られなかった場合は、すでに起動していると判断して終了
-                    MessageBox.Show("Already Running Br-Initializer now.");
+                    MessageBox.Show(Lang.Instance.AlreadyRunning);
                     return;
                 }
 
