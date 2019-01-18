@@ -1,0 +1,1069 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Xb.Core</name>
+    </assembly>
+    <members>
+        <member name="T:Xb.Byte">
+            <summary>
+            Byte, Bit functions
+            バイト／ビット関数群
+            </summary>
+            <remarks></remarks>
+        </member>
+        <member name="M:Xb.Byte.GetBase64String(System.Byte[])">
+            <summary>
+            Get Base64-String from Byte Array
+            バイト配列からBase64文字列を生成する。
+            </summary>
+            <param name="bytes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.Byte.GetBase64String(System.IO.Stream)">
+            <summary>
+            Get Base64-String from Stream
+            StreamからBase64文字列を生成する。
+            </summary>
+            <param name="stream"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.Byte.GetBytes(System.IO.Stream)">
+            <summary>
+            Get Byte Array from Stream
+            Streamからバイト配列を取得する。
+            </summary>
+            <param name="stream"></param>
+            <returns></returns>
+            <remarks>
+            thanks:
+            http://www.atmarkit.co.jp/fdotnet/dotnettips/985memstream/memstream.html
+            http://stackoverflow.com/questions/221925/creating-a-byte-array-from-a-stream
+            </remarks>
+        </member>
+        <member name="M:Xb.Byte.GetStream(System.Byte[])">
+            <summary>
+            Get Stream from Byte Array
+            バイト配列からStreamを取得する。
+            </summary>
+            <param name="bytes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.Byte.GetStream(System.String)">
+            <summary>
+            Get Stream from Base64-String
+            Base64文字列からStreamを取得する。
+            </summary>
+            <param name="base64String"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.Byte.GetBitString(System.Byte)">
+            <summary>
+            Get Bit-String from 1byte
+            バイト値から二進数文字列を取得する。
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+            <remarks></remarks>
+        </member>
+        <member name="M:Xb.Byte.GetBitString(System.Int32)">
+            <summary>
+            Get Bit-String from integer(regarded as unsigned)
+            符号無し整数値から二進数文字列を取得する。
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+            <remarks></remarks>
+        </member>
+        <member name="T:Xb.Byte.ByteArray">
+            <summary>
+            Byte Array Operator Class
+            バイト配列操作クラス
+            </summary>
+        </member>
+        <member name="F:Xb.Byte.ByteArray._bytes">
+            <summary>
+            Byte Array
+            バイト配列
+            </summary>
+        </member>
+        <member name="P:Xb.Byte.ByteArray.Bytes">
+            <summary>
+            Byte Array
+            バイト配列
+            </summary>
+        </member>
+        <member name="P:Xb.Byte.ByteArray.BitString">
+            <summary>
+            Joined Bit String
+            全バイト配列を連結したビット文字列
+            </summary>
+        </member>
+        <member name="M:Xb.Byte.ByteArray.#ctor(System.Byte[])">
+            <summary>
+            Constructor
+            コンストラクタ
+            </summary>
+            <param name="bytes"></param>
+        </member>
+        <member name="M:Xb.Byte.ByteArray.GetBit(System.Int32,System.Int32)">
+            <summary>
+            Get Bit value
+            指定位置のビット値をboolで取得する。
+            </summary>
+            <param name="byteIndex"></param>
+            <param name="bitIndex"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.Byte.ByteArray.SetBit(System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Write Bit value
+            指定位置のビット値をセットする。
+            </summary>
+            <param name="byteIndex"></param>
+            <param name="bitIndex"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:Xb.Byte.ByteArray.GetInteger(System.Int32,System.Int32)">
+            <summary>
+            Get Integer from byte range
+            指定バイト範囲から符号なし整数を取得する。
+            </summary>
+            <param name="byteIndex"></param>
+            <param name="length"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.Byte.ByteArray.GetLong(System.Int32,System.Int32)">
+            <summary>
+            Get Long from byte range
+            指定バイト範囲から符号なし整数を取得する。
+            </summary>
+            <param name="byteIndex"></param>
+            <param name="length"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Xb.Date">
+            <summary>
+            Date, Time functions
+            日付・時刻関数群
+            </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Xb.Date.UnixtimeStartValue">
+            <summary>
+            Unix-Time start point
+            UNIX時間の開始日時
+            </summary>
+        </member>
+        <member name="M:Xb.Date.GetDate(System.String)">
+            <summary>
+            Get DateTime from String
+            文字列日時値から日付型値を取得する。
+            </summary>
+            <param name="dateTimeString">null -> now</param>
+            <returns></returns>
+            <remarks></remarks>
+        </member>
+        <member name="M:Xb.Date.GetDate(System.Int64,System.Boolean)">
+            <summary>
+            Get DateTime from Unix-Time integer
+            UNIXタイム値から日付型値を取得する。
+            </summary>
+            <param name="unixTime"></param>
+            <returns></returns>
+            <remarks>
+            auto add offset local-timezone
+            </remarks>
+        </member>
+        <member name="M:Xb.Date.GetUnixtime(System.DateTime,System.Boolean)">
+            <summary>
+            Get Unix-Time integer
+            渡し値日時のUnixタイムを取得する。
+            </summary>
+            <param name="dateTime"></param>
+            <returns></returns>
+            <remarks></remarks>
+        </member>
+        <member name="M:Xb.Date.GetLastDate(System.DateTime)">
+            <summary>
+            Get last-date in month
+            渡し値日付の月末日DateTimeを返す。
+            </summary>
+            <param name="dateTime"></param>
+            <returns></returns>
+            <remarks></remarks>
+        </member>
+        <member name="M:Xb.Date.GetLastDate(System.String,System.String)">
+            <summary>
+            Get last-date in month
+            渡し値日付の月末日DateTimeを返す。
+            </summary>
+            <param name="yyyy"></param>
+            <param name="mm"></param>
+            <returns></returns>
+            <remarks></remarks>
+        </member>
+        <member name="M:Xb.Date.GetLastDate(System.Int32,System.Int32)">
+            <summary>
+            Get last-date in month
+            渡し値日付の月末日DateTimeを返す。
+            </summary>
+            <param name="yyyy"></param>
+            <param name="mm"></param>
+            <returns></returns>
+            <remarks></remarks>
+        </member>
+        <member name="M:Xb.Date.GetLastDay(System.DateTime)">
+            <summary>
+            Get last-day integer in month
+            渡し値日付の月末日数値を返す。
+            </summary>
+            <param name="dateTime"></param>
+            <returns></returns>
+            <remarks></remarks>
+        </member>
+        <member name="M:Xb.Date.GetLastDay(System.String,System.String)">
+            <summary>
+            Get last-day integer in month
+            渡し値日付の月末日数値を返す。
+            </summary>
+            <param name="yyyy"></param>
+            <param name="mm"></param>
+            <returns></returns>
+            <remarks></remarks>
+        </member>
+        <member name="M:Xb.Date.GetLastDay(System.Int32,System.Int32)">
+            <summary>
+            Get last-day integer in month
+            渡し値日付の月末日数値を返す。
+            </summary>
+            <param name="yyyy"></param>
+            <param name="mm"></param>
+            <returns></returns>
+            <remarks></remarks>
+        </member>
+        <member name="M:Xb.Date.IsDate(System.String)">
+            <summary>
+            Validate DateTime-String
+            日付型に変換可能か否かを検証する。
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+            <remarks></remarks>
+        </member>
+        <member name="M:Xb.Date.IsTime(System.String)">
+            <summary>
+            Validate Time-String
+            文字列が時刻フォーマット[XX:XX(:XX.XXX)]か否かを検証する。
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+            <remarks></remarks>
+        </member>
+        <member name="M:Xb.Date.FormatDb(System.DateTime)">
+            <summary>
+            Get Database-DateTime String
+            日付型値から、汎用DBフォーマットの日時文字列を取得する。
+            </summary>
+            <param name="dateTime"></param>
+            <returns></returns>
+            <remarks></remarks>
+        </member>
+        <member name="M:Xb.Date.FormatString(System.String,System.String,System.String,System.String)">
+            <summary>
+            Format DateTime String
+            日時文字列のフォーマットを整える。
+            </summary>
+            <param name="dateString"></param>
+            <param name="dateSplitter"></param>
+            <param name="timeSplitter"></param>
+            <param name="spacer"></param>
+            <returns></returns>
+            <remarks>
+            i forgot base logic url...
+            </remarks>
+        </member>
+        <member name="M:Xb.Date.GetTimestampString(System.DateTime,System.Nullable{System.DateTime})">
+            <summary>
+            Get Update-Time sring
+            更新日時表現の文字列を取得する。
+            </summary>
+            <param name="targetDateTime"></param>
+            <param name="afterDateTime">null -> Now</param>
+            <returns></returns>
+            <remarks></remarks>
+        </member>
+        <member name="T:Xb.Ext">
+            <summary>
+            Method Extensions
+            拡張メソッド群
+            </summary>
+        </member>
+        <member name="M:Xb.Ext.Timeout(System.Threading.Tasks.Task,System.TimeSpan)">
+            <summary>
+            Task.Timeout
+            </summary>
+            <param name="task"></param>
+            <param name="timeout"></param>
+            <returns></returns>
+            <remarks>
+            thanks:
+            http://neue.cc/2012/10/16_383.html
+            </remarks>
+        </member>
+        <!-- 正しくない形式の XML コメントがメンバー "M:Xb.Ext.Timeout``1(System.Threading.Tasks.Task{``0},System.TimeSpan)" で無視されました -->
+        <member name="T:Xb.Net.Http">
+            <summary>
+            Http functions
+            Http関連関数群
+            </summary>
+            <remarks></remarks>
+        </member>
+        <member name="T:Xb.Net.Http.MethodType">
+            <summary>
+            Method type
+            メソッド
+            </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Xb.Net.Http.MethodType.Get">
+            <summary>
+            GET
+            </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Xb.Net.Http.MethodType.Post">
+            <summary>
+            POST - Normal
+            </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Xb.Net.Http.MethodType.Put">
+            <summary>
+            PUT - Normal
+            </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Xb.Net.Http.MethodType.Delete">
+            <summary>
+            DELETE - Normal
+            </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Xb.Net.Http.RetryCount">
+            <summary>
+            Http-Query retry count
+            </summary>
+        </member>
+        <member name="P:Xb.Net.Http.Encode">
+            <summary>
+            Encode for http
+            Httpクエリ時のエンコード
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Xb.Net.Http.ResponseSet">
+            <summary>
+            Result WebResponse and Stream
+            </summary>
+        </member>
+        <member name="P:Xb.Net.Http.ResponseSet.Response">
+            <summary>
+            WebResponse Object
+            </summary>
+        </member>
+        <member name="P:Xb.Net.Http.ResponseSet.Stream">
+            <summary>
+            Stream Object
+            </summary>
+        </member>
+        <member name="P:Xb.Net.Http.Timeout">
+            <summary>
+            Timeout(Second)
+            </summary>
+        </member>
+        <member name="P:Xb.Net.Http.Url">
+            <summary>
+            Query Url
+            </summary>
+        </member>
+        <member name="P:Xb.Net.Http.BuildedUrl">
+            <summary>
+            Logic Builded Url
+            </summary>
+        </member>
+        <member name="P:Xb.Net.Http.PassingValues">
+            <summary>
+            Value strings on body
+            </summary>
+        </member>
+        <member name="P:Xb.Net.Http.Method">
+            <summary>
+            Http-Method Type
+            </summary>
+        </member>
+        <member name="P:Xb.Net.Http.Headers">
+            <summary>
+            Header Values
+            </summary>
+        </member>
+        <member name="M:Xb.Net.Http.#ctor(System.String,System.String,Xb.Net.Http.MethodType,System.Collections.Generic.Dictionary{System.Net.HttpRequestHeader,System.String})">
+            <summary>
+            Constructor
+            </summary>
+            <param name="url"></param>
+            <param name="passingValues"></param>
+            <param name="method"></param>
+            <param name="headers"></param>
+        </member>
+        <member name="M:Xb.Net.Http.GetResponseAsync">
+            <summary>
+            Get WebResponse and Stream by url
+            渡し値URLから取得したWebResponse, Streamを返す。
+            </summary>
+            <returns></returns>
+            <remarks>
+            </remarks>
+        </member>
+        <member name="M:Xb.Net.Http.GetAsync">
+            <summary>
+            Get String by url
+            渡し値URLから取得した文字列を返す。
+            </summary>
+            <returns></returns>
+            <remarks>
+            </remarks>
+        </member>
+        <member name="M:Xb.Net.Http.GetRequestAsync(System.Boolean)">
+            <summary>
+            Get WebRequest-Object
+            Httpリクエストの渡し値を整形し、WebRequestオブジェクトを返す。
+            </summary>
+            <returns></returns>
+            <remarks>
+            GETパラメータにマルチバイト文字を含んだURL文字列、かつURI-Encodeしていないとき、
+            自動でUTF-8によるURI-Encodeを実行してしまう。
+            </remarks>
+        </member>
+        <member name="M:Xb.Net.Http.GetResponseAsync(System.Net.WebRequest)">
+            <summary>
+            Get WebResponse from WebRequest
+            Httpリクエストから、WebResponseを取得する。
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.Net.Http.GetResponseStreamAsync(System.Net.WebResponse)">
+            <summary>
+            Get Stream from WebResponse
+            レスポンスからStreamを取得する。
+            </summary>
+            <param name="response"></param>
+            <returns></returns>
+        </member>
+        <!-- 正しくない形式の XML コメントがメンバー "M:Xb.Net.Http.GetParamString(System.Collections.Generic.Dictionary{System.String,System.Object})" で無視されました -->
+        <member name="M:Xb.Net.Http.CanEncode(System.String)">
+            <summary>
+            Validate string Uri-Encodable
+            URIエンコードが可能か否かを判定する。
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.Net.Http.EncodeUri(System.String)">
+            <summary>
+            Get Uri-Encode string
+            URIエンコードした文字列を取得する。
+            </summary>
+            <param name="text"></param>
+            <returns></returns>
+            <remarks></remarks>
+        </member>
+        <member name="M:Xb.Net.Http.DecodeUri(System.String)">
+            <summary>
+            Get Uri-Decode string
+            URIデコードした文字列を取得する。
+            </summary>
+            <param name="text"></param>
+            <returns></returns>
+            <remarks></remarks>
+        </member>
+        <member name="M:Xb.Net.Http.GetFilename(System.String)">
+            <summary>
+            Get File Name from url
+            URLからファイル名箇所を切り出す。
+            </summary>
+            <param name="url"></param>
+            <returns></returns>
+            <remarks>
+            thanks:
+            http://www.atmarkit.co.jp/fdotnet/dotnettips/164getfilename/getfilename.html
+            </remarks>
+        </member>
+        <member name="M:Xb.Net.Http.GetDirectory(System.String)">
+            <summary>
+            Get Directory Name from url
+            URLからディレクトリ名を切り出す。
+            </summary>
+            <param name="url"></param>
+            <returns></returns>
+            <remarks></remarks>
+        </member>
+        <member name="M:Xb.Net.Http.IsValidUrl(System.String)">
+            <summary>
+            Validate url string
+            渡し値URLが文字列として正しいか否かを検証する。
+            </summary>
+            <param name="url"></param>
+            <returns></returns>
+            <remarks>
+            http, https のみOK、ftp等はNG
+            </remarks>
+        </member>
+        <member name="T:Xb.Net.HttpXml">
+            <summary>
+            Http on XML functions
+            XMLベースのHTTP関連関数群
+            </summary>
+        </member>
+        <member name="M:Xb.Net.HttpXml.#ctor(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Xb.Net.Http.MethodType,System.Collections.Generic.Dictionary{System.Net.HttpRequestHeader,System.String})">
+            <summary>
+            Constructor
+            </summary>
+            <param name="url"></param>
+            <param name="passingValues"></param>
+            <param name="method"></param>
+            <param name="headers"></param>
+            <remarks>
+            thanks;
+            http://stackoverflow.com/questions/1799767/easy-way-to-convert-a-dictionarystring-string-to-xml-and-visa-versa
+            </remarks>
+        </member>
+        <member name="M:Xb.Net.HttpXml.SetPassingValues(System.Collections.Generic.Dictionary{System.String,System.Object})">
+            <summary>
+            Convert object to Json-String, and Set it PassingValues
+            渡し値objectをJSONにキャストし、PassingValuesにセットする。
+            </summary>
+            <param name="passingValues"></param>
+            <remarks>
+            thanks:
+            http://stackoverflow.com/questions/1799767/easy-way-to-convert-a-dictionarystring-string-to-xml-and-visa-versa
+            </remarks>
+        </member>
+        <member name="M:Xb.Net.HttpXml.GetResponseAsync">
+            <summary>
+            Get WebResponse and Stream by url
+            渡し値URLから取得したWebResponse, Streamを返す。
+            </summary>
+            <returns></returns>
+            <remarks>
+            </remarks>
+        </member>
+        <member name="M:Xb.Net.HttpXml.GetAsync``1">
+            <summary>
+            Get Response from url, Cast response to T
+            指定URLから応答を取得し、指定の型にキャストして返す。
+            </summary>
+            <returns>Ordered-Type</returns>
+            <remarks>
+            thanks:
+            http://dobon.net/vb/dotnet/file/xmlserializer.html
+            </remarks>
+        </member>
+        <!-- 正しくない形式の XML コメントがメンバー "M:Xb.Net.HttpXml.GetParamString(System.Collections.Generic.Dictionary{System.String,System.Object})" で無視されました -->
+        <member name="T:Xb.Num">
+            <summary>
+            Numeric functions
+            数値関数群
+            </summary>
+            <remarks></remarks>
+        </member>
+        <member name="T:Xb.Num.RoundType">
+            <summary>
+            Fraction Round Type
+            端数処理区分
+            </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Xb.Num.RoundType.Floor">
+            <summary>
+            Truncate
+            切り捨て
+            </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Xb.Num.RoundType.HalfUp">
+            <summary>
+            Half Round Up
+            四捨五入
+            </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Xb.Num.RoundType.Cell">
+            <summary>
+            Round Up
+            切り上げ
+            </summary>
+            <remarks></remarks>
+        </member>
+        <member name="M:Xb.Num.Round(System.Decimal,Xb.Num.RoundType,System.Int32)">
+            <summary>
+            Get Rounded Number
+            指定桁数で端数処理する。
+            </summary>
+            <param name="value"></param>
+            <param name="roundType"></param>
+            <param name="decimalPoint"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.Num.IsNumeric(System.String)">
+            <summary>
+            Validate Number-String
+            文字列が数値にキャスト可能か否かを検証する。
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+            <remarks></remarks>
+        </member>
+        <member name="T:Xb.Str">
+            <summary>
+            String functions
+            文字列関連関数群
+            </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Xb.Str.Dq">
+            <summary>
+            Double-Quote
+            </summary>
+        </member>
+        <member name="T:Xb.Str.LinefeedType">
+            <summary>
+            Line-Feed charactor type
+            改行コード指定種
+            </summary>
+        </member>
+        <member name="F:Xb.Str.LinefeedType.Lf">
+            <summary>
+            LF - Unix
+            </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Xb.Str.LinefeedType.CrLf">
+            <summary>
+            CR + LF - Windows
+            </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Xb.Str.LinefeedType.Cr">
+            <summary>
+            CR - Mac
+            </summary>
+            <remarks></remarks>
+        </member>
+        <member name="M:Xb.Str.Left(System.String,System.Int32)">
+            <summary>
+            Get substring left side
+            左から指定位置までの文字列を切り出す、もしくは指定位置までを削除する。
+            </summary>
+            <param name="target"></param>
+            <param name="length">
+            plus: slice left char
+            値が正のとき 左 から切り出した文字列
+            
+            minus: cut left char
+            値が負のとき 左 から切り取った結果残った文字列
+            </param>
+            <returns></returns>
+            <remarks>
+            target = "ABCDEFG", position = 1  -> "A"
+            target = "ABCDEFG", position = 3  -> "ABC"
+            target = "ABCDEFG", position = -2 -> "CDEFG"
+            </remarks>
+        </member>
+        <member name="M:Xb.Str.Right(System.String,System.Int32)">
+            <summary>
+            Get substring right side
+            右から指定位置までの文字列を切り出す、もしくは指定位置までを削除する。
+            </summary>
+            <param name="target"></param>
+            <param name="length">
+            plus: slice right char
+            値が正のとき 右 から切り出した文字列
+            
+            minus: cut right char
+            値が負のときは 右 から切り取った結果残った文字列
+            </param>
+            <returns></returns>
+            <remarks>
+            target = "ABCDEFG", position = 1  -> "G"
+            target = "ABCDEFG", position = 3  -> "EFG"
+            target = "ABCDEFG", position = -2 -> "ABCDE"
+            </remarks>
+        </member>
+        <member name="M:Xb.Str.Slice(System.String,System.Int32)">
+            <summary>
+            Get sliced substring
+            文字列を、先頭/末尾から指定文字数数分切り出す。
+            </summary>
+            <param name="target"></param>
+            <param name="length">
+            plus: slice left char
+            値が正のとき 左 から切り出した文字列
+            
+            minus: slice right char
+            値が正のとき 右 から切り出した文字列
+            </param>
+            <returns></returns>
+            <remarks>
+            target = "ABCDEFG", position = 1  -> "A"
+            target = "ABCDEFG", position = 3  -> "ABC"
+            target = "ABCDEFG", position = -2 -> "FG"
+            </remarks>
+        </member>
+        <member name="M:Xb.Str.SliceReverse(System.String,System.Int32)">
+            <summary>
+            Get cutted substring
+            文字列を先頭/末尾から文字数単位で取り除き、余った文字列を返す。
+            </summary>
+            <param name="target"></param>
+            <param name="length">
+            plus: cut left char
+            値が正のとき 左 から切り出した結果残った文字列
+            
+            minus: cut right char
+            値が負のとき 右 から切り出した結果残った文字列
+            </param>
+            <returns></returns>
+            <remarks>
+            target = "ABCDEFG", position = 1  -> "BCDEFG"
+            target = "ABCDEFG", position = 3  -> "DEFG"
+            target = "ABCDEFG", position = -2 -> "ABCDE"
+            </remarks>
+        </member>
+        <member name="M:Xb.Str.LeftSentence(System.String,System.Int32,System.String)">
+            <summary>
+            Get sliced string block left side
+            左から指定要素までの文字列を切り出す、もしくは指定位置までを削除する。
+            </summary>
+            <param name="target"></param>
+            <param name="length">
+            plus: slice left block
+            値が正のとき 左 から切り出した要素文字列
+            
+            minus: cut left block
+            値が負のときは 左 から切り出した結果残った要素文字列
+            </param>
+            <param name="delimiter"></param>
+            <returns></returns>
+            <remarks>
+            target = "1/2/3/4",   index = 2   -> "1/2"
+            target = "1/2/3/4/5", index = 3   -> "1/2/3"
+            target = "AAaa/bb Bb/cCcCcCc/DdDDdDd", index = -1 -> "bb Bb/cCcCcCc/DdDDdDd"
+            target = "AAaa/bb Bb/cCcCcCc/DdDDdDd", index = -3 -> "DdDDdDd"
+            </remarks>
+        </member>
+        <member name="M:Xb.Str.RightSentence(System.String,System.Int32,System.String)">
+            <summary>
+            Get sliced string block right side
+            右から指定要素までの文字列を切り出す、もしくは指定要素までを削除する。
+            </summary>
+            <param name="target"></param>
+            <param name="length">
+            plus: slice right block
+            値が正のときは 右 から切り出した要素文字列
+            
+            minus: cut right block
+            値が負のときは 右 から切り出した結果残った要素文字列
+            </param>
+            <param name="delimiter"></param>
+            <returns></returns>
+            <remarks>
+            target = "1/2/3/4",   index = 2   -> "3/4"
+            target = "1/2/3/4/5", index = 3   -> "3/4/5"
+            target = "AAaa/bb Bb/cCcCcCc/DdDDdDd", index = -1 -> "AAaa/bb Bb/cCcCcCc"
+            target = "AAaa/bb Bb/cCcCcCc/DdDDdDd", index = -3 -> "AAaa"
+            </remarks>
+        </member>
+        <member name="M:Xb.Str.SliceSentence(System.String,System.Int32,System.String)">
+            <summary>
+            Get sliced string block
+            デリミタで区切られた要素文字列を、先頭/末尾から要素数単位で切り出す。
+            </summary>
+            <param name="target"></param>
+            <param name="length">
+            plus: slice left block
+            値が正のとき 左 から切り出した要素文字列
+            
+            plus: slice right block
+            値が負のとき 右 から切り出した要素文字列
+            </param>
+            <param name="delimiter"></param>
+            <returns></returns>
+            <remarks>
+            target = "1/2/3/4",   index = 2   -> "1/2"
+            target = "1/2/3/4/5", index = 3   -> "1/2/3"
+            target = "AAaa/bb Bb/cCcCcCc/DdDDdDd", index = -1 -> "DdDDdDd"
+            target = "AAaa/bb Bb/cCcCcCc/DdDDdDd", index = -3 -> "bb Bb/cCcCcCc/DdDDdDd"
+            </remarks>
+        </member>
+        <member name="M:Xb.Str.SliceReverseSentence(System.String,System.Int32,System.String)">
+            <summary>
+            Get cutted string block
+            文字列を先頭/末尾から要素数単位で取り除き、余った要素の文字列を返す。
+            </summary>
+            <param name="target"></param>
+            <param name="length">
+            plus: cut left block
+            値が正のときは 左 から切り出した結果残った要素文字列
+            
+            minus: cut right block
+            値が負のとき 右 から切り出した結果残った要素文字列
+            </param>
+            <param name="delimiter"></param>
+            <returns></returns>
+            <remarks>
+            target = "1/2/3/4",   index = 2   -> "3/4"
+            target = "1/2/3/4/5", index = 3   -> "4/5"
+            target = "AAaa/bb Bb/cCcCcCc/DdDDdDd", index = -1 -> "AAaa/bb Bb/cCcCcCc"
+            target = "AAaa/bb Bb/cCcCcCc/DdDDdDd", index = -3 -> "AAaa"
+            </remarks>
+        </member>
+        <member name="M:Xb.Str.Split(System.String,System.String)">
+            <summary>
+            Get Splitted String
+            文字列を分割する。
+            </summary>
+            <param name="delimiter"></param>
+            <param name="target"></param>
+            <returns></returns>
+            <remarks></remarks>
+        </member>
+        <member name="M:Xb.Str.IsAscii(System.String)">
+            <summary>
+            Validate string has only Single-Byte charactors
+            文字列が全てASCIIコードか否か
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+            <remarks></remarks>
+        </member>
+        <member name="M:Xb.Str.IsMultiByte(System.String,System.Text.Encoding)">
+            <summary>
+            Validate string only Multi-Byte charactors
+            文字列が全てマルチバイトか否か
+            </summary>
+            <param name="value"></param>
+            <param name="encode">null -> utf-8</param>
+            <returns>
+            半角カナを1バイトにするときは、ShiftJISで判定すること
+            </returns>
+        </member>
+        <member name="M:Xb.Str.GetLinefeed(Xb.Str.LinefeedType)">
+            <summary>
+            Get Linefeed charactor
+            改行文字を取得する。
+            </summary>
+            <param name="linefeed"></param>
+            <returns></returns>
+            <remarks></remarks>
+        </member>
+        <member name="M:Xb.Str.GetMultiLine(System.String)">
+            <summary>
+            Get Linefeed-Splitted multiline strings
+            改行文字を判定して改行処理を通した文字列配列を取得する。
+            </summary>
+            <param name="multiLineText"></param>
+            <returns></returns>
+            <remarks></remarks>
+        </member>
+        <member name="M:Xb.Str.GetBytes(System.String,System.Text.Encoding)">
+            <summary>
+            Get Byte-Array from string
+            文字列からバイト配列を取得する。
+            </summary>
+            <param name="target"></param>
+            <param name="encode">null to utf-8</param>
+            <returns></returns>
+            <remarks></remarks>
+        </member>
+        <member name="M:Xb.Str.GetByteLength(System.String,System.Text.Encoding)">
+            <summary>
+            Get Byte-Length from string
+            文字列のバイト長を取得する。
+            </summary>
+            <param name="target"></param>
+            <param name="encode">ull to utf-8</param>
+            <returns></returns>
+            <remarks></remarks>
+        </member>
+        <member name="M:Xb.Str.EscapeHtml(System.String)">
+            <summary>
+            Escape Html-Special-Charactors
+            HTML用特殊文字をエスケープする。
+            </summary>
+            <param name="html"></param>
+            <returns></returns>
+            <remarks>
+            Like: PHP - htmlspecialchars(html, ENT_COMPAT)
+            </remarks>
+        </member>
+        <member name="M:Xb.Str.UnescapeHtml(System.String)">
+            <summary>
+            Unescape Html-Special-Charactors
+            エスケープされたHTML特殊文字を戻す。
+            </summary>
+            <param name="html"></param>
+            <returns></returns>
+            <remarks></remarks>
+        </member>
+        <member name="M:Xb.Str.MySqlQuote(System.String)">
+            <summary>
+            Quote string value, and Escape for MySql
+            文字列をシングルクォートで囲む。文字列中にシングルクォートがある場合、MySQL式のエスケープを行う。
+            </summary>
+            <param name="text"></param>
+            <returns></returns>
+            <remarks></remarks>
+        </member>
+        <member name="M:Xb.Str.SqlQuote(System.String)">
+            <summary>
+            Quote string value, and Escape for Microsoft Sql Server
+            文字列をシングルクォートで囲む。文字列中にシングルクォートがある場合、SQL-Server/SQLite式のエスケープを行う。
+            </summary>
+            <param name="text"></param>
+            <returns></returns>
+            <remarks></remarks>
+        </member>
+        <member name="M:Xb.Str.Dquote(System.String)">
+            <summary>
+            Double-Quote string value, and Escape for JSON
+            文字列をダブルクォートで囲む。文字列中にダブルクォートがある場合、JSON式エスケープを行う。
+            </summary>
+            <param name="text"></param>
+            <returns></returns>
+            <remarks></remarks>
+        </member>
+        <member name="M:Xb.Str.CsvDquote(System.String)">
+            <summary>
+            Double-Quote string value, and Escape for CSV
+            文字列をダブルクォートで囲む。文字列中にダブルクォートがある場合、CSV式エスケープを行う。
+            </summary>
+            <param name="text"></param>
+            <returns></returns>
+            <remarks></remarks>
+        </member>
+        <member name="M:Xb.Str.GetString(System.Byte[])">
+            <summary>
+            Get string from Byte-Array, auto detect Japanese-Encode
+            バイト配列を文字列に変換する。
+            </summary>
+            <param name="bytes"></param>
+            <returns></returns>
+            <remarks>
+            エンコードが分かっているときは、Encoding.GetString()を使うこと。
+            </remarks>
+        </member>
+        <member name="M:Xb.Str.GetString(System.IO.Stream)">
+            <summary>
+            Get string from Stream, auto detect Japanese-Encode
+            バイト配列を文字列に変換する。
+            </summary>
+            <param name="stream"></param>
+            <returns></returns>
+            <remarks>
+            エンコードが分かっているときは、Encoding.GetString()を使うこと。
+            </remarks>
+        </member>
+        <member name="M:Xb.Str.GetEncode(System.Byte[],System.Boolean)">
+            <summary>
+            Detect Encode from Byte-Array(for Japanese)
+            文字コードを判定する
+            </summary>
+            <param name="bytes"></param>
+            <param name="forceJapaneseDetection"></param>
+            <returns></returns>
+            <remarks>
+            not found, return ASCII.
+            
+            thanks:
+            http://dobon.net/vb/dotnet/string/detectcode.html
+            
+            Jcode.pmのgetcodeメソッドを移植したものです。
+            Jcode.pm(http://openlab.ring.gr.jp/Jcode/index-j.html)
+            Jcode.pmのCopyright: Copyright 1999-2005 Dan Kogai
+            </remarks>
+        </member>
+        <member name="M:Xb.Str.GetEncode(System.IO.Stream,System.Boolean)">
+            <summary>
+            Detect Encode from Byte-Array(for Japanese)
+            文字コードを判定する
+            </summary>
+            <param name="bytes"></param>
+            <param name="forceJapaneseDetection"></param>
+            <returns></returns>
+            <remarks>
+            not found, return ASCII.
+            
+            thanks:
+            http://dobon.net/vb/dotnet/string/detectcode.html
+            
+            Jcode.pmのgetcodeメソッドを移植したものです。
+            Jcode.pm(http://openlab.ring.gr.jp/Jcode/index-j.html)
+            Jcode.pmのCopyright: Copyright 1999-2005 Dan Kogai
+            </remarks>
+        </member>
+        <member name="M:Xb.Util.Out(System.String)">
+            <summary>
+            Output message to console
+            コンソールにメッセージを出力する。
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="M:Xb.Util.Out(System.String,System.Object[])">
+            <summary>
+            Output formatted-message to console
+            コンソールに整形済みメッセージを出力する。
+            </summary>
+            <param name="format"></param>
+            <param name="values"></param>
+        </member>
+        <member name="M:Xb.Util.Out(System.Exception)">
+            <summary>
+            Output Exception-Info to console
+            コンソールに例外情報を出力する。
+            </summary>
+            <param name="ex"></param>
+        </member>
+        <member name="M:Xb.Util.OutHighlighted(System.String[])">
+            <summary>
+            Output Highlighted message
+            コンソールに、強調されたメッセージを出力する。
+            </summary>
+            <param name="messages"></param>
+        </member>
+        <member name="M:Xb.Util.GetHighlighted(System.String[])">
+            <summary>
+            Cast string-arrary to Highlighted message
+            文字列配列を強調メッセージ形式文字列に変換する。
+            </summary>
+            <param name="messages"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.Util.GetErrorHighlighted(System.Exception)">
+            <summary>
+            Get Exception-Info message
+            例外情報文字列を取得する。
+            </summary>
+            <param name="ex"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.Util.GetErrorString(System.Exception)">
+            <summary>
+            Get Formatted Exception-Info string-array
+            例外情報を整形した文字列配列を返す。
+            </summary>
+            <param name="ex"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

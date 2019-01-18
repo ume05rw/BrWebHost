@@ -1,0 +1,43 @@
+﻿{
+  "FontName": "メイリオ",
+
+
+  "AlreadyRunning": "Broadlinkデバイスイニシャライザーは、既に起動中です。",
+
+  "NowSetting": "設定中です...",
+  "NowBooting": "起動処理中です...",
+
+  "SettingFailed": "設定に失敗しました",
+  "DevicePreparation": "Broadlinkデバイスの準備",
+  "PreparationStep1": "1.デバイスにUSBケーブルを差し込み、電源を入れます。",
+  "PreparationStep2": "2.青いLEDが素早く点滅するまで、リセットボタンを長押しします。",
+  "PreparationStep3": "3.もう一度リセットを長押しし、青いLEDがゆっくり点滅する状態にします。",
+  "SettingSucceeded": "設定が終わりました！",
+  "SetYourWifi": "Wi-Fi情報の入力",
+  "Security": "セキュリティ",
+  "Ssid": "SSID",
+  "Password": "パスワード",
+  "ShowPassword": "パスワードを表示する",
+
+  "Prev": "<< 戻る",
+  "Next": "次へ >>",
+  "Retry": "もう一度",
+  "Exec": "実行",
+  "Close": "閉じる",
+
+
+
+  "WifiInterfacesNotFound": "PC上にWiFiインタフェースが見つかりません。\r\nWiFiを有効にして、もう一度お試しください。",
+  "BroadlinkDeviceNotFound": "Broadlinkデバイスが見つかりません。\r\nデバイスの準備状態を確認して、もう一度お試しください。",
+  "PcWifiRestoringFailure": "PCのWiFi設定復元に失敗しました。手動で戻してください。",
+  "BroadlinkDeviceInitializeFailure": "Broadlinkデバイスの初期化に失敗しました。\r\nデバイスの準備状態を確認して、もう一度お試しください。",
+  "NewDeviceIpIs": "新しいデバイスのIPアドレスは、以下になります。",
+  "NewDeviceIsReady": "新しいデバイスがオンラインになりました！"
+
+  //"": "",
+  //"": "",
+  //"": "",
+  //"": "",
+  //"": "",
+  //"": "",
+}

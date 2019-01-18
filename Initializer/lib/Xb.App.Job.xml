@@ -1,0 +1,803 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Xb.App.Job</name>
+    </assembly>
+    <members>
+        <member name="T:Xb.App.Job">
+            <summary>
+            Thread.Task.Run Replacement method implementation.
+            Thread.Task.Run 置換メソッド実装
+            </summary>
+        </member>
+        <member name="F:Xb.App.Job._uiTaskScheduler">
+            <summary>
+            UI-Thread TaskScheduler
+            UIスレッドのタスクスケジューラ
+            </summary>
+        </member>
+        <member name="F:Xb.App.Job._uiThreadId">
+            <summary>
+            UI-Thread ID
+            UIスレッドID
+            </summary>
+        </member>
+        <member name="M:Xb.App.Job.Init">
+            <summary>
+            Initialize
+            初期化処理
+            </summary>
+            <remarks>
+            ** MAKE SURE to execute this with UI-THREAD. **
+            </remarks>
+        </member>
+        <member name="P:Xb.App.Job.IsUIThread">
+            <summary>
+            Whether the current thread is a UI thread.
+            カレントスレッドがUIスレッドか否かを判定する。
+            </summary>
+            <returns></returns>
+            <remarks>
+            ** Before executing this method, MAKE SURE to execute [ Xb.App.Job.Init() ] with UI-THREAD. **
+            </remarks>
+        </member>
+        <member name="P:Xb.App.Job.IsMonitorEnabled">
+            <summary>
+            Whether Job Monitor is active.
+            ジョブ情報管理が、現在稼働中か否か
+            </summary>
+        </member>
+        <member name="P:Xb.App.Job.IsDumpStatus">
+            <summary>
+            Whether console-dump output of [Periodic Status Info] is active.
+            ステータス情報の定期ダンプ出力が稼働中か否か
+            </summary>
+        </member>
+        <member name="P:Xb.App.Job.IsDumpTaskValidation">
+            <summary>
+            Whether console-dump output of [Task Varidation Info] is active.
+            タスク検証情報のダンプ出力が稼働中か否か
+            </summary>
+        </member>
+        <member name="P:Xb.App.Job.TimerIntervalMsec">
+            <summary>
+            execution interval of periodic staus dump / task verification processing.
+            ステータス情報定期ダンプ／タスク検証処理の実行間隔
+            </summary>
+        </member>
+        <member name="M:Xb.App.Job.Run(System.Action,System.Boolean,System.String,System.Threading.CancellationTokenSource)">
+            <summary>
+            Execute a job without return value.
+            戻り値の無いジョブを実行する。
+            </summary>
+            <param name="action"></param>
+            <param name="isExecUiThread"></param>
+            <param name="jobName"></param>
+            <param name="cancellation"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.App.Job.Run``1(System.Func{``0},System.Boolean,System.String,System.Threading.CancellationTokenSource)">
+            <summary>
+            Execute a job with return value.
+            戻り値付きジョブを実行する。
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="action"></param>
+            <param name="isExecUiThread"></param>
+            <param name="jobName"></param>
+            <param name="cancellation"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.App.Job.Run(System.Action,System.String)">
+            <summary>
+            Execute the passed Action asynchronously on Non-UI-Thread.
+            渡し値Actionを非UIスレッドで非同期実行する。
+            </summary>
+            <param name="action"></param>
+            <param name="jobName"></param>
+        </member>
+        <member name="M:Xb.App.Job.RunUI(System.Action,System.String)">
+            <summary>
+            Execute the passed Action asynchronously on UI-Thread.
+            渡し値ActionをUIスレッドで非同期実行する。
+            </summary>
+            <param name="action"></param>
+            <param name="jobName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.App.Job.RunSynced(System.Action,System.String)">
+            <summary>
+            Synchronously Execute the passed Action on Non-UI-Thread.
+            渡し値Actionを非UIスレッドで同期的に実行する。
+            </summary>
+            <param name="action"></param>
+            <param name="jobName"></param>
+        </member>
+        <member name="M:Xb.App.Job.RunUISynced(System.Action,System.String)">
+            <summary>
+            Synchronously Execute the passed Action on Non-UI-Thread.
+            渡し値Actionを、UIスレッドで同期的に実行する。
+            </summary>
+            <param name="action"></param>
+            <param name="jobName"></param>
+        </member>
+        <member name="M:Xb.App.Job.Wait(System.Int32,System.Threading.CancellationTokenSource)">
+            <summary>
+            Wait for specified milliseconds.
+            指定ミリ秒待つ
+            </summary>
+            <param name="msec"></param>
+            <param name="cancellation"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.App.Job.WaitSynced(System.Int32,System.Threading.CancellationTokenSource)">
+            <summary>
+            Synchronously Wait for specified milliseconds.
+            指定ミリ秒を同期的に待つ
+            </summary>
+            <param name="msec"></param>
+            <param name="cancellation"></param>
+        </member>
+        <member name="M:Xb.App.Job.DelayedRun(System.Action,System.Int32,System.String)">
+            <summary>
+            Delayed Execute the passed Action asynchronously on Non-UI-Thread.
+            渡し値Actionを非UIスレッドで遅延つき非同期実行する。
+            </summary>
+            <param name="action"></param>
+            <param name="msec"></param>
+            <param name="jobName"></param>
+        </member>
+        <member name="M:Xb.App.Job.DelayedRunUI(System.Action,System.Int32,System.String)">
+            <summary>
+            Delayed Execute the passed Action asynchronously on UI-Thread.
+            渡し値ActionをUIスレッドで非同期実行する。
+            </summary>
+            <param name="action"></param>
+            <param name="msec"></param>
+            <param name="jobName"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Xb.App.Job.Action">
+            <summary>
+            Job Logic
+            </summary>
+        </member>
+        <member name="P:Xb.App.Job.IsExecUIThread">
+            <summary>
+            Whether it is necessary to run in the UI-Thread.
+            </summary>
+        </member>
+        <member name="P:Xb.App.Job.DelayMSec">
+            <summary>
+            Start Delay
+            </summary>
+        </member>
+        <member name="P:Xb.App.Job.JobName">
+            <summary>
+            Name of Info in Job-Manager.
+            </summary>
+        </member>
+        <member name="M:Xb.App.Job.#ctor">
+            <summary>
+            Constructor
+            コンストラクタ
+            </summary>
+        </member>
+        <member name="M:Xb.App.Job.CreateJob(System.Action,System.Boolean,System.String)">
+            <summary>
+            Generate Job-Instance for serial processing.
+            連続処理用Job生成
+            </summary>
+            <param name="action"></param>
+            <param name="isExecUiThread"></param>
+            <param name="jobName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.App.Job.CreateDelay(System.Int32)">
+            <summary>
+            Generate Delay-Job-Instance for serial processing.
+            連続処理用の遅延を生成
+            </summary>
+            <param name="delayMsec"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.App.Job.RunSerial(System.Threading.CancellationTokenSource,Xb.App.Job[])">
+            <summary>
+            Execute the Job instance array sequentially.
+            Jobインスタンス配列を順次実行する。
+            </summary>
+            <param name="cancellation"></param>
+            <param name="jobs"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.App.Job.RunSerial(Xb.App.Job[])">
+            <summary>
+            Execute the Job instance array sequentially.
+            Jobインスタンス配列を順次実行する。
+            </summary>
+            <param name="jobs"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.App.Job.RunSerial(System.Threading.CancellationTokenSource,System.Action[])">
+            <summary>
+            Execute the Action array sequentially with Non-UI-Threads.
+            Action配列を、非UIスレッドで順次実行する。
+            </summary>
+            <param name="cancellation"></param>
+            <param name="actions"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.App.Job.RunSerial(System.Action[])">
+            <summary>
+            Execute the Action array sequentially with Non-UI-Threads.
+            Action配列を、非UIスレッドで順次実行する。
+            </summary>
+            <param name="actions"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.App.Job.RunSerial``1(System.Func{``0},System.Boolean,System.Threading.CancellationTokenSource,Xb.App.Job[])">
+            <summary>
+            Execute a continuous job with return value.
+            Jobインスタンス配列を順次実行したあと、最後に戻り値がある処理を実行する。
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="lastJob"></param>
+            <param name="isUiThreadLastJob"></param>
+            <param name="cancellation"></param>
+            <param name="jobs"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.App.Job.RunSerial``1(System.Func{``0},Xb.App.Job[])">
+            <summary>
+            Execute a continuous job with return value.
+            Jobインスタンス配列を順次実行したあと、最後に戻り値がある処理を実行する。
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="lastJob"></param>
+            <param name="jobs"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Xb.App.Job.BackgroundJobManager">
+            <summary>
+            Background task processor class
+            バックグラウンドタスク処理クラス
+            </summary>
+        </member>
+        <member name="T:Xb.App.Job.BackgroundJobManager.ExecuteEventArgs">
+            <summary>
+            job-execution event args
+            </summary>
+        </member>
+        <member name="P:Xb.App.Job.BackgroundJobManager.ExecuteEventArgs.Action">
+            <summary>
+            executed action
+            </summary>
+        </member>
+        <member name="M:Xb.App.Job.BackgroundJobManager.ExecuteEventArgs.#ctor(System.Action)">
+            <summary>
+            constructor
+            </summary>
+            <param name="action"></param>
+        </member>
+        <member name="T:Xb.App.Job.BackgroundJobManager.ExecuteEventHandler">
+            <summary>
+            job execution event handler
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="F:Xb.App.Job.BackgroundJobManager.Started">
+            <summary>
+            Job-Manager thread started event
+            </summary>
+        </member>
+        <member name="F:Xb.App.Job.BackgroundJobManager.Executed">
+            <summary>
+            Job executed event
+            </summary>
+        </member>
+        <member name="F:Xb.App.Job.BackgroundJobManager.Ended">
+            <summary>
+            Job-Manager thread ended event
+            </summary>
+        </member>
+        <member name="F:Xb.App.Job.BackgroundJobManager.Sleep">
+            <summary>
+            Job-Manager thread go to sleep event
+            </summary>
+        </member>
+        <member name="F:Xb.App.Job.BackgroundJobManager.Waked">
+            <summary>
+            Job-Manager thread waked up event
+            </summary>
+        </member>
+        <member name="P:Xb.App.Job.BackgroundJobManager.Name">
+            <summary>
+            Job-Manager Name
+            ジョブマネージャー名称
+            </summary>
+        </member>
+        <member name="P:Xb.App.Job.BackgroundJobManager.StartDelayMsec">
+            <summary>
+            Job start delay
+            ジョブ開始遅延時間(mSec)
+            </summary>
+        </member>
+        <member name="P:Xb.App.Job.BackgroundJobManager.JobCheckSpanMsec">
+            <summary>
+            Job-Detection checking span
+            ジョブ検出スパン(mSec)
+            </summary>
+        </member>
+        <member name="P:Xb.App.Job.BackgroundJobManager.SuppressCheckSpanMsec">
+            <summary>
+            Job-Suppression checking span
+            ジョブ実行抑止検出スパン(mSec)
+            </summary>
+        </member>
+        <member name="P:Xb.App.Job.BackgroundJobManager.IsResident">
+            <summary>
+            Whether job-manager thread residentable or not.
+            ジョブ実行スレッドを常駐するか否か
+            </summary>
+        </member>
+        <member name="P:Xb.App.Job.BackgroundJobManager.IsSuppressing">
+            <summary>
+            Whether job-manager suppressing or not.
+            現在ジョブ実行抑止中か否か
+            </summary>
+        </member>
+        <member name="P:Xb.App.Job.BackgroundJobManager.IsRunning">
+            <summary>
+            Whether now on running job or not.
+            ジョブ実行スレッドが実行中か否か
+            </summary>
+        </member>
+        <member name="P:Xb.App.Job.BackgroundJobManager.SuppressorCount">
+            <summary>
+            Job suppressing ordered object count
+            ジョブ実行抑止指示オブジェクトの個数
+            </summary>
+        </member>
+        <member name="M:Xb.App.Job.BackgroundJobManager.#ctor(System.String)">
+            <summary>
+            Constructor
+            コンストラクタ
+            </summary>
+            <param name="name"></param>
+        </member>
+        <member name="M:Xb.App.Job.BackgroundJobManager.Regist(System.Action)">
+            <summary>
+            Regist job
+            ジョブを登録する。
+            </summary>
+            <param name="action"></param>
+        </member>
+        <member name="M:Xb.App.Job.BackgroundJobManager.Suppress(System.Object,System.String)">
+            <summary>
+            Suppress job
+            処理抑止フラグをセットする。
+            </summary>
+        </member>
+        <member name="M:Xb.App.Job.BackgroundJobManager.ReleaseSuppress(System.Object)">
+            <summary>
+            Release suppress
+            処理抑止フラグを解除する。
+            </summary>
+        </member>
+        <member name="M:Xb.App.Job.BackgroundJobManager.IsSuppressorObject(System.Object)">
+            <summary>
+            Whether passing-object is suppressor or not.
+            </summary>
+            <param name="targetObject"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.App.Job.BackgroundJobManager.GetSuppressorNames">
+            <summary>
+            Get suppressing object's Names
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Xb.App.Job.DelayedOnceJobManager">
+            <summary>
+            Delayed-Job execution manager class
+            </summary>
+            <remarks>
+            accepts multiple execution requests in delay time, and execute only one.
+            each time an execution request is made, 
+            the scheduled execution time is delayed and reset.
+            </remarks>
+        </member>
+        <member name="P:Xb.App.Job.DelayedOnceJobManager.ScheduledTime">
+            <summary>
+            Job execution scheduled time
+            </summary>
+        </member>
+        <member name="P:Xb.App.Job.DelayedOnceJobManager.ScheduleLimitedTime">
+            <summary>
+            Maximum delay limit time
+            </summary>
+            <remarks>
+            When MaxDelayMsec is greater than zero, 
+            the action is forcibly executed when this value is exceeded.
+            
+            When MaxDelayMsec is less than zero(default), this property is disabled.
+            </remarks>
+        </member>
+        <member name="P:Xb.App.Job.DelayedOnceJobManager.IsScheduled">
+            <summary>
+            Whether job execution scheduled or not.
+            </summary>
+        </member>
+        <member name="P:Xb.App.Job.DelayedOnceJobManager.DelayMsec">
+            <summary>
+            Job-Execution delay time
+            </summary>
+        </member>
+        <member name="P:Xb.App.Job.DelayedOnceJobManager.MaxDelayMsec">
+            <summary>
+            Maximun delay time
+            </summary>
+            <remarks>
+            When this value is greater than zero, 
+            the action is forcibly executed when ScheduleLimitedTime is exceeded.
+            
+            When this value is less than zero(default), the maximum delay limit is disabled.
+            At this time, if you continue to run in small increments, 
+            the action will not be executed.
+            </remarks>
+        </member>
+        <member name="M:Xb.App.Job.DelayedOnceJobManager.#ctor(System.Action,System.Int32,System.Int32)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="delayedAction"></param>
+            <param name="delayMsec"></param>
+            <param name="maxDelayMsec"></param>
+        </member>
+        <member name="M:Xb.App.Job.DelayedOnceJobManager.Run">
+            <summary>
+            Request execution
+            </summary>
+        </member>
+        <member name="T:Xb.App.Job.Dumper">
+            <summary>
+            Dump output class of Resource / Job information
+            リソース情報／ジョブ情報のダンプ出力クラス
+            </summary>
+        </member>
+        <member name="P:Xb.App.Job.Dumper.Instance">
+            <summary>
+            Job.Dumper Instance
+            </summary>
+        </member>
+        <member name="M:Xb.App.Job.Dumper.Create">
+            <summary>
+            Create Instance(Singleton)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.App.Job.Dumper.DisposeInstance">
+            <summary>
+            Dispose Instance
+            </summary>
+        </member>
+        <member name="F:Xb.App.Job.Dumper.DefaultTimerIntervalMsec">
+            <summary>
+            Default dump timer interval
+            デフォルトのダンプタイマー間隔
+            </summary>
+        </member>
+        <member name="P:Xb.App.Job.Dumper.IsWorking">
+            <summary>
+            Whether it is currently in operation or not.
+            現在稼働中か否か
+            </summary>
+        </member>
+        <member name="P:Xb.App.Job.Dumper.IsDumpStatus">
+            <summary>
+            Whether console-dump output of [Periodic Status Info] is active.
+            リソース情報のダンプ出力が稼働中か否か
+            </summary>
+        </member>
+        <member name="P:Xb.App.Job.Dumper.IsDumpTaskValidation">
+            <summary>
+            Whether console-dump output of [Task Verification Info] is active.
+            タスク検証情報のダンプ出力が稼働中か否か
+            </summary>
+        </member>
+        <member name="M:Xb.App.Job.Dumper.ApplyTimer">
+            <summary>
+            Control the operation of the timer from the state of the flag.
+            タイマータスクフラグの状態から、タイマー稼働を制御する。
+            </summary>
+        </member>
+        <member name="P:Xb.App.Job.Dumper.TimerIntervalMsec">
+            <summary>
+            Time interval of dump output
+            ダンプ出力の時間間隔
+            </summary>
+        </member>
+        <member name="F:Xb.App.Job.Dumper._canceller">
+            <summary>
+            監視タスクのキャンセルトークンソース
+            </summary>
+        </member>
+        <member name="P:Xb.App.Job.Dumper.Process">
+            <summary>
+            Current Process instance
+            カレントプロセスのProcessインスタンス
+            </summary>
+            <remarks>
+            For acquiring memory / thread information
+            メモリ／スレッド情報取得用
+            </remarks>
+        </member>
+        <member name="M:Xb.App.Job.Dumper.#ctor(System.Int32)">
+            <summary>
+            Constructor
+            コンストラクタ
+            </summary>
+        </member>
+        <member name="M:Xb.App.Job.Dumper.SetTimerInterval(System.Int32)">
+            <summary>
+            Set the execution interval of periodic staus dump / task verification processing.
+            ステータス情報定期ダンプ／タスク検証処理の実行間隔をセットする。
+            </summary>
+            <param name="msec"></param>
+        </member>
+        <member name="M:Xb.App.Job.Dumper.TimerExec">
+            <summary>
+            Perform timer processing for monitoring.
+            監視用のタイマー処理を実行する。
+            </summary>
+        </member>
+        <member name="M:Xb.App.Job.Dumper.Dump">
+            <summary>
+            Perform status output / task verification processing.
+            ステータス出力／タスク検証処理を行う。
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.App.Job.Dumper.GetSystemStatusDump">
+            <summary>
+            Get system status string array.
+            システム状態状況を取得し、文字列配列で返す。
+            </summary>
+            <returns></returns>
+            <remarks>
+            </remarks>
+        </member>
+        <member name="M:Xb.App.Job.Dumper.Dispose">
+            <summary>
+            Dispose
+            破棄する。
+            </summary>
+        </member>
+        <member name="T:Xb.App.Job.Info">
+            <summary>
+            Job Infomation Class
+            Job情報保持クラス
+            </summary>
+            <remarks>
+            長期パフォーマンス計測したい場合にDisposeせず保持出来るように、
+            文字列、数値、時刻しか持たせない。
+            </remarks>
+        </member>
+        <member name="F:Xb.App.Job.Info._maxJobId">
+            <summary>
+            Current maximum job ID(=Number of jobs generated so far)
+            現在の最大ジョブID(=現在までに生成されたジョブの数)
+            </summary>
+        </member>
+        <member name="P:Xb.App.Job.Info.JobId">
+            <summary>
+            job ID
+            ジョブ番号
+            </summary>
+            <remarks>
+            Indicates "Which Job was generated"
+            「何番目に生成されたJobか」を示す。
+            </remarks>
+        </member>
+        <member name="P:Xb.App.Job.Info.StartTime">
+            <summary>
+            job Started DateTime
+            ジョブ開始日時
+            </summary>
+        </member>
+        <member name="P:Xb.App.Job.Info.CalledClassName">
+            <summary>
+            Generator class name
+            Action/FuncTの生成元クラス名
+            </summary>
+        </member>
+        <member name="P:Xb.App.Job.Info.JobName">
+            <summary>
+            job name
+            ジョブ名称
+            </summary>
+        </member>
+        <member name="P:Xb.App.Job.Info.IsEnded">
+            <summary>
+            Whether the job has ended.
+            ジョブが終了したか否か
+            </summary>
+        </member>
+        <member name="P:Xb.App.Job.Info.EndTime">
+            <summary>
+            job Ended DateTime
+            ジョブ終了日時
+            </summary>
+        </member>
+        <member name="P:Xb.App.Job.Info.ThreadId">
+            <summary>
+            Thread ID
+            スレッドID
+            </summary>
+        </member>
+        <member name="P:Xb.App.Job.Info.State">
+            <summary>
+            Status String
+            状態情報文字列
+            </summary>
+        </member>
+        <member name="M:Xb.App.Job.Info.#ctor(System.String,System.String)">
+            <summary>
+            Constructor
+            コンストラクタ
+            </summary>
+            <param name="name"></param>
+            <param name="calledClassName"></param>
+        </member>
+        <member name="M:Xb.App.Job.Info.SetThreadId(System.Int32)">
+            <summary>
+            Set Thread-ID
+            スレッドIDをセットする。
+            </summary>
+            <param name="threadId"></param>
+        </member>
+        <member name="M:Xb.App.Job.Info.End">
+            <summary>
+            Set Ended Info.
+            ジョブ終了を記録する。
+            </summary>
+        </member>
+        <member name="T:Xb.App.Job.Monitor">
+            <summary>
+            Job Monitor Class
+            Job監視クラス
+            </summary>
+        </member>
+        <member name="P:Xb.App.Job.Monitor.Instance">
+            <summary>
+            Job.InfoStore Instance
+            </summary>
+        </member>
+        <member name="M:Xb.App.Job.Monitor.Create(System.Boolean)">
+            <summary>
+            Create Instance(Singleton)
+            </summary>
+            <param name="isWorkingJobOnly"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.App.Job.Monitor.DisposeInstance">
+            <summary>
+            Dispose Instance
+            </summary>
+        </member>
+        <member name="P:Xb.App.Job.Monitor.IsWorking">
+            <summary>
+            Whether it is currently in operation or not.
+            現在稼働中か否か
+            </summary>
+        </member>
+        <member name="T:Xb.App.Job.Monitor.Locker">
+            <summary>
+            Class for exclusive control
+            lock構文用排他制御クラス
+            </summary>
+        </member>
+        <member name="F:Xb.App.Job.Monitor._locker">
+            <summary>
+            lock-object for exclusive control
+            ジョブ追加／削除時等のロックオブジェクト
+            </summary>
+        </member>
+        <member name="F:Xb.App.Job.Monitor._jobs">
+            <summary>
+            Job.Info Array
+            ジョブ開始番号に対するInfoクラスの連想配列
+            </summary>
+        </member>
+        <member name="P:Xb.App.Job.Monitor.Started">
+            <summary>
+            Number of started jobs
+            開始したジョブ数
+            </summary>
+        </member>
+        <member name="P:Xb.App.Job.Monitor.Ended">
+            <summary>
+            Number of jobs ended(Include abnormally terminated jobs)
+            終了したジョブ数(異常終了したジョブも含まれる)
+            </summary>
+        </member>
+        <member name="P:Xb.App.Job.Monitor.OnWork">
+            <summary>
+            Number of active jobs
+            稼働中のジョブ数
+            </summary>
+        </member>
+        <member name="P:Xb.App.Job.Monitor.IsWorkingJobOnly">
+            <summary>
+            Whether to not manage finished jobs.
+            稼働中ジョブ以外は監視しないか否か
+            </summary>
+            <remarks>
+            true  :Discard the Info object of the finished job.(default)
+                  :終了したジョブのInfoオブジェクトを破棄する。
+            false :Holds the Info object of the finished job information. When you want to see the transition of all job information.
+                  :終了したジョブ情報のInfoオブジェクトを保持する。ジョブ情報の推移を見たいときなどに。
+            </remarks>
+        </member>
+        <member name="M:Xb.App.Job.Monitor.#ctor(System.Boolean)">
+            <summary>
+            Constructor
+            コンストラクタ
+            </summary>
+            <param name="isWorkingJobOnly"></param>
+        </member>
+        <member name="M:Xb.App.Job.Monitor.Start(System.String,System.String)">
+            <summary>
+            Generate job information and place it under control.
+            ジョブ情報を生成し、管理下に置く。(Returns the job start number)
+            </summary>
+            <param name="name"></param>
+            <param name="calledClassName"></param>
+            <returns>ジョブ開始番号</returns>
+        </member>
+        <member name="M:Xb.App.Job.Monitor.SetThreadId(System.Nullable{System.Int64})">
+            <summary>
+            Set the thread ID to the job
+            ジョブにスレッドIDをセットする。
+            </summary>
+            <param name="jobId"></param>
+            <remarks>execute it after thread generated. 必ず生成後のスレッド内で実行すること。</remarks>
+        </member>
+        <member name="M:Xb.App.Job.Monitor.End(System.Nullable{System.Int64})">
+            <summary>
+            Add an end record to job information.
+            渡し値ジョブ監視番号のジョブ情報に終了記録を付ける。
+            </summary>
+            <param name="jobId"></param>
+        </member>
+        <member name="M:Xb.App.Job.Monitor.ErrorEnd(System.Nullable{System.Int64})">
+            <summary>
+            Add an end record to job information.(Abnormal termination)
+            渡し値ジョブ監視番号のジョブ情報に終了記録を付ける。(異常終了時)
+            </summary>
+            <param name="jobId"></param>
+        </member>
+        <member name="M:Xb.App.Job.Monitor.GetStatus(System.Boolean)">
+            <summary>
+            Generates string array for job state.
+            ジョブ状態ダンプ用の文字列配列を生成する。
+            </summary>
+            <param name="isOnWorkOnly">Filter it ended jobs. 稼働中ジョブのみに絞る</param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.App.Job.Monitor.GetValidation">
+            <summary>
+            Generate string array of task validation.
+            タスク検証結果の文字列配列を生成する。
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.App.Job.Monitor.Dispose">
+            <summary>
+            Dispose
+            破棄する。
+            </summary>
+        </member>
+    </members>
+</doc>

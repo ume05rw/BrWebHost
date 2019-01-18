@@ -1,0 +1,954 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Xb.File.Tree</name>
+    </assembly>
+    <members>
+        <member name="M:Xb.File.FileTree.#ctor(System.String)">
+            <summary>
+            Constructor
+            コンストラクタ
+            </summary>
+            <param name="rootPath"></param>
+        </member>
+        <member name="M:Xb.File.FileTree.GetTree(System.String)">
+            <summary>
+            Returns Tree-object with the passing path as the root
+            指定パスをルートにした、Treeオブジェクトを返す
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.File.FileTree.GetTreeRecursiveAsync(System.String)">
+            <summary>
+            Returns a Tree object that scans all nodes under the passing path (VERY HEAVY!)
+            指定パス配下の全ノードをスキャンしたTreeオブジェクトを返す。重い！
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.File.FileTree.FileNode.#ctor(Xb.File.Tree.ITree,System.String)">
+            <summary>
+            Constructor
+            コンストラクタ
+            </summary>
+            <param name="tree"></param>
+            <param name="path"></param>
+        </member>
+        <member name="M:Xb.File.FileTree.FileNode.Scan">
+            <summary>
+            Scan, refresh nodes
+            子ノードを走査する
+            </summary>
+        </member>
+        <member name="M:Xb.File.FileTree.FileNode.CreateChild(System.String,Xb.File.Tree.NodeBase.NodeType)">
+            <summary>
+            Create real system element and child tree-node
+            実システムに指定要素を追加し、自身に子ノードを追加する
+            </summary>
+            <param name="name"></param>
+            <param name="type"></param>
+        </member>
+        <member name="M:Xb.File.FileTree.FileNode.Delete">
+            <summary>
+            Delete real system elements and myself-node from tree
+            実システムから自身に該当する要素を削除し、自分自身を破棄する。
+            </summary>
+        </member>
+        <member name="M:Xb.File.FileTree.FileNode.GetBytes">
+            <summary>
+            Get byte-array of node
+            ノードのデータをバイト配列で取得する
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.File.FileTree.FileNode.GetBytes(System.Int64,System.Int32)">
+            <summary>
+            Get byte-array of node
+            ノードのデータをバイト配列で取得する
+            </summary>
+            <param name="offset"></param>
+            <param name="length"></param>
+            <returns></returns>
+            <remarks>file size max 2GB</remarks>
+        </member>
+        <member name="M:Xb.File.FileTree.FileNode.GetReadStream">
+            <summary>
+            Get stream for read-only
+            読込専用Streamを取得する
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.File.FileTree.FileNode.WriteBytes(System.Byte[])">
+            <summary>
+            Overwrite data of node
+            バイト配列データをノードに上書きする。
+            </summary>
+            <param name="bytes"></param>
+        </member>
+        <member name="M:Xb.File.FileTree.FileNode.ValidateMyself">
+            <summary>
+            実システムと自身の保持データに矛盾が無いかどうか検証する。
+            </summary>
+        </member>
+        <member name="M:Xb.File.FileTree.FileNode.Delete(System.String,System.Boolean)">
+            <summary>
+            Remove file, directory recursive
+            ファイル／ディレクトリを再帰的に削除する
+            </summary>
+            <param name="path"></param>
+            <param name="force"></param>
+            <remarks>C# recursive option bug, FUCK!</remarks>
+        </member>
+        <member name="P:Xb.File.Tree.INode.Tree">
+            <summary>
+            Tree(= node manager) object
+            ノード管理オブジェクト
+            </summary>
+        </member>
+        <member name="P:Xb.File.Tree.INode.Parent">
+            <summary>
+            Parent-node
+            親ノード
+            </summary>
+        </member>
+        <member name="P:Xb.File.Tree.INode.Children">
+            <summary>
+            Child-Nodes array
+            子ノード配列
+            </summary>
+        </member>
+        <member name="P:Xb.File.Tree.INode.Item(System.String)">
+            <summary>
+            Node indexer
+            ノード要素インデクサ
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Xb.File.Tree.INode.Item(System.Int32)">
+            <summary>
+            Node indexer
+            ノード要素インデクサ
+            </summary>
+            <param name="index"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Xb.File.Tree.INode.Name">
+            <summary>
+            Node-name (not full-path)
+            ノード名称
+            </summary>
+        </member>
+        <member name="P:Xb.File.Tree.INode.Extension">
+            <summary>
+            Extension
+            拡張子
+            </summary>
+        </member>
+        <member name="P:Xb.File.Tree.INode.Type">
+            <summary>
+            Node type(file or directory)
+            </summary>
+        </member>
+        <member name="P:Xb.File.Tree.INode.FullPath">
+            <summary>
+            Full-Path
+            </summary>
+        </member>
+        <member name="P:Xb.File.Tree.INode.UpdateDate">
+            <summary>
+            Last update-date
+            最終更新日時
+            </summary>
+        </member>
+        <member name="P:Xb.File.Tree.INode.Length">
+            <summary>
+            File Size
+            ファイルサイズ
+            </summary>
+        </member>
+        <member name="P:Xb.File.Tree.INode.IsRootNode">
+            <summary>
+            ルートノードか否か
+            is root node?
+            </summary>
+        </member>
+        <member name="M:Xb.File.Tree.INode.Scan">
+            <summary>
+            Scan refresh nodes
+            子ノードを走査する
+            </summary>
+        </member>
+        <member name="M:Xb.File.Tree.INode.ScanRecursiveAsync">
+            <summary>
+            Scan refresh nodes recursive on async
+            子ノードを再帰的に走査する
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.File.Tree.INode.GetSerializable">
+            <summary>
+            Get serializable-object of tree structure
+            配下のツリー構造をシリアライズ可能なオブジェクトとして取得する
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.File.Tree.INode.GetAllChildrenRecursive">
+            <summary>
+            Get all-children recursive
+            配下の全ノードを再帰的に取得する
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.File.Tree.INode.Find(System.String)">
+            <summary>
+            Get first-node of matched needle
+            渡し値文字列が合致した最初の子ノードを返す
+            </summary>
+            <param name="needle"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.File.Tree.INode.FindAll(System.String)">
+            <summary>
+            Get all-nodes of matched needle
+            渡し値文字列が合致した全ての子ノードを返す
+            </summary>
+            <param name="needle"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.File.Tree.INode.GetBytes">
+            <summary>
+            Get byte-array of node
+            ノードのデータをバイト配列で取得する
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.File.Tree.INode.GetBytesAsync">
+            <summary>
+            Get byte-array of node on async
+            ノードのデータをバイト配列で取得する
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.File.Tree.INode.GetBytes(System.Int64,System.Int32)">
+            <summary>
+            Get byte-array of node
+            ノードのデータをバイト配列で取得する
+            </summary>
+            <param name="offset"></param>
+            <param name="length"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.File.Tree.INode.GetBytesAsync(System.Int64,System.Int32)">
+            <summary>
+            Get byte-array of node on async
+            ノードのデータをバイト配列で取得する
+            </summary>
+            <param name="offset"></param>
+            <param name="length"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.File.Tree.INode.GetReadStream">
+            <summary>
+            Get stream for read-only
+            読込専用Streamを取得する
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.File.Tree.INode.WriteBytes(System.Byte[])">
+            <summary>
+            Overwrite data of node
+            バイト配列データをノードに上書きする。
+            </summary>
+            <param name="bytes"></param>
+        </member>
+        <member name="M:Xb.File.Tree.INode.WriteBytesAsync(System.Byte[])">
+            <summary>
+            Overwrite data of node on async
+            バイト配列データをノードに上書きする。
+            </summary>
+            <param name="bytes"></param>
+        </member>
+        <member name="M:Xb.File.Tree.INode.CreateChild(System.String,Xb.File.Tree.NodeBase.NodeType)">
+            <summary>
+            Create child-node
+            子ノードを追加する
+            </summary>
+            <param name="name"></param>
+        </member>
+        <member name="M:Xb.File.Tree.INode.Delete">
+            <summary>
+            Delete myself-node from tree
+            Treeから自分自身を削除する。
+            </summary>
+        </member>
+        <member name="P:Xb.File.Tree.ITree.RootNode">
+            <summary>
+            Root node on tree
+            Treeのルートノード
+            </summary>
+        </member>
+        <member name="P:Xb.File.Tree.ITree.Item(System.String)">
+            <summary>
+            Node indexer
+            ノード要素インデクサ
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Xb.File.Tree.ITree.Item(System.Int32)">
+            <summary>
+            Node indexer
+            ノード要素インデクサ
+            </summary>
+            <param name="index"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Xb.File.Tree.ITree.Paths">
+            <summary>
+            Node-path array of all nodes
+            ノードパス配列
+            </summary>
+        </member>
+        <member name="P:Xb.File.Tree.ITree.Nodes">
+            <summary>
+            Node array of all nodes
+            ノード配列
+            </summary>
+        </member>
+        <member name="M:Xb.File.Tree.ITree.Exists(System.String)">
+            <summary>
+            Validate own-node path
+            配下ノードのパスか否か
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.File.Tree.ITree.GetNode(System.String)">
+            <summary>
+            Get matched one Node-object by fullpath
+            パスが合致したNodeオブジェクトを返す
+            </summary>
+            <param name="paths"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.File.Tree.ITree.GetNodes(System.Collections.Generic.ICollection{System.String})">
+            <summary>
+            Get matched Node-objects by fullpath
+            パスが合致したNodeオブジェクトの配列を返す
+            </summary>
+            <param name="paths"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.File.Tree.ITree.Find(System.String)">
+            <summary>
+            Get first-node of matched needle
+            渡し値文字列が合致した最初の子ノードを返す
+            </summary>
+            <param name="needle"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.File.Tree.ITree.FindAll(System.String)">
+            <summary>
+            Get all-nodes of matched needle
+            渡し値文字列が合致した全ての子ノードを返す
+            </summary>
+            <param name="needle"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.File.Tree.ITree.ScanRecursiveAsync">
+            <summary>
+            Tree-Structure Re-Scan recursive(VERY HEAVY!)
+            ツリー構造をルートノードから再帰的に取得する
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Xb.File.Tree.NodeBase.NodeType">
+            <summary>
+            Node type(file or directory)
+            </summary>
+        </member>
+        <member name="T:Xb.File.Tree.NodeBase.ChildAddEventHandler">
+            <summary>
+            Child add event handler
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="E:Xb.File.Tree.NodeBase.ChildAdded">
+            <summary>
+            Child added event
+            </summary>
+        </member>
+        <member name="T:Xb.File.Tree.NodeBase.DeleteEventHandler">
+            <summary>
+            Delete-myself event handler
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="E:Xb.File.Tree.NodeBase.Deleted">
+            <summary>
+            Deleteed-myself event
+            </summary>
+        </member>
+        <member name="P:Xb.File.Tree.NodeBase.Tree">
+            <summary>
+            Tree(= node manager) object
+            ノード管理オブジェクト
+            </summary>
+        </member>
+        <member name="P:Xb.File.Tree.NodeBase.Parent">
+            <summary>
+            Parent-node
+            親ノード
+            </summary>
+        </member>
+        <member name="P:Xb.File.Tree.NodeBase.Children">
+            <summary>
+            Child-Nodes array
+            子ノード配列
+            </summary>
+        </member>
+        <member name="P:Xb.File.Tree.NodeBase.Item(System.String)">
+            <summary>
+            Node indexer
+            ノード要素インデクサ
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Xb.File.Tree.NodeBase.Item(System.Int32)">
+            <summary>
+            Node indexer
+            ノード要素インデクサ
+            </summary>
+            <param name="index"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Xb.File.Tree.NodeBase.ParentPath">
+            <summary>
+            Parent-Node full-path
+            親ノードのフルパス
+            </summary>
+        </member>
+        <member name="P:Xb.File.Tree.NodeBase.ChildPaths">
+            <summary>
+            Child-Node array of full-path(key)
+            子ノードのフルパス配列
+            </summary>
+        </member>
+        <member name="P:Xb.File.Tree.NodeBase.Name">
+            <summary>
+            Node-name (not full-path)
+            ノード名称
+            </summary>
+        </member>
+        <member name="P:Xb.File.Tree.NodeBase.Extension">
+            <summary>
+            Extension
+            拡張子
+            </summary>
+        </member>
+        <member name="P:Xb.File.Tree.NodeBase.Type">
+            <summary>
+            Node type(file or directory)
+            </summary>
+        </member>
+        <member name="P:Xb.File.Tree.NodeBase.FullPath">
+            <summary>
+            Full-Path
+            </summary>
+        </member>
+        <member name="P:Xb.File.Tree.NodeBase.UpdateDate">
+            <summary>
+            Last update-date
+            最終更新日時
+            </summary>
+        </member>
+        <member name="P:Xb.File.Tree.NodeBase.Length">
+            <summary>
+            File Size
+            ファイルサイズ
+            </summary>
+        </member>
+        <member name="P:Xb.File.Tree.NodeBase.IsRootNode">
+            <summary>
+            ルートノードか否か
+            is root node?
+            </summary>
+        </member>
+        <member name="M:Xb.File.Tree.NodeBase.#ctor">
+            <summary>
+            Constructor
+            コンストラクタ
+            </summary>
+        </member>
+        <member name="M:Xb.File.Tree.NodeBase.#ctor(Xb.File.Tree.ITree,System.String)">
+            <summary>
+            Constructor
+            コンストラクタ
+            </summary>
+            <param name="tree"></param>
+            <param name="path"></param>
+        </member>
+        <member name="M:Xb.File.Tree.NodeBase.#ctor(Xb.File.Tree.ITree,System.String,System.DateTime,Xb.File.Tree.NodeBase.NodeType,System.Int64,System.Boolean)">
+            <summary>
+            Constructor
+            コンストラクタ
+            </summary>
+            <param name="tree"></param>
+            <param name="path"></param>
+            <param name="updateDate"></param>
+            <param name="type"></param>
+        </member>
+        <member name="M:Xb.File.Tree.NodeBase.Scan">
+            <summary>
+            Scan, refresh nodes
+            子ノードを走査する
+            </summary>
+        </member>
+        <member name="M:Xb.File.Tree.NodeBase.ScanRecursiveAsync">
+            <summary>
+            Scan, refresh nodes recursive on async
+            子ノードを再帰的に走査する
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.File.Tree.NodeBase.GetSerializable">
+            <summary>
+            Get serializable-object of tree structure
+            配下のツリー構造をシリアライズ可能なオブジェクトとして取得する
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.File.Tree.NodeBase.GetAllChildrenRecursive">
+            <summary>
+            Get all-children recursive
+            配下の全ノードを再帰的に取得する
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.File.Tree.NodeBase.Find(System.String)">
+            <summary>
+            Get first-node of matched needle
+            渡し値文字列が合致した最初の子ノードを返す
+            </summary>
+            <param name="needle"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.File.Tree.NodeBase.FindAll(System.String)">
+            <summary>
+            Get all-nodes of matched needle
+            渡し値文字列が合致した全ての子ノードを返す
+            </summary>
+            <param name="needle"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.File.Tree.NodeBase.GetBytes">
+            <summary>
+            Get byte-array of node
+            ノードのデータをバイト配列で取得する
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.File.Tree.NodeBase.GetBytesAsync">
+            <summary>
+            Get byte-array of node on async
+            ノードのデータをバイト配列で取得する
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.File.Tree.NodeBase.GetBytes(System.Int64,System.Int32)">
+            <summary>
+            Get byte-array of node
+            ノードのデータをバイト配列で取得する
+            </summary>
+            <param name="offset"></param>
+            <param name="length"></param>
+            <returns></returns>
+            <remarks>file size max 2GB</remarks>
+        </member>
+        <member name="M:Xb.File.Tree.NodeBase.GetBytesAsync(System.Int64,System.Int32)">
+            <summary>
+            Get byte-array of node on async
+            ノードのデータをバイト配列で取得する
+            </summary>
+            <param name="offset"></param>
+            <param name="length"></param>
+            <returns></returns>
+            <remarks>file size max 2GB</remarks>
+        </member>
+        <member name="M:Xb.File.Tree.NodeBase.GetReadStream">
+            <summary>
+            Get stream for read-only
+            読込専用Streamを取得する
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.File.Tree.NodeBase.WriteBytes(System.Byte[])">
+            <summary>
+            Overwrite data of node
+            バイト配列データをノードに上書きする。
+            </summary>
+            <param name="bytes"></param>
+        </member>
+        <member name="M:Xb.File.Tree.NodeBase.WriteBytesAsync(System.Byte[])">
+            <summary>
+            Overwrite data of node on async
+            バイト配列データをノードに上書きする。
+            </summary>
+            <param name="bytes"></param>
+        </member>
+        <member name="M:Xb.File.Tree.NodeBase.CreateChild(System.String,Xb.File.Tree.NodeBase.NodeType)">
+            <summary>
+            Create real system element and child tree-node
+            実システムに指定要素を追加し、自身に子ノードを追加する
+            </summary>
+            <param name="name"></param>
+        </member>
+        <member name="M:Xb.File.Tree.NodeBase.AddChild(Xb.File.Tree.INode,System.String)">
+            <summary>
+            Append new-node to child-list, tree
+            新規ノードを、子リストとTreeインスタンスに追加する
+            </summary>
+            <param name="node"></param>
+            <param name="childPath"></param>
+            <remarks>
+            ここでは実システムに対する操作は行わない。
+            あくまでXb.File.Tree構造に対する操作のみを対象とする。
+            </remarks>
+        </member>
+        <member name="M:Xb.File.Tree.NodeBase.Delete">
+            <summary>
+            Delete real system elements and myself-node from tree
+            実システムから自身に該当する要素を削除し、自分自身を破棄する。
+            </summary>
+        </member>
+        <member name="M:Xb.File.Tree.NodeBase.OnChildRemoved(System.Object,Xb.File.Tree.NodeEventArgs)">
+            <summary>
+            child-node removed event
+            子ノードの削除イベント
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="P:Xb.File.Tree.SerializableNode.Children">
+            <summary>
+            Child-Nodes array
+            子ノード配列
+            </summary>
+        </member>
+        <member name="P:Xb.File.Tree.SerializableNode.Name">
+            <summary>
+            Node-name (not full-path)
+            ノード名称
+            </summary>
+        </member>
+        <member name="P:Xb.File.Tree.SerializableNode.Extension">
+            <summary>
+            Extension
+            拡張子
+            </summary>
+        </member>
+        <member name="P:Xb.File.Tree.SerializableNode.Type">
+            <summary>
+            Node type(file or directory)
+            </summary>
+        </member>
+        <member name="P:Xb.File.Tree.SerializableNode.FullPath">
+            <summary>
+            Full-Path
+            </summary>
+        </member>
+        <member name="P:Xb.File.Tree.SerializableNode.UpdateDate">
+            <summary>
+            Last update-date
+            最終更新日時
+            </summary>
+        </member>
+        <member name="P:Xb.File.Tree.SerializableNode.IsRootNode">
+            <summary>
+            ルートノードか否か
+            is root node?
+            </summary>
+        </member>
+        <member name="M:Xb.File.Tree.SerializableNode.#ctor(Xb.File.Tree.INode)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="node"></param>
+        </member>
+        <member name="F:Xb.File.Tree.TreeBase.NodeDictionary">
+            <summary>
+            Nodes array
+            配下のノード配列
+            </summary>
+        </member>
+        <member name="P:Xb.File.Tree.TreeBase.RootNode">
+            <summary>
+            Root node on tree
+            Treeのルートノード
+            </summary>
+        </member>
+        <member name="P:Xb.File.Tree.TreeBase.Item(System.String)">
+            <summary>
+            Node indexer
+            ノード要素インデクサ
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Xb.File.Tree.TreeBase.Item(System.Int32)">
+            <summary>
+            Node indexer
+            ノード要素インデクサ
+            </summary>
+            <param name="index"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Xb.File.Tree.TreeBase.Paths">
+            <summary>
+            Node-path array of all nodes
+            ノードパス配列
+            </summary>
+        </member>
+        <member name="P:Xb.File.Tree.TreeBase.Nodes">
+            <summary>
+            Node array of all nodes
+            ノード配列
+            </summary>
+        </member>
+        <member name="M:Xb.File.Tree.TreeBase.Init(Xb.File.Tree.INode)">
+            <summary>
+            Initialize
+            初期化
+            </summary>
+            <param name="rootNode"></param>
+        </member>
+        <member name="M:Xb.File.Tree.TreeBase.OnNodeChildAdded(System.Object,Xb.File.Tree.NodeEventArgs)">
+            <summary>
+            Event when child-node is added to node-tree
+            配下のノードに子ノードが追加されたときのイベント
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:Xb.File.Tree.TreeBase.OnNodeDeleted(System.Object,Xb.File.Tree.NodeEventArgs)">
+            <summary>
+            Event when node is deleted on node-tree
+            配下のノードが削除されたときのイベント
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:Xb.File.Tree.TreeBase.Exists(System.String)">
+            <summary>
+            Validate own-node path
+            配下ノードのパスか否か
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.File.Tree.TreeBase.GetNode(System.String)">
+            <summary>
+            Get matched one Node-object by fullpath
+            パスが合致したNodeオブジェクトを返す
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.File.Tree.TreeBase.GetNodes(System.Collections.Generic.ICollection{System.String})">
+            <summary>
+            Get matched Node-objects by fullpath
+            パスが合致したNodeオブジェクトの配列を返す
+            </summary>
+            <param name="paths"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.File.Tree.TreeBase.Find(System.String)">
+            <summary>
+            Get first-node of matched needle
+            渡し値文字列が合致した最初の子ノードを返す
+            </summary>
+            <param name="needle"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.File.Tree.TreeBase.FindAll(System.String)">
+            <summary>
+            Get all-nodes of matched needle
+            渡し値文字列が合致した全ての子ノードを返す
+            </summary>
+            <param name="needle"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.File.Tree.TreeBase.ScanRecursiveAsync">
+            <summary>
+            Tree-Structure Re-Scan recursive(VERY HEAVY!)
+            ツリー構造をルートノードから再帰的に取得する
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.File.Tree.TreeBase.GetTree(System.String)">
+            <summary>
+            Returns Tree-object with the passing path as the root
+            指定パスをルートにした、Treeオブジェクトを返す
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.File.Tree.TreeBase.GetTreeRecursiveAsync(System.String)">
+            <summary>
+            Returns a Tree object that scans all nodes under the passing path (VERY HEAVY!)
+            指定パス配下の全ノードをスキャンしたTreeオブジェクトを返す。重い！
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
+        </member>
+        <member name="F:Xb.File.Tree.TreeBase.DelimiterChars">
+            <summary>
+            Delimiter char
+            パスの区切り文字
+            </summary>
+        </member>
+        <member name="M:Xb.File.Tree.TreeBase.FormatPath(System.String)">
+            <summary>
+            Format path-string
+            パス文字列を整形する
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Xb.File.ZipTree.ReadOnly">
+            <summary>
+            Operation Type
+            読み取り専用フラグ
+            </summary>
+        </member>
+        <member name="M:Xb.File.ZipTree.#ctor(System.String,System.Boolean,System.Text.Encoding)">
+            <summary>
+            Constructor
+            コンストラクタ
+            </summary>
+            <param name="zipFileName"></param>
+        </member>
+        <member name="M:Xb.File.ZipTree.#ctor(System.IO.Stream,System.Text.Encoding)">
+            <summary>
+            Constructor - for readonly stream
+            コンストラクタ
+            </summary>
+            <param name="readableStream"></param>
+            <param name="encoding"></param>
+        </member>
+        <member name="M:Xb.File.ZipTree.BuildTree">
+            <summary>
+            ZipEntryをツリー上に構成する
+            </summary>
+        </member>
+        <member name="M:Xb.File.ZipTree.GetTreeAsync(System.String,System.Boolean,System.Text.Encoding)">
+            <summary>
+            Returns Tree-object with the passing zip-file as the root
+            zipファイルをルートにした、Treeオブジェクトを返す
+            </summary>
+            <param name="zipFileName"></param>
+            <param name="readOnly"></param>
+            <param name="encoding"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.File.ZipTree.GetTreeAsync(System.IO.Stream,System.Text.Encoding)">
+            <summary>
+            Returns readonly Tree-object with the passing zip-file as the root
+            zipファイルをルートにした、読み取り専用Treeオブジェクトを返す
+            </summary>
+            <param name="readableStream"></param>
+            <param name="encoding"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.File.ZipTree.Dispose(System.Boolean)">
+            <summary>
+            Disposing Stream, ZipArchive
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="M:Xb.File.ZipTree.ZipNode.#ctor(Xb.File.Tree.ITree)">
+            <summary>
+            Constructor for root-node only
+            コンストラクタ
+            </summary>
+            <param name="tree"></param>
+            <remarks>
+            Zipアーカイブ用Tree.RootNodeには、該当するZipArchiveEntryオブジェクトが存在しない。
+            </remarks>
+        </member>
+        <member name="M:Xb.File.ZipTree.ZipNode.#ctor(Xb.File.Tree.ITree,System.String,System.DateTime,Xb.File.Tree.NodeBase.NodeType,System.Int64,System.IO.Compression.ZipArchiveEntry)">
+            <summary>
+            Constructor
+            コンストラクタ
+            </summary>
+            <param name="tree"></param>
+            <param name="path"></param>
+            <param name="updateDate"></param>
+            <param name="type"></param>
+            <param name="entry"></param>
+        </member>
+        <member name="M:Xb.File.ZipTree.ZipNode.CreateChild(System.String,Xb.File.Tree.NodeBase.NodeType)">
+            <summary>
+            Create real system element and child tree-node
+            実システムに指定要素を追加し、自身に子ノードを追加する
+            </summary>
+            <param name="name"></param>
+            <param name="type"></param>
+        </member>
+        <member name="M:Xb.File.ZipTree.ZipNode.AddChild(Xb.File.Tree.INode)">
+            <summary>
+            Add child node
+            子ノードを追加する。
+            </summary>
+            <param name="node"></param>
+        </member>
+        <member name="M:Xb.File.ZipTree.ZipNode.Delete">
+            <summary>
+            Delete real system elements and myself-node from tree
+            実システムから自身に該当する要素を削除し、自分自身を破棄する。
+            </summary>
+        </member>
+        <member name="M:Xb.File.ZipTree.ZipNode.GetBytes">
+            <summary>
+            Get byte-array of node
+            ノードのデータをバイト配列で取得する
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.File.ZipTree.ZipNode.GetReadStream">
+            <summary>
+            Get stream for read-only
+            読込専用Streamを取得する
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Xb.File.ZipTree.ZipNode.GetBytes(System.Int64,System.Int32)">
+            <summary>
+            Get byte-array of node
+            ノードのデータをバイト配列で取得する
+            </summary>
+            <param name="offset"></param>
+            <param name="length"></param>
+            <returns></returns>
+            <remarks>file size max 2GB</remarks>
+        </member>
+        <member name="M:Xb.File.ZipTree.ZipNode.WriteBytes(System.Byte[])">
+            <summary>
+            Overwrite data of node
+            バイト配列データをノードに上書きする。
+            </summary>
+            <param name="bytes"></param>
+        </member>
+        <member name="M:Xb.File.ZipTree.ZipNode.Dispose(System.Boolean)">
+            <summary>
+            Disposing Entry
+            </summary>
+            <param name="disposing"></param>
+        </member>
+    </members>
+</doc>

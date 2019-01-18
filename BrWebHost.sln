@@ -16,7 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Initializer", "Initializer\Initializer.csproj", "{E8A8F939-A718-4E98-B386-C977AC577F9C}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SetupTest", "SetupTest\SetupTest.vdproj", "{07869401-1B2F-4EE0-8F53-B661EB888BCF}"
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SetupBrWebHost", "SetupBrWebHost\SetupBrWebHost.vdproj", "{07869401-1B2F-4EE0-8F53-B661EB888BCF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InstallerCustomAction", "InstallerCustomAction\InstallerCustomAction.csproj", "{93D10290-0296-43F0-826D-06F77D337DD8}"
 EndProject
