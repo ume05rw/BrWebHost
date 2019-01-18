@@ -1,4 +1,6 @@
-﻿namespace Initializer.Views
+﻿using Initializer.Models.Langs;
+
+namespace Initializer.Views
 {
     partial class PanelFailure
     {
@@ -76,7 +78,7 @@
             // linkFlatIcon
             // 
             this.linkFlatIcon.AutoSize = true;
-            this.linkFlatIcon.Font = new System.Drawing.Font("Yu Gothic UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.linkFlatIcon.Font = new System.Drawing.Font(Lang.Instance.FontName, 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.linkFlatIcon.LinkColor = System.Drawing.Color.Gray;
             this.linkFlatIcon.Location = new System.Drawing.Point(216, 207);
             this.linkFlatIcon.Name = "linkFlatIcon";
@@ -90,7 +92,7 @@
             // linkLicense
             // 
             this.linkLicense.AutoSize = true;
-            this.linkLicense.Font = new System.Drawing.Font("Yu Gothic UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.linkLicense.Font = new System.Drawing.Font(Lang.Instance.FontName, 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.linkLicense.LinkColor = System.Drawing.Color.Gray;
             this.linkLicense.Location = new System.Drawing.Point(460, 207);
             this.linkLicense.Name = "linkLicense";

@@ -6,53 +6,166 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Initializer.Models.Langs
 {
     public class Lang
     {
+        private const string DefaultLanguageFile = "en.json";
+        private const string EnglishLanguageFile = "en.json";
+        private const string JapaneseLanguageFile = "ja.json";
+        private const string ChineseLanguageFile = "zh-cn.json";
+
+        #region "static"
+
         private static Lang _instance = null;
-        private static Xb.Type.Reflection _refs 
-            = Xb.Type.Reflection.Get(typeof(Lang));
+        private static Xb.Type.Reflection _refs = null;
 
-        public static Lang Instance => Lang._instance;
+        public static Lang Instance
+        {
+            get
+            {
+                if (Lang._instance == null)
+                    Lang.Init();
 
+                return Lang._instance;
+            }
+        }
 
-        public static void Init()
+        private static void Init()
         {
             Lang._instance = new Lang();
-            Lang.SetLang("ja.json");
+            Lang.SetLang(Lang.DefaultLanguageFile);
+            Lang.SetLang(Lang.GetCurrentLanguageFileName());
+
+            Lang.SetLang(Lang.ChineseLanguageFile);
         }
 
         public static void SetLang(string fileName)
         {
-            // TODO: ./Models/Langs/{fileName}を取得
-            var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
-            var rootPath = Path.GetDirectoryName(pathToExe);
-            var jsontPath = Path.Combine(rootPath, "Models\\Langs", fileName);
-            var json = File.ReadAllText(jsontPath, Encoding.UTF8);
-            var resource 
-                = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+            if (Lang._refs == null)
+                Lang._refs = Xb.Type.Reflection.Get(typeof(Lang));
 
+            // ./Models/Langs/{fileName} から言語Key-Valueセットを取得。
+            var resource = Lang.GetLangResource(fileName);
 
-            // TODO: Lang._instance のプロパティを取得し、名前が合致するものの値を上書き
+            // Langクラスのプロパティを取得し、名前が合致するものの値を上書き
             foreach (var kv in Lang._refs.Properties)
             {
-                if (!resource.ContainsKey(kv.Key))
+                if (!resource.ContainsKey(kv.Key) 
+                    || string.IsNullOrEmpty(resource[kv.Key]))
                     continue;
 
                 // publicなセッターが無いので、アクセスできない。
+                // PropertyInfo.SetValueでセットする。
                 //kv.Value.Set(Lang.Instance, resource[kv.Key]);
                 kv.Value.Info.SetValue(Lang.Instance, resource[kv.Key]);
-                
             }
         }
 
+        private static Dictionary<string, string> GetLangResource(string fileName)
+        {
+            var result = default(Dictionary<string, string>);
 
+            var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
+            var rootPath = Path.GetDirectoryName(pathToExe);
+
+            if (string.IsNullOrEmpty(fileName))
+                fileName = Lang.DefaultLanguageFile;
+
+            var jsonPath = Path.Combine(rootPath, "Models\\Langs", fileName);
+
+            if (!File.Exists(jsonPath))
+                jsonPath = Path.Combine(rootPath, $"Models\\Langs\\{Lang.DefaultLanguageFile}");
+
+            var json = "";
+            try
+            {
+                json = File.ReadAllText(jsonPath, Encoding.UTF8);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show(
+                    "Language file NOT found. Please re-install Initializer", 
+                    "Broadlink Device Initializer", 
+                    MessageBoxButtons.OK, 
+                    MessageBoxIcon.Exclamation
+                );
+                Application.Exit();
+            }
+
+            try
+            {
+                result = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+            }
+            catch (Exception)
+            {
+                if (fileName == "en.json")
+                {
+                    MessageBox.Show(
+                        "Default language file Broken. \r\nPlease re-install Initializer",
+                        "Broadlink Device Initializer",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation
+                    );
+                    Application.Exit();
+                }
+                else
+                {
+                    MessageBox.Show(
+                        $"Language file [{fileName}] is Broken. \r\nSet to default language.",
+                        "Broadlink Device Initializer",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation
+                    );
+
+                    result = Lang.GetLangResource(Lang.DefaultLanguageFile);
+                }
+            }
+
+            if (result == null)
+            {
+                MessageBox.Show(
+                    "Default language file Broken. \r\nPlease re-install Initializer",
+                    "Broadlink Device Initializer",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation
+                );
+                Application.Exit();
+            }
+
+            return result;
+        }
+
+        private static string GetCurrentLanguageFileName()
+        {
+            var cultureName = System.Globalization.CultureInfo.CurrentCulture.Name.ToLower();
+
+            if (cultureName.IndexOf("ja-") >= 0)
+                return Lang.JapaneseLanguageFile;
+            else if (cultureName.IndexOf("zh-ch") >= 0)
+                return Lang.ChineseLanguageFile;
+            else if (cultureName.IndexOf("en-") >= 0)
+                return Lang.EnglishLanguageFile;
+
+            return Lang.DefaultLanguageFile;
+        }
+
+        #endregion
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <remarks>
+        /// シングルトンにする。
+        /// </remarks>
         private Lang()
         {
-
         }
+
+        public string FontName { get; private set; }
 
         public string AlreadyRunning { get; private set; }
         public string NowSetting { get; private set; }

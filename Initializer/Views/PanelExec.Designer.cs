@@ -1,4 +1,6 @@
-﻿namespace Initializer.Views
+﻿using Initializer.Models.Langs;
+
+namespace Initializer.Views
 {
     partial class PanelExec
     {

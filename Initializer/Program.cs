@@ -15,8 +15,6 @@ namespace Initializer
         [STAThread]
         static void Main()
         {
-            Lang.Init();
-
             //Mutex名を決める（必ずアプリケーション固有の文字列に変更すること！）
             string mutexName = "BrDeviceInitializer";
             //Mutexオブジェクトを作成する

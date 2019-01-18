@@ -1,5 +1,8 @@
 ﻿{
-  "AlreadyRunning": "Already Running Br-Initializer now.",
+  "FontName": "Arial",
+
+
+  "AlreadyRunning": "Already Running Bradlink Initializer now.",
 
   "NowSetting": "Now Setting...",
   "NowBooting": "Now Booting...",

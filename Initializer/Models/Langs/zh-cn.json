@@ -1,35 +1,38 @@
 ﻿{
-  "AlreadyRunning": "Already Running Br-Initializer now.",
+  "FontName": "Microsoft YaHei UI",
 
-  "NowSetting": "設定中です...",
-  "NowBooting": "起動処理中です...",
 
-  "SettingFailed": "設定に失敗しました",
-  "DevicePreparation": "Broadlinkデバイスの準備",
-  "PreparationStep1": "1.デバイスにUSBケーブルを差し込み、電源を入れます。",
-  "PreparationStep2": "2.青いLEDが素早く点滅するまで、リセットボタンを長押しします。",
-  "PreparationStep3": "3.もう一度リセットを長押しし、青いLEDがゆっくり点滅する状態にします。",
-  "SettingSucceeded": "設定が終わりました！",
-  "SetYourWifi": "Wi-Fi情報の入力",
-  "Security": "セキュリティ",
+  "AlreadyRunning": "已经运行Bradlink初始化工具了。",
+
+  "NowSetting": "现在设定...",
+  "NowBooting": "现在开机了...",
+
+  "SettingFailed": "设置失败...",
+  "DevicePreparation": "Broadlink设备准备",
+  "PreparationStep1": "1.将USB电缆插入Broadlink设备，将其打开。",
+  "PreparationStep2": "2.长按复位按钮，直到蓝色LED快速闪烁。",
+  "PreparationStep3": "3.再次长按直到蓝色LED缓慢闪烁。",
+  "SettingSucceeded": "设置成功！",
+  "SetYourWifi": "设置您的Wifi信息",
+  "Security": "安全",
   "Ssid": "SSID",
-  "Password": "パスワード",
-  "ShowPassword": "パスワードを表示する",
+  "Password": "密码",
+  "ShowPassword": "显示密码",
 
-  "Prev": "<<戻る",
-  "Next": "次へ>>",
-  "Retry": "もう一度",
-  "Exec": "実行",
-  "Close": "閉じる",
+  "Prev": "<<回报",
+  "Next": "下一个>>",
+  "Retry": "重试",
+  "Exec": "跑",
+  "Close": "关",
 
 
 
-  "WifiInterfacesNotFound": "PC上にWiFiインタフェースが見つかりません。\r\nWiFiを有効にして、もう一度お試しください。",
-  "BroadlinkDeviceNotFound": "Broadlinkデバイスが見つかりません。\r\nデバイスの準備状態を確認して、もう一度お試しください。",
-  "PcWifiRestoringFailure": "PCのWiFi設定復元に失敗しました。手動で戻してください。",
-  "BroadlinkDeviceInitializeFailure": "Broadlinkデバイスの初期化に失敗しました。\r\nデバイスの準備状態を確認して、もう一度お試しください。",
-  "NewDeviceIpIs": "新しいデバイスのIPアドレスは、以下になります。",
-  "NewDeviceIsReady": "新しいデバイスがオンラインになりました！"
+  "WifiInterfacesNotFound": "在您的PC上找不到WiFi接口。\r\n添加WiFi设备，然后重试。",
+  "BroadlinkDeviceNotFound": "未找到Broadlink设备。\r\n检查您的设备准备，然后重试。",
+  "PcWifiRestoringFailure": "PC的WiFi恢复失败，请手动设置。",
+  "BroadlinkDeviceInitializeFailure": "Broadlink设备初始化失败。\r\n检查您的设备准备，然后重试。",
+  "NewDeviceIpIs": "新设备IP在这里。",
+  "NewDeviceIsReady": "新设备准备就绪！"
 
   //"": "",
   //"": "",

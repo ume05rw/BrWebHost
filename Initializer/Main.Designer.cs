@@ -1,4 +1,6 @@
-﻿namespace Initializer
+﻿using Initializer.Models.Langs;
+
+namespace Initializer
 {
     partial class Main
     {
@@ -80,7 +82,7 @@
             // pnlWifi
             // 
             this.pnlWifi.BackColor = System.Drawing.Color.Transparent;
-            this.pnlWifi.Font = new System.Drawing.Font("MS UI Gothic", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.pnlWifi.Font = new System.Drawing.Font(Lang.Instance.FontName, 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.pnlWifi.Location = new System.Drawing.Point(12, 321);
             this.pnlWifi.Margin = new System.Windows.Forms.Padding(5);
             this.pnlWifi.Name = "pnlWifi";
@@ -90,7 +92,7 @@
             // pnlPreparation
             // 
             this.pnlPreparation.BackColor = System.Drawing.Color.Transparent;
-            this.pnlPreparation.Font = new System.Drawing.Font("MS UI Gothic", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.pnlPreparation.Font = new System.Drawing.Font(Lang.Instance.FontName, 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.pnlPreparation.Location = new System.Drawing.Point(131, 321);
             this.pnlPreparation.Margin = new System.Windows.Forms.Padding(5);
             this.pnlPreparation.Name = "pnlPreparation";
@@ -100,7 +102,7 @@
             // pnlExec
             // 
             this.pnlExec.BackColor = System.Drawing.Color.Transparent;
-            this.pnlExec.Font = new System.Drawing.Font("MS UI Gothic", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.pnlExec.Font = new System.Drawing.Font(Lang.Instance.FontName, 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.pnlExec.Location = new System.Drawing.Point(250, 321);
             this.pnlExec.Margin = new System.Windows.Forms.Padding(5);
             this.pnlExec.Name = "pnlExec";
@@ -110,7 +112,7 @@
             // pnlSucceeded
             // 
             this.pnlSucceeded.BackColor = System.Drawing.Color.Transparent;
-            this.pnlSucceeded.Font = new System.Drawing.Font("MS UI Gothic", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.pnlSucceeded.Font = new System.Drawing.Font(Lang.Instance.FontName, 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.pnlSucceeded.Location = new System.Drawing.Point(369, 321);
             this.pnlSucceeded.Margin = new System.Windows.Forms.Padding(5);
             this.pnlSucceeded.Name = "pnlSucceeded";
@@ -120,7 +122,7 @@
             // pnlFailure
             // 
             this.pnlFailure.BackColor = System.Drawing.Color.Transparent;
-            this.pnlFailure.Font = new System.Drawing.Font("MS UI Gothic", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.pnlFailure.Font = new System.Drawing.Font(Lang.Instance.FontName, 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.pnlFailure.Location = new System.Drawing.Point(488, 321);
             this.pnlFailure.Margin = new System.Windows.Forms.Padding(5);
             this.pnlFailure.Name = "pnlFailure";
@@ -168,7 +170,7 @@
             this.Controls.Add(this.btnExec);
             this.Controls.Add(this.btnPrev);
             this.Controls.Add(this.btnNext);
-            this.Font = new System.Drawing.Font("Yu Gothic UI", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.Font = new System.Drawing.Font(Lang.Instance.FontName, 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);

@@ -1,5 +1,8 @@
 ﻿{
-  "AlreadyRunning": "Already Running Br-Initializer now.",
+  "FontName": "メイリオ",
+
+
+  "AlreadyRunning": "Broadlinkデバイスイニシャライザーは、既に起動中です。",
 
   "NowSetting": "設定中です...",
   "NowBooting": "起動処理中です...",
