@@ -1411,6 +1411,7 @@ var App;
         (function (Lang) {
             Lang.Ja = {
                 Title: 'BrWebHost',
+                TitleScriptAgent: 'BWH Script Agent',
                 Property: 'プロパティ',
                 RemoteControl: 'リモコン',
                 Name: '名前',
@@ -1509,6 +1510,7 @@ var App;
         (function (Lang) {
             Lang.En = {
                 Title: 'BrWebHost',
+                TitleScriptAgent: 'BWH Script Agent',
                 Property: 'Property',
                 RemoteControl: 'Remote Control',
                 Name: 'Name',
@@ -1605,6 +1607,7 @@ var App;
         (function (Lang) {
             Lang.ZhCn = {
                 Title: 'BrWebHost',
+                TitleScriptAgent: 'BWH Script Agent',
                 Property: '属性',
                 RemoteControl: '遥控器',
                 Name: '名',
@@ -1709,6 +1712,7 @@ var App;
              */
             Lang_1.Lang = {
                 Title: 'BrWebHost',
+                TitleScriptAgent: 'BWH Script Agent',
                 Property: 'Property',
                 RemoteControl: 'Remote Control',
                 Name: 'Name',

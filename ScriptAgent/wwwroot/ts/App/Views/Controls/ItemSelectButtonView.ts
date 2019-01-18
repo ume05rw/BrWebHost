@@ -24,7 +24,7 @@ namespace App.Views.Controls {
 
             this.Value = null;
 
-            this.SetSize(70, 75);
+            this.SetSize(75, 75);
             this.Position.Policy = Property.PositionPolicy.LeftTop;
             this.HasBorder = true;
             this.BorderRadius = 10;

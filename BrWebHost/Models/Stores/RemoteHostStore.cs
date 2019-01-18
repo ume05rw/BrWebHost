@@ -73,7 +73,6 @@ namespace BrWebHost.Models.Stores
                     RemoteHostStore._socket.Dispose();
                     RemoteHostStore._socket = null;
                 }
-                    
 
                 RemoteHostStore._localAddresses = new List<byte[]>();
                 var locals = Xb.Net.Util.GetLocalAddresses();
@@ -273,7 +272,6 @@ namespace BrWebHost.Models.Stores
             else
                 return (false, JsonConvert.SerializeObject(remoteResult.Errors));
         }
-
 
         #region IDisposable Support
         private bool IsDisposed = false; // 重複する呼び出しを検出するには

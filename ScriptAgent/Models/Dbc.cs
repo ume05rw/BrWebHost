@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace BrWebHost.Models
@@ -12,6 +13,13 @@ namespace BrWebHost.Models
     /// </summary>
     public class Dbc : DbContext
     {
+        private class LockerObject
+        {
+            public bool IsLocked { get; set; }
+        }
+
+        private static LockerObject Locker = new LockerObject();
+
         public DbSet<ControlSet> ControlSets { get; set; }
 
         public DbSet<Control> Controls { get; set; }
@@ -26,6 +34,52 @@ namespace BrWebHost.Models
             Xb.Util.Out("Dbc.Constructor");
         }
 
+        /// <summary>
+        /// SaveChanges
+        /// </summary>
+        /// <returns></returns>
+        /// <remarks>
+        /// SQLiteのとき、マルチスレッドでDBファイル取得に失敗する現象への対応。
+        /// </remarks>
+        public override int SaveChanges()
+        {
+            var result = default(int);
+
+            lock(Dbc.Locker)
+            {
+                Dbc.Locker.IsLocked = true;
+
+                result = base.SaveChanges();
+
+                Dbc.Locker.IsLocked = false;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// SaveChangesAsync
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// SQLiteのとき、マルチスレッドでDBファイル取得に失敗する現象への対応。
+        /// </remarks>
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var result = default(Task<int>);
+
+            lock(Dbc.Locker)
+            {
+                Dbc.Locker.IsLocked = true;
+
+                result = base.SaveChangesAsync(cancellationToken);
+
+                Dbc.Locker.IsLocked = false;
+            }
+
+            return result;
+        }
 
         public override void Dispose()
         {
@@ -34,6 +88,7 @@ namespace BrWebHost.Models
         }
 
 
+        #region "Creating Seed"
 
         /// <summary>
         /// シード生成
@@ -48,7 +103,7 @@ namespace BrWebHost.Models
                     BrDeviceId = null,
                     Name = "TV",
                     Color = "#fcc91f",
-                    IconUrl = "images/icons/controlset/tv.png",
+                    IconUrl = "images/icons/operation/large/tv.png",
 
                     Order = 99999,
                     ToggleState = false,
@@ -63,7 +118,7 @@ namespace BrWebHost.Models
                     BrDeviceId = null,
                     Name = "AV",
                     Color = "#F92068",
-                    IconUrl = "images/icons/controlset/av.png",
+                    IconUrl = "images/icons/operation/large/av.png",
                     Order = 99999,
                     ToggleState = false,
                     IsMainPanelReady = true,
@@ -77,7 +132,7 @@ namespace BrWebHost.Models
                     BrDeviceId = null,
                     Name = "Light",
                     Color = "#ccdc4b",
-                    IconUrl = "images/icons/controlset/light.png",
+                    IconUrl = "images/icons/operation/large/light.png",
                     Order = 99999,
                     ToggleState = false,
                     IsMainPanelReady = true,
@@ -90,7 +145,7 @@ namespace BrWebHost.Models
                     Id = 4,
                     BrDeviceId = null,
                     Name = "Air Complessor",
-                    IconUrl = "images/icons/controlset/aircompressor.png",
+                    IconUrl = "images/icons/operation/large/aircompressor.png",
                     Order = 99999,
                     ToggleState = false,
                     IsMainPanelReady = true,
@@ -104,7 +159,7 @@ namespace BrWebHost.Models
                     Id = 5,
                     BrDeviceId = null,
                     Name = "A1 Sensor",
-                    IconUrl = "images/icons/controlset/a1.png",
+                    IconUrl = "images/icons/operation/large/a1.png",
                     Order = 99999,
                     ToggleState = false,
                     IsMainPanelReady = true,
@@ -118,7 +173,7 @@ namespace BrWebHost.Models
                     Id = 6,
                     BrDeviceId = null,
                     Name = "Sp2 Switch",
-                    IconUrl = "images/icons/controlset/sp2.png",
+                    IconUrl = "images/icons/operation/large/sp2.png",
                     Order = 99999,
                     ToggleState = false,
                     IsMainPanelReady = true,
@@ -132,7 +187,7 @@ namespace BrWebHost.Models
                     Id = 7,
                     BrDeviceId = null,
                     Name = "Sp1 Switch",
-                    IconUrl = "images/icons/controlset/sp2.png",
+                    IconUrl = "images/icons/operation/large/sp2.png",
                     Order = 99999,
                     ToggleState = false,
                     IsMainPanelReady = true,
@@ -146,7 +201,7 @@ namespace BrWebHost.Models
                     Id = 8,
                     BrDeviceId = null,
                     Name = "Single Control",
-                    IconUrl = "images/icons/controlset/sp2.png",
+                    IconUrl = "images/icons/operation/large/sp2.png",
                     Order = 99999,
                     ToggleState = false,
                     IsMainPanelReady = true,
@@ -160,7 +215,7 @@ namespace BrWebHost.Models
                     Id = 9,
                     BrDeviceId = null,
                     Name = "No Control",
-                    IconUrl = "images/icons/controlset/sp2.png",
+                    IconUrl = "images/icons/operation/large/sp2.png",
                     Order = 99999,
                     ToggleState = false,
                     IsMainPanelReady = true,
@@ -840,5 +895,7 @@ namespace BrWebHost.Models
                 }
             );
         }
+
+        #endregion
     }
 }

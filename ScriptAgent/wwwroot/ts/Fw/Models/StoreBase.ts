@@ -24,7 +24,7 @@ namespace Fw.Models {
         protected constructor() {
             super();
 
-            this.EnableLog = true;
+            //this.EnableLog = true;
         }
 
         protected Clear(): void {

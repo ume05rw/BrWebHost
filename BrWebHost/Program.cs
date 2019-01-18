@@ -91,10 +91,12 @@ namespace BrWebHost
                 // サービスかどうかで起動方法を分ける
                 if (isService)
                 {
+                    // Windowsサービスとして起動する。
                     Program.BuildWebHost(new string[] { }).RunAsCustomService();
                 }
                 else
                 {
+                    // 通常はこちら。
                     Program.BuildWebHost(new string[] { }).Run();
                 }
             }

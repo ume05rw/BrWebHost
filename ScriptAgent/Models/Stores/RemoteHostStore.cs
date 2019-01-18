@@ -12,10 +12,11 @@ using System.Text;
 using Newtonsoft.Json;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using Microsoft.Extensions.Logging;
 
 namespace BrWebHost.Models.Stores
 {
-    public class RemoteHostStore
+    public class RemoteHostStore : IDisposable
     {
         private const string CallString = "hello?";
         private const string ResponseString = "here!";
@@ -23,8 +24,6 @@ namespace BrWebHost.Models.Stores
         private static Xb.Net.Udp _socket = null;
         private static List<byte[]> _localAddresses;
 
-        // 一応、維持。
-        private static Xb.App.Process Replyer = null;
 
         public static void SetReciever()
         {
@@ -45,7 +44,10 @@ namespace BrWebHost.Models.Stores
                 //    = Xb.App.Process.Create("dotnet", $"\"{dllPath}\" {Program.Port}", false, execPath);
 
                 if (RemoteHostStore._socket != null)
+                {
                     RemoteHostStore._socket.Dispose();
+                    RemoteHostStore._socket = null;
+                }
 
                 RemoteHostStore._localAddresses = new List<byte[]>();
                 var locals = Xb.Net.Util.GetLocalAddresses();
@@ -97,9 +99,6 @@ namespace BrWebHost.Models.Stores
 
         public static void DisposeReciever()
         {
-            if (RemoteHostStore.Replyer != null)
-                RemoteHostStore.Replyer.Dispose();
-
             if (RemoteHostStore._socket != null)
                 RemoteHostStore._socket.Dispose();
 
@@ -109,5 +108,31 @@ namespace BrWebHost.Models.Stores
                 RemoteHostStore._localAddresses = null;
             }
         }
+
+        #region IDisposable Support
+        private bool IsDisposed = false; // 重複する呼び出しを検出するには
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!IsDisposed)
+            {
+                if (disposing)
+                {
+                }
+
+                // TODO: アンマネージド リソース (アンマネージド オブジェクト) を解放し、下のファイナライザーをオーバーライドします。
+                // TODO: 大きなフィールドを null に設定します。
+
+                IsDisposed = true;
+            }
+        }
+
+        // このコードは、破棄可能なパターンを正しく実装できるように追加されました。
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 }

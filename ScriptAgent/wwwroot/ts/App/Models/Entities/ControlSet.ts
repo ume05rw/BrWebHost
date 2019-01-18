@@ -5,19 +5,21 @@
 /// <reference path="../../Items/Color.ts" />
 /// <reference path="../../Items/ControlSetTemplate.ts" />
 /// <reference path="../../Items/OperationType.ts" />
+/// <reference path="../../Items/Lang/Lang.ts" />
 
 namespace App.Models.Entities {
     import Dump = Fw.Util.Dump;
     import Color = App.Items.Color;
     import ControlSetTemplate = App.Items.ControlSetTemplate;
     import OperationType = App.Items.OperationType;
+    import Lang = App.Items.Lang.Lang;
 
     export class ControlSet extends Fw.Models.EntityBase {
 
         /**
          * リモコン名
          */
-        public Name: string = 'New Remote Control';
+        public Name: string = Lang.NewRemoteControl;
 
         /**
          * BrDeviceID: null もセットしないでおく。

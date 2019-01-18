@@ -30,7 +30,7 @@ namespace App.Models.Stores {
             super();
 
             this.SetClassName('ScriptStore');
-            this.EnableLog = true;
+            //this.EnableLog = true;
         }
 
         public async Exec(controlSet: ControlSet, control: Control): Promise<boolean> {

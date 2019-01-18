@@ -106,11 +106,9 @@ namespace Fw.Views {
             this._innerBox.Elem.addClass('SlidablePanelInnerView');
 
             this._innerBox.Elem.on('touchstart mousedown', (e) => {
-                // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
-                if (e.eventPhase !== 2)
-                    return;
-
-                e.preventDefault();
+                //// 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
+                //if (e.eventPhase !== 2)
+                //    return;
 
                 this._isDragging = true;
 
@@ -127,11 +125,9 @@ namespace Fw.Views {
                 if (!this._isDragging || this._spcvMouseSuppressor)
                     return;
 
-                // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
-                if (e.eventPhase !== 2)
-                    return;
-
-                e.preventDefault();
+                //// 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
+                //if (e.eventPhase !== 2)
+                //    return;
 
                 const ml = MouseLocation.Create(e);
                 const addX = ml.ClientX - this._dragStartMousePosition.X;
@@ -175,7 +171,6 @@ namespace Fw.Views {
                 if (this._isDragging || this._spcvMouseSuppressor)
                     return;
 
-                e.preventDefault();
                 const orgEv = e.originalEvent as any;
                 const delta = orgEv.deltaY
                     ? -(orgEv.deltaY)
@@ -216,11 +211,9 @@ namespace Fw.Views {
             });
 
             this._innerBox.Elem.on('touchend mouseup mouseout', (e) => {
-                // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
-                if (e.eventPhase !== 2)
-                    return;
-
-                e.preventDefault();
+                //// 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
+                //if (e.eventPhase !== 2)
+                //    return;
 
                 this._isDragging = false;
                 Fw.Root.Instance.SetTextSelection(true);

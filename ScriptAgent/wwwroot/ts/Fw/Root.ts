@@ -74,7 +74,7 @@ namespace Fw {
                     this._viewRefreshInterval = 30;
                     this._releaseInitialized = true;
                     this.DispatchEvent(Events.PageInitializeCompleted);
-                    Dump.Log('Root.ReleasePageInitialize - Released');
+                    //Dump.Log('Root.ReleasePageInitialize - Released');
                 },
                 300,
                 -1,
@@ -144,7 +144,7 @@ namespace Fw {
             this._releaseInitialized = false;
             this._viewRefreshInterval = 3000;
             this.DispatchEvent(Events.PageInitializeStarted);
-            Dump.Log('Root.StartPageInitialize');
+            //Dump.Log('Root.StartPageInitialize');
         }
 
         private _releaseInitialized: boolean = false;

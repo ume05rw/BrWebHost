@@ -10,6 +10,7 @@
 /// <reference path="../Views/Popup/AlertPopup.ts" />
 /// <reference path="../Items/OperationType.ts" />
 /// <reference path="../Items/DeviceType.ts" />
+/// <reference path="../Items/Lang/Lang.ts" />
 
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
@@ -24,6 +25,7 @@ namespace App.Controllers {
     import Entities = App.Models.Entities;
     import OperationType = App.Items.OperationType;
     import DeviceType = App.Items.DeviceType;
+    import Lang = App.Items.Lang.Lang;
 
     export class ControlHeaderPropertyController extends Fw.Controllers.ControllerBase {
 
@@ -80,7 +82,7 @@ namespace App.Controllers {
                     return;
 
                 const res = await Popup.Confirm.OpenAsync({
-                    Message: 'This Remote Control will be REMOVED.<br/>Are you ok?'
+                    Message: Lang.ThisRemoteControlWillBeRemoved
                 });
 
                 if (res !== true)

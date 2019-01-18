@@ -6,6 +6,7 @@
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../Controls/HeaderBarView.ts" />
 /// <reference path="../../Items/Color.ts" />
+/// <reference path="../../Items/Lang/Lang.ts" />
 
 namespace App.Views.Pages {
     import Dump = Fw.Util.Dump;
@@ -14,6 +15,7 @@ namespace App.Views.Pages {
     import Property = Fw.Views.Property;
     import Controls = App.Views.Controls;
     import Color = App.Items.Color;
+    import Lang = App.Items.Lang.Lang;
 
     export class ControlSetPageView extends Fw.Views.PageView {
 
@@ -38,7 +40,7 @@ namespace App.Views.Pages {
             background.Src = 'images/Pages/ControlSet/background.jpg';
             this.Add(background);
 
-            this.HeaderBar.Text = 'Remote Control';
+            this.HeaderBar.Text = Lang.RemoteControl;
             this.HeaderBar.RightButton.Hide(0);
             this.Add(this.HeaderBar);
 

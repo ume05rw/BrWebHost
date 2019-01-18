@@ -69,6 +69,7 @@ namespace App.Controllers {
 
                     Dump.Log('SubController Load Start');
                     const controlSetCtr = new ControlSetController();
+
                     const controlHeaderPropertyCtr = new ControlHeaderPropertyController();
                     const controlPropertyCtr = new ControlPropertyController();
 

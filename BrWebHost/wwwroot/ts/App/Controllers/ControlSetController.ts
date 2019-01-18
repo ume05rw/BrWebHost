@@ -467,7 +467,6 @@ namespace App.Controllers {
             ctr.ShowModal();
         }
 
-
         /**
          * 学習指示／コード取得
          */

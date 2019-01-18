@@ -32,7 +32,27 @@ namespace App.Models.Stores {
             super();
 
             this.SetClassName('RemoteStore');
-            this.EnableLog = true;
+            //this.EnableLog = true;
+        }
+
+        public async GetHostname(): Promise<string> {
+            this.Log('GetHostname');
+
+            const params = new Xhr.Params(
+                'RemoteHosts/GetHostname',
+                Xhr.MethodType.Get
+            );
+
+            const res = await Xhr.Query.Invoke(params);
+
+            if (res.Succeeded) {
+
+                return res.Values;
+            } else {
+                this.Log('Query Fail');
+                this.Log(res.Errors);
+                return null;
+            }
         }
 
         public async GetList(): Promise<Script[]> {

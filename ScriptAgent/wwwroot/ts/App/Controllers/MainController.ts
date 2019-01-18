@@ -17,6 +17,7 @@
 /// <reference path="../Items/OperationType.ts" />
 /// <reference path="../Items/Color.ts" />
 /// <reference path="../Items/Icon.ts" />
+/// <reference path="../Items/Lang/Lang.ts" />
 
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
@@ -35,6 +36,7 @@ namespace App.Controllers {
     import OperationType = App.Items.OperationType;
     import Color = App.Items.Color;
     import Icon = App.Items.Icon;
+    import Lang = App.Items.Lang.Lang;
 
     export class MainController extends Fw.Controllers.ControllerBase {
 
@@ -50,7 +52,14 @@ namespace App.Controllers {
             this._page = this.View as Pages.MainPageView;
 
             this.InitStores()
-                .then(() => {
+                .then(async () => {
+                    // ホスト名をセットする。
+                    const hostname = await Stores.Remotes.GetHostname();
+                    if (hostname != null) {
+                        this._page.HeaderBar.Text = Lang.TitleScriptAgent + ' - ' + hostname;
+                        this._page.HeaderBar.Refresh();
+                    }
+
                     Dump.Log('SubController Load Start');
                     const controlSetCtr = new ControlSetController();
 

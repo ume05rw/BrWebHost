@@ -9,6 +9,8 @@
 /// <reference path="../Entities/Header.ts" />
 /// <reference path="ControlStore.ts" />
 /// <reference path="../../Items/OperationType.ts" />
+/// <reference path="../../Items/Lang/Lang.ts" />
+/// <reference path="../../Items/ValidationFailType.ts" />
 
 namespace App.Models.Stores {
     import Dump = Fw.Util.Dump;
@@ -19,6 +21,8 @@ namespace App.Models.Stores {
     import ControlSetTemplate = App.Items.ControlSetTemplate;
     import Header = App.Models.Entities.Header;
     import OperationType = App.Items.OperationType;
+    import Lang = App.Items.Lang.Lang;
+    import ValidationFailType = App.Items.ValidationFailType;
 
     export class ControlSetStore extends Fw.Models.StoreBase<ControlSet> {
 
@@ -34,7 +38,7 @@ namespace App.Models.Stores {
             super();
 
             this.SetClassName('ControlSetStore');
-            this.EnableLog = true;
+            //this.EnableLog = true;
         }
 
         protected GetNewEntity(): ControlSet {
@@ -289,6 +293,11 @@ namespace App.Models.Stores {
                 this.Log(res.Errors);
                 return null;
             }
+        }
+
+        public Validate(controlSet: ControlSet): Array<Entities.ValidationResult> {
+            let errors = new Array<Entities.ValidationResult>();
+            return errors;
         }
 
     }

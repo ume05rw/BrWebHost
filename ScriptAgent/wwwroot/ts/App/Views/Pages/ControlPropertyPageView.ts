@@ -6,6 +6,7 @@
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../Controls/HeaderBarView.ts" />
 /// <reference path="../../Items/Color.ts" />
+/// <reference path="../../Items/Lang/Lang.ts" />
 
 namespace App.Views.Pages {
     import Dump = Fw.Util.Dump;
@@ -14,6 +15,7 @@ namespace App.Views.Pages {
     import Property = Fw.Views.Property;
     import Controls = App.Views.Controls;
     import Color = App.Items.Color;
+    import Lang = App.Items.Lang.Lang;
 
     export class ControlPropertyPageView extends Fw.Views.PageView {
 
@@ -67,7 +69,7 @@ namespace App.Views.Pages {
             label.FontSize = Property.FontSize.Large;
             label.Color = Color.Main;
             label.SetAnchor(null, 5, null, null);
-            label.Text = 'Property';
+            label.Text = Lang.Property;
             this.HeaderBar.Add(label);
 
             this.InputPanel.Position.Policy = Property.PositionPolicy.LeftTop;
@@ -79,7 +81,7 @@ namespace App.Views.Pages {
             this.Add(this.InputPanel);
 
             const lbl1 = new Views.LabelView();
-            lbl1.Text = 'Name';
+            lbl1.Text = Lang.Name;
             lbl1.TextAlign = Property.TextAlign.Left;
             lbl1.AutoSize = true;
             lbl1.SetAnchor(null, 5, null, null);
@@ -88,11 +90,10 @@ namespace App.Views.Pages {
 
             this.TxtName.SetAnchor(null, 5, 15, null);
             this.TxtName.Size.Height = 30;
-            this.TxtName.Name = 'Name';
             this.InputPanel.Add(this.TxtName);
 
             const lbl2 = new Views.LabelView();
-            lbl2.Text = 'Icon / Color';
+            lbl2.Text = Lang.IconColor;
             lbl2.TextAlign = Property.TextAlign.Left;
             lbl2.AutoSize = true;
             lbl2.SetAnchor(null, 5, null, null);
@@ -105,7 +106,7 @@ namespace App.Views.Pages {
             this.InputPanel.AddSpacer();
 
             this.LblCode = new Views.LabelView();
-            this.LblCode.Text = 'Code';
+            this.LblCode.Text = Lang.Code;
             this.LblCode.TextAlign = Property.TextAlign.Left;
             this.LblCode.AutoSize = true;
             this.LblCode.SetAnchor(null, 5, null, null);
@@ -114,12 +115,10 @@ namespace App.Views.Pages {
 
             this.TarCode.SetAnchor(null, 5, 15, null);
             this.TarCode.Size.Height = 90;
-            this.TarCode.Name = 'Code';
             this.InputPanel.Add(this.TarCode);
 
             this.TxtMac.SetAnchor(null, 5, 15, null);
             this.TxtMac.Size.Height = 30;
-            this.TxtMac.Name = 'Mac';
             this.InputPanel.Add(this.TxtMac);
 
             this.SboRemote.SetAnchor(null, 5, 15, null);
@@ -128,16 +127,16 @@ namespace App.Views.Pages {
 
             this.BtnLearn.SetAnchor(null, 5, 15, null);
             this.BtnLearn.Size.Height = 30;
-            this.BtnLearn.Text = 'Learn';
+            this.BtnLearn.Text = Lang.Learn;
             this.InputPanel.Add(this.BtnLearn);
 
             this.BtnSend.SetAnchor(null, 5, 15, null);
             this.BtnSend.Size.Height = 30;
-            this.BtnSend.Text = 'Test';
+            this.BtnSend.Text = Lang.Test;
             this.InputPanel.Add(this.BtnSend);
 
             const lbl5 = new Views.LabelView();
-            lbl5.Text = 'Toggle Assigns';
+            lbl5.Text = Lang.ToggleAssigns;
             lbl5.TextAlign = Property.TextAlign.Left;
             lbl5.AutoSize = true;
             lbl5.SetAnchor(null, 5, null, null);
@@ -146,19 +145,17 @@ namespace App.Views.Pages {
 
             this.ChkToggleOn.SetAnchor(null, 5, 15, null);
             this.ChkToggleOn.Size.Height = 30;
-            this.ChkToggleOn.Name = 'AssignToggleOn';
-            this.ChkToggleOn.Text = 'Main-Panel Toggle ON';
+            this.ChkToggleOn.Text = Lang.MainPanelToggleOn;
             this.InputPanel.Add(this.ChkToggleOn);
 
             this.ChkToggleOff.SetAnchor(null, 5, 15, null);
             this.ChkToggleOff.Size.Height = 30;
-            this.ChkToggleOff.Name = 'AssignToggleOff';
-            this.ChkToggleOff.Text = 'Main-Panel Toggle OFF';
+            this.ChkToggleOff.Text = Lang.MainPanelToggleOff;
             this.InputPanel.Add(this.ChkToggleOff);
 
             this.DeleteButton.SetAnchor(null, 5, 15, null);
             this.DeleteButton.Size.Height = 30;
-            this.DeleteButton.Text = '*Delete*';
+            this.DeleteButton.Text = Lang.Delete;
             this.InputPanel.Add(this.DeleteButton);
         }
     }

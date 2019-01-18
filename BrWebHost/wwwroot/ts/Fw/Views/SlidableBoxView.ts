@@ -44,8 +44,7 @@ namespace Fw.Views {
             this.Refresh();
         }
 
-        // TODO: 一時的にpublic化。あとでprivateに戻す。
-        public _innerBox: BoxView;
+        private _innerBox: BoxView;
         private _positionBarMax: LineView;
         private _positionBarCurrent: LineView;
         private _barMargin: number = 10;
@@ -105,7 +104,6 @@ namespace Fw.Views {
             });
 
             this._innerBox.Elem.addClass('SlidablePanelInnerView');
-
 
             this._innerBox.Elem.on('touchstart mousedown', (e) => {
                 //// 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。

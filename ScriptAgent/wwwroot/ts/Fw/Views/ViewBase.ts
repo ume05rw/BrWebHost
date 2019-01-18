@@ -453,7 +453,7 @@ namespace Fw.Views {
         }
 
         public Refresh(): void {
-            this.Log('ViewBase.Refresh');
+            //this.Log('ViewBase.Refresh');
             if (this._isSuppressLayout || !this._isInitialized)
                 return;
 
@@ -461,7 +461,7 @@ namespace Fw.Views {
         }
 
         protected InnerRefresh(): void {
-            this.Log(`ViewBase.InnerRefresh - ${this.GetParentsString()}`);
+            //this.Log(`ViewBase.InnerRefresh - ${this.GetParentsString()}`);
             const parent = $(this.Elem.parent());
 
             if (parent.length <= 0)

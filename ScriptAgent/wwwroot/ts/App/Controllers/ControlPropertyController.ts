@@ -13,6 +13,7 @@
 /// <reference path="../Items/OperationType.ts" />
 /// <reference path="../Views/Pages/MainPageView.ts" />
 /// <reference path="../Views/Popup/AlertPopup.ts" />
+/// <reference path="../Items/Lang/Lang.ts" />
 
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
@@ -29,6 +30,7 @@ namespace App.Controllers {
     import ButtonEvents = Fw.Events.ButtonViewEvents;
     import OperationType = App.Items.OperationType;
     import Stores = App.Models.Stores;
+    import Lang = App.Items.Lang.Lang;
 
     export class ControlPropertyController extends Fw.Controllers.ControllerBase {
 
@@ -118,7 +120,7 @@ namespace App.Controllers {
                     return;
 
                 const res = await Popup.Confirm.OpenAsync({
-                    Message: 'Button will be removed.<br/>Are you ok?'
+                    Message: Lang.ThisButtonWillBeRemoved
                 });
 
                 if (res !== true)
@@ -150,7 +152,7 @@ namespace App.Controllers {
 
             switch (controlSet.OperationType) {
                 case OperationType.RemoteControl:
-                    this._page.LblCode.Text = 'Code';
+                    this._page.LblCode.Text = Lang.Code;
 
                     this._page.TarCode.Show(0);
                     this._page.TxtMac.Hide(0);
@@ -161,7 +163,7 @@ namespace App.Controllers {
 
                     break;
                 case OperationType.BroadlinkDevice:
-                    this._page.LblCode.Text = 'Code';
+                    this._page.LblCode.Text = Lang.Code;
 
                     this._page.TarCode.Show(0);
                     this._page.TxtMac.Hide(0);
@@ -170,7 +172,7 @@ namespace App.Controllers {
 
                     break;
                 case OperationType.WakeOnLan:
-                    this._page.LblCode.Text = 'MAC Address';
+                    this._page.LblCode.Text = Lang.MacAddress;
 
                     this._page.TarCode.Hide(0);
                     this._page.TxtMac.Show(0);
@@ -181,7 +183,7 @@ namespace App.Controllers {
 
                     break;
                 case OperationType.Script:
-                    this._page.LblCode.Text = 'Commands';
+                    this._page.LblCode.Text = Lang.Script;
 
                     this._page.TarCode.Show(0);
                     this._page.TxtMac.Hide(0);
@@ -192,7 +194,7 @@ namespace App.Controllers {
 
                     break;
                 case OperationType.RemoteHostScript:
-                    this._page.LblCode.Text = 'Remote Script';
+                    this._page.LblCode.Text = Lang.RemoteScript;
 
                     this._page.TarCode.Hide(0);
                     this._page.TxtMac.Hide(0);

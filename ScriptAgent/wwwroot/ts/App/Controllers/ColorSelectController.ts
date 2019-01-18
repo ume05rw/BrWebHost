@@ -9,7 +9,7 @@
 /// <reference path="../Views/Pages/MainPageView.ts" />
 /// <reference path="../Views/Controls/ItemSelectButtonView.ts" />
 /// <reference path="../../Fw/Events/ButtonViewEvents.ts" />
-
+/// <reference path="../Items/Lang/Lang.ts" />
 
 namespace App.Controllers {
     import Dump = Fw.Util.Dump;
@@ -18,6 +18,7 @@ namespace App.Controllers {
     import Pages = App.Views.Pages;
     import ButtonEvents = Fw.Events.ButtonViewEvents;
     import ItemSelectButtonView = App.Views.Controls.ItemSelectButtonView;
+    import Lang = App.Items.Lang.Lang;
 
     export class ColorSelectController extends ItemSelectControllerBase {
 
@@ -30,7 +31,7 @@ namespace App.Controllers {
 
             this._page = this.View as Pages.ItemSelectPageView;
 
-            this._page.Label.Text = 'Select Color';
+            this._page.Label.Text = Lang.SelectColor;
 
             _.each(App.Items.Color.ButtonColors, (color, idx) => {
                 const btn = new ItemSelectButtonView();

@@ -48,12 +48,6 @@ namespace App.Views.Controls {
             this._labelView.Size.Height = 15;
             this._labelView.FontSize = Property.FontSize.Small;
             this.Add(this._labelView);
-
-            // StuckerViewの再配置モード移行操作を変更。
-            //// StuckerViewが直下の子のLongClickを監視するため。
-            //this._buttonView.AddEventListener(ControlButtonViewEvents.LongClick, (e) => {
-            //    this.DispatchEvent(ControlButtonViewEvents.LongClick);
-            //}, this);
         }
 
         protected InnerRefresh(): void {

@@ -83,8 +83,10 @@ namespace Fw.Views {
         private _isChildDragging: boolean = false;
         private _isInnerDragging: boolean = false;
         private _relocationTargetView: IView = null;
-        private _dragStartMousePosition: Property.Position = new Property.Position();
-        private _dragStartViewPosition: Property.Position = new Property.Position();
+        private _sbvInMouseStartPosition: Property.Position = new Property.Position();
+        private _sbvInViewStartPosition: Property.Position = new Property.Position();
+        private _sbvChMouseStartPosition: Property.Position = new Property.Position();
+        private _sbvChViewStartPosition: Property.Position = new Property.Position();
 
         constructor() {
             super();
@@ -102,7 +104,7 @@ namespace Fw.Views {
             this.Elem.addClass(this.ClassName);
 
             this._margin = 10;
-            this._rightMargin = 40;
+            this._rightMargin = 20;
             this._referencePoint = Property.ReferencePoint.LeftTop;
             this._scrollMargin = 0;
             this._isChildRelocatable = true;
@@ -142,8 +144,6 @@ namespace Fw.Views {
             this._backupView = null;
             this._dummyView.Elem.addClass('Shadow');
             this._dummyView.Position.Policy = Property.PositionPolicy.LeftTop;
-
-            //this.EnableLog = true;
 
             // 下に定義済みのメソッドをthisバインドしておく。
             this.OnInnerMouseDown = this.OnInnerMouseDown.bind(this);
@@ -218,19 +218,20 @@ namespace Fw.Views {
             //if (e.eventPhase !== 2)
             //    return;
 
+            //this.Log(`mousedown`);
+
             this._mouseClickTime = new Date();
 
             const ml = MouseLocation.Create(e);
-            this._dragStartMousePosition.X = ml.ClientX;
-            this._dragStartMousePosition.Y = ml.ClientY;
+            this._sbvInMouseStartPosition.X = ml.ClientX;
+            this._sbvInMouseStartPosition.Y = ml.ClientY;
 
-            this._dragStartViewPosition.X = this._innerBox.Position.Left;
-            this._dragStartViewPosition.Y = this._innerBox.Position.Top;
+            this._sbvInViewStartPosition.X = this._innerBox.Position.Left;
+            this._sbvInViewStartPosition.Y = this._innerBox.Position.Top;
 
             if (this._isChildRelocation) {
             } else {
                 //this.Log(`${this.ClassName}.OnInnerMouseDown`);
-                //e.preventDefault();
 
                 this._isInnerDragging = true;
                 Fw.Root.Instance.SetTextSelection(false);
@@ -243,22 +244,22 @@ namespace Fw.Views {
             //if (e.eventPhase !== 2)
             //    return;
 
+            //this.Log(`mousemove`);
+
             if (this._isChildRelocation || this._scrollMargin === 0)
                 return;
-
-            e.preventDefault();
 
             // * ドラッグ処理中でないとき *　は無視する。
             if (!this._isInnerDragging)
                 return;
 
-            // 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
-            if (e.eventPhase !== 2)
-                return;
+            //// 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
+            //if (e.eventPhase !== 2)
+            //    return;
 
             const ml = MouseLocation.Create(e);
-            const addY = ml.ClientY - this._dragStartMousePosition.Y;
-            let top = this._dragStartViewPosition.Y + addY;
+            const addY = ml.ClientY - this._sbvInMouseStartPosition.Y;
+            let top = this._sbvInViewStartPosition.Y + addY;
 
             const margin = this._scrollMargin * -1;
             if (top < margin)
@@ -277,8 +278,6 @@ namespace Fw.Views {
             // * ドラッグ処理中のとき *　は無視する。
             if (this._isInnerDragging)
                 return;
-
-            e.preventDefault();
 
             const orgEv = e.originalEvent as any;
             const delta = orgEv.deltaY
@@ -309,12 +308,14 @@ namespace Fw.Views {
             //if (e.eventPhase !== 2)
             //    return;
 
+            this.Log(`mouseup`);
+
             // シングルクリック判定
             if (this._mouseClickTime) {
                 const elasped = (new Date()).getTime() - this._mouseClickTime.getTime();
                 const ml = MouseLocation.Create(e);
-                const addX = ml.ClientX - this._dragStartMousePosition.X;
-                const addY = ml.ClientY - this._dragStartMousePosition.Y;
+                const addX = ml.ClientX - this._sbvInMouseStartPosition.X;
+                const addY = ml.ClientY - this._sbvInMouseStartPosition.Y;
                 if (elasped < 800
                     && (Math.abs(addX) + Math.abs(addY)) < 30
                 ) {
@@ -328,7 +329,6 @@ namespace Fw.Views {
                 // 子View再配置モードのとき
             } else {
                 // 内部Viewドラッグ中のとき
-                //e.preventDefault();
 
                 // ドラッグ終了処理。
                 this._isInnerDragging = false;
@@ -396,7 +396,6 @@ namespace Fw.Views {
          * @param e
          */
         private OnLockButtonClick(e: JQueryEventObject): void {
-            e.stopPropagation();
 
             //if (e.eventPhase !== 2)
             //    return;
@@ -510,8 +509,6 @@ namespace Fw.Views {
          * @param e
          */
         private OnChildMouseDown(e: JQueryEventObject): void {
-            e.stopPropagation();
-
             //// 子Viewからのバブルアップイベント等は無視、自身のイベントのみ見る。
             //if (e.eventPhase !== 2)
             //    return;
@@ -519,8 +516,6 @@ namespace Fw.Views {
             //this.Log(`${this.ClassName}.OnChildMouseDown`);
             if (!this._isChildRelocation)
                 return;
-
-            e.preventDefault();
 
             const rect = this.Dom.getBoundingClientRect();
 
@@ -532,10 +527,10 @@ namespace Fw.Views {
                 //this.Log('OnChildMouseDown - view found: ' + (view as ButtonView).Label);
                 this._isChildDragging = true;
                 this._relocationTargetView = view;
-                this._dragStartMousePosition.X = ml.PageX;
-                this._dragStartMousePosition.Y = ml.PageY;
-                this._dragStartViewPosition.X = view.Position.Left;
-                this._dragStartViewPosition.Y = view.Position.Top;
+                this._sbvChMouseStartPosition.X = ml.PageX;
+                this._sbvChMouseStartPosition.Y = ml.PageY;
+                this._sbvChViewStartPosition.X = view.Position.Left;
+                this._sbvChViewStartPosition.Y = view.Position.Top;
                 this.SetDummyView(view);
                 view.SetTransAnimation(false);
             }
@@ -553,25 +548,41 @@ namespace Fw.Views {
             if (!this._isChildRelocation || !this._isChildDragging)
                 return;
 
-            e.preventDefault();
-
             //this.Log(`${this.ClassName}.OnChildMouseMove`);
 
             const view = this._relocationTargetView;
 
             const ml = MouseLocation.Create(e);
-            const addX = ml.PageX - this._dragStartMousePosition.X;
-            const addY = ml.PageY - this._dragStartMousePosition.Y;
+            const addX = ml.PageX - this._sbvChMouseStartPosition.X;
+            const addY = ml.PageY - this._sbvChMouseStartPosition.Y;
 
-            view.Position.Left = this._dragStartViewPosition.X + addX;
-            view.Position.Top = this._dragStartViewPosition.Y + addY;
+            view.Position.Left = this._sbvChViewStartPosition.X + addX;
+            view.Position.Top = this._sbvChViewStartPosition.Y + addY;
 
             const replaceView = this.GetNearestByView(view);
             if (replaceView !== null && replaceView !== this._dummyView) {
-                this.Swap(replaceView, this._dummyView);
+                this.MoveView(this._dummyView, replaceView);
             }
 
             this.Refresh();
+        }
+
+        private MoveView(movingView: IView, toView: IView): void {
+            const movingIndex = this._innerBox.Children.indexOf(movingView);
+            let toIndex = this._innerBox.Children.indexOf(toView);
+
+            if (movingIndex < 0)
+                throw new Error('Not contained movingView');
+
+            if (toIndex < 0)
+                throw new Error('Not contained toView');
+
+
+            // 差し込み対象を一旦配列から削除
+            this._innerBox.Children.splice(movingIndex, 1);
+
+            // 差し込み対象を目標位置に差し込む。※toIndexは配列に存在しなくても(=末尾でも)良い。
+            this._innerBox.Children.splice(toIndex, 0, movingView);
         }
 
         /**
@@ -587,8 +598,6 @@ namespace Fw.Views {
             if (!this._isChildRelocation) {
                 this._isChildDragging = false;
             } else {
-                e.preventDefault();
-
                 this._isChildDragging = false;
 
                 if (this._relocationTargetView) {
@@ -610,19 +619,7 @@ namespace Fw.Views {
             }
         }
 
-        private Swap(view1: IView, view2: IView): void {
-            const view1Index = this._innerBox.Children.indexOf(view1);
-            const view2Index = this._innerBox.Children.indexOf(view2);
 
-            if (view1Index < 0)
-                throw new Error('Not contained view1');
-
-            if (view2Index < 0)
-                throw new Error('Not contained view2');
-
-            this._innerBox.Children[view1Index] = view2;
-            this._innerBox.Children[view2Index] = view1;
-        }
 
         private GetNearestByView(view: IView): IView {
             let diff = Number.MAX_VALUE;

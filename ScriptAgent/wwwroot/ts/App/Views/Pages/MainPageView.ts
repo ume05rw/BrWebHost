@@ -6,6 +6,7 @@
 /// <reference path="../../../Fw/Util/Dump.ts" />
 /// <reference path="../Controls/HeaderBarView.ts" />
 /// <reference path="../../Items/Color.ts" />
+/// <reference path="../../Items/Lang/Lang.ts" />
 
 namespace App.Views.Pages {
     import Dump = Fw.Util.Dump;
@@ -14,6 +15,7 @@ namespace App.Views.Pages {
     import Property = Fw.Views.Property;
     import Controls = App.Views.Controls;
     import Color = App.Items.Color;
+    import Lang = App.Items.Lang.Lang;
 
     export class MainPageView extends Fw.Views.PageView {
 
@@ -34,9 +36,8 @@ namespace App.Views.Pages {
             background.Src = 'images/Pages/Main/background.jpg';
             this.Add(background);
 
-            this.HeaderBar.Text = 'BrWebHost Script Agent';
+            this.HeaderBar.Text = Lang.TitleScriptAgent;
             this.HeaderBar.LeftButton.Hide(0);
-            //this.HeaderBar.RightButton.Hide(0);
             this.Add(this.HeaderBar);
 
             this.ControlSetPanel = new Views.StuckerBoxView();
@@ -49,10 +50,10 @@ namespace App.Views.Pages {
             this.Add(this.ControlSetPanel);
 
             const iconRights = new Views.HtmlView('a');
-            iconRights.SetSize(200, 16);
+            iconRights.SetSize(235, 16);
             iconRights.SetAnchor(null, null, 5, 2);
             iconRights.Color = '#9d9e9e';
-            iconRights.InnerHtml = 'designed by Lucy G from Flaticon';
+            iconRights.InnerHtml = 'Icon designed by Lucy G from Flaticon';
             iconRights.Dom.style.fontSize = '12px';
             iconRights.Elem.attr('href', 'https://www.flaticon.com/packs/free-basic-ui-elements');
             iconRights.Elem.attr('target', '_blank');
