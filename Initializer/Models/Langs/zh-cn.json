@@ -9,9 +9,9 @@
 
   "SettingFailed": "设置失败...",
   "DevicePreparation": "Broadlink设备准备",
-  "PreparationStep1": "1.将USB电缆插入Broadlink设备，将其打开。",
-  "PreparationStep2": "2.长按复位按钮，直到蓝色LED快速闪烁。",
-  "PreparationStep3": "3.再次长按直到蓝色LED缓慢闪烁。",
+  "PreparationStep1": "       1.将USB电缆插入Broadlink设备，将其打开。",
+  "PreparationStep2": "       2.长按复位按钮，直到蓝色LED快速闪烁。",
+  "PreparationStep3": "       3.再次长按直到蓝色LED缓慢闪烁。",
   "SettingSucceeded": "设置成功！",
   "SetYourWifi": "设置您的Wifi信息",
   "Security": "安全",
@@ -19,8 +19,8 @@
   "Password": "密码",
   "ShowPassword": "显示密码",
 
-  "Prev": "<<回报",
-  "Next": "下一个>>",
+  "Prev": "<< 回报",
+  "Next": "下一个 >>",
   "Retry": "重试",
   "Exec": "跑",
   "Close": "关",

@@ -16,7 +16,11 @@ namespace Initializer.Views
         public PanelExec(): base()
         {
             this.InitializeComponent();
-            this.lblPanelTitle.Text = Lang.Instance.NowSetting;
+
+            if (LicenseManager.UsageMode != LicenseUsageMode.Designtime)
+            {
+                this.lblPanelTitle.Text = Lang.Instance.NowSetting;
+            }
         }
 
         public void SetProgress(int progress)

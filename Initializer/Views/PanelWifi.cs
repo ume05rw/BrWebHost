@@ -18,12 +18,24 @@ namespace Initializer.Views
         public PanelWifi() : base()
         {
             this.InitializeComponent();
-            this.lblPanelTitle.Text = Lang.Instance.SetYourWifi;
-            this.lblSecurity.Text = Lang.Instance.Security;
-            this.lblSsid.Text = Lang.Instance.Ssid;
-            this.lblPassword.Text = Lang.Instance.Password;
-            this.chkPassword.Text = Lang.Instance.ShowPassword;
-            this.Init();
+
+            if (LicenseManager.UsageMode != LicenseUsageMode.Designtime)
+            {
+                this.lblSecurity.Font = new System.Drawing.Font(Lang.Instance.FontName, 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+                this.cboSecurity.Font = new System.Drawing.Font(Lang.Instance.FontName, 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+                this.lblSsid.Font = new System.Drawing.Font(Lang.Instance.FontName, 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+                this.chkPassword.Font = new System.Drawing.Font(Lang.Instance.FontName, 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+                this.txtSsid.Font = new System.Drawing.Font(Lang.Instance.FontName, 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+                this.txtPassword.Font = new System.Drawing.Font(Lang.Instance.FontName, 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+                this.lblPassword.Font = new System.Drawing.Font(Lang.Instance.FontName, 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+
+                this.lblPanelTitle.Text = Lang.Instance.SetYourWifi;
+                this.lblSecurity.Text = Lang.Instance.Security;
+                this.lblSsid.Text = Lang.Instance.Ssid;
+                this.lblPassword.Text = Lang.Instance.Password;
+                this.chkPassword.Text = Lang.Instance.ShowPassword;
+                this.Init();
+            }
         }
 
         #region "Events"

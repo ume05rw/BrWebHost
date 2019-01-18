@@ -27,7 +27,17 @@ namespace Initializer
             Xb.App.Job.Init();
 
             this.InitializeComponent();
-            this.Height = 300;
+
+            if (LicenseManager.UsageMode != LicenseUsageMode.Designtime)
+            {
+                // WindowsFormデザイナ時には通らない。
+                this.Font = new System.Drawing.Font(Lang.Instance.FontName, 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+                this.pnlWifi.Font = new System.Drawing.Font(Lang.Instance.FontName, 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+                this.pnlPreparation.Font = new System.Drawing.Font(Lang.Instance.FontName, 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+                this.pnlExec.Font = new System.Drawing.Font(Lang.Instance.FontName, 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+                this.pnlSucceeded.Font = new System.Drawing.Font(Lang.Instance.FontName, 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+                this.pnlFailure.Font = new System.Drawing.Font(Lang.Instance.FontName, 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            }
 
             this.pnlWifi.Hide();
             this.pnlPreparation.Hide();
@@ -158,56 +168,72 @@ namespace Initializer
 
             await Task.Run(async () =>
             {
-                //Xb.Util.Out("Get All Nics.");
-                NetInterface.Init();
-                this.pnlExec.SetProgress(40);
-                await Task.Delay(500);
-
-                // PC上のWiFiインタフェースを取得する。
-                //Xb.Util.Out("Get current WiFi interface.");
-                this._wifiInterface = WifiInterface.GetInterface();
-
-                this.pnlExec.SetProgress(60);
-                await Task.Delay(500);
-
-                // PC上にWiFiインタフェースが無い場合
-                if (this._wifiInterface == null)
+                try
                 {
-                    // メッセージ表示して終了。
-                    //"WiFi-Interfaces NOT Found on your PC.\r\nAdd WiFi-Device, and Retry."
-                    this.pnlFailure.SetMessage(Lang.Instance.WifiInterfacesNotFound);
-                    this.SetPanel(this.pnlFailure);
-                    return;
+                    //Xb.Util.Out("Get All Nics.");
+                    NetInterface.Init();
+                    this.pnlExec.SetProgress(40);
+                    await Task.Delay(500);
+
+                    // PC上のWiFiインタフェースを取得する。
+                    //Xb.Util.Out("Get current WiFi interface.");
+                    try
+                    {
+                        this._wifiInterface = WifiInterface.GetInterface();
+                    }
+                    catch (Exception)
+                    {
+                        this._wifiInterface = null;
+                    }
+
+                    this.pnlExec.SetProgress(60);
+                    await Task.Delay(500);
+
+                    // PC上にWiFiインタフェースが無い場合
+                    if (this._wifiInterface == null)
+                    {
+                        // メッセージ表示して終了。
+                        //"WiFi-Interfaces NOT Found on your PC.\r\nAdd WiFi-Device, and Retry."
+                        this.pnlFailure.SetMessage(Lang.Instance.WifiInterfacesNotFound);
+                        this.SetPanel(this.pnlFailure);
+                        return;
+                    }
+
+                    // 以降、WiFiインタフェースが存在するとする。
+
+                    // 現在接続中のWiFi情報を取得する。
+                    //Xb.Util.Out("Get current WiFi profile.");
+                    this._currentProfile = this._wifiInterface.GetCurrentProfile();
+
+                    this.pnlExec.SetProgress(80);
+                    await Task.Delay(500);
+
+                    // 保存済SSIDが空で、現在接続中WiFi情報が取れていればセットする。
+                    if (this._currentProfile != null
+                        && !string.IsNullOrEmpty(this._currentProfile.Ssid)
+                        && !settings.Exists
+                    )
+                    {
+                        var newSettings = new Settings(
+                            this._currentProfile.SecurityType,
+                            this._currentProfile.Ssid,
+                            string.Empty
+                        );
+
+                        this.pnlWifi.SetSettings(newSettings);
+                    }
+
+                    this.pnlExec.SetProgress(100);
+                    await Task.Delay(500);
+
+                    this.SetPanel(this.pnlWifi);
+                }
+                catch (Exception ex)
+                {
+                    Xb.Util.Out(ex);
+                    throw;
                 }
 
-                // 以降、WiFiインタフェースが存在するとする。
-
-                // 現在接続中のWiFi情報を取得する。
-                //Xb.Util.Out("Get current WiFi profile.");
-                this._currentProfile = this._wifiInterface.GetCurrentProfile();
-
-                this.pnlExec.SetProgress(80);
-                await Task.Delay(500);
-
-                // 保存済SSIDが空で、現在接続中WiFi情報が取れていればセットする。
-                if (this._currentProfile != null
-                    && !string.IsNullOrEmpty(this._currentProfile.Ssid)
-                    && !settings.Exists
-                )
-                {
-                    var newSettings = new Settings(
-                        this._currentProfile.SecurityType,
-                        this._currentProfile.Ssid,
-                        string.Empty
-                    );
-
-                    this.pnlWifi.SetSettings(newSettings);
-                }
-
-                this.pnlExec.SetProgress(100);
-                await Task.Delay(500);
-
-                this.SetPanel(this.pnlWifi);
             });
 
             return true;

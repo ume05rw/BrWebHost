@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Initializer.Models.Langs;
 
 namespace Initializer.Views
 {
@@ -15,6 +16,13 @@ namespace Initializer.Views
         public PanelBase()
         {
             this.InitializeComponent();
+
+            if (LicenseManager.UsageMode != LicenseUsageMode.Designtime)
+            {
+                this.panel1.Font = new System.Drawing.Font(Lang.Instance.FontName, 14.25F);
+                this.lblPanelTitle.Font = new System.Drawing.Font(Lang.Instance.FontName, 13.8F);
+                this.Font = new System.Drawing.Font(Lang.Instance.FontName, 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            }
         }
 
         public void SetAlignRight(int right, Control[] controls)
@@ -30,10 +38,14 @@ namespace Initializer.Views
         {
             Xb.App.Job.RunUI(() =>
             {
-                this.Left = 12;
-                this.Top = 8;
-                this.Width = 615;
+                var hMargin = 12;
+                var vMargin = 8;
+
+                this.Left = hMargin;
+                this.Top = vMargin;
+                this.Width = 600;
                 this.Height = 236;
+
                 this.Show();
             });
         }

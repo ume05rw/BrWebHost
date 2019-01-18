@@ -39,7 +39,7 @@ namespace Initializer.Models.Langs
             Lang.SetLang(Lang.DefaultLanguageFile);
             Lang.SetLang(Lang.GetCurrentLanguageFileName());
 
-            Lang.SetLang(Lang.ChineseLanguageFile);
+            //Lang.SetLang(Lang.ChineseLanguageFile);
         }
 
         public static void SetLang(string fileName)
@@ -142,9 +142,12 @@ namespace Initializer.Models.Langs
         {
             var cultureName = System.Globalization.CultureInfo.CurrentCulture.Name.ToLower();
 
+            //MessageBox.Show($"System Lang is {cultureName}");
+
             if (cultureName.IndexOf("ja-") >= 0)
                 return Lang.JapaneseLanguageFile;
-            else if (cultureName.IndexOf("zh-ch") >= 0)
+            else if (cultureName.IndexOf("zh-cn") >= 0
+                     || cultureName.IndexOf("zh-sg") >= 0)
                 return Lang.ChineseLanguageFile;
             else if (cultureName.IndexOf("en-") >= 0)
                 return Lang.EnglishLanguageFile;

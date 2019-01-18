@@ -1,6 +1,4 @@
-﻿using Initializer.Models.Langs;
-
-namespace Initializer.Views
+﻿namespace Initializer.Views
 {
     partial class PanelExec
     {
@@ -46,19 +44,29 @@ namespace Initializer.Views
             // 
             // lblPanelTitle
             // 
+            this.lblPanelTitle.Margin = new System.Windows.Forms.Padding(9, 0, 9, 0);
+            this.lblPanelTitle.Size = new System.Drawing.Size(596, 32);
             this.lblPanelTitle.Text = "Now Setting...";
             // 
             // progressBar
             // 
-            this.progressBar.Location = new System.Drawing.Point(75, 171);
+            this.progressBar.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.progressBar.Location = new System.Drawing.Point(53, 182);
+            this.progressBar.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.progressBar.Name = "progressBar";
-            this.progressBar.Size = new System.Drawing.Size(450, 17);
+            this.progressBar.Size = new System.Drawing.Size(495, 21);
             this.progressBar.TabIndex = 13;
             // 
             // pctWait
             // 
+            this.pctWait.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.pctWait.Image = global::Initializer.Properties.Resources.indicator;
-            this.pctWait.Location = new System.Drawing.Point(250, 45);
+            this.pctWait.Location = new System.Drawing.Point(250, 57);
+            this.pctWait.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.pctWait.Name = "pctWait";
             this.pctWait.Size = new System.Drawing.Size(100, 100);
             this.pctWait.TabIndex = 12;
@@ -66,8 +74,9 @@ namespace Initializer.Views
             // 
             // PanelExec
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 19F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+            this.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.Name = "PanelExec";
             this.panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pctWait)).EndInit();

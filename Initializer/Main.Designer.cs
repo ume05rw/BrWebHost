@@ -1,6 +1,4 @@
-﻿using Initializer.Models.Langs;
-
-namespace Initializer
+﻿namespace Initializer
 {
     partial class Main
     {
@@ -34,22 +32,22 @@ namespace Initializer
             this.btnNext = new System.Windows.Forms.Button();
             this.btnPrev = new System.Windows.Forms.Button();
             this.btnExec = new System.Windows.Forms.Button();
-            this.pnlWifi = new Initializer.Views.PanelWifi();
-            this.pnlPreparation = new Initializer.Views.PanelPreparation();
-            this.pnlExec = new Initializer.Views.PanelExec();
-            this.pnlSucceeded = new Initializer.Views.PanelSucceeded();
-            this.pnlFailure = new Initializer.Views.PanelFailure();
             this.btnClose = new System.Windows.Forms.Button();
             this.btnRetry = new System.Windows.Forms.Button();
+            this.pnlFailure = new Initializer.Views.PanelFailure();
+            this.pnlSucceeded = new Initializer.Views.PanelSucceeded();
+            this.pnlExec = new Initializer.Views.PanelExec();
+            this.pnlPreparation = new Initializer.Views.PanelPreparation();
+            this.pnlWifi = new Initializer.Views.PanelWifi();
             this.SuspendLayout();
             // 
             // btnNext
             // 
-            this.btnNext.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.btnNext.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnNext.Location = new System.Drawing.Point(511, 253);
+            this.btnNext.Location = new System.Drawing.Point(499, 254);
             this.btnNext.Name = "btnNext";
-            this.btnNext.Size = new System.Drawing.Size(115, 34);
+            this.btnNext.Size = new System.Drawing.Size(111, 33);
             this.btnNext.TabIndex = 6;
             this.btnNext.Text = "Next >>";
             this.btnNext.UseVisualStyleBackColor = true;
@@ -57,11 +55,11 @@ namespace Initializer
             // 
             // btnPrev
             // 
-            this.btnPrev.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.btnPrev.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnPrev.Location = new System.Drawing.Point(12, 253);
+            this.btnPrev.Location = new System.Drawing.Point(12, 254);
             this.btnPrev.Name = "btnPrev";
-            this.btnPrev.Size = new System.Drawing.Size(115, 34);
+            this.btnPrev.Size = new System.Drawing.Size(111, 33);
             this.btnPrev.TabIndex = 15;
             this.btnPrev.Text = "<< Prev";
             this.btnPrev.UseVisualStyleBackColor = true;
@@ -69,73 +67,23 @@ namespace Initializer
             // 
             // btnExec
             // 
-            this.btnExec.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.btnExec.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnExec.Location = new System.Drawing.Point(295, 253);
+            this.btnExec.Location = new System.Drawing.Point(262, 254);
             this.btnExec.Name = "btnExec";
-            this.btnExec.Size = new System.Drawing.Size(115, 34);
+            this.btnExec.Size = new System.Drawing.Size(111, 33);
             this.btnExec.TabIndex = 17;
             this.btnExec.Text = "Exec";
             this.btnExec.UseVisualStyleBackColor = true;
             this.btnExec.Click += new System.EventHandler(this.btnExec_Click);
             // 
-            // pnlWifi
-            // 
-            this.pnlWifi.BackColor = System.Drawing.Color.Transparent;
-            this.pnlWifi.Font = new System.Drawing.Font(Lang.Instance.FontName, 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.pnlWifi.Location = new System.Drawing.Point(12, 321);
-            this.pnlWifi.Margin = new System.Windows.Forms.Padding(5);
-            this.pnlWifi.Name = "pnlWifi";
-            this.pnlWifi.Size = new System.Drawing.Size(118, 104);
-            this.pnlWifi.TabIndex = 18;
-            // 
-            // pnlPreparation
-            // 
-            this.pnlPreparation.BackColor = System.Drawing.Color.Transparent;
-            this.pnlPreparation.Font = new System.Drawing.Font(Lang.Instance.FontName, 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.pnlPreparation.Location = new System.Drawing.Point(131, 321);
-            this.pnlPreparation.Margin = new System.Windows.Forms.Padding(5);
-            this.pnlPreparation.Name = "pnlPreparation";
-            this.pnlPreparation.Size = new System.Drawing.Size(118, 104);
-            this.pnlPreparation.TabIndex = 19;
-            // 
-            // pnlExec
-            // 
-            this.pnlExec.BackColor = System.Drawing.Color.Transparent;
-            this.pnlExec.Font = new System.Drawing.Font(Lang.Instance.FontName, 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.pnlExec.Location = new System.Drawing.Point(250, 321);
-            this.pnlExec.Margin = new System.Windows.Forms.Padding(5);
-            this.pnlExec.Name = "pnlExec";
-            this.pnlExec.Size = new System.Drawing.Size(118, 104);
-            this.pnlExec.TabIndex = 20;
-            // 
-            // pnlSucceeded
-            // 
-            this.pnlSucceeded.BackColor = System.Drawing.Color.Transparent;
-            this.pnlSucceeded.Font = new System.Drawing.Font(Lang.Instance.FontName, 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.pnlSucceeded.Location = new System.Drawing.Point(369, 321);
-            this.pnlSucceeded.Margin = new System.Windows.Forms.Padding(5);
-            this.pnlSucceeded.Name = "pnlSucceeded";
-            this.pnlSucceeded.Size = new System.Drawing.Size(118, 104);
-            this.pnlSucceeded.TabIndex = 21;
-            // 
-            // pnlFailure
-            // 
-            this.pnlFailure.BackColor = System.Drawing.Color.Transparent;
-            this.pnlFailure.Font = new System.Drawing.Font(Lang.Instance.FontName, 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.pnlFailure.Location = new System.Drawing.Point(488, 321);
-            this.pnlFailure.Margin = new System.Windows.Forms.Padding(5);
-            this.pnlFailure.Name = "pnlFailure";
-            this.pnlFailure.Size = new System.Drawing.Size(118, 104);
-            this.pnlFailure.TabIndex = 22;
-            // 
             // btnClose
             // 
-            this.btnClose.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.btnClose.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnClose.Location = new System.Drawing.Point(402, 253);
+            this.btnClose.Location = new System.Drawing.Point(371, 254);
             this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(115, 34);
+            this.btnClose.Size = new System.Drawing.Size(111, 33);
             this.btnClose.TabIndex = 23;
             this.btnClose.Text = "Close";
             this.btnClose.UseVisualStyleBackColor = true;
@@ -143,41 +91,90 @@ namespace Initializer
             // 
             // btnRetry
             // 
-            this.btnRetry.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.btnRetry.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnRetry.Location = new System.Drawing.Point(122, 253);
+            this.btnRetry.Location = new System.Drawing.Point(151, 254);
             this.btnRetry.Name = "btnRetry";
-            this.btnRetry.Size = new System.Drawing.Size(115, 34);
+            this.btnRetry.Size = new System.Drawing.Size(111, 33);
             this.btnRetry.TabIndex = 24;
             this.btnRetry.Text = "Retry";
             this.btnRetry.UseVisualStyleBackColor = true;
             this.btnRetry.Click += new System.EventHandler(this.btnRetry_Click);
             // 
+            // pnlFailure
+            // 
+            this.pnlFailure.BackColor = System.Drawing.Color.Transparent;
+            this.pnlFailure.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.pnlFailure.Location = new System.Drawing.Point(488, 277);
+            this.pnlFailure.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
+            this.pnlFailure.Name = "pnlFailure";
+            this.pnlFailure.Size = new System.Drawing.Size(600, 180);
+            this.pnlFailure.TabIndex = 22;
+            // 
+            // pnlSucceeded
+            // 
+            this.pnlSucceeded.BackColor = System.Drawing.Color.Transparent;
+            this.pnlSucceeded.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.pnlSucceeded.Location = new System.Drawing.Point(369, 277);
+            this.pnlSucceeded.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
+            this.pnlSucceeded.Name = "pnlSucceeded";
+            this.pnlSucceeded.Size = new System.Drawing.Size(600, 180);
+            this.pnlSucceeded.TabIndex = 21;
+            // 
+            // pnlExec
+            // 
+            this.pnlExec.BackColor = System.Drawing.Color.Transparent;
+            this.pnlExec.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.pnlExec.Location = new System.Drawing.Point(250, 277);
+            this.pnlExec.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
+            this.pnlExec.Name = "pnlExec";
+            this.pnlExec.Size = new System.Drawing.Size(600, 180);
+            this.pnlExec.TabIndex = 20;
+            // 
+            // pnlPreparation
+            // 
+            this.pnlPreparation.BackColor = System.Drawing.Color.Transparent;
+            this.pnlPreparation.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.pnlPreparation.Location = new System.Drawing.Point(131, 277);
+            this.pnlPreparation.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
+            this.pnlPreparation.Name = "pnlPreparation";
+            this.pnlPreparation.Size = new System.Drawing.Size(600, 180);
+            this.pnlPreparation.TabIndex = 19;
+            // 
+            // pnlWifi
+            // 
+            this.pnlWifi.BackColor = System.Drawing.Color.Transparent;
+            this.pnlWifi.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.pnlWifi.Location = new System.Drawing.Point(12, 277);
+            this.pnlWifi.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
+            this.pnlWifi.Name = "pnlWifi";
+            this.pnlWifi.Size = new System.Drawing.Size(600, 180);
+            this.pnlWifi.TabIndex = 18;
+            // 
             // Main
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(638, 462);
+            this.ClientSize = new System.Drawing.Size(622, 299);
             this.ControlBox = false;
             this.Controls.Add(this.btnRetry);
             this.Controls.Add(this.btnClose);
+            this.Controls.Add(this.btnExec);
+            this.Controls.Add(this.btnPrev);
+            this.Controls.Add(this.btnNext);
             this.Controls.Add(this.pnlFailure);
             this.Controls.Add(this.pnlSucceeded);
             this.Controls.Add(this.pnlExec);
             this.Controls.Add(this.pnlPreparation);
             this.Controls.Add(this.pnlWifi);
-            this.Controls.Add(this.btnExec);
-            this.Controls.Add(this.btnPrev);
-            this.Controls.Add(this.btnNext);
-            this.Font = new System.Drawing.Font(Lang.Instance.FontName, 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.Font = new System.Drawing.Font("MS UI Gothic", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            this.Margin = new System.Windows.Forms.Padding(5);
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(640, 1400);
+            this.MaximumSize = new System.Drawing.Size(624, 1209);
             this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(640, 200);
+            this.MinimumSize = new System.Drawing.Size(624, 173);
             this.Name = "Main";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Main_FormClosing);

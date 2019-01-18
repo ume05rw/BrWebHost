@@ -16,7 +16,15 @@ namespace Initializer.Views
         public PanelSucceeded(): base()
         {
             this.InitializeComponent();
-            this.lblPanelTitle.Text = Lang.Instance.SettingSucceeded;
+
+            if (LicenseManager.UsageMode != LicenseUsageMode.Designtime)
+            {
+                this.txtMessage.Font = new System.Drawing.Font(Lang.Instance.FontName, 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+                this.linkLicense.Font = new System.Drawing.Font(Lang.Instance.FontName, 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+                this.linkFlatIcon.Font = new System.Drawing.Font(Lang.Instance.FontName, 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+
+                this.lblPanelTitle.Text = Lang.Instance.SettingSucceeded;
+            }
         }
 
         public void SetMessage(string message)
