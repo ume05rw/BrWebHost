@@ -20,6 +20,8 @@ Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SetupBrWebHost", "SetupBrWe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InstallerCustomAction", "InstallerCustomAction\InstallerCustomAction.csproj", "{93D10290-0296-43F0-826D-06F77D337DD8}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SetupScriptAgent", "SetupScriptAgent\SetupScriptAgent.vdproj", "{43CB6866-BA0F-48F7-B17F-5FEE9FE69EB1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -96,6 +98,12 @@ Global
 		{93D10290-0296-43F0-826D-06F77D337DD8}.Release|x64.Build.0 = Release|Any CPU
 		{93D10290-0296-43F0-826D-06F77D337DD8}.Release|x86.ActiveCfg = Release|Any CPU
 		{93D10290-0296-43F0-826D-06F77D337DD8}.Release|x86.Build.0 = Release|Any CPU
+		{43CB6866-BA0F-48F7-B17F-5FEE9FE69EB1}.Debug|Any CPU.ActiveCfg = Debug
+		{43CB6866-BA0F-48F7-B17F-5FEE9FE69EB1}.Debug|x64.ActiveCfg = Debug
+		{43CB6866-BA0F-48F7-B17F-5FEE9FE69EB1}.Debug|x86.ActiveCfg = Debug
+		{43CB6866-BA0F-48F7-B17F-5FEE9FE69EB1}.Release|Any CPU.ActiveCfg = Release
+		{43CB6866-BA0F-48F7-B17F-5FEE9FE69EB1}.Release|x64.ActiveCfg = Release
+		{43CB6866-BA0F-48F7-B17F-5FEE9FE69EB1}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
