@@ -36,13 +36,17 @@ namespace InstallerCustomAction
         private static string DesktopPath
             = Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory);
 
-        // デスクトップ上のショートカット
-        private static string DesktopLinkPath
-            = Path.Combine(Installer.DesktopPath, "BrWebHost.lnk");
+        private static string LinkBrWebHost = "Start BrWebHost.lnk";
 
-        // スタートメニュー上のショートカット
-        private static string ProramMenuLinkPath
-            = Path.Combine(Installer.ProgramMenuPath, "BrWebHost.lnk");
+        private static string LinkScriptAgent = "Start ScriptAgent.lnk";
+
+        //// デスクトップ上のショートカット
+        //private static string DesktopLinkPath
+        //    = Path.Combine(Installer.DesktopPath, "BrWebHost.lnk");
+
+        //// スタートメニュー上のショートカット
+        //private static string ProramMenuLinkPath
+        //    = Path.Combine(Installer.ProgramMenuPath, "BrWebHost.lnk");
 
         /// <summary>
         /// インストール処理
@@ -86,10 +90,10 @@ namespace InstallerCustomAction
                 // 展開先フォルダのアクセス権を、everyoneに与える。
                 var allowEveryone = new FileSystemAccessRule(
                     new NTAccount("everyone"),
-                        FileSystemRights.FullControl,
-                        InheritanceFlags.ObjectInherit | InheritanceFlags.ContainerInherit,
-                        PropagationFlags.None,
-                        AccessControlType.Allow
+                    FileSystemRights.FullControl,
+                    InheritanceFlags.ObjectInherit | InheritanceFlags.ContainerInherit,
+                    PropagationFlags.None,
+                    AccessControlType.Allow
                 );
                 var security = Directory.GetAccessControl(Installer.InstallPath);
                 security.AddAccessRule(allowEveryone);
@@ -167,6 +171,31 @@ namespace InstallerCustomAction
                 // ショートカット作成の参考
                 // https://dobon.net/vb/dotnet/file/createshortcut.html
 
+                var brwExePath = Path.Combine(Installer.InstallPath, "BrWebHost.exe");
+                var saExePath = Path.Combine(Installer.InstallPath, "ScriptAgent.exe");
+                var desktopLinkPath = "";
+                var programMenuLinkPath = "";
+                if (File.Exists(brwExePath))
+                {
+                    desktopLinkPath
+                        = Path.Combine(Installer.DesktopPath, Installer.LinkBrWebHost);
+                    programMenuLinkPath
+                        = Path.Combine(Installer.ProgramMenuPath, Installer.LinkBrWebHost);
+                }
+                else if (File.Exists(saExePath))
+                {
+                    desktopLinkPath
+                        = Path.Combine(Installer.DesktopPath, Installer.LinkScriptAgent);
+                    programMenuLinkPath
+                        = Path.Combine(Installer.ProgramMenuPath, Installer.LinkScriptAgent);
+                }
+                else
+                {
+                    var message = $"Exec-File Not Found.";
+                    this.ShowMessage(message);
+                    throw new InstallException(message);
+                }
+
                 var monitorExePath = Path.Combine(Installer.InstallPath, "Monitor.exe");
                 var monitorIconPath = Path.Combine(targetdir, "Tools\\Monitor\\normal.ico"); ;
 
@@ -175,9 +204,9 @@ namespace InstallerCustomAction
                 dynamic shell = Activator.CreateInstance(t);
 
                 //WshShortcutを作成
-                if (!File.Exists(Installer.DesktopLinkPath))
+                if (!File.Exists(desktopLinkPath))
                 {
-                    var desktopLink = shell.CreateShortcut(Installer.DesktopLinkPath);
+                    var desktopLink = shell.CreateShortcut(desktopLinkPath);
                     desktopLink.TargetPath = monitorExePath;
                     desktopLink.IconLocation = monitorIconPath;
                     desktopLink.WorkingDirectory = Installer.InstallPath;
@@ -186,9 +215,9 @@ namespace InstallerCustomAction
                     System.Runtime.InteropServices.Marshal.FinalReleaseComObject(desktopLink);
                 }
 
-                if (!File.Exists(Installer.ProramMenuLinkPath))
+                if (!File.Exists(programMenuLinkPath))
                 {
-                    var programMenuLink = shell.CreateShortcut(Installer.ProramMenuLinkPath);
+                    var programMenuLink = shell.CreateShortcut(programMenuLinkPath);
                     programMenuLink.TargetPath = monitorExePath;
                     programMenuLink.IconLocation = monitorIconPath;
                     programMenuLink.WorkingDirectory = Installer.InstallPath;
@@ -254,14 +283,36 @@ namespace InstallerCustomAction
             // ショートカットを削除
             try
             {
-                File.Delete(Installer.DesktopLinkPath);
+                var path = Path.Combine(Installer.DesktopPath, Installer.LinkBrWebHost);
+                if (File.Exists(path))
+                    File.Delete(path);
             }
             catch (Exception)
             {
             }
             try
             {
-                File.Delete(Installer.ProramMenuLinkPath);
+                var path = Path.Combine(Installer.DesktopPath, Installer.LinkScriptAgent);
+                if (File.Exists(path))
+                    File.Delete(path);
+            }
+            catch (Exception)
+            {
+            }
+            try
+            {
+                var path = Path.Combine(Installer.ProgramMenuPath, Installer.LinkBrWebHost);
+                if (File.Exists(path))
+                    File.Delete(path);
+            }
+            catch (Exception)
+            {
+            }
+            try
+            {
+                var path = Path.Combine(Installer.ProgramMenuPath, Installer.LinkScriptAgent);
+                if (File.Exists(path))
+                    File.Delete(path);
             }
             catch (Exception)
             {
