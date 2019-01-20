@@ -65,6 +65,9 @@
     <Compile Include="Installer.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Operations\Install.cs" />
+    <Compile Include="Operations\OperationBase.cs" />
+    <Compile Include="Operations\UnInstall.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
