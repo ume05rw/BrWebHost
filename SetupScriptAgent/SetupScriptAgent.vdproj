@@ -2751,7 +2751,7 @@
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:..\\binaries\\InstallerCustomAction\\System.IO.FileSystem.dll"
+            "SourcePath" = "8:..\\_binaries\\InstallerCustomAction\\System.IO.FileSystem.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_192BF6A9062640C49978763EF4FED476"
@@ -4523,7 +4523,7 @@
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:..\\binaries\\InstallerCustomAction\\System.IO.Compression.dll"
+            "SourcePath" = "8:..\\_binaries\\InstallerCustomAction\\System.IO.Compression.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_192BF6A9062640C49978763EF4FED476"
@@ -4678,7 +4678,7 @@
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:..\\binaries\\InstallerCustomAction\\System.IO.FileSystem.Primitives.dll"
+            "SourcePath" = "8:..\\_binaries\\InstallerCustomAction\\System.IO.FileSystem.Primitives.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_192BF6A9062640C49978763EF4FED476"
@@ -5079,7 +5079,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5B49E1CA07EA4ACE8A03EBDE25B85BCF"
             {
-            "SourcePath" = "8:..\\binaries\\InstallerCustomAction\\InstallerCustomAction.dll.config"
+            "SourcePath" = "8:..\\_binaries\\InstallerCustomAction\\InstallerCustomAction.dll.config"
             "TargetName" = "8:InstallerCustomAction.dll.config"
             "Tag" = "8:"
             "Folder" = "8:_192BF6A9062640C49978763EF4FED476"
@@ -5296,7 +5296,7 @@
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:..\\binaries\\InstallerCustomAction\\InstallerCustomAction.dll"
+            "SourcePath" = "8:..\\_binaries\\InstallerCustomAction\\InstallerCustomAction.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_192BF6A9062640C49978763EF4FED476"
@@ -5471,7 +5471,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_735EA9DC38964BA1AA7A0B7ED76ACC59"
             {
-            "SourcePath" = "8:..\\binaries\\appIcon.jpg"
+            "SourcePath" = "8:..\\_binaries\\appIcon.jpg"
             "TargetName" = "8:appIcon.jpg"
             "Tag" = "8:"
             "Folder" = "8:_722028623F58470ABDE23A3E654A305C"
@@ -5584,7 +5584,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7A22432413FA4957AA316752BE8695BA"
             {
-            "SourcePath" = "8:..\\binaries\\normal.ico"
+            "SourcePath" = "8:..\\_binaries\\normal.ico"
             "TargetName" = "8:normal.ico"
             "Tag" = "8:"
             "Folder" = "8:_722028623F58470ABDE23A3E654A305C"
@@ -6182,7 +6182,7 @@
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:..\\binaries\\InstallerCustomAction\\System.IO.Compression.ZipFile.dll"
+            "SourcePath" = "8:..\\_binaries\\InstallerCustomAction\\System.IO.Compression.ZipFile.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_192BF6A9062640C49978763EF4FED476"
@@ -7059,7 +7059,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CB4783436B8447628C8229178A348180"
             {
-            "SourcePath" = "8:..\\binaries\\ScriptAgent\\current\\win-x64.zip"
+            "SourcePath" = "8:..\\_binaries\\ScriptAgent\\current\\win-x64.zip"
             "TargetName" = "8:win-x64.zip"
             "Tag" = "8:"
             "Folder" = "8:_722028623F58470ABDE23A3E654A305C"
