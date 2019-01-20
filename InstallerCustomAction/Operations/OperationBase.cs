@@ -71,6 +71,22 @@ namespace InstallerCustomAction.Operations
             throw new InstallException(message);
         }
 
+        /// <summary>
+        /// 警告表示
+        /// </summary>
+        /// <param name="message"></param>
+        public static void OperationAlert(string message)
+        {
+            MessageBox.Show(
+                message,
+                "BrWebHost Installer",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning,
+                MessageBoxDefaultButton.Button1,
+                MessageBoxOptions.DefaultDesktopOnly
+            );
+        }
+
         protected string ProgramFilesPath { get; private set; } = "";
 
         protected void SetProgramFilesPath(string programFilesPath)
@@ -85,6 +101,15 @@ namespace InstallerCustomAction.Operations
         protected void Fail(string message)
         {
             OperationBase.OperationFailure(message);
+        }
+
+        /// <summary>
+        /// 警告表示
+        /// </summary>
+        /// <param name="message"></param>
+        protected void Alert(string message)
+        {
+            OperationBase.OperationAlert(message);
         }
 
         /// <summary>

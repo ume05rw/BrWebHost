@@ -84,7 +84,9 @@ namespace Monitor
                     throw new ArgumentException($"Unexpected target: {target}");
             }
 
-            this.SetFirewall();
+            // 管理者権限が必要なため、セットアップ時に行う。
+            //this.SetFirewall();
+
             this.InitTasktray();
             this.OnStart(this, new EventArgs());
             this.StartMonitor();
@@ -168,8 +170,9 @@ namespace Monitor
             menu.Items.Add(this._menuItemStop);
 
             var menuItem2 = new ToolStripMenuItem();
-            menuItem2.Text = "&Exit Monitor";
+            menuItem2.Text = "&Exit";
             menuItem2.Click += (sender, e) => {
+                this.OnStop(this, new EventArgs());
                 Application.Exit();
             };
             menu.Items.Add(menuItem2);
@@ -392,6 +395,12 @@ namespace Monitor
                 : null;
         }
 
+        /// <summary>
+        /// ファイアウォール設定
+        /// </summary>
+        /// <remarks>
+        /// ※要管理者権限、現状では機能しない。
+        /// </remarks>
         private void SetFirewall()
         {
             try
