@@ -6,7 +6,7 @@ Web IoT Controller for Broadlink Devices.
 ## Description
 
 This is Web Remote-Controller for Broadlink Devices on your LAN.  
-It Learning any IR Remote Controls for Rm, Switch Operating for SP3, and Displaying Sensor values for A1.
+It Learning any IR Remote Controls for Rm, Switch Operating for SP3, and Displaying Sensor values for A1.  
 Others include Wake on LAN, Script Executer, Remote-Script Runner.    
 Touch operation like a smartphone-app has been realized.  
 
@@ -22,8 +22,13 @@ Touch operation like a smartphone-app has been realized.
 3. Run 'setup.exe', to Install your system.
 4. Run 'Start BrWebHost' on your Desktop Shoptcut and little wait, it wake up Browser.
 
+Broadlink-Device Initializer is a Initial Setup Tool for Broadlink-Devices.  
+It find your new Broadlink-Device on your LAN, and add Wi-Fi settings.  
+This is only for Windows.  
+  
 [ScriptAgent](https://github.com/ume05rw/BrWebHost/releases/download/release1.0.1/SetupScriptAgent.zip) is tiny implementation that limits to Script Execution Only.  
-It makes BrWebHost Remote-Scripting more convenient.
+It makes BrWebHost Remote-Scripting more convenient.  
+  
 
 ## Usage for Linux
 1. [Download Zip-Arvhive for your platform.](https://github.com/ume05rw/BrWebHost/releases)  
