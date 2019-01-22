@@ -10,7 +10,7 @@ It Learning any IR Remote Controls for Rm, Switch Operating for SP3, and Display
 Touch operation like a smartphone-app has been realized.  
 
 ## Supported Platform
-* Windows7, Windows10 (only x64 platform)  
+* Windows7, Windows8.1, Windows10 (only x64 platform)  
 * Any Linux on x64
 * RaspberryPi (Raspbian)
   
