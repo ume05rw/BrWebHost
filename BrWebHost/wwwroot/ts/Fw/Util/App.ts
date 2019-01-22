@@ -22,6 +22,7 @@ namespace Fw.Util {
             return id;
         }
 
+        // 単純な待機
         public static async Wait(msec: number): Promise<boolean> {
             return new Promise<boolean>((resolve: (value: boolean) => void) => {
                 setTimeout(() => {

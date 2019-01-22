@@ -50,20 +50,12 @@ namespace App.Views.Popup {
             // Callback方式で使えるけど、やめとけ、というやつ。
             throw new Error('OpenAsyncを使いたまへ！');
 
-            if (typeof params === 'object') {
-                this._callbackOk = _.isFunction(params.CallbackOk)
-                    ? params.CallbackOk
-                    : null;
-
-                this._callbackCancel = _.isFunction(params.CallbackCancel)
-                    ? params.CallbackCancel
-                    : null;
-            }
-
-            super.Open(params)
         }
 
         public async OpenAsync(params?: any): Promise<boolean> {
+
+            //return super.OpenAsync(params);
+
             return new Promise<boolean>((resolve: (value: boolean) => void) => {
                 this._callbackOk = () => {
                     resolve(true);

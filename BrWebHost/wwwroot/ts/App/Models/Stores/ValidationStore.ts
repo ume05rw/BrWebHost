@@ -118,11 +118,11 @@ namespace App.Models.Stores {
                 result += '<br/>';
 
             } else if (hasError) {
-                result = 'Errors<br/><br/>';
+                result = Lang.Errors + '<br/><br/>';
                 result += errs.join('');
                 result += '<br/>';
             } else if (hasWarning) {
-                result = 'Warnings<br/><br/>';
+                result = Lang.Warnings + '<br/><br/>';
                 result += warns.join('');
                 result += '<br/>';
             } else {

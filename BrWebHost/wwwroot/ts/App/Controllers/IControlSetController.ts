@@ -14,5 +14,7 @@ namespace App.Controllers {
         ResetToggleAssign(control: Entities.Control, targetState: boolean): void;
         RemoveControl(control: Entities.Control): void;
         RemoveControlSet(): Promise<boolean>;
+        ShowHeader(): void;
+        ShowProperty(control: Entities.Control): Promise<boolean>;
     }
 }

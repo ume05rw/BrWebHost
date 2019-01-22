@@ -9,7 +9,7 @@ namespace App.Items.Lang {
         RemoteControl: 'リモコン',
         Name: '名前',
         Color: 'カラー',
-        Controller: 'コントローラ',
+        Controller: 'Rmコントローラ',
         Delete: '※削除※',
         Icon: 'アイコン',
         Code: 'コード',

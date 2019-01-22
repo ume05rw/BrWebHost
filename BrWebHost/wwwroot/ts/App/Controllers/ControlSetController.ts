@@ -299,24 +299,8 @@ namespace App.Controllers {
                     if (this._controlSet.OperationType === OperationType.BroadlinkDevice)
                         return;
 
-                    const ctr = this.Manager.Get('ControlProperty') as ControlPropertyController;
                     const button2 = e.Sender as Controls.ControlButtonView;
-                    ctr.SetEntity(button2.Control, this._controlSet);
-                    ctr.ShowModal();
-
-                    // クリック時にコードが空のものは、自動で学習モードにする。
-                    const id = this._controlSet.BrDeviceId;
-                    if ((id)
-                        && (this._controlSet.OperationType === OperationType.RemoteControl)
-                        && (!button2.Control.Code
-                            || button2.Control.Code === '')
-                    ) {
-                        const code = await this.GetLearnedCode();
-                        if (code) {
-                            button2.Control.Code = code;
-                            ctr.SetEntity(button2.Control, this._controlSet);
-                        }
-                    }
+                    await this.ShowProperty(button2.Control);
 
                     break;
                 case ModalOperationType.Select:
@@ -329,6 +313,42 @@ namespace App.Controllers {
                     alert('ここにはこないはず。');
                     throw new Error('なんでー？');
             }
+        }
+
+        public async ShowProperty(control: Entities.Control): Promise<boolean> {
+
+            let button: Controls.ControlButtonView = null;
+            _.each(this._page.ButtonPanel.Children, (view: Fw.Views.IView) => {
+                if (
+                    view instanceof Controls.ControlButtonView
+                    && view.Control === control
+                ) {
+                    button = view;
+                }
+            });
+
+            if (!button)
+                throw new Error("ControlButtonView Not Found.");
+
+            const ctr = this.Manager.Get('ControlProperty') as ControlPropertyController;
+            ctr.SetEntity(button.Control, this._controlSet);
+            ctr.ShowModal();
+
+            // クリック時にコードが空のものは、自動で学習モードにする。
+            const id = this._controlSet.BrDeviceId;
+            if ((id)
+                && (this._controlSet.OperationType === OperationType.RemoteControl)
+                && (!button.Control.Code
+                || button.Control.Code === '')
+            ) {
+                const code = await this.GetLearnedCode();
+                if (code) {
+                    button.Control.Code = code;
+                    ctr.SetEntity(button.Control, this._controlSet);
+                }
+            }
+
+            return true;
         }
 
         protected ApplyFromEntity(): void {
@@ -454,8 +474,10 @@ namespace App.Controllers {
             if (e.eventPhase !== 2)
                 return;
 
-            //if (!this.IsOnEditMode)
-            //    return;
+            this.ShowHeader();
+        }
+
+        public ShowHeader(): void {
             if (this._operationType !== ModalOperationType.Edit)
                 return;
 
@@ -519,9 +541,18 @@ namespace App.Controllers {
                 const guide = (this._operationType === ModalOperationType.Edit)
                     ? Lang.ClickHeader
                     : Lang.GoEdit;
-                Popup.Alert.Open({
+
+                await Popup.Alert.OpenAsync({
                     Message: Lang.SelectYourRmDevicePart + guide,
                 });
+
+                // 実行モードのとき、編集画面に移行してヘッダを表示する。
+                if (this._operationType === ModalOperationType.Exec) {
+                    await Fw.Util.App.Wait(400);
+                    const ctr = await this.OpenOnEdit();
+                    await Fw.Util.App.Wait(400);
+                    ctr.ShowHeader();
+                }
                 return false;
             }
 
@@ -555,9 +586,17 @@ namespace App.Controllers {
                         break;
                 }
 
-                Popup.Alert.Open({
+                await Popup.Alert.OpenAsync({
                     Message: message,
                 });
+
+                // 実行モードのとき、編集画面に移行してボタンのプロパティを表示する。
+                if (this._operationType === ModalOperationType.Exec) {
+                    await Fw.Util.App.Wait(400);
+                    const ctr = await this.OpenOnEdit();
+                    await Fw.Util.App.Wait(400);
+                    ctr.ShowProperty(control);
+                }
 
                 return false;
             }
@@ -620,6 +659,26 @@ namespace App.Controllers {
             }
 
             return result;
+        }
+
+        private async OpenOnEdit(): Promise<IControlSetController> {
+
+            if (this._operationType === ModalOperationType.Edit)
+                throw new Error("Already Edit-Mode.");
+
+            const controlSet = this._controlSet;
+            const ctr = this.Manager.Get('Main') as MainController;
+            ctr.Show();
+            this._controlSet = null;
+
+            await Fw.Util.App.Wait(400);
+
+            const ctr2 = App.Controllers.CSControllerFactory.Get(controlSet);
+            ctr2.SetEntity(controlSet);
+            ctr2.SetEditMode();
+            ctr2.Show();
+
+            return ctr2;
         }
 
         /**

@@ -11,7 +11,7 @@ namespace App.Items.Lang {
         RemoteControl: 'Remote Control',
         Name: 'Name',
         Color: 'Color',
-        Controller: 'Controller',
+        Controller: 'Rm-Controller',
         Delete: '*Delete*',
         Icon: 'Icon',
         Code: 'Code',

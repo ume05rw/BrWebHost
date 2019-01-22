@@ -9,7 +9,7 @@ namespace App.Items.Lang {
         RemoteControl: '遥控器',
         Name: '名',
         Color: '颜色',
-        Controller: '调节器',
+        Controller: 'Rm调节器',
         Delete: '※删除※',
         Icon: '图标',
         Code: '代码',

@@ -24,6 +24,8 @@ namespace App.Views.Popup {
             return this._isOpen;
         }
 
+        private _callback: Function;
+
         /**
          * @description コンストラクタ
          * @see ポップアップは重複しないため、Singleton実装を強制する。
@@ -85,6 +87,15 @@ namespace App.Views.Popup {
                 showCloseBtn: this.ShowCloseBtn,
                 closeOnBgClick: this.CloseOnBgClick,
                 enableEscapeKey: this.EnableEscapeKey,
+                callbacks: {
+                    close: function () {
+                        if (_.isFunction(this._callback))
+                            this._callback();
+
+                        this._isOpen = false;
+
+                    }.bind(this)
+                },
             };
 
             if (params)
@@ -94,7 +105,20 @@ namespace App.Views.Popup {
             this._isOpen = true;
         }
 
+        public async OpenAsync(params?: any): Promise<boolean> {
+            return new Promise<boolean>((resolve: (value: boolean) => void) => {
+                this._callback = () => {
+                    resolve(true);
+                };
+
+                this.Open(params);
+            });
+        }
+
         public Close(): void {
+            if (_.isFunction(this._callback))
+                this._callback();
+
             $.magnificPopup.close();
             this._isOpen = false;
         }

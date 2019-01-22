@@ -636,6 +636,7 @@ var Fw;
                 App._ids.push(id);
                 return id;
             };
+            // 単純な待機
             App.Wait = function (msec) {
                 return __awaiter(this, void 0, void 0, function () {
                     return __generator(this, function (_a) {
@@ -1084,7 +1085,7 @@ var App;
                 RemoteControl: 'リモコン',
                 Name: '名前',
                 Color: 'カラー',
-                Controller: 'コントローラ',
+                Controller: 'Rmコントローラ',
                 Delete: '※削除※',
                 Icon: 'アイコン',
                 Code: 'コード',
@@ -1199,7 +1200,7 @@ var App;
                 RemoteControl: 'Remote Control',
                 Name: 'Name',
                 Color: 'Color',
-                Controller: 'Controller',
+                Controller: 'Rm-Controller',
                 Delete: '*Delete*',
                 Icon: 'Icon',
                 Code: 'Code',
@@ -1312,7 +1313,7 @@ var App;
                 RemoteControl: '遥控器',
                 Name: '名',
                 Color: '颜色',
-                Controller: '调节器',
+                Controller: 'Rm调节器',
                 Delete: '※删除※',
                 Icon: '图标',
                 Code: '代码',
@@ -1433,7 +1434,7 @@ var App;
                 RemoteControl: 'Remote Control',
                 Name: 'Name',
                 Color: 'Color',
-                Controller: 'Controller',
+                Controller: 'Rm-Controller',
                 Delete: '*Delete*',
                 Icon: 'Icon',
                 Code: 'Code',
@@ -4728,13 +4729,35 @@ var App;
                         showCloseBtn: this.ShowCloseBtn,
                         closeOnBgClick: this.CloseOnBgClick,
                         enableEscapeKey: this.EnableEscapeKey,
+                        callbacks: {
+                            close: function () {
+                                if (_.isFunction(this._callback))
+                                    this._callback();
+                                this._isOpen = false;
+                            }.bind(this)
+                        },
                     };
                     if (params)
                         _.extend(_params, params);
                     $.magnificPopup.open(_params);
                     this._isOpen = true;
                 };
+                PopupBase.prototype.OpenAsync = function (params) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var _this = this;
+                        return __generator(this, function (_a) {
+                            return [2 /*return*/, new Promise(function (resolve) {
+                                    _this._callback = function () {
+                                        resolve(true);
+                                    };
+                                    _this.Open(params);
+                                })];
+                        });
+                    });
+                };
                 PopupBase.prototype.Close = function () {
+                    if (_.isFunction(this._callback))
+                        this._callback();
                     $.magnificPopup.close();
                     this._isOpen = false;
                 };
@@ -5682,7 +5705,7 @@ var App;
             };
             ControlSetController.prototype.OnButtonClicked = function (e) {
                 return __awaiter(this, void 0, void 0, function () {
-                    var _a, button1, ctr, button2, id, code, button3;
+                    var _a, button1, button2, button3;
                     return __generator(this, function (_b) {
                         switch (_b.label) {
                             case 0:
@@ -5690,44 +5713,67 @@ var App;
                                 switch (_a) {
                                     case 1 /* Exec */: return [3 /*break*/, 1];
                                     case 2 /* Edit */: return [3 /*break*/, 2];
-                                    case 3 /* Select */: return [3 /*break*/, 5];
+                                    case 3 /* Select */: return [3 /*break*/, 4];
                                 }
-                                return [3 /*break*/, 6];
+                                return [3 /*break*/, 5];
                             case 1:
                                 this.Log('ControlButtonViewEvents.ExecOrdered');
                                 button1 = e.Sender;
                                 this.ExecCode(button1.Control);
-                                return [3 /*break*/, 7];
+                                return [3 /*break*/, 6];
                             case 2:
                                 // Broadlinkデバイスはボタン編集禁止
                                 if (this._controlSet.OperationType === 2 /* BroadlinkDevice */)
                                     return [2 /*return*/];
-                                ctr = this.Manager.Get('ControlProperty');
                                 button2 = e.Sender;
-                                ctr.SetEntity(button2.Control, this._controlSet);
+                                return [4 /*yield*/, this.ShowProperty(button2.Control)];
+                            case 3:
+                                _b.sent();
+                                return [3 /*break*/, 6];
+                            case 4:
+                                button3 = e.Sender;
+                                this.Commit(button3.Control);
+                                return [3 /*break*/, 6];
+                            case 5:
+                                alert('ここにはこないはず。');
+                                throw new Error('なんでー？');
+                            case 6: return [2 /*return*/];
+                        }
+                    });
+                });
+            };
+            ControlSetController.prototype.ShowProperty = function (control) {
+                return __awaiter(this, void 0, void 0, function () {
+                    var button, ctr, id, code;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                button = null;
+                                _.each(this._page.ButtonPanel.Children, function (view) {
+                                    if (view instanceof Controls.ControlButtonView
+                                        && view.Control === control) {
+                                        button = view;
+                                    }
+                                });
+                                if (!button)
+                                    throw new Error("ControlButtonView Not Found.");
+                                ctr = this.Manager.Get('ControlProperty');
+                                ctr.SetEntity(button.Control, this._controlSet);
                                 ctr.ShowModal();
                                 id = this._controlSet.BrDeviceId;
                                 if (!((id)
                                     && (this._controlSet.OperationType === 1 /* RemoteControl */)
-                                    && (!button2.Control.Code
-                                        || button2.Control.Code === ''))) return [3 /*break*/, 4];
+                                    && (!button.Control.Code
+                                        || button.Control.Code === ''))) return [3 /*break*/, 2];
                                 return [4 /*yield*/, this.GetLearnedCode()];
-                            case 3:
-                                code = _b.sent();
+                            case 1:
+                                code = _a.sent();
                                 if (code) {
-                                    button2.Control.Code = code;
-                                    ctr.SetEntity(button2.Control, this._controlSet);
+                                    button.Control.Code = code;
+                                    ctr.SetEntity(button.Control, this._controlSet);
                                 }
-                                _b.label = 4;
-                            case 4: return [3 /*break*/, 7];
-                            case 5:
-                                button3 = e.Sender;
-                                this.Commit(button3.Control);
-                                return [3 /*break*/, 7];
-                            case 6:
-                                alert('ここにはこないはず。');
-                                throw new Error('なんでー？');
-                            case 7: return [2 /*return*/];
+                                _a.label = 2;
+                            case 2: return [2 /*return*/, true];
                         }
                     });
                 });
@@ -5839,8 +5885,9 @@ var App;
             ControlSetController.prototype.OnOrderedHeader = function (e) {
                 if (e.eventPhase !== 2)
                     return;
-                //if (!this.IsOnEditMode)
-                //    return;
+                this.ShowHeader();
+            };
+            ControlSetController.prototype.ShowHeader = function () {
                 if (this._operationType !== 2 /* Edit */)
                     return;
                 if (!this._controlSet)
@@ -5892,59 +5939,87 @@ var App;
              */
             ControlSetController.prototype.ExecCode = function (control) {
                 return __awaiter(this, void 0, void 0, function () {
-                    var id, guide, message, guide, newCs, newCtl, ctr1, ctr2, result;
+                    var id, guide, ctr, message, guide, ctr, newCs, newCtl, ctr1, ctr2, result;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
                                 this.Log('ExecCode');
                                 id = this._controlSet.BrDeviceId;
-                                if ((this._controlSet.OperationType === 1 /* RemoteControl */
+                                if (!((this._controlSet.OperationType === 1 /* RemoteControl */
                                     || this._controlSet.OperationType === 2 /* BroadlinkDevice */)
-                                    && !this._controlSet.BrDeviceId) {
-                                    guide = (this._operationType === 2 /* Edit */)
-                                        ? Lang.ClickHeader
-                                        : Lang.GoEdit;
-                                    Popup.Alert.Open({
+                                    && !this._controlSet.BrDeviceId)) return [3 /*break*/, 6];
+                                guide = (this._operationType === 2 /* Edit */)
+                                    ? Lang.ClickHeader
+                                    : Lang.GoEdit;
+                                return [4 /*yield*/, Popup.Alert.OpenAsync({
                                         Message: Lang.SelectYourRmDevicePart + guide,
-                                    });
-                                    return [2 /*return*/, false];
-                                }
-                                if (!control.Code || control.Code === '') {
-                                    message = '';
-                                    switch (this._controlSet.OperationType) {
-                                        case 1 /* RemoteControl */:
-                                            guide = (this._operationType === 2 /* Edit */)
-                                                ? Lang.ClickLearnButton
-                                                : Lang.GoEdit;
-                                            message = Lang.LearnYourRemoteControlButtonPart + guide;
-                                            break;
-                                        case 2 /* BroadlinkDevice */:
-                                            alert('ここにはこないはずやで！！');
-                                            message = Lang.UnexpectedOperation;
-                                            break;
-                                        case 3 /* WakeOnLan */:
-                                            message = Lang.SetMacAddressGoEdit;
-                                            break;
-                                        case 4 /* Script */:
-                                            message = Lang.WriteScriptGoEdit;
-                                            break;
-                                        case 5 /* RemoteHostScript */:
-                                            message = Lang.SelectRemoteScriptGoEdit;
-                                            break;
-                                        case 99 /* Scene */:
-                                        default:
-                                            alert('ここにはこないはずやで！！');
-                                            message = Lang.UnexpectedOperation;
-                                            break;
-                                    }
-                                    Popup.Alert.Open({
-                                        Message: message,
-                                    });
-                                    return [2 /*return*/, false];
-                                }
-                                if (!(this._operationType === 2 /* Edit */)) return [3 /*break*/, 2];
-                                return [4 /*yield*/, Stores.ControlSets.Write(this._controlSet)];
+                                    })];
                             case 1:
+                                _a.sent();
+                                if (!(this._operationType === 1 /* Exec */)) return [3 /*break*/, 5];
+                                return [4 /*yield*/, Fw.Util.App.Wait(400)];
+                            case 2:
+                                _a.sent();
+                                return [4 /*yield*/, this.OpenOnEdit()];
+                            case 3:
+                                ctr = _a.sent();
+                                return [4 /*yield*/, Fw.Util.App.Wait(400)];
+                            case 4:
+                                _a.sent();
+                                ctr.ShowHeader();
+                                _a.label = 5;
+                            case 5: return [2 /*return*/, false];
+                            case 6:
+                                if (!(!control.Code || control.Code === '')) return [3 /*break*/, 12];
+                                message = '';
+                                switch (this._controlSet.OperationType) {
+                                    case 1 /* RemoteControl */:
+                                        guide = (this._operationType === 2 /* Edit */)
+                                            ? Lang.ClickLearnButton
+                                            : Lang.GoEdit;
+                                        message = Lang.LearnYourRemoteControlButtonPart + guide;
+                                        break;
+                                    case 2 /* BroadlinkDevice */:
+                                        alert('ここにはこないはずやで！！');
+                                        message = Lang.UnexpectedOperation;
+                                        break;
+                                    case 3 /* WakeOnLan */:
+                                        message = Lang.SetMacAddressGoEdit;
+                                        break;
+                                    case 4 /* Script */:
+                                        message = Lang.WriteScriptGoEdit;
+                                        break;
+                                    case 5 /* RemoteHostScript */:
+                                        message = Lang.SelectRemoteScriptGoEdit;
+                                        break;
+                                    case 99 /* Scene */:
+                                    default:
+                                        alert('ここにはこないはずやで！！');
+                                        message = Lang.UnexpectedOperation;
+                                        break;
+                                }
+                                return [4 /*yield*/, Popup.Alert.OpenAsync({
+                                        Message: message,
+                                    })];
+                            case 7:
+                                _a.sent();
+                                if (!(this._operationType === 1 /* Exec */)) return [3 /*break*/, 11];
+                                return [4 /*yield*/, Fw.Util.App.Wait(400)];
+                            case 8:
+                                _a.sent();
+                                return [4 /*yield*/, this.OpenOnEdit()];
+                            case 9:
+                                ctr = _a.sent();
+                                return [4 /*yield*/, Fw.Util.App.Wait(400)];
+                            case 10:
+                                _a.sent();
+                                ctr.ShowProperty(control);
+                                _a.label = 11;
+                            case 11: return [2 /*return*/, false];
+                            case 12:
+                                if (!(this._operationType === 2 /* Edit */)) return [3 /*break*/, 14];
+                                return [4 /*yield*/, Stores.ControlSets.Write(this._controlSet)];
+                            case 13:
                                 newCs = _a.sent();
                                 if (newCs !== null) {
                                     this._controlSet = newCs;
@@ -5975,9 +6050,9 @@ var App;
                                     });
                                     return [2 /*return*/, false];
                                 }
-                                _a.label = 2;
-                            case 2: return [4 /*yield*/, Stores.Operations.Exec(this._controlSet, control)];
-                            case 3:
+                                _a.label = 14;
+                            case 14: return [4 /*yield*/, Stores.Operations.Exec(this._controlSet, control)];
+                            case 15:
                                 result = _a.sent();
                                 if (result) {
                                     if (control.IsAssignToggleOn === true
@@ -5997,6 +6072,30 @@ var App;
                                     }
                                 }
                                 return [2 /*return*/, result];
+                        }
+                    });
+                });
+            };
+            ControlSetController.prototype.OpenOnEdit = function () {
+                return __awaiter(this, void 0, void 0, function () {
+                    var controlSet, ctr, ctr2;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                if (this._operationType === 2 /* Edit */)
+                                    throw new Error("Already Edit-Mode.");
+                                controlSet = this._controlSet;
+                                ctr = this.Manager.Get('Main');
+                                ctr.Show();
+                                this._controlSet = null;
+                                return [4 /*yield*/, Fw.Util.App.Wait(400)];
+                            case 1:
+                                _a.sent();
+                                ctr2 = App.Controllers.CSControllerFactory.Get(controlSet);
+                                ctr2.SetEntity(controlSet);
+                                ctr2.SetEditMode();
+                                ctr2.Show();
+                                return [2 /*return*/, ctr2];
                         }
                     });
                 });
@@ -12193,12 +12292,12 @@ var App;
                         result += '<br/>';
                     }
                     else if (hasError) {
-                        result = 'Errors<br/><br/>';
+                        result = Lang.Errors + '<br/><br/>';
                         result += errs.join('');
                         result += '<br/>';
                     }
                     else if (hasWarning) {
-                        result = 'Warnings<br/><br/>';
+                        result = Lang.Warnings + '<br/><br/>';
                         result += warns.join('');
                         result += '<br/>';
                     }
@@ -13407,20 +13506,12 @@ var App;
                 ConfirmPopup.prototype.Open = function (params) {
                     // Callback方式で使えるけど、やめとけ、というやつ。
                     throw new Error('OpenAsyncを使いたまへ！');
-                    if (typeof params === 'object') {
-                        this._callbackOk = _.isFunction(params.CallbackOk)
-                            ? params.CallbackOk
-                            : null;
-                        this._callbackCancel = _.isFunction(params.CallbackCancel)
-                            ? params.CallbackCancel
-                            : null;
-                    }
-                    _super.prototype.Open.call(this, params);
                 };
                 ConfirmPopup.prototype.OpenAsync = function (params) {
                     return __awaiter(this, void 0, void 0, function () {
                         var _this = this;
                         return __generator(this, function (_a) {
+                            //return super.OpenAsync(params);
                             return [2 /*return*/, new Promise(function (resolve) {
                                     _this._callbackOk = function () {
                                         resolve(true);
