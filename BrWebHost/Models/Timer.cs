@@ -228,9 +228,13 @@ namespace BrWebHost.Models
             {
                 using (var serviceScope = this._provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
                 using (var store = serviceScope.ServiceProvider.GetService<ControlSetStore>())
+                using (var brStore = serviceScope.ServiceProvider.GetService<BrDeviceStore>())
                 using (var dbc = serviceScope.ServiceProvider.GetService<Dbc>())
                 {
-                    var entities = dbc.BrDevices.ToList();
+                    var entities = brStore.GetList()
+                        .GetAwaiter()
+                        .GetResult();
+
                     store.EnsureBrControlSets(entities)
                         .ConfigureAwait(false)
                         .GetAwaiter()
