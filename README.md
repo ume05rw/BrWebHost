@@ -21,7 +21,7 @@ Touch operation like a smartphone-app has been realized.
 3. Run 'setup.exe', to Install your system.
 4. Run 'Start BrWebHost' on your Desktop Shoptcut, to Inisialize and Start.
 
-[ScriptAgent](https://github.com/ume05rw/BrWebHost/releases/download/release1.0.1/SetupScriptAgent.zip) is tiny implementation that limits to Script Execution Only.
+[ScriptAgent](https://github.com/ume05rw/BrWebHost/releases/download/release1.0.1/SetupScriptAgent.zip) is tiny implementation that limits to Script Execution Only.  
 It makes BrWebHost Remote-Scripting more convenient.
 
 ## Usage for Linux
