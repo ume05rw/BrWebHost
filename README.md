@@ -75,10 +75,12 @@ starting service:
      
 
 and Access **localhost:5004** from your browser.  
+  
+If it NOT Works, Install [**.Net Core 2.0 Runtime**](https://dotnet.microsoft.com/download/dotnet-core/2.0) to your platform.  
 
 
 ## Usage for Othres
-1. Install **.Net Core 2.0 SDK** to your platform.
+1. Install [**.Net Core 2.0 SDK**](https://dotnet.microsoft.com/download/dotnet-core/2.0) to your platform.
 2. Git Clone this project.
 3. Restore, Build, Publish "BrWebHost" and Run.
 
@@ -100,6 +102,8 @@ run:
   
 and Access **localhost:5004** from your browser.    
   
+
+
 ## Licence
 
 [MIT Licence](https://github.com/ume05rw/BrWebHost/blob/master/LICENSE)
