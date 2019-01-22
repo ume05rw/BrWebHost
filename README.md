@@ -6,20 +6,21 @@ Web IoT Controller for Broadlink Devices.
 ## Description
 
 This is Web Remote-Controller for Broadlink Devices on your LAN.  
-It Learning any IR Remote Controls for Rm, Switch Operating for SP3, and Displaying Sensor values for A1.  
+It Learning any IR Remote Controls for Rm, Switch Operating for SP3, and Displaying Sensor values for A1.
+Others include Wake on LAN, Script Executer, Remote-Script Runner.    
 Touch operation like a smartphone-app has been realized.  
 
 ## Supported Platform
-* Windows7, Windows8.1, Windows10 (only x64 platform)  
+* Windows7, Windows8.1, Windows10 (**only x64 platform**)  
 * Any Linux on x64
-* RaspberryPi (Raspbian)
+* RaspberryPi (**Raspbian November 2018 or later**)
   
 
 ## Usage for Windows
 1. [Download Zip-Arvhive.](https://github.com/ume05rw/BrWebHost/releases/download/release1.0.1/SetupBrWebHost.zip)  
 2. Unzip archived-files. 
 3. Run 'setup.exe', to Install your system.
-4. Run 'Start BrWebHost' on your Desktop Shoptcut, to Inisialize and Start.
+4. Run 'Start BrWebHost' on your Desktop Shoptcut and little wait, it wake up Browser.
 
 [ScriptAgent](https://github.com/ume05rw/BrWebHost/releases/download/release1.0.1/SetupScriptAgent.zip) is tiny implementation that limits to Script Execution Only.  
 It makes BrWebHost Remote-Scripting more convenient.
@@ -60,11 +61,13 @@ enabling service:
     # sudo systemctl enable brwebhost 
      
 
-start service:
+starting service:
 
      
     # sudo systemctl start brwebhost
      
+
+and Access **localhost:5004** from your browser.  
 
 
 ## Licence
