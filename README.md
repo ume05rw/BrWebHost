@@ -77,6 +77,29 @@ starting service:
 and Access **localhost:5004** from your browser.  
 
 
+## Usage for Othres
+1. Install **.Net Core 2.0 SDK** to your platform.
+2. Git Clone this project.
+3. Restore, Build, Publish "BrWebHost" and Run.
+
+restore Nuget packages:   
+     
+    # dotnet restore ./BrWebHost/BrWebHost.csproj
+
+build:  
+     
+    # dotnet build ./BrWebHost/BrWebHost.csproj
+
+publish:
+     
+    # dotnet publish ./BrWebHost/BrWebHost.csproj -c Release -r [osx-x64|linux-x86|win-x86|as your platform]
+
+run:
+     
+    # dotnet [published_path]/BrWebHost.dll
+  
+and Access **localhost:5004** from your browser.    
+  
 ## Licence
 
 [MIT Licence](https://github.com/ume05rw/BrWebHost/blob/master/LICENSE)
