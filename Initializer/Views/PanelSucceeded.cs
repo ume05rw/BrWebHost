@@ -22,8 +22,10 @@ namespace Initializer.Views
                 this.txtMessage.Font = new System.Drawing.Font(Lang.Instance.FontName, 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
                 this.linkLicense.Font = new System.Drawing.Font(Lang.Instance.FontName, 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
                 this.linkFlatIcon.Font = new System.Drawing.Font(Lang.Instance.FontName, 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-
                 this.lblPanelTitle.Text = Lang.Instance.SettingSucceeded;
+
+                this.linkLicense.Left = this.Width - this.linkLicense.Width - 5;
+                this.linkFlatIcon.Left = this.linkLicense.Left - this.linkFlatIcon.Width + 5;
             }
         }
 
