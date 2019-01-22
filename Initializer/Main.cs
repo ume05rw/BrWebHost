@@ -203,7 +203,14 @@ namespace Initializer
 
                     // 現在接続中のWiFi情報を取得する。
                     //Xb.Util.Out("Get current WiFi profile.");
-                    this._currentProfile = this._wifiInterface.GetCurrentProfile();
+                    try
+                    {
+                        this._currentProfile = this._wifiInterface.GetCurrentProfile();
+                    }
+                    catch (Exception)
+                    {
+                    }
+                    
 
                     this.pnlExec.SetProgress(80);
                     await Task.Delay(500);
