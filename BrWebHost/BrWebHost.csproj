@@ -7,12 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="lib\**" />
     <Compile Remove="obj\bin\**" />
     <Compile Remove="Releases\**" />
+    <Content Remove="lib\**" />
     <Content Remove="obj\bin\**" />
     <Content Remove="Releases\**" />
+    <EmbeddedResource Remove="lib\**" />
     <EmbeddedResource Remove="obj\bin\**" />
     <EmbeddedResource Remove="Releases\**" />
+    <None Remove="lib\**" />
     <None Remove="obj\bin\**" />
     <None Remove="Releases\**" />
   </ItemGroup>
@@ -378,10 +382,6 @@
     <Content Update="nlog.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="lib\" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
