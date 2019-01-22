@@ -7,6 +7,7 @@ Web IoT Controller for Broadlink Devices.
 
 This is Web Remote-Controller for Broadlink Devices on your LAN.  
 It Learning any IR Remote Controls for Rm, Switch Operating for SP3, and Displaying Sensor values for A1.  
+Touch operation like a smartphone-app has been realized.  
 
 ## Supported Platform
 * Windows7, Windows10 (only x64 platform)  
