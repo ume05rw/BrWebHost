@@ -100,5 +100,25 @@ namespace App.Items.Lang {
         WriteScriptGoEdit: 'スクリプトを編集してください。<br/>編集画面を開いてください。',
         SelectRemoteScriptGoEdit: 'リモートスクリプトを選択してください。<br/>編集画面を開いてください。',
         UnexpectedControlNotFound: '不明な操作です...コントロールが見つかりません。',
+
+        RmControllerNotSelected: 'Rmコントローラが選択されていません。',
+        InvalidProntoCode: 'コードが不正です。もう一度学習してください。',
+        MacAddressNotSetted: 'MACアドレスが選択されていません。',
+        InvalidMacChar: 'MACアドレスの文字が不正です。',
+        InvalidMacFormat: 'MACアドレスの形式が不正です。',
+        ScriptNull: 'スクリプトが入力されていません。',
+        RemoteScriptNull: 'リモートスクリプトが選択されていません。',
+        CheckYourInput: '入力を確認してください。',
+
+        ErrorsAndWarnings: 'エラー／警告',
+        Errors: 'エラー',
+        Warnings: '警告',
+        SaveAnyway: '構わずに保存しますか？',
+
+        NoOperations: '操作対象がありません。',
+        OperationNotSelected: '操作が選択されていません。',
+        OperationDetailNotSelected: '操作の詳細が選択されていません。',
+
+        EnableButWeekdayNotSelected: 'タイマーは有効ですが、曜日が選択されていません。',
     };
 }

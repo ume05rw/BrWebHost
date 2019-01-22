@@ -100,5 +100,25 @@ namespace App.Items.Lang {
         WriteScriptGoEdit: '请编辑脚本。<br/>请打开编辑屏幕。',
         SelectRemoteScriptGoEdit: '请选择远程脚本。<br/>请打开编辑屏幕。',
         UnexpectedControlNotFound: '未知的操作...找不到控制权。',
+
+        RmControllerNotSelected: '未选择Rm控制器。',
+        InvalidProntoCode: '代码无效，重试学习。',
+        MacAddressNotSetted: 'MAC地址未设置。',
+        InvalidMacChar: 'MAC地址字符无效。',
+        InvalidMacFormat: 'MAC地址格式无效。',
+        ScriptNull: '脚本尚未输入。',
+        RemoteScriptNull: '远程脚本未选中。',
+        CheckYourInput: '检查你的输入。',
+
+        ErrorsAndWarnings: '错误和警告',
+        Errors: '错误',
+        Warnings: '警告',
+        SaveAnyway: '还是保存？',
+
+        NoOperations: '没有操作。',
+        OperationNotSelected: '操作未选中。',
+        OperationDetailNotSelected: '操作 - 未选择详细信息。',
+
+        EnableButWeekdayNotSelected: '定时器启用，但未选择工作日。',
     };
 }
