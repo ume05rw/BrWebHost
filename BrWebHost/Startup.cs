@@ -13,6 +13,7 @@ using Newtonsoft.Json.Serialization;
 using BrWebHost.Extensions;
 using BrWebHost.Models.Stores;
 using BrWebHost.Models.Entities;
+using System.IO;
 
 namespace BrWebHost
 {
@@ -46,11 +47,24 @@ namespace BrWebHost
                     if (loggerFactory != null)
                         options.UseLoggerFactory(loggerFactory);
 
-                    var dbPath = System.IO.Path.Combine(Program.CurrentPath, "brwebhost.db");
+                    var dbPath = Path.Combine(Program.CurrentPath, "brwebhost.db");
 
-                    // マイグレーション時は例外にしないように。
-                    //if (!System.IO.File.Exists(dbPath))
-                    //    throw new Exception("DB-File Not Found!!: " + dbPath);
+                    // ※注意！！※
+                    // マイグレーション時はこのif文をコメントアウトする。
+                    // なにかいい方法は無いものか...
+                    if (!File.Exists(dbPath))
+                    {
+                        var templateDbPath
+                            = Path.Combine(Program.CurrentPath, "brwebhost.template.db");
+
+                        if (!File.Exists(templateDbPath))
+                            throw new Exception("DB-Template NOT Found. If migrating, See Startup.cs");
+
+                        File.Copy(templateDbPath, dbPath);
+
+                        if (!File.Exists(dbPath))
+                            throw new Exception("DB Creation Failed. If migrating, See Startup.cs");
+                    }
 
                     options.UseSqlite($"Data Source=\"{dbPath}\"");
 

@@ -2,7 +2,7 @@
 
 namespace ScriptAgent.Migrations
 {
-    public partial class InitailCreate : Migration
+    public partial class CreateDb : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -58,47 +58,52 @@ namespace ScriptAgent.Migrations
             migrationBuilder.InsertData(
                 table: "controlsets",
                 columns: new[] { "Id", "BrDeviceId", "Color", "IconUrl", "IsMainPanelReady", "IsTemplate", "IsTogglable", "Name", "OperationType", "Order", "ToggleState" },
-                values: new object[] { 1, null, "#fcc91f", "images/icons/controlset/tv.png", true, true, true, "TV", 1, 99999, false });
+                values: new object[] { 1, null, "#fcc91f", "images/icons/operation/large/tv.png", true, true, true, "TV", 1, 99999, false });
 
             migrationBuilder.InsertData(
                 table: "controlsets",
                 columns: new[] { "Id", "BrDeviceId", "Color", "IconUrl", "IsMainPanelReady", "IsTemplate", "IsTogglable", "Name", "OperationType", "Order", "ToggleState" },
-                values: new object[] { 2, null, "#F92068", "images/icons/controlset/av.png", true, true, true, "AV", 1, 99999, false });
+                values: new object[] { 2, null, "#F92068", "images/icons/operation/large/av.png", true, true, true, "AV", 1, 99999, false });
 
             migrationBuilder.InsertData(
                 table: "controlsets",
                 columns: new[] { "Id", "BrDeviceId", "Color", "IconUrl", "IsMainPanelReady", "IsTemplate", "IsTogglable", "Name", "OperationType", "Order", "ToggleState" },
-                values: new object[] { 3, null, "#ccdc4b", "images/icons/controlset/light.png", true, true, true, "Light", 1, 99999, false });
+                values: new object[] { 3, null, "#ccdc4b", "images/icons/operation/large/light.png", true, true, true, "Light", 1, 99999, false });
 
             migrationBuilder.InsertData(
                 table: "controlsets",
                 columns: new[] { "Id", "BrDeviceId", "Color", "IconUrl", "IsMainPanelReady", "IsTemplate", "IsTogglable", "Name", "OperationType", "Order", "ToggleState" },
-                values: new object[] { 4, null, "#6545C6", "images/icons/controlset/aircompressor.png", true, true, true, "Air Complessor", 1, 99999, false });
+                values: new object[] { 4, null, "#6545C6", "images/icons/operation/large/aircompressor.png", true, true, true, "Air Complessor", 1, 99999, false });
 
             migrationBuilder.InsertData(
                 table: "controlsets",
                 columns: new[] { "Id", "BrDeviceId", "Color", "IconUrl", "IsMainPanelReady", "IsTemplate", "IsTogglable", "Name", "OperationType", "Order", "ToggleState" },
-                values: new object[] { 5, null, "#84bde8", "images/icons/controlset/a1.png", true, true, false, "A1 Sensor", 2, 99999, false });
+                values: new object[] { 5, null, "#84bde8", "images/icons/operation/large/a1.png", true, true, false, "A1 Sensor", 2, 99999, false });
 
             migrationBuilder.InsertData(
                 table: "controlsets",
                 columns: new[] { "Id", "BrDeviceId", "Color", "IconUrl", "IsMainPanelReady", "IsTemplate", "IsTogglable", "Name", "OperationType", "Order", "ToggleState" },
-                values: new object[] { 6, null, "#84bde8", "images/icons/controlset/sp2.png", true, true, true, "Sp2 Switch", 2, 99999, false });
+                values: new object[] { 6, null, "#84bde8", "images/icons/operation/large/sp2.png", true, true, true, "Sp2 Switch", 2, 99999, false });
 
             migrationBuilder.InsertData(
                 table: "controlsets",
                 columns: new[] { "Id", "BrDeviceId", "Color", "IconUrl", "IsMainPanelReady", "IsTemplate", "IsTogglable", "Name", "OperationType", "Order", "ToggleState" },
-                values: new object[] { 7, null, "#84bde8", "images/icons/controlset/sp2.png", true, true, true, "Sp1 Switch", 2, 99999, false });
+                values: new object[] { 7, null, "#84bde8", "images/icons/operation/large/sp2.png", true, true, true, "Sp1 Switch", 2, 99999, false });
 
             migrationBuilder.InsertData(
                 table: "controlsets",
                 columns: new[] { "Id", "BrDeviceId", "Color", "IconUrl", "IsMainPanelReady", "IsTemplate", "IsTogglable", "Name", "OperationType", "Order", "ToggleState" },
-                values: new object[] { 8, null, "#84bde8", "images/icons/controlset/sp2.png", true, true, true, "Single Control", 2, 99999, false });
+                values: new object[] { 8, null, "#84bde8", "images/icons/operation/large/sp2.png", true, true, true, "Single Control", 2, 99999, false });
 
             migrationBuilder.InsertData(
                 table: "controlsets",
                 columns: new[] { "Id", "BrDeviceId", "Color", "IconUrl", "IsMainPanelReady", "IsTemplate", "IsTogglable", "Name", "OperationType", "Order", "ToggleState" },
-                values: new object[] { 9, null, "#84bde8", "images/icons/controlset/sp2.png", true, true, true, "No Control", 2, 99999, false });
+                values: new object[] { 9, null, "#84bde8", "images/icons/operation/large/sp2.png", true, true, true, "No Control", 2, 99999, false });
+
+            migrationBuilder.InsertData(
+                table: "controlsets",
+                columns: new[] { "Id", "BrDeviceId", "Color", "IconUrl", "IsMainPanelReady", "IsTemplate", "IsTogglable", "Name", "OperationType", "Order", "ToggleState" },
+                values: new object[] { 10, null, "#81c03b", "images/icons/operation/large/script.png", true, false, true, "On your PC", 4, 99999, false });
 
             migrationBuilder.InsertData(
                 table: "controls",
@@ -158,12 +163,12 @@ namespace ScriptAgent.Migrations
             migrationBuilder.InsertData(
                 table: "controls",
                 columns: new[] { "Id", "Code", "Color", "ControlSetId", "IconUrl", "IsAssignToggleOff", "IsAssignToggleOn", "Name", "PositionLeft", "PositionTop" },
-                values: new object[] { 38, "", "#9d9e9e", 4, "images/icons/arrow2_down.png", false, false, "Down", 185, 185 });
+                values: new object[] { 27, "", "#9d9e9e", 2, "images/icons/darrow_left.png", false, false, "Prev", 5, 365 });
 
             migrationBuilder.InsertData(
                 table: "controls",
                 columns: new[] { "Id", "Code", "Color", "ControlSetId", "IconUrl", "IsAssignToggleOff", "IsAssignToggleOn", "Name", "PositionLeft", "PositionTop" },
-                values: new object[] { 39, "Temp", "#F92068", 5, "", false, false, "Temp.", 185, 5 });
+                values: new object[] { 38, "", "#9d9e9e", 4, "images/icons/arrow2_down.png", false, false, "Down", 185, 185 });
 
             migrationBuilder.InsertData(
                 table: "controls",
@@ -213,17 +218,22 @@ namespace ScriptAgent.Migrations
             migrationBuilder.InsertData(
                 table: "controls",
                 columns: new[] { "Id", "Code", "Color", "ControlSetId", "IconUrl", "IsAssignToggleOff", "IsAssignToggleOn", "Name", "PositionLeft", "PositionTop" },
-                values: new object[] { 27, "", "#9d9e9e", 2, "images/icons/darrow_left.png", false, false, "Prev", 5, 365 });
+                values: new object[] { 49, "PowerOff", "#9d9e9e", 7, "", true, false, "Power Off", 185, 5 });
+
+            migrationBuilder.InsertData(
+                table: "controls",
+                columns: new[] { "Id", "Code", "Color", "ControlSetId", "IconUrl", "IsAssignToggleOff", "IsAssignToggleOn", "Name", "PositionLeft", "PositionTop" },
+                values: new object[] { 39, "Temp", "#F92068", 5, "", false, false, "Temp.", 185, 5 });
+
+            migrationBuilder.InsertData(
+                table: "controls",
+                columns: new[] { "Id", "Code", "Color", "ControlSetId", "IconUrl", "IsAssignToggleOff", "IsAssignToggleOn", "Name", "PositionLeft", "PositionTop" },
+                values: new object[] { 50, "Control", "#9d9e9e", 8, "", false, false, "Control", 95, 5 });
 
             migrationBuilder.InsertData(
                 table: "controls",
                 columns: new[] { "Id", "Code", "Color", "ControlSetId", "IconUrl", "IsAssignToggleOff", "IsAssignToggleOn", "Name", "PositionLeft", "PositionTop" },
                 values: new object[] { 26, "", "#9d9e9e", 2, "images/icons/darrow_right.png", false, false, "Next", 185, 365 });
-
-            migrationBuilder.InsertData(
-                table: "controls",
-                columns: new[] { "Id", "Code", "Color", "ControlSetId", "IconUrl", "IsAssignToggleOff", "IsAssignToggleOn", "Name", "PositionLeft", "PositionTop" },
-                values: new object[] { 25, "", "#9d9e9e", 2, "images/icons/circle_play.png", false, false, "Play", 95, 275 });
 
             migrationBuilder.InsertData(
                 table: "controls",
@@ -283,7 +293,7 @@ namespace ScriptAgent.Migrations
             migrationBuilder.InsertData(
                 table: "controls",
                 columns: new[] { "Id", "Code", "Color", "ControlSetId", "IconUrl", "IsAssignToggleOff", "IsAssignToggleOn", "Name", "PositionLeft", "PositionTop" },
-                values: new object[] { 49, "PowerOff", "#9d9e9e", 7, "", true, false, "Power Off", 185, 5 });
+                values: new object[] { 25, "", "#9d9e9e", 2, "images/icons/circle_play.png", false, false, "Play", 95, 275 });
 
             migrationBuilder.InsertData(
                 table: "controls",
@@ -348,7 +358,7 @@ namespace ScriptAgent.Migrations
             migrationBuilder.InsertData(
                 table: "controls",
                 columns: new[] { "Id", "Code", "Color", "ControlSetId", "IconUrl", "IsAssignToggleOff", "IsAssignToggleOn", "Name", "PositionLeft", "PositionTop" },
-                values: new object[] { 50, "Control", "#9d9e9e", 8, "", false, false, "Control", 95, 5 });
+                values: new object[] { 51, "notepad.exe", "#F92068", 10, "", false, false, "NotePad", 95, 5 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_controls_ControlSetId",

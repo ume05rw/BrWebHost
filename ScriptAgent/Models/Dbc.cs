@@ -223,6 +223,23 @@ namespace BrWebHost.Models
                     OperationType = OperationType.BroadlinkDevice,
                     Color = "#84bde8",
                     IsTemplate = true
+                },
+
+
+                // Inisial ControlSet: On your PC
+                new ControlSet
+                {
+                    Id = 10,
+                    BrDeviceId = null,
+                    Name = "On your PC",
+                    IconUrl = "images/icons/operation/large/script.png",
+                    Order = 99999,
+                    ToggleState = false,
+                    IsMainPanelReady = true,
+                    IsTogglable = true,
+                    OperationType = OperationType.Script,
+                    Color = "#81c03b",
+                    IsTemplate = false
                 }
             );
 
@@ -890,6 +907,22 @@ namespace BrWebHost.Models
                     IsAssignToggleOff = false,
                     IsAssignToggleOn = false,
                     Name = "Control",
+                    PositionLeft = 95,
+                    PositionTop = 5
+                },
+
+
+                // Inisial Control: On your PC
+                new Control
+                {
+                    Id = 51,
+                    Code = "notepad.exe",
+                    Color = "#F92068",
+                    ControlSetId = 10,
+                    IconUrl = "",
+                    IsAssignToggleOff = false,
+                    IsAssignToggleOn = false,
+                    Name = "NotePad",
                     PositionLeft = 95,
                     PositionTop = 5
                 }
