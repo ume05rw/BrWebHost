@@ -16,11 +16,13 @@ Touch operation like a smartphone-app has been realized.
   
 
 ## Usage for Windows
-1. [Download Zip-Arvhive for your platform.](https://github.com/ume05rw/BrWebHost/releases)  
+1. [Download Zip-Arvhive.](https://github.com/ume05rw/BrWebHost/releases/download/release1.0.1/SetupBrWebHost.zip)  
 2. Unzip archived-files. 
 3. Run 'setup.exe', to Install your system.
 4. Run 'Start BrWebHost' on your Desktop Shoptcut, to Inisialize and Start.
 
+[ScriptAgent](https://github.com/ume05rw/BrWebHost/releases/download/release1.0.1/SetupScriptAgent.zip) is tiny implementation that limits to Script Execution Only.
+It makes BrWebHost Remote-Scripting more convenient.
 
 ## Usage for Linux
 1. [Download Zip-Arvhive for your platform.](https://github.com/ume05rw/BrWebHost/releases)  
