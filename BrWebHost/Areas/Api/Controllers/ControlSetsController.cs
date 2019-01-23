@@ -235,7 +235,8 @@ namespace BrWebHost.Areas.Api.Controllers
         public async Task<XhrResult> Exec(
             [FromRoute] int id,
             [FromBody] ControlCommand command,
-            [FromServices] BrDeviceStore devStore
+            [FromServices] BrDeviceStore devStore,
+            [FromServices] ControlSetStore csStore
         )
         {
             try
@@ -270,13 +271,15 @@ namespace BrWebHost.Areas.Api.Controllers
                          && brDevice.SbDevice.DeviceType != DeviceType.Rm2Pro)
                     return XhrResult.CreateError("Device is not Rm");
 
-                var rm = (Rm)brDevice.SbDevice;
-                var pBytes = SharpBroadlink.Signals.String2ProntoBytes(control.Code);
-                var result = await rm.SendPronto(pBytes);
+                //var rm = (Rm)brDevice.SbDevice;
+                //var pBytes = SharpBroadlink.Signals.String2ProntoBytes(control.Code);
+                //var result = await rm.SendPronto(pBytes);
 
-                return (result)
+                var errors = await csStore.Exec(control);
+
+                return (errors.Length <= 0)
                     ? XhrResult.CreateSucceeded(true)
-                    : XhrResult.CreateError("Failed to Exec Command");
+                    : XhrResult.CreateError(errors);
             }
             catch (Exception ex)
             {

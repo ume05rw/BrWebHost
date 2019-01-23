@@ -28,16 +28,20 @@ namespace BrWebHost.Models.Stores
 
             var results = new List<string>();
             var isSucceeded = true;
-            foreach (var row in rows)
-            {
-                results.Add(row);
-                var res = await Xb.App.Process.GetConsoleResultAsync(row, null, 1);
-                results.Add(res.Message);
 
-                if (!res.Succeeded && res.Message != "No Response")
+            if (!Program.IsDemoMode)
+            {
+                foreach (var row in rows)
                 {
-                    isSucceeded = false;
-                    break;
+                    results.Add(row);
+                    var res = await Xb.App.Process.GetConsoleResultAsync(row, null, 1);
+                    results.Add(res.Message);
+
+                    if (!res.Succeeded && res.Message != "No Response")
+                    {
+                        isSucceeded = false;
+                        break;
+                    }
                 }
             }
 

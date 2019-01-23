@@ -15,6 +15,9 @@ namespace BrWebHost.Models.Stores
     {
         public async Task<bool> Exec(string macString)
         {
+            if (Program.IsDemoMode)
+                return true;
+
             var mac = macString
                 .Replace("\r\n", "\n")
                 .Replace("\r", "\n")

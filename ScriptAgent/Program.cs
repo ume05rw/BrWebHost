@@ -24,16 +24,10 @@ namespace BrWebHost
     /// </remarks>
     public class Program
     {
-        public static int Port = 5004;
-
-        private static string _currentPath = "";
-        public static string CurrentPath
-        {
-            get
-            {
-                return Program._currentPath;
-            }
-        }
+        public static int Port { get; private set; } = 5004;
+        public static string CurrentPath { get; private set; } = string.Empty;
+        public static bool IsWindowsService { get; private set; } = false;
+        public static bool IsDemoMode { get; private set; } = false;
 
         /// <summary>
         /// 
@@ -48,13 +42,17 @@ namespace BrWebHost
             // ロガーインスタンスを、Asp.NetCoreと無関係に取得する。
             var logger = NLog.LogManager.LoadConfiguration("nlog.config").GetCurrentClassLogger();
 
+            // VSから起動したとき、ポートを変更。
+            Program.Port = (Debugger.IsAttached)
+                ? 5005
+                : 5004;
+
             // サービスとして起動するかどうかのフラグ
             // 引数に"--winservice"を付与して起動すると、Windowsサービスとして起動する。
-            bool isService = args.Contains("--winservice");
+            Program.IsWindowsService = args.Contains("--winservice");
 
-            // VSから起動したとき、ポートを変更。
-            if (Debugger.IsAttached)
-                Program.Port = 5005;
+            // デモモードとして起動するか否かのフラグ
+            Program.IsDemoMode = args.Contains("--demo");
 
             // 1.サービスとして起動する場合
             //   1) WebRoot = 実行ファイルパス
@@ -82,13 +80,13 @@ namespace BrWebHost
             {
                 // dotnetコマンドから起動している。
                 // VisualStudio、コマンドライン等から実行している。
-                Program._currentPath = Directory.GetCurrentDirectory();
+                Program.CurrentPath = Directory.GetCurrentDirectory();
             }
             else
             {
                 // dotnetコマンド以外から起動している。
                 // 実行ファイルのパスを取得してルートとする。
-                Program._currentPath = Path.GetDirectoryName(pathToExe);
+                Program.CurrentPath = Path.GetDirectoryName(pathToExe);
             }
 
             // コマンドライン引数のパースでエラーになるので、引数を渡さず握りつぶす。
@@ -105,7 +103,7 @@ namespace BrWebHost
                 logger.Debug("Start");
 
                 // サービスかどうかで起動方法を分ける
-                if (isService)
+                if (Program.IsWindowsService)
                 {
                     // Windowsサービスとして起動する。
                     Program.BuildWebHost(new string[] { }).RunAsCustomService();
@@ -146,7 +144,7 @@ namespace BrWebHost
                 })
                 .UseNLog()
                 .UseKestrel()
-                .UseContentRoot(Program._currentPath)
+                .UseContentRoot(Program.CurrentPath)
                 .UseStartup<Startup>()
                 .UseUrls($"http://*:{Program.Port}")
                 //.UseUrls("http://0.0.0.0:5004")

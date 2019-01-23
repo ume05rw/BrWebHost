@@ -293,182 +293,186 @@ namespace BrWebHost.Models.Stores
                 return errors.ToArray();
             }
 
+
             using (var serviceScope = ControlSetStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
-                switch (controlSet.OperationType)
+                if (!Program.IsDemoMode)
                 {
-                    case OperationType.RemoteControl:
-                        try
-                        {
-                            var device = await this.GetBrDevice(controlSet.BrDeviceId);
-                            if (device == null)
+                    switch (controlSet.OperationType)
+                    {
+                        case OperationType.RemoteControl:
+                            try
                             {
-                                errors.Add(new Error()
+                                var device = await this.GetBrDevice(controlSet.BrDeviceId);
+                                if (device == null)
                                 {
-                                    Name = "BrDeviceId",
-                                    Message = $"ControlSetStore.Exec[RemoteControl]: Broadlink Device Not Found[{controlSet.BrDeviceId}]"
-                                });
-                                break;
+                                    errors.Add(new Error()
+                                    {
+                                        Name = "BrDeviceId",
+                                        Message = $"ControlSetStore.Exec[RemoteControl]: Broadlink Device Not Found[{controlSet.BrDeviceId}]"
+                                    });
+                                    break;
+                                }
+
+                                var rm = (Rm)device.SbDevice;
+                                var pBytes = Signals.String2ProntoBytes(control.Code);
+                                var result = await rm.SendPronto(pBytes);
+
+                                if (result == false)
+                                {
+                                    errors.Add(new Error()
+                                    {
+                                        Name = "Code",
+                                        Message = "ControlSetStore.Exec[RemoteControl]: Code Exec Failure."
+                                    });
+                                    break;
+                                }
                             }
-
-                            var rm = (Rm)device.SbDevice;
-                            var pBytes = Signals.String2ProntoBytes(control.Code);
-                            var result = await rm.SendPronto(pBytes);
-
-                            if (result == false)
+                            catch (Exception ex)
                             {
                                 errors.Add(new Error()
                                 {
                                     Name = "Code",
-                                    Message = "ControlSetStore.Exec[RemoteControl]: Code Exec Failure."
+                                    Message = $"ControlSetStore.Exec[RemoteControl]: {ex.Message} / {ex.StackTrace}"
                                 });
                                 break;
                             }
-                        }
-                        catch (Exception ex)
-                        {
-                            errors.Add(new Error()
-                            {
-                                Name = "Code",
-                                Message = $"ControlSetStore.Exec[RemoteControl]: {ex.Message} / {ex.StackTrace}"
-                            });
                             break;
-                        }
-                        break;
-                    case OperationType.BroadlinkDevice:
-                        try
-                        {
-                            var device = await this.GetBrDevice(controlSet.BrDeviceId);
-                            if (device == null)
+                        case OperationType.BroadlinkDevice:
+                            try
+                            {
+                                var device = await this.GetBrDevice(controlSet.BrDeviceId);
+                                if (device == null)
+                                {
+                                    errors.Add(new Error()
+                                    {
+                                        Name = "BrDeviceId",
+                                        Message = $"ControlSetStore.Exec[BroadlinkDevice]: Broadlink Device Not Found[{controlSet.BrDeviceId}]"
+                                    });
+                                    break;
+                                }
+
+                                var brErrors = await this.ExecBrDevice(control, device);
+                                if (brErrors.Length > 0)
+                                {
+                                    errors.AddRange(brErrors);
+                                    break;
+                                }
+                            }
+                            catch (Exception ex)
                             {
                                 errors.Add(new Error()
                                 {
-                                    Name = "BrDeviceId",
-                                    Message = $"ControlSetStore.Exec[BroadlinkDevice]: Broadlink Device Not Found[{controlSet.BrDeviceId}]"
+                                    Name = "Unexpected",
+                                    Message = $"ControlSetStore.Exec[BroadlinkDevice]: {ex.Message} / {ex.StackTrace}"
                                 });
                                 break;
                             }
 
-                            var brErrors = await this.ExecBrDevice(control, device);
-                            if (brErrors.Length > 0)
+                            break;
+                        case OperationType.WakeOnLan:
+                            try
                             {
-                                errors.AddRange(brErrors);
+                                using (var wolStore = serviceScope.ServiceProvider.GetService<WolStore>())
+                                {
+                                    var res = await wolStore.Exec(control.Code);
+                                    if (res == false)
+                                    {
+                                        errors.Add(new Error()
+                                        {
+                                            Name = "Code",
+                                            Message = "Broadlink Device Not Found."
+                                        });
+                                        break;
+                                    }
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                errors.Add(new Error()
+                                {
+                                    Name = "Unexpected",
+                                    Message = $"ControlSetStore.Exec[WakeOnLan]: {ex.Message} / {ex.StackTrace}"
+                                });
                                 break;
                             }
-                        }
-                        catch (Exception ex)
-                        {
-                            errors.Add(new Error()
-                            {
-                                Name = "Unexpected",
-                                Message = $"ControlSetStore.Exec[BroadlinkDevice]: {ex.Message} / {ex.StackTrace}"
-                            });
-                            break;
-                        }
 
-                        break;
-                    case OperationType.WakeOnLan:
-                        try
-                        {
-                            using (var wolStore = serviceScope.ServiceProvider.GetService<WolStore>())
+                            break;
+                        case OperationType.Script:
+                            try
                             {
-                                var res = await wolStore.Exec(control.Code);
-                                if (res == false)
+                                using (var scriptStore = serviceScope.ServiceProvider.GetService<ScriptStore>())
                                 {
-                                    errors.Add(new Error()
+                                    var res = await scriptStore.Exec(control.Code);
+                                    if (!res.IsSucceeded)
                                     {
-                                        Name = "Code",
-                                        Message = "Broadlink Device Not Found."
-                                    });
-                                    break;
+                                        errors.Add(new Error()
+                                        {
+                                            Name = "Code",
+                                            Message = $"ControlSetStore.Exec[WakeOnLan]: {res.Result}"
+                                        });
+                                        break;
+                                    }
                                 }
                             }
-                        }
-                        catch (Exception ex)
-                        {
-                            errors.Add(new Error()
+                            catch (Exception ex)
                             {
-                                Name = "Unexpected",
-                                Message = $"ControlSetStore.Exec[WakeOnLan]: {ex.Message} / {ex.StackTrace}"
-                            });
-                            break;
-                        }
-
-                        break;
-                    case OperationType.Script:
-                        try
-                        {
-                            using (var scriptStore = serviceScope.ServiceProvider.GetService<ScriptStore>())
-                            {
-                                var res = await scriptStore.Exec(control.Code);
-                                if (!res.IsSucceeded)
+                                errors.Add(new Error()
                                 {
-                                    errors.Add(new Error()
+                                    Name = "Unexpected",
+                                    Message = $"ControlSetStore.Exec[Script]: {ex.Message} / {ex.StackTrace}"
+                                });
+                                break;
+                            }
+
+                            break;
+                        case OperationType.RemoteHost:
+                            try
+                            {
+                                using (var rhStore = serviceScope.ServiceProvider.GetService<RemoteHostStore>())
+                                {
+                                    Script script;
+                                    try
                                     {
-                                        Name = "Code",
-                                        Message = $"ControlSetStore.Exec[WakeOnLan]: {res.Result}"
-                                    });
-                                    break;
+                                        script = JsonConvert.DeserializeObject<Script>(control.Code);
+                                    }
+                                    catch (Exception)
+                                    {
+                                        errors.Add(new Error()
+                                        {
+                                            Name = "Code",
+                                            Message = "ControlSetStore.Exec[RemoteHost]: Remote Script Not Recognize."
+                                        });
+                                        break;
+                                    }
+
+                                    var res = await rhStore.Exec(script);
+                                    if (!res.IsSucceeded)
+                                    {
+                                        errors.Add(new Error()
+                                        {
+                                            Name = "Code",
+                                            Message = $"ControlSetStore.Exec[RemoteHost]: {res.Result}"
+                                        });
+                                        break;
+                                    }
                                 }
                             }
-                        }
-                        catch (Exception ex)
-                        {
-                            errors.Add(new Error()
+                            catch (Exception ex)
                             {
-                                Name = "Unexpected",
-                                Message = $"ControlSetStore.Exec[Script]: {ex.Message} / {ex.StackTrace}"
-                            });
-                            break;
-                        }
-
-                        break;
-                    case OperationType.RemoteHost:
-                        try
-                        {
-                            using (var rhStore = serviceScope.ServiceProvider.GetService<RemoteHostStore>())
-                            {
-                                Script script;
-                                try
+                                errors.Add(new Error()
                                 {
-                                    script = JsonConvert.DeserializeObject<Script>(control.Code);
-                                }
-                                catch (Exception)
-                                {
-                                    errors.Add(new Error()
-                                    {
-                                        Name = "Code",
-                                        Message = "ControlSetStore.Exec[RemoteHost]: Remote Script Not Recognize."
-                                    });
-                                    break;
-                                }
-
-                                var res = await rhStore.Exec(script);
-                                if (!res.IsSucceeded)
-                                {
-                                    errors.Add(new Error()
-                                    {
-                                        Name = "Code",
-                                        Message = $"ControlSetStore.Exec[RemoteHost]: {res.Result}"
-                                    });
-                                    break;
-                                }
+                                    Name = "Unexpected",
+                                    Message = $"ControlSetStore.Exec[RemoteHost]: {ex.Message} / {ex.StackTrace}"
+                                });
+                                break;
                             }
-                        }
-                        catch (Exception ex)
-                        {
-                            errors.Add(new Error()
-                            {
-                                Name = "Unexpected",
-                                Message = $"ControlSetStore.Exec[RemoteHost]: {ex.Message} / {ex.StackTrace}"
-                            });
                             break;
-                        }
-                        break;
-                    case OperationType.Scene:
-                    default:
-                        // ここにはこないはず。
-                        throw new Exception("なんでやー");
+                        case OperationType.Scene:
+                        default:
+                            // ここにはこないはず。
+                            throw new Exception("なんでやー");
+                    }
                 }
 
 

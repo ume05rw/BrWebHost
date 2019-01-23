@@ -118,6 +118,9 @@ namespace BrWebHost.Areas.Api.Controllers
             Xb.Util.Out("RmController.Exec");
             try
             {
+                if (Program.IsDemoMode)
+                    return XhrResult.CreateSucceeded(true);
+
                 var pair = await this.GetRmDevice(id);
                 if (pair.result != null)
                     return pair.result;

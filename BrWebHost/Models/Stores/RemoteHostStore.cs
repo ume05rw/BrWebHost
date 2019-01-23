@@ -233,6 +233,9 @@ namespace BrWebHost.Models.Stores
 
         public async Task<(bool IsSucceeded, string Result)> Exec(Script script)
         {
+            if (Program.IsDemoMode)
+                return (true, string.Empty);
+
             if (script == null)
                 return (false, "Entity Not Found");
             else if (script.RemoteHostId == null)
