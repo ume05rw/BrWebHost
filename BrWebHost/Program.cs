@@ -38,11 +38,6 @@ namespace BrWebHost
             // デモモードとして起動するか否かのフラグ
             Program.IsDemoMode = args.Contains("--demo");
 
-            if (Debugger.IsAttached)
-            {
-                Program.IsDemoMode = true;
-            }
-
             // 1.サービスとして起動する場合
             //   1) WebRoot = 実行ファイルパス
             //   2) DBパス  = 実行ファイルパス/scriptagent.db
