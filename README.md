@@ -3,8 +3,10 @@ BrWebHost
 
 Web IoT Controller for Broadlink Devices.  
 
-![BrWebHost Demo](https://raw.githubusercontent.com/ume05rw/BrWebHost/master/_binaries/form_full.png "BrWebHost")
-
+![BrWebHost Demo](https://raw.githubusercontent.com/ume05rw/BrWebHost/master/_binaries/form_full.png "BrWebHost")  
+  
+[Demonstration Page: http://brwebdemo.dobes.jp/](http://brwebdemo.dobes.jp/)  
+  
 ## Description
 
 This is Web Remote-Controller for Broadlink Devices on your LAN.  
