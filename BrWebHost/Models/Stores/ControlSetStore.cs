@@ -296,6 +296,8 @@ namespace BrWebHost.Models.Stores
 
             using (var serviceScope = ControlSetStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
+                // デモモードのときは実行せず正常終了する。
+                // デモモードでないときだけ実行。
                 if (!Program.IsDemoMode)
                 {
                     switch (controlSet.OperationType)

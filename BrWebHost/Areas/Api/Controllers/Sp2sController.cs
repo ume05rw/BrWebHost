@@ -51,7 +51,7 @@ namespace BrWebHost.Areas.Api.Controllers
             }
         }
 
-        // GET: api/Sp2s/5
+        // POST: api/Sp2s/5
         [HttpPost("{id?}")]
         public async Task<XhrResult> SetSp2Status([FromRoute] int? id, [FromBody] Sp2Status sp2Status)
         {

@@ -14,6 +14,10 @@ namespace BrWebHost.Models.Stores
     {
         public async Task<(bool IsSucceeded, string Result)> Exec(string script)
         {
+            // デモモードのときは実行せず正常終了する。
+            if (Program.IsDemoMode)
+                return (true, string.Empty);
+
             var rows = script
                 .Replace("\r\n", "\n")
                 .Replace("\r", "\n")
@@ -29,19 +33,16 @@ namespace BrWebHost.Models.Stores
             var results = new List<string>();
             var isSucceeded = true;
 
-            if (!Program.IsDemoMode)
+            foreach (var row in rows)
             {
-                foreach (var row in rows)
-                {
-                    results.Add(row);
-                    var res = await Xb.App.Process.GetConsoleResultAsync(row, null, 1);
-                    results.Add(res.Message);
+                results.Add(row);
+                var res = await Xb.App.Process.GetConsoleResultAsync(row, null, 1);
+                results.Add(res.Message);
 
-                    if (!res.Succeeded && res.Message != "No Response")
-                    {
-                        isSucceeded = false;
-                        break;
-                    }
+                if (!res.Succeeded && res.Message != "No Response")
+                {
+                    isSucceeded = false;
+                    break;
                 }
             }
 

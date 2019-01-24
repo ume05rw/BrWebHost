@@ -15,6 +15,7 @@ namespace BrWebHost.Models.Stores
     {
         public async Task<bool> Exec(string macString)
         {
+            // デモモードのときは実行せず正常終了する。
             if (Program.IsDemoMode)
                 return true;
 

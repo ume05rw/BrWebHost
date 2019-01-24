@@ -233,6 +233,7 @@ namespace BrWebHost.Models.Stores
 
         public async Task<(bool IsSucceeded, string Result)> Exec(Script script)
         {
+            // デモモードのときは実行せず正常終了する。
             if (Program.IsDemoMode)
                 return (true, string.Empty);
 

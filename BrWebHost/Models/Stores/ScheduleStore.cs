@@ -99,6 +99,7 @@ namespace BrWebHost.Models.Stores
                         var elapsed = now - schedule.NextDateTime;
                         if (elapsed < (new TimeSpan(0, 1, 30)))
                         {
+                            // デモモードのときは、ControlSetStore.Exec内で実行を抑止する。
                             // 指定時間超過が1分半以下のとき
                             // 通常実行
                             // 1.実行する。
@@ -159,6 +160,8 @@ namespace BrWebHost.Models.Stores
         {
             var errors = new List<Error>();
 
+            // デモモードのときは、ControlSetStore.Exec内で実行を抑止する。
+            // ScheneStore.Execの内部で ControlSetStore.Exec を呼んでいるため、同様。
             using (var serviceScope = ScheduleStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 if (schedule.Scene != null)

@@ -46,6 +46,10 @@ namespace BrWebHost.Models.Stores
 
         public async Task<bool> SetStatus(int id, Sp2Status sp2Status)
         {
+            // デモモードのときは実行せず正常終了する。
+            if (Program.IsDemoMode)
+                return true;
+
             var entity = await this._brDeviceStore.Get(id);
 
             if (entity == null)

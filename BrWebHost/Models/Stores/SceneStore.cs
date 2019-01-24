@@ -69,6 +69,7 @@ namespace BrWebHost.Models.Stores
         /// <returns></returns>
         public async Task<bool> InnerExec(Job job, Scene scene, SceneStatus status)
         {
+            // デモモードのときは、ControlSetStore.Exec内で実行を抑止する。
             using (var serviceScope = SceneStore.Provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             using (var dbc = serviceScope.ServiceProvider.GetService<Dbc>())
             {
