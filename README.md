@@ -28,11 +28,14 @@ Language Supports: English, Japanese, Chinese.
 3. Run 'setup.exe', to Install your system.
 4. Run 'Start BrWebHost' on your Desktop Shoptcut and little wait, it wake up Browser.
 
+#### Broadlink-Device Initializer
+![Broadlink-Device Initializer](https://raw.githubusercontent.com/ume05rw/BrWebHost/master/_binaries/form_initializer.png "Broadlink-Device Initializer")  
 Broadlink-Device Initializer is a Initial Setup Tool for Broadlink-Devices.  
 It find your new Broadlink-Device on your LAN, and add Wi-Fi settings.  
 This is only for Windows.  
   
-[ScriptAgent](https://github.com/ume05rw/BrWebHost/releases/download/release1.0.1/SetupScriptAgent.zip) is tiny implementation that limits to Script Execution Only.  
+#### BWH Script Agent
+[BWH Script Agent](https://github.com/ume05rw/BrWebHost/releases/download/release1.0.1/SetupScriptAgent.zip) is tiny implementation that limits to Script Execution Only.  
 It makes BrWebHost Remote-Scripting more convenient.  
   
 
