@@ -26,6 +26,7 @@ namespace BrWebHost
     {
         public static int Port { get; private set; } = 5004;
         public static string CurrentPath { get; private set; } = string.Empty;
+        public static string DbPath { get; private set; } = string.Empty;
         public static bool IsWindowsService { get; private set; } = false;
         public static bool IsDemoMode { get; private set; } = false;
 
@@ -53,6 +54,36 @@ namespace BrWebHost
             Program.Port = 5004;
             if (Program.IsDemoMode || Debugger.IsAttached)
                 Program.Port = 5005;
+
+            // DBパスを取得。
+            Program.DbPath = Path.Combine(Program.CurrentPath, "scriptagent.db");
+
+            // デモモード起動時は既存DBを削除する。
+            if (Program.IsDemoMode)
+            {
+                if (File.Exists(Program.DbPath))
+                    File.Delete(Program.DbPath);
+
+                if (File.Exists(Program.DbPath))
+                    throw new Exception("DB Deleting Failure on DEMO-Mode.");
+            }
+
+            // ※注意！！※
+            // マイグレーション時はこのif文をコメントアウトする。
+            // なにかいい方法は無いものか...
+            if (!File.Exists(Program.DbPath))
+            {
+                var templateDbPath
+                    = Path.Combine(Program.CurrentPath, "scriptagent.template.db");
+
+                if (!File.Exists(templateDbPath))
+                    throw new Exception("DB-Template NOT Found. If migrating, See Program.cs");
+
+                File.Copy(templateDbPath, Program.DbPath);
+
+                if (!File.Exists(Program.DbPath))
+                    throw new Exception("DB Creation Failed. If migrating, See Program.cs");
+            }
 
             // 1.サービスとして起動する場合
             //   1) WebRoot = 実行ファイルパス

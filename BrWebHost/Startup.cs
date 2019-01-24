@@ -47,26 +47,7 @@ namespace BrWebHost
                     if (loggerFactory != null)
                         options.UseLoggerFactory(loggerFactory);
 
-                    var dbPath = Path.Combine(Program.CurrentPath, "brwebhost.db");
-
-                    // ※注意！！※
-                    // マイグレーション時はこのif文をコメントアウトする。
-                    // なにかいい方法は無いものか...
-                    if (!File.Exists(dbPath))
-                    {
-                        var templateDbPath
-                            = Path.Combine(Program.CurrentPath, "brwebhost.template.db");
-
-                        if (!File.Exists(templateDbPath))
-                            throw new Exception("DB-Template NOT Found. If migrating, See Startup.cs");
-
-                        File.Copy(templateDbPath, dbPath);
-
-                        if (!File.Exists(dbPath))
-                            throw new Exception("DB Creation Failed. If migrating, See Startup.cs");
-                    }
-
-                    options.UseSqlite($"Data Source=\"{dbPath}\"");
+                    options.UseSqlite($"Data Source=\"{Program.DbPath}\"");
 
                     // MySQL接続のとき
                     //options.UseMySQL(this.Configuration.GetConnectionString("DbConnectionMySql"));
