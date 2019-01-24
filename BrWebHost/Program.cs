@@ -26,17 +26,17 @@ namespace BrWebHost
             // ロガーインスタンスを、Asp.NetCoreと無関係に取得する。
             var logger = NLog.LogManager.LoadConfiguration("nlog.config").GetCurrentClassLogger();
 
-            // VSから起動したとき、ポートを変更。
-            Program.Port = (Debugger.IsAttached)
-                ? 5005
-                : 5004;
-
             // サービスとして起動するか否かのフラグ
             // 引数に"--winservice"を付与して起動すると、Windowsサービスとして起動する。
             Program.IsWindowsService = args.Contains("--winservice");
 
             // デモモードとして起動するか否かのフラグ
             Program.IsDemoMode = args.Contains("--demo");
+
+            // VSから起動時、もしくはデモモードのとき、ポートを変更。
+            Program.Port = 5004;
+            if (Program.IsDemoMode || Debugger.IsAttached)
+                Program.Port = 5005;
 
             // 1.サービスとして起動する場合
             //   1) WebRoot = 実行ファイルパス
