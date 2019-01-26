@@ -39,6 +39,21 @@ namespace BrWebHost
             if (Program.IsDemoMode || Debugger.IsAttached)
                 Program.Port = 5005;
 
+            // カレントパスを取得する。
+            var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
+            if (pathToExe.EndsWith("dotnet") || pathToExe.EndsWith("dotnet.exe"))
+            {
+                // dotnetコマンドから起動している。
+                // VisualStudio、コマンドライン等から実行している。
+                Program.CurrentPath = Directory.GetCurrentDirectory();
+            }
+            else
+            {
+                // dotnetコマンド以外から起動している。
+                // 実行ファイルのパスを取得してルートとする。
+                Program.CurrentPath = Path.GetDirectoryName(pathToExe);
+            }
+
             // DBパスを取得。
             Program.DbPath = Path.Combine(Program.CurrentPath, "brwebhost.db");
 
@@ -90,19 +105,7 @@ namespace BrWebHost
             //   2) DBパス  = カレントパス/scriptagent.db
             //   3) Replyer = カレントパス/lib/UdpReplyer/UdpReplyer.dll
 
-            string pathToExe = Process.GetCurrentProcess().MainModule.FileName;
-            if (pathToExe.EndsWith("dotnet") || pathToExe.EndsWith("dotnet.exe"))
-            {
-                // dotnetコマンドから起動している。
-                // VisualStudio、コマンドライン等から実行している。
-                Program.CurrentPath = Directory.GetCurrentDirectory();
-            }
-            else
-            {
-                // dotnetコマンド以外から起動している。
-                // 実行ファイルのパスを取得してルートとする。
-                Program.CurrentPath = Path.GetDirectoryName(pathToExe);
-            }
+
 
             // コマンドライン引数のパースでエラーになるので、引数を渡さず握りつぶす。
             // 1) .NetCoreコマンドライン引数は、常に キーと値のペアである必要がある。
